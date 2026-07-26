@@ -89,7 +89,7 @@ function SettlementsPage() {
                     {s.status === "APPROVED" && <PayInline id={s.id} onPay={(reference) => payFn({ data: { id: s.id, reference } }).then(() => { toast.success("Ditandai lunas"); qc.invalidateQueries(); }).catch((e: Error) => toast.error(e.message))} />}
                   </div>
                 </div>
-                {expanded === s.id && detail.data?.settlement.id === s.id && (
+                {expanded === s.id && detail.data && detail.data.settlement.id === s.id && (
                   <div className="mt-3 space-y-1 border-t pt-2">
                     {detail.data.items.map((it: any) => (
                       <div key={it.id} className="flex justify-between text-xs">
