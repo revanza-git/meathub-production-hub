@@ -26,18 +26,18 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   return (
-    <div className="min-h-screen bg-charcoal font-[family-name:var(--font-body-alt)] text-offwhite">
-      <header className="sticky top-0 z-20 border-b border-gold-bright/10 bg-charcoal/95 backdrop-blur">
+    <div className="min-h-screen bg-warm-white font-[family-name:var(--font-body-alt)] text-espresso">
+      <header className="sticky top-0 z-20 border-b border-espresso/10 bg-warm-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-3">
-            <span className="grid h-10 w-10 place-items-center rounded-full border border-gold-bright/40 bg-noir-surface font-headline text-xs font-bold tracking-widest text-gold-bright">
+            <span className="grid h-10 w-10 place-items-center rounded-full border border-espresso/30 bg-espresso font-headline text-xs font-bold tracking-widest text-warm-white">
               MH
             </span>
             <div>
-              <div className="font-headline text-lg font-bold leading-none tracking-tight text-offwhite">
+              <div className="font-headline text-lg font-bold leading-none tracking-tight text-espresso">
                 MEATHUB
               </div>
-              <div className="text-[10px] uppercase tracking-[0.2em] text-offwhite/60">
+              <div className="text-[10px] uppercase tracking-[0.2em] text-espresso/60">
                 Meat Hub
               </div>
             </div>
@@ -46,13 +46,13 @@ function Landing() {
             <Button
               asChild
               variant="ghost"
-              className="text-offwhite hover:bg-noir-surface hover:text-offwhite"
+              className="text-espresso hover:bg-sand hover:text-espresso"
             >
               <Link to="/auth">Masuk</Link>
             </Button>
             <Button
               asChild
-              className="border border-gold-bright bg-transparent text-gold-bright hover:bg-gold-bright hover:text-charcoal"
+              className="border border-espresso bg-espresso text-warm-white hover:bg-espresso-dark hover:text-warm-white"
             >
               <Link to="/auth" search={{ next: "/dashboard" }}>
                 Mulai pesan
@@ -63,9 +63,9 @@ function Landing() {
       </header>
 
       <main>
-        {/* Hero — Editorial Noir & Gold */}
-        <section className="relative overflow-hidden bg-noir px-4 py-16 md:py-24 lg:py-32">
-          <div className="pointer-events-none absolute -bottom-24 -right-24 select-none font-headline text-[160px] leading-none text-noir-surface opacity-40 md:text-[220px] lg:-right-16 lg:text-[280px]">
+        {/* Hero — Espresso editorial on warm white page */}
+        <section className="relative overflow-hidden bg-espresso-dark px-4 py-16 md:py-24 lg:py-32">
+          <div className="pointer-events-none absolute -bottom-24 -right-24 select-none font-headline text-[160px] leading-none text-espresso opacity-30 md:text-[220px] lg:-right-16 lg:text-[280px]">
             B2B
           </div>
 
@@ -74,22 +74,22 @@ function Landing() {
             <div className="lg:col-span-7 flex flex-col space-y-8">
               <div className="fade-in-up" style={{ animationDelay: "0.05s" }}>
                 <div className="flex items-center gap-4">
-                  <span className="h-px w-12 bg-gold-bright" />
-                  <span className="text-xs font-bold uppercase tracking-[0.3em] text-gold-bright">
+                  <span className="h-px w-12 bg-tan" />
+                  <span className="text-xs font-bold uppercase tracking-[0.3em] text-tan">
                     B2B Premium Marketplace
                   </span>
                 </div>
-                <h1 className="mt-6 font-headline text-6xl leading-[0.85] tracking-tighter text-offwhite uppercase md:text-7xl lg:text-8xl">
-                  Meat<span className="text-gold-bright">hub</span>
+                <h1 className="mt-6 font-headline text-6xl leading-[0.85] tracking-tighter text-warm-white uppercase md:text-7xl lg:text-8xl">
+                  Meat<span className="text-tan">hub</span>
                 </h1>
               </div>
 
               <p
-                className="max-w-xl text-xl leading-relaxed text-offwhite/80 md:text-2xl font-light fade-in-up"
+                className="max-w-xl text-xl leading-relaxed text-warm-white/85 md:text-2xl font-light fade-in-up"
                 style={{ animationDelay: "0.15s" }}
               >
                 Standardisasi baru distribusi daging di{" "}
-                <span className="font-semibold text-offwhite">Jabodetabek</span>. Akurasi stok ≥97%
+                <span className="font-semibold text-warm-white">Jabodetabek</span>. Akurasi stok ≥97%
                 dengan konfirmasi berat hanya dalam 2 jam.
               </p>
 
@@ -100,7 +100,7 @@ function Landing() {
                 <Button
                   asChild
                   size="lg"
-                  className="bg-gold-bright px-8 py-6 font-headline text-sm font-bold uppercase tracking-wider text-noir shadow-[0_0_24px_rgba(201,168,76,0.25)] hover:bg-gold-cream"
+                  className="bg-tan px-8 py-6 font-headline text-sm font-bold uppercase tracking-wider text-espresso-dark shadow-[0_0_24px_rgba(139,115,85,0.25)] hover:bg-sand"
                 >
                   <Link to="/auth" search={{ next: "/dashboard" }}>
                     Daftar sebagai pembeli
@@ -110,7 +110,7 @@ function Landing() {
                   asChild
                   size="lg"
                   variant="outline"
-                  className="border-gold-bright px-8 py-6 font-headline text-sm font-bold uppercase tracking-wider text-gold-bright hover:bg-gold-bright hover:text-noir"
+                  className="border-tan px-8 py-6 font-headline text-sm font-bold uppercase tracking-wider text-tan hover:bg-tan hover:text-espresso-dark"
                 >
                   <Link to="/auth" search={{ next: "/dashboard" }}>
                     Daftar sebagai vendor
@@ -119,7 +119,7 @@ function Landing() {
               </div>
 
               <div
-                className="grid grid-cols-3 gap-6 border-t border-noir-surface pt-10 fade-in-up"
+                className="grid grid-cols-3 gap-6 border-t border-espresso-light/30 pt-10 fade-in-up"
                 style={{ animationDelay: "0.35s" }}
               >
                 <Stat value="2 JAM" label="Konfirmasi Berat" />
@@ -133,45 +133,45 @@ function Landing() {
               className="relative z-10 grid grid-cols-2 gap-3 lg:col-span-5 fade-in-up"
               style={{ animationDelay: "0.45s" }}
             >
-              <div className="col-span-2 flex h-44 items-end justify-between border-l-4 border-gold-bright bg-noir-surface p-6 transition-colors hover:bg-noir-surface/80">
+              <div className="col-span-2 flex h-44 items-end justify-between border-l-4 border-tan bg-espresso p-6 transition-colors hover:bg-espresso/90">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-gold-bright">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-tan">
                     Tier 01
                   </span>
-                  <h3 className="mt-2 font-headline text-2xl uppercase leading-none text-offwhite">
+                  <h3 className="mt-2 font-headline text-2xl uppercase leading-none text-warm-white">
                     Super Premium
                   </h3>
                 </div>
-                <ArrowRight className="h-7 w-7 text-gold-bright opacity-60" />
+                <ArrowRight className="h-7 w-7 text-tan opacity-60" />
               </div>
 
-              <div className="flex h-56 flex-col justify-between border border-noir-surface bg-noir-surface/40 p-5 transition-colors hover:border-gold-bright/30">
-                <h3 className="font-headline text-lg uppercase leading-tight text-offwhite">
+              <div className="flex h-56 flex-col justify-between border border-espresso-light/30 bg-espresso/40 p-5 transition-colors hover:border-tan/30">
+                <h3 className="font-headline text-lg uppercase leading-tight text-warm-white">
                   Commodity & Premium
                 </h3>
-                <p className="text-xs leading-relaxed text-offwhite/70">
+                <p className="text-xs leading-relaxed text-warm-white/75">
                   Volume dan kualitas seimbang untuk operasional skala besar.
                 </p>
               </div>
 
-              <div className="flex h-56 flex-col justify-between bg-gold-bright p-5">
-                <h3 className="font-headline text-lg uppercase leading-tight text-noir">
+              <div className="flex h-56 flex-col justify-between bg-tan p-5">
+                <h3 className="font-headline text-lg uppercase leading-tight text-espresso-dark">
                   Undervalued QC
                 </h3>
-                <p className="text-[10px] font-bold uppercase tracking-tighter text-noir/70">
+                <p className="text-[10px] font-bold uppercase tracking-tighter text-espresso-dark/70">
                   Limited Daily Deals
                 </p>
               </div>
 
-              <div className="col-span-2 flex items-center gap-4 border-t border-noir-surface bg-noir-surface/40 p-5">
-                <div className="grid h-12 w-12 place-items-center rounded-full border border-gold-bright bg-noir font-headline text-sm font-bold text-gold-bright">
+              <div className="col-span-2 flex items-center gap-4 border-t border-espresso-light/30 bg-espresso/40 p-5">
+                <div className="grid h-12 w-12 place-items-center rounded-full border border-tan bg-espresso-dark font-headline text-sm font-bold text-tan">
                   MH
                 </div>
                 <div>
-                  <h4 className="font-headline text-sm font-bold uppercase tracking-wider text-offwhite">
+                  <h4 className="font-headline text-sm font-bold uppercase tracking-wider text-warm-white">
                     MEATHUB House
                   </h4>
-                  <p className="text-[10px] uppercase tracking-wider text-offwhite/60">
+                  <p className="text-[10px] uppercase tracking-wider text-warm-white/60">
                     Private Selected Cuts
                   </p>
                 </div>
@@ -180,8 +180,8 @@ function Landing() {
           </div>
         </section>
 
-        {/* Trust bar — muted gold */}
-        <section className="border-y border-charcoal/20 bg-gold-muted px-4 py-10 text-charcoal">
+        {/* Trust bar — warm sand */}
+        <section className="border-y border-espresso/10 bg-sand px-4 py-10 text-espresso-dark">
           <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-3">
             <TrustItem
               icon={<ShieldCheck className="h-6 w-6" />}
@@ -201,14 +201,14 @@ function Landing() {
           </div>
         </section>
 
-        {/* How it works — warm ivory */}
-        <section className="bg-ivory px-4 py-16 text-charcoal md:py-24">
+        {/* How it works — warm ivory / soft white */}
+        <section className="bg-warm-white px-4 py-16 text-espresso-dark md:py-24">
           <div className="mx-auto max-w-7xl">
-            <div className="mb-12 flex items-end justify-between border-b border-charcoal/15 pb-6">
-              <h2 className="font-headline text-3xl uppercase tracking-tight text-charcoal md:text-4xl">
+            <div className="mb-12 flex items-end justify-between border-b border-espresso/15 pb-6">
+              <h2 className="font-headline text-3xl uppercase tracking-tight text-espresso-dark md:text-4xl">
                 Bagaimana bekerjanya
               </h2>
-              <span className="hidden text-[10px] font-bold uppercase tracking-[0.3em] text-burgundy md:block">
+              <span className="hidden text-[10px] font-bold uppercase tracking-[0.3em] text-espresso-light md:block">
                 4 Langkah
               </span>
             </div>
@@ -216,32 +216,32 @@ function Landing() {
               {STEPS.map((s, i) => (
                 <div
                   key={s.title}
-                  className="group relative border border-charcoal/15 bg-transparent p-6 transition-colors hover:border-burgundy/50 hover:bg-ivory-warm"
+                  className="group relative border border-espresso/15 bg-transparent p-6 transition-colors hover:border-espresso/40 hover:bg-sand"
                 >
-                  <span className="absolute right-4 top-4 font-headline text-4xl text-charcoal/10 transition-colors group-hover:text-burgundy/40">
+                  <span className="absolute right-4 top-4 font-headline text-4xl text-espresso/10 transition-colors group-hover:text-espresso/25">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-burgundy">
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-espresso-light">
                     Langkah {i + 1}
                   </span>
-                  <h3 className="mt-3 font-headline text-lg font-bold uppercase text-charcoal">
+                  <h3 className="mt-3 font-headline text-lg font-bold uppercase text-espresso-dark">
                     {s.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-charcoal/75">{s.body}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-espresso/80">{s.body}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Tiers detail — dark, distinctive cards */}
-        <section className="border-t border-gold-bright/10 bg-noir px-4 py-16 md:py-24">
+        {/* Tiers detail — espresso dark, distinctive cards */}
+        <section className="border-t border-espresso/10 bg-espresso-dark px-4 py-16 md:py-24">
           <div className="mx-auto max-w-7xl">
             <div className="mb-12">
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold-bright">
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-tan">
                 Product Line
               </span>
-              <h2 className="mt-3 font-headline text-3xl uppercase tracking-tight text-offwhite md:text-4xl">
+              <h2 className="mt-3 font-headline text-3xl uppercase tracking-tight text-warm-white md:text-4xl">
                 Empat tier produk
               </h2>
             </div>
@@ -271,13 +271,13 @@ function Landing() {
           </div>
         </section>
 
-        {/* Final CTA */}
-        <section className="bg-charcoal px-4 py-16 md:py-24">
+        {/* Final CTA — warm sand */}
+        <section className="bg-sand px-4 py-16 md:py-24">
           <div className="mx-auto max-w-4xl text-center">
-            <h2 className="font-headline text-4xl uppercase tracking-tight text-offwhite md:text-5xl">
+            <h2 className="font-headline text-4xl uppercase tracking-tight text-espresso-dark md:text-5xl">
               Siap standarisasi pengadaan daging?
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-offwhite/75">
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-espresso/85">
               Bergabung sebagai pembeli atau vendor dan rasakan akurasi stok serta konfirmasi berat
               yang belum pernah ada di pasar B2B Jabodetabek.
             </p>
@@ -285,7 +285,7 @@ function Landing() {
               <Button
                 asChild
                 size="lg"
-                className="bg-gold-bright px-8 py-6 font-headline text-sm font-bold uppercase tracking-wider text-noir shadow-[0_0_24px_rgba(201,168,76,0.25)] hover:bg-gold-cream"
+                className="bg-espresso px-8 py-6 font-headline text-sm font-bold uppercase tracking-wider text-warm-white shadow-[0_0_24px_rgba(139,115,85,0.25)] hover:bg-espresso-dark"
               >
                 <Link to="/auth" search={{ next: "/dashboard" }}>
                   Daftar sebagai pembeli
@@ -295,7 +295,7 @@ function Landing() {
                 asChild
                 size="lg"
                 variant="outline"
-                className="border-gold-bright px-8 py-6 font-headline text-sm font-bold uppercase tracking-wider text-gold-bright hover:bg-gold-bright hover:text-noir"
+                className="border-espresso px-8 py-6 font-headline text-sm font-bold uppercase tracking-wider text-espresso hover:bg-espresso hover:text-warm-white"
               >
                 <Link to="/auth" search={{ next: "/dashboard" }}>
                   Daftar sebagai vendor
@@ -306,7 +306,7 @@ function Landing() {
         </section>
       </main>
 
-      <footer className="border-t border-gold-bright/10 bg-noir py-10 text-center text-xs text-offwhite/50">
+      <footer className="border-t border-espresso/10 bg-espresso-dark py-10 text-center text-xs text-warm-white/50">
         <p>© {new Date().getFullYear()} MEATHUB Meat Hub. Jabodetabek B2B.</p>
       </footer>
     </div>
@@ -316,8 +316,8 @@ function Landing() {
 function Stat({ value, label }: { value: string; label: string }) {
   return (
     <div>
-      <p className="font-headline text-2xl text-offwhite md:text-3xl">{value}</p>
-      <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-gold-bright">
+      <p className="font-headline text-2xl text-warm-white md:text-3xl">{value}</p>
+      <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-tan">
         {label}
       </p>
     </div>
@@ -335,12 +335,12 @@ function TrustItem({
 }) {
   return (
     <div className="flex items-start gap-4">
-      <div className="shrink-0 text-charcoal">{icon}</div>
+      <div className="shrink-0 text-espresso-dark">{icon}</div>
       <div>
-        <h4 className="font-headline text-sm font-bold uppercase tracking-wider text-charcoal">
+        <h4 className="font-headline text-sm font-bold uppercase tracking-wider text-espresso-dark">
           {title}
         </h4>
-        <p className="mt-1 text-sm leading-relaxed text-charcoal/80">{body}</p>
+        <p className="mt-1 text-sm leading-relaxed text-espresso/85">{body}</p>
       </div>
     </div>
   );
@@ -371,29 +371,29 @@ const TIERS = [
     body: "Platform pilih vendor terbaik berdasar harga landed & keandalan.",
     tag: "Workhorse",
     classes: "border-charcoal bg-charcoal",
-    numberClass: "text-offwhite/20",
-    titleClass: "text-offwhite",
-    bodyClass: "text-offwhite/75",
-    tagClass: "text-gold-bright",
+    numberClass: "text-warm-white/20",
+    titleClass: "text-warm-white",
+    bodyClass: "text-warm-white/75",
+    tagClass: "text-tan",
   },
   {
     name: "Super Premium",
     body: "Pilih brand dengan bukti sertifikasi asosiasi/award terverifikasi.",
     tag: "Certified",
     classes: "border-cream bg-cream",
-    numberClass: "text-charcoal/25",
-    titleClass: "text-charcoal",
-    bodyClass: "text-charcoal/80",
+    numberClass: "text-espresso/25",
+    titleClass: "text-espresso-dark",
+    bodyClass: "text-espresso/80",
     tagClass: "text-burgundy",
   },
   {
     name: "Undervalued — QC Verified",
     body: "Produk premium underpriced karena administrasi, dengan QC eksplisit.",
     tag: "Daily Deals",
-    classes: "border-gold-muted bg-gold-muted",
-    numberClass: "text-charcoal/25",
-    titleClass: "text-charcoal",
-    bodyClass: "text-charcoal/80",
+    classes: "border-tan bg-tan",
+    numberClass: "text-espresso/25",
+    titleClass: "text-espresso-dark",
+    bodyClass: "text-espresso/85",
     tagClass: "text-burgundy-deep",
   },
   {
@@ -401,9 +401,9 @@ const TIERS = [
     body: "House brand MEATHUB dengan standar marbling & pH terpajang.",
     tag: "House Brand",
     classes: "border-burgundy bg-burgundy",
-    numberClass: "text-offwhite/25",
-    titleClass: "text-offwhite",
-    bodyClass: "text-offwhite/85",
+    numberClass: "text-warm-white/25",
+    titleClass: "text-warm-white",
+    bodyClass: "text-warm-white/85",
     tagClass: "text-gold-cream",
   },
 ];
