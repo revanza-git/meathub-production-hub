@@ -1,17 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle2, ShieldCheck, Truck } from "lucide-react";
+import {
+  ShoppingCart,
+  ShieldCheck,
+  Package,
+  Handshake,
+  Truck,
+  BadgeCheck,
+  Search,
+} from "lucide-react";
+import heroMeat from "@/assets/hero-meat.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MEATHUB Meat Hub — Marketplace daging premium B2B Jabodetabek" },
+      { title: "MEATHUB — Marketplace daging premium B2B Jabodetabek" },
       {
         name: "description",
         content:
-          "MEATHUB Meat Hub menghubungkan importir/distributor daging premium dengan restoran, hotel, dan katering di Jabodetabek. Stok akurat, pembayaran aman, pengiriman lewat cold storage Kemayoran.",
+          "MEATHUB menghubungkan importir daging premium dengan restoran, hotel, dan katering di Jabodetabek. Stok akurat, konfirmasi berat 2 jam, pengiriman dari hub Kemayoran.",
       },
-      { property: "og:title", content: "MEATHUB Meat Hub — Marketplace daging premium B2B" },
+      { property: "og:title", content: "MEATHUB — Marketplace daging premium B2B" },
       {
         property: "og:description",
         content:
@@ -26,210 +35,176 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   return (
-    <div className="min-h-screen bg-warm-white font-[family-name:var(--font-body-alt)] text-ink">
-      <header className="sticky top-0 z-20 bg-maroon-dark text-warm-white shadow-sm">
+    <div className="min-h-screen bg-[#f5f2e6] font-[family-name:var(--font-body-alt)] text-ink">
+      {/* Top nav — light cream with dark text */}
+      <header className="sticky top-0 z-20 border-b border-line/60 bg-[#f5f2e6]/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-3">
-            <span className="grid h-10 w-10 place-items-center rounded-full bg-warm-white font-headline text-xs font-bold tracking-widest text-maroon-dark">
+          <Link to="/" className="flex items-center gap-3" aria-label="MEATHUB beranda">
+            <span className="grid h-11 w-11 place-items-center rounded-full bg-maroon-dark font-headline text-[11px] font-bold tracking-widest text-warm-white shadow-sm">
               MH
             </span>
-            <div>
-              <div className="font-headline text-lg font-bold leading-none tracking-tight text-warm-white">
+            <div className="leading-tight">
+              <div className="font-[family-name:var(--font-serif)] text-xl font-bold text-maroon-dark">
                 MEATHUB
               </div>
-              <div className="text-[10px] uppercase tracking-[0.2em] text-gold">
-                Meat Hub
+              <div className="text-[10px] uppercase tracking-[0.25em] text-ink-soft">
+                Meat Hub · B2B
               </div>
             </div>
           </Link>
+          <nav className="hidden items-center gap-8 md:flex">
+            <span className="text-sm font-semibold text-maroon-dark">Beranda</span>
+            <span className="text-sm text-ink-soft">Produk</span>
+            <span className="text-sm text-ink-soft">Cara Kerja</span>
+            <span className="text-sm text-ink-soft">Kemitraan</span>
+          </nav>
           <div className="flex items-center gap-2">
-            <Button
-              asChild
-              variant="ghost"
-              className="text-warm-white hover:bg-warm-white/10 hover:text-warm-white"
-            >
+            <Button asChild variant="ghost" size="sm" className="text-ink hover:bg-ink/5">
               <Link to="/auth">Masuk</Link>
             </Button>
             <Button
               asChild
-              className="bg-gold text-maroon-dark hover:bg-gold-bright hover:text-maroon-dark"
+              size="sm"
+              className="bg-maroon-dark text-warm-white hover:bg-maroon"
             >
-              <Link to="/auth" search={{ next: "/dashboard" }}>
-                Mulai pesan
-              </Link>
+              <Link to="/auth" search={{ next: "/dashboard" }}>Daftar</Link>
             </Button>
           </div>
         </div>
       </header>
 
       <main>
-        {/* Hero — Maroon dominant with gold accents */}
-        <section
-          className="relative overflow-hidden px-4 py-16 md:py-24 lg:py-32"
-          style={{
-            background:
-              "linear-gradient(135deg, var(--maroon-dark) 0%, var(--maroon) 55%, var(--burgundy-deep) 100%)",
-          }}
-        >
-          <div className="pointer-events-none absolute -bottom-24 -right-24 select-none font-headline text-[160px] leading-none text-warm-white opacity-[0.06] md:text-[220px] lg:-right-16 lg:text-[280px]">
-            B2B
-          </div>
-
-          <div className="relative z-10 mx-auto grid max-w-7xl gap-12 lg:grid-cols-12 lg:items-start">
-            <div className="lg:col-span-7 flex flex-col space-y-8">
-              <div className="fade-in-up" style={{ animationDelay: "0.05s" }}>
-                <div className="flex items-center gap-4">
-                  <span className="h-px w-12 bg-gold" />
-                  <span className="text-xs font-bold uppercase tracking-[0.3em] text-gold">
-                    B2B Premium Marketplace
-                  </span>
-                </div>
-                <h1 className="mt-6 font-headline text-6xl leading-[0.85] tracking-tighter text-warm-white uppercase md:text-7xl lg:text-8xl">
-                  Meat<span className="text-gold">hub</span>
-                </h1>
+        {/* Split hero — image left, headline right */}
+        <section className="px-4 py-14 md:py-20">
+          <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-16">
+            <div className="order-2 lg:order-1 fade-in-up">
+              <div className="overflow-hidden rounded-2xl shadow-[0_25px_60px_-25px_rgba(90,26,26,0.35)]">
+                <img
+                  src={heroMeat}
+                  alt="Potongan ribeye premium dengan rempah segar di atas papan slate"
+                  width={1200}
+                  height={900}
+                  className="h-full w-full object-cover"
+                />
               </div>
+            </div>
 
-              <p
-                className="max-w-xl text-xl leading-relaxed text-warm-white/90 md:text-2xl font-light fade-in-up"
-                style={{ animationDelay: "0.15s" }}
-              >
-                Standardisasi baru distribusi daging di{" "}
-                <span className="font-semibold text-warm-white">Jabodetabek</span>. Akurasi stok ≥97%
-                dengan konfirmasi berat hanya dalam 2 jam.
+            <div className="order-1 lg:order-2 fade-in-up" style={{ animationDelay: "0.1s" }}>
+              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-maroon-dark">
+                MEATHUB · B2B
               </p>
-
-              <div
-                className="flex flex-wrap gap-4 pt-2 fade-in-up"
-                style={{ animationDelay: "0.25s" }}
-              >
+              <h1 className="mt-4 font-[family-name:var(--font-serif)] text-5xl leading-[1.05] text-ink md:text-6xl lg:text-[64px]">
+                Daging Sapi Premium,{" "}
+                <em className="italic text-maroon-dark">Langsung</em> dari Hub Kemayoran
+              </h1>
+              <p className="mt-6 max-w-lg text-base leading-relaxed text-ink-soft md:text-lg">
+                MEATHUB adalah marketplace daging premium untuk restoran, hotel, dan katering
+                di Jabodetabek. Stok akurat, konfirmasi berat aktual dalam 2 jam, dan
+                pengiriman terlacak dari cold storage Kemayoran.
+              </p>
+              <div className="mt-8 flex flex-wrap items-center gap-4">
                 <Button
                   asChild
                   size="lg"
-                  className="bg-gold px-8 py-6 font-headline text-sm font-bold uppercase tracking-wider text-maroon-dark shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] hover:bg-gold-bright"
+                  className="rounded-full bg-maroon-dark px-8 py-6 text-sm font-semibold text-warm-white hover:bg-maroon"
                 >
                   <Link to="/auth" search={{ next: "/dashboard" }}>
-                    Daftar sebagai pembeli
+                    <ShoppingCart className="mr-2 h-4 w-4" aria-hidden="true" />
+                    Mulai Belanja
                   </Link>
                 </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="border-warm-white/40 bg-transparent px-8 py-6 font-headline text-sm font-bold uppercase tracking-wider text-warm-white hover:bg-warm-white hover:text-maroon-dark"
+                <Link
+                  to="/auth"
+                  search={{ next: "/dashboard" }}
+                  className="text-sm font-semibold text-maroon-dark underline-offset-4 hover:underline"
                 >
-                  <Link to="/auth" search={{ next: "/dashboard" }}>
-                    Daftar sebagai vendor
-                  </Link>
-                </Button>
-              </div>
-
-              <div
-                className="grid grid-cols-3 gap-6 border-t border-warm-white/15 pt-10 fade-in-up"
-                style={{ animationDelay: "0.35s" }}
-              >
-                <Stat value="2 JAM" label="Konfirmasi Berat" />
-                <Stat value="≥97%" label="Akurasi Stok" />
-                <Stat value="COLD" label="Storage Kemayoran" />
-              </div>
-            </div>
-
-            {/* Right: Editorial Tiers Grid */}
-            <div
-              className="relative z-10 grid grid-cols-2 gap-3 lg:col-span-5 fade-in-up"
-              style={{ animationDelay: "0.45s" }}
-            >
-              <div className="col-span-2 flex h-44 items-end justify-between border-l-4 border-gold bg-maroon/60 p-6 backdrop-blur-sm transition-colors hover:bg-maroon/80">
-                <div>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-gold">
-                    Tier 01
-                  </span>
-                  <h3 className="mt-2 font-headline text-2xl uppercase leading-none text-warm-white">
-                    Super Premium
-                  </h3>
-                </div>
-                <ArrowRight className="h-7 w-7 text-gold opacity-80" />
-              </div>
-
-              <div className="flex h-56 flex-col justify-between border border-warm-white/15 bg-maroon-dark/50 p-5 transition-colors hover:border-gold/50">
-                <h3 className="font-headline text-lg uppercase leading-tight text-warm-white">
-                  Commodity & Premium
-                </h3>
-                <p className="text-xs leading-relaxed text-warm-white/80">
-                  Volume dan kualitas seimbang untuk operasional skala besar.
-                </p>
-              </div>
-
-              <div className="flex h-56 flex-col justify-between bg-gold p-5">
-                <h3 className="font-headline text-lg uppercase leading-tight text-maroon-dark">
-                  Undervalued QC
-                </h3>
-                <p className="text-[10px] font-bold uppercase tracking-tighter text-maroon-dark/80">
-                  Limited Daily Deals
-                </p>
-              </div>
-
-              <div className="col-span-2 flex items-center gap-4 border-t border-warm-white/15 bg-maroon-dark/50 p-5">
-                <div className="grid h-12 w-12 place-items-center rounded-full bg-gold font-headline text-sm font-bold text-maroon-dark">
-                  MH
-                </div>
-                <div>
-                  <h4 className="font-headline text-sm font-bold uppercase tracking-wider text-warm-white">
-                    MEATHUB House
-                  </h4>
-                  <p className="text-[10px] uppercase tracking-wider text-gold">
-                    Private Selected Cuts
-                  </p>
-                </div>
+                  Daftar sebagai vendor →
+                </Link>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Trust bar — soft white */}
-        <section className="border-b border-line bg-warm-white px-4 py-10 text-ink">
-          <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-3">
-            <TrustItem
-              icon={<ShieldCheck className="h-6 w-6" />}
-              title="100% Rekonsiliasi"
-              body="Refund langsung ke deposit jika berat atau kualitas tidak sesuai konfirmasi."
-            />
-            <TrustItem
-              icon={<Truck className="h-6 w-6" />}
-              title="≤ 24 Jam Keluar Hub"
-              body="Pesanan diproses dan dikirim dari cold storage Kemayoran dalam satu hari kerja."
-            />
-            <TrustItem
-              icon={<CheckCircle2 className="h-6 w-6" />}
-              title="Verifikasi Grade"
-              body="Setiap potongan dilengkapi spesifikasi grade, brand, dan asal yang transparan."
-            />
+        {/* Feature strip — maroon with cream cards */}
+        <section className="bg-maroon-dark px-4 py-14">
+          <div className="mx-auto grid max-w-6xl gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {FEATURES.map((f) => (
+              <div
+                key={f.title}
+                className="rounded-xl bg-[#f5f2e6] p-6 shadow-sm transition-transform hover:-translate-y-1"
+              >
+                <div className="grid h-11 w-11 place-items-center rounded-full bg-maroon-dark/10 text-maroon-dark">
+                  {f.icon}
+                </div>
+                <h3 className="mt-4 font-[family-name:var(--font-serif)] text-xl font-bold text-ink">
+                  {f.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-ink-soft">{f.body}</p>
+              </div>
+            ))}
           </div>
         </section>
 
-        {/* How it works — warm ivory / soft white */}
-        <section className="bg-ivory px-4 py-16 text-ink md:py-24">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-12 flex items-end justify-between border-b border-ink/15 pb-6">
-              <h2 className="font-headline text-3xl uppercase tracking-tight text-ink md:text-4xl">
-                Bagaimana bekerjanya
+        {/* Product tiers on light bg */}
+        <section className="px-4 py-16 md:py-24">
+          <div className="mx-auto max-w-6xl">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-maroon-dark">
+                Product Line
+              </p>
+              <h2 className="mt-3 font-[family-name:var(--font-serif)] text-4xl text-ink md:text-5xl">
+                Empat Tier Daging Premium
               </h2>
-              <span className="hidden text-[10px] font-bold uppercase tracking-[0.3em] text-ink-soft md:block">
-                4 Langkah
-              </span>
+              <p className="mt-4 text-base text-ink-soft">
+                Setiap tier punya standar grade, brand, dan verifikasi yang transparan —
+                cocok untuk kebutuhan menu dan budget yang berbeda.
+              </p>
             </div>
-            <div className="grid gap-4 md:grid-cols-4">
-              {STEPS.map((s, i) => (
+
+            <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {TIERS.map((t, i) => (
                 <div
-                  key={s.title}
-                  className="group relative border border-ink/15 bg-warm-white p-6 transition-colors hover:border-maroon hover:shadow-md"
+                  key={t.name}
+                  className="group flex flex-col overflow-hidden rounded-xl border border-line bg-white transition-shadow hover:shadow-lg"
                 >
-                  <span className="absolute right-4 top-4 font-headline text-4xl text-maroon/10 transition-colors group-hover:text-maroon/40">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-maroon">
-                    Langkah {i + 1}
-                  </span>
-                  <h3 className="mt-3 font-headline text-lg font-bold uppercase text-ink">
+                  <div className="aspect-[4/3] bg-gradient-to-br from-maroon-dark to-burgundy-deep p-6 text-warm-white">
+                    <span className="font-[family-name:var(--font-serif)] text-4xl text-gold">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <p className="mt-6 text-[10px] font-bold uppercase tracking-[0.25em] text-gold">
+                      {t.tag}
+                    </p>
+                    <h3 className="mt-2 font-[family-name:var(--font-serif)] text-2xl leading-tight text-warm-white">
+                      {t.name}
+                    </h3>
+                  </div>
+                  <div className="flex flex-1 flex-col justify-between p-5">
+                    <p className="text-sm leading-relaxed text-ink-soft">{t.body}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* How it works — cream continuous */}
+        <section className="bg-ivory px-4 py-16 md:py-20">
+          <div className="mx-auto max-w-6xl">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-maroon-dark">
+                Alur Pemesanan
+              </p>
+              <h2 className="mt-3 font-[family-name:var(--font-serif)] text-4xl text-ink md:text-5xl">
+                Sederhana, Terlacak, Terverifikasi
+              </h2>
+            </div>
+            <div className="mt-12 grid gap-6 md:grid-cols-4">
+              {STEPS.map((s, i) => (
+                <div key={s.title} className="text-center">
+                  <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-maroon-dark font-[family-name:var(--font-serif)] text-xl font-bold text-warm-white">
+                    {i + 1}
+                  </div>
+                  <h3 className="mt-4 font-[family-name:var(--font-serif)] text-xl font-bold text-ink">
                     {s.title}
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-ink-soft">{s.body}</p>
@@ -239,176 +214,97 @@ function Landing() {
           </div>
         </section>
 
-        {/* Tiers detail — maroon dominant */}
-        <section className="bg-maroon-dark px-4 py-16 md:py-24">
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-12">
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gold">
-                Product Line
-              </span>
-              <h2 className="mt-3 font-headline text-3xl uppercase tracking-tight text-warm-white md:text-4xl">
-                Empat tier produk
-              </h2>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              {TIERS.map((t, i) => (
-                <div
-                  key={t.name}
-                  className={`flex flex-col justify-between border p-6 transition-transform hover:-translate-y-1 ${t.classes}`}
-                >
-                  <div>
-                    <span className={`font-headline text-4xl ${t.numberClass}`}>
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <h3 className={`mt-4 font-headline text-lg font-bold uppercase ${t.titleClass}`}>
-                      {t.name}
-                    </h3>
-                    <p className={`mt-2 text-sm leading-relaxed ${t.bodyClass}`}>{t.body}</p>
-                  </div>
-                  <div className={`mt-6 text-[10px] font-bold uppercase tracking-[0.25em] ${t.tagClass}`}>
-                    {t.tag}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Final CTA — cream */}
-        <section className="bg-cream px-4 py-16 md:py-24">
-          <div className="mx-auto max-w-4xl text-center">
-            <h2 className="font-headline text-4xl uppercase tracking-tight text-maroon-dark md:text-5xl">
-              Siap standarisasi pengadaan daging?
+        {/* Final CTA */}
+        <section className="px-4 py-16 md:py-24">
+          <div className="mx-auto max-w-4xl rounded-2xl bg-maroon-dark px-8 py-14 text-center text-warm-white shadow-[0_25px_60px_-30px_rgba(90,26,26,0.6)]">
+            <h2 className="font-[family-name:var(--font-serif)] text-4xl md:text-5xl">
+              Siap standardisasi pengadaan daging Anda?
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-ink-soft">
-              Bergabung sebagai pembeli atau vendor dan rasakan akurasi stok serta konfirmasi berat
-              yang belum pernah ada di pasar B2B Jabodetabek.
+            <p className="mx-auto mt-4 max-w-xl text-base text-warm-white/85">
+              Bergabung sebagai pembeli atau vendor dan rasakan akurasi stok serta
+              konfirmasi berat yang belum pernah ada di pasar B2B Jabodetabek.
             </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Button
                 asChild
                 size="lg"
-                className="bg-maroon-dark px-8 py-6 font-headline text-sm font-bold uppercase tracking-wider text-warm-white shadow-[0_10px_30px_-10px_rgba(0,0,0,0.4)] hover:bg-maroon"
+                className="rounded-full bg-gold px-8 py-6 text-sm font-semibold text-maroon-dark hover:bg-gold-bright"
               >
-                <Link to="/auth" search={{ next: "/dashboard" }}>
-                  Daftar sebagai pembeli
-                </Link>
+                <Link to="/auth" search={{ next: "/dashboard" }}>Daftar sebagai pembeli</Link>
               </Button>
               <Button
                 asChild
                 size="lg"
                 variant="outline"
-                className="border-maroon-dark bg-transparent px-8 py-6 font-headline text-sm font-bold uppercase tracking-wider text-maroon-dark hover:bg-maroon-dark hover:text-warm-white"
+                className="rounded-full border-warm-white/40 bg-transparent px-8 py-6 text-sm font-semibold text-warm-white hover:bg-warm-white hover:text-maroon-dark"
               >
-                <Link to="/auth" search={{ next: "/dashboard" }}>
-                  Daftar sebagai vendor
-                </Link>
+                <Link to="/auth" search={{ next: "/dashboard" }}>Daftar sebagai vendor</Link>
               </Button>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="bg-maroon-dark py-10 text-center text-xs text-warm-white/60">
-        <p>© {new Date().getFullYear()} MEATHUB Meat Hub. Jabodetabek B2B.</p>
+      <footer className="border-t border-line/60 bg-[#f5f2e6] py-8 text-center text-xs text-ink-soft">
+        <p>© {new Date().getFullYear()} MEATHUB Meat Hub · Jabodetabek B2B Marketplace</p>
       </footer>
     </div>
   );
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div>
-      <p className="font-headline text-2xl text-warm-white md:text-3xl">{value}</p>
-      <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-gold">
-        {label}
-      </p>
-    </div>
-  );
-}
-
-function TrustItem({
-  icon,
-  title,
-  body,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  body: string;
-}) {
-  return (
-    <div className="flex items-start gap-4">
-      <div className="shrink-0 grid h-11 w-11 place-items-center rounded-full bg-maroon-dark text-gold">
-        {icon}
-      </div>
-      <div>
-        <h4 className="font-headline text-sm font-bold uppercase tracking-wider text-ink">
-          {title}
-        </h4>
-        <p className="mt-1 text-sm leading-relaxed text-ink-soft">{body}</p>
-      </div>
-    </div>
-  );
-}
+const FEATURES = [
+  {
+    icon: <Truck className="h-5 w-5" />,
+    title: "Integrasi Ojek Online",
+    body: "Kurir instan & armada cold-chain terintegrasi dari hub Kemayoran.",
+  },
+  {
+    icon: <BadgeCheck className="h-5 w-5" />,
+    title: "Halal & Higienis",
+    body: "Setiap potongan diverifikasi grade, brand, dan sertifikat halal.",
+  },
+  {
+    icon: <Package className="h-5 w-5" />,
+    title: "Packaging Rapi & Aman",
+    body: "Vacuum-sealed dan dikemas cold-chain untuk menjaga freshness.",
+  },
+  {
+    icon: <Handshake className="h-5 w-5" />,
+    title: "Peluang Kemitraan",
+    body: "Program vendor & distributor terbuka untuk importir tangan pertama.",
+  },
+];
 
 const STEPS = [
-  {
-    title: "Cari & pilih",
-    body: "Cari cut/brand/grade. Lihat harga landed, stok, dan estimasi ETA.",
-  },
-  {
-    title: "Konfirmasi berat",
-    body: "Vendor konfirmasi berat aktual dalam 2 jam. Anda bisa batal sebelum bayar.",
-  },
-  {
-    title: "Bayar cash",
-    body: "Pembayaran via deposit atau VA. Fulfillment mulai setelah pembayaran diterima.",
-  },
-  {
-    title: "Lacak & terima",
-    body: "Barang masuk hub Kemayoran, kurir dispatch, Anda lacak sampai POD.",
-  },
+  { title: "Cari & Pilih", body: "Cari cut, brand, grade. Lihat harga landed & ETA." },
+  { title: "Konfirmasi Berat", body: "Vendor konfirmasi berat aktual dalam 2 jam." },
+  { title: "Bayar Aman", body: "Pembayaran via deposit atau VA. Refund otomatis." },
+  { title: "Lacak & Terima", body: "Dispatch dari hub Kemayoran, lacak sampai POD." },
 ];
 
 const TIERS = [
   {
     name: "Commodity / Premium",
-    body: "Platform pilih vendor terbaik berdasar harga landed & keandalan.",
     tag: "Workhorse",
-    classes: "border-warm-white/15 bg-maroon/40",
-    numberClass: "text-warm-white/25",
-    titleClass: "text-warm-white",
-    bodyClass: "text-warm-white/80",
-    tagClass: "text-gold",
+    body: "Platform memilih vendor terbaik berdasarkan harga landed dan keandalan.",
   },
   {
     name: "Super Premium",
-    body: "Pilih brand dengan bukti sertifikasi asosiasi/award terverifikasi.",
     tag: "Certified",
-    classes: "border-cream bg-cream",
-    numberClass: "text-maroon-dark/25",
-    titleClass: "text-maroon-dark",
-    bodyClass: "text-ink",
-    tagClass: "text-burgundy",
+    body: "Brand dengan sertifikasi asosiasi atau award terverifikasi.",
   },
   {
-    name: "Undervalued — QC Verified",
-    body: "Produk premium underpriced karena administrasi, dengan QC eksplisit.",
+    name: "Undervalued QC",
     tag: "Daily Deals",
-    classes: "border-gold bg-gold",
-    numberClass: "text-maroon-dark/30",
-    titleClass: "text-maroon-dark",
-    bodyClass: "text-maroon-dark/85",
-    tagClass: "text-burgundy-deep",
+    body: "Produk premium underpriced karena administrasi, dengan QC eksplisit.",
   },
   {
-    name: "MEATHUB Product Line",
-    body: "House brand MEATHUB dengan standar marbling & pH terpajang.",
+    name: "MEATHUB House",
     tag: "House Brand",
-    classes: "border-gold/40 bg-burgundy-deep",
-    numberClass: "text-gold/40",
-    titleClass: "text-warm-white",
-    bodyClass: "text-warm-white/85",
-    tagClass: "text-gold",
+    body: "House brand MEATHUB dengan standar marbling & pH terpajang.",
   },
 ];
+
+// Icon aliases retained for tree-shaking hints
+void Search;
+void ShieldCheck;
