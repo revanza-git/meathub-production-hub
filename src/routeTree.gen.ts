@@ -28,6 +28,7 @@ import { Route as AuthenticatedPartnerVendorFulfillmentsRouteImport } from './ro
 import { Route as AuthenticatedPartnerQcReturnsRouteImport } from './routes/_authenticated/partner/qc/returns'
 import { Route as AuthenticatedPartnerHubInboundRouteImport } from './routes/_authenticated/partner/hub/inbound'
 import { Route as AuthenticatedPartnerFinanceSettlementsRouteImport } from './routes/_authenticated/partner/finance/settlements'
+import { Route as AuthenticatedPartnerFinanceReturnsRouteImport } from './routes/_authenticated/partner/finance/returns'
 import { Route as AuthenticatedPartnerFinanceInvoicesRouteImport } from './routes/_authenticated/partner/finance/invoices'
 import { Route as AuthenticatedPartnerCourierDeliveriesRouteImport } from './routes/_authenticated/partner/courier/deliveries'
 import { Route as AuthenticatedPartnerAdminSpWarningsRouteImport } from './routes/_authenticated/partner/admin/sp-warnings'
@@ -144,6 +145,12 @@ const AuthenticatedPartnerFinanceSettlementsRoute =
     path: '/partner/finance/settlements',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPartnerFinanceReturnsRoute =
+  AuthenticatedPartnerFinanceReturnsRouteImport.update({
+    id: '/partner/finance/returns',
+    path: '/partner/finance/returns',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPartnerFinanceInvoicesRoute =
   AuthenticatedPartnerFinanceInvoicesRouteImport.update({
     id: '/partner/finance/invoices',
@@ -219,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/partner/admin/sp-warnings': typeof AuthenticatedPartnerAdminSpWarningsRoute
   '/partner/courier/deliveries': typeof AuthenticatedPartnerCourierDeliveriesRoute
   '/partner/finance/invoices': typeof AuthenticatedPartnerFinanceInvoicesRoute
+  '/partner/finance/returns': typeof AuthenticatedPartnerFinanceReturnsRoute
   '/partner/finance/settlements': typeof AuthenticatedPartnerFinanceSettlementsRoute
   '/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
   '/partner/qc/returns': typeof AuthenticatedPartnerQcReturnsRoute
@@ -248,6 +256,7 @@ export interface FileRoutesByTo {
   '/partner/admin/sp-warnings': typeof AuthenticatedPartnerAdminSpWarningsRoute
   '/partner/courier/deliveries': typeof AuthenticatedPartnerCourierDeliveriesRoute
   '/partner/finance/invoices': typeof AuthenticatedPartnerFinanceInvoicesRoute
+  '/partner/finance/returns': typeof AuthenticatedPartnerFinanceReturnsRoute
   '/partner/finance/settlements': typeof AuthenticatedPartnerFinanceSettlementsRoute
   '/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
   '/partner/qc/returns': typeof AuthenticatedPartnerQcReturnsRoute
@@ -279,6 +288,7 @@ export interface FileRoutesById {
   '/_authenticated/partner/admin/sp-warnings': typeof AuthenticatedPartnerAdminSpWarningsRoute
   '/_authenticated/partner/courier/deliveries': typeof AuthenticatedPartnerCourierDeliveriesRoute
   '/_authenticated/partner/finance/invoices': typeof AuthenticatedPartnerFinanceInvoicesRoute
+  '/_authenticated/partner/finance/returns': typeof AuthenticatedPartnerFinanceReturnsRoute
   '/_authenticated/partner/finance/settlements': typeof AuthenticatedPartnerFinanceSettlementsRoute
   '/_authenticated/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
   '/_authenticated/partner/qc/returns': typeof AuthenticatedPartnerQcReturnsRoute
@@ -310,6 +320,7 @@ export interface FileRouteTypes {
     | '/partner/admin/sp-warnings'
     | '/partner/courier/deliveries'
     | '/partner/finance/invoices'
+    | '/partner/finance/returns'
     | '/partner/finance/settlements'
     | '/partner/hub/inbound'
     | '/partner/qc/returns'
@@ -339,6 +350,7 @@ export interface FileRouteTypes {
     | '/partner/admin/sp-warnings'
     | '/partner/courier/deliveries'
     | '/partner/finance/invoices'
+    | '/partner/finance/returns'
     | '/partner/finance/settlements'
     | '/partner/hub/inbound'
     | '/partner/qc/returns'
@@ -369,6 +381,7 @@ export interface FileRouteTypes {
     | '/_authenticated/partner/admin/sp-warnings'
     | '/_authenticated/partner/courier/deliveries'
     | '/_authenticated/partner/finance/invoices'
+    | '/_authenticated/partner/finance/returns'
     | '/_authenticated/partner/finance/settlements'
     | '/_authenticated/partner/hub/inbound'
     | '/_authenticated/partner/qc/returns'
@@ -520,6 +533,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPartnerFinanceSettlementsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/partner/finance/returns': {
+      id: '/_authenticated/partner/finance/returns'
+      path: '/partner/finance/returns'
+      fullPath: '/partner/finance/returns'
+      preLoaderRoute: typeof AuthenticatedPartnerFinanceReturnsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/partner/finance/invoices': {
       id: '/_authenticated/partner/finance/invoices'
       path: '/partner/finance/invoices'
@@ -617,6 +637,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPartnerAdminSpWarningsRoute: typeof AuthenticatedPartnerAdminSpWarningsRoute
   AuthenticatedPartnerCourierDeliveriesRoute: typeof AuthenticatedPartnerCourierDeliveriesRoute
   AuthenticatedPartnerFinanceInvoicesRoute: typeof AuthenticatedPartnerFinanceInvoicesRoute
+  AuthenticatedPartnerFinanceReturnsRoute: typeof AuthenticatedPartnerFinanceReturnsRoute
   AuthenticatedPartnerFinanceSettlementsRoute: typeof AuthenticatedPartnerFinanceSettlementsRoute
   AuthenticatedPartnerHubInboundRoute: typeof AuthenticatedPartnerHubInboundRoute
   AuthenticatedPartnerQcReturnsRoute: typeof AuthenticatedPartnerQcReturnsRoute
@@ -647,6 +668,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedPartnerCourierDeliveriesRoute,
   AuthenticatedPartnerFinanceInvoicesRoute:
     AuthenticatedPartnerFinanceInvoicesRoute,
+  AuthenticatedPartnerFinanceReturnsRoute:
+    AuthenticatedPartnerFinanceReturnsRoute,
   AuthenticatedPartnerFinanceSettlementsRoute:
     AuthenticatedPartnerFinanceSettlementsRoute,
   AuthenticatedPartnerHubInboundRoute: AuthenticatedPartnerHubInboundRoute,

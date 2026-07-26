@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { getOrderDetail, cancelOrder } from "@/lib/orders.functions";
 import { getFulfillmentByOrder, listMyReturns, requestReturn } from "@/lib/fulfillment.functions";
 import { getInvoiceByOrder } from "@/lib/finance.functions";
+import { listRefundsForOrder } from "@/lib/returns.functions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -51,6 +52,11 @@ function OrderDetailPage() {
   const { data: invoice } = useQuery({
     queryKey: ["invoice", id],
     queryFn: () => invFn({ data: { order_id: id } }),
+  });
+  const refundsFn = useServerFn(listRefundsForOrder);
+  const { data: refunds } = useQuery({
+    queryKey: ["refunds", id],
+    queryFn: () => refundsFn({ data: { order_id: id } }),
   });
 
 
@@ -266,6 +272,22 @@ function OrderDetailPage() {
                 </CardContent>
               </Card>
             ) : null}
+
+            {refunds && refunds.length > 0 ? (
+              <Card>
+                <CardHeader><CardTitle className="text-base">Refund</CardTitle></CardHeader>
+                <CardContent className="space-y-1 text-sm">
+                  {refunds.map((r) => (
+                    <div key={r.id} className="flex justify-between text-xs">
+                      <span>{new Date(r.created_at).toLocaleDateString("id-ID")} · {r.method}{r.reference ? ` · ${r.reference}` : ""}</span>
+                      <span className="font-semibold">{fmt(Number(r.amount))}</span>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            ) : null}
+
+
 
 
             <Card>

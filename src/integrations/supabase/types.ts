@@ -1610,6 +1610,74 @@ export type Database = {
           },
         ]
       }
+      refunds: {
+        Row: {
+          amount: number
+          buyer_org_id: string
+          created_at: string
+          id: string
+          method: Database["public"]["Enums"]["payment_method"]
+          notes: string | null
+          order_id: string
+          recorded_by: string
+          reference: string | null
+          return_request_id: string
+        }
+        Insert: {
+          amount: number
+          buyer_org_id: string
+          created_at?: string
+          id?: string
+          method: Database["public"]["Enums"]["payment_method"]
+          notes?: string | null
+          order_id: string
+          recorded_by: string
+          reference?: string | null
+          return_request_id: string
+        }
+        Update: {
+          amount?: number
+          buyer_org_id?: string
+          created_at?: string
+          id?: string
+          method?: Database["public"]["Enums"]["payment_method"]
+          notes?: string | null
+          order_id?: string
+          recorded_by?: string
+          reference?: string | null
+          return_request_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "refunds_buyer_org_id_fkey"
+            columns: ["buyer_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "refunds_buyer_org_id_fkey"
+            columns: ["buyer_org_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
+          },
+          {
+            foreignKeyName: "refunds_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "refunds_return_request_id_fkey"
+            columns: ["return_request_id"]
+            isOneToOne: false
+            referencedRelation: "return_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       return_requests: {
         Row: {
           buyer_org_id: string
@@ -1622,6 +1690,9 @@ export type Database = {
           reason_code: string
           requested_at: string
           requested_by: string
+          resolution: string | null
+          resolved_at: string | null
+          resolved_by: string | null
           return_number: string
           status: Database["public"]["Enums"]["return_status"]
           updated_at: string
@@ -1637,6 +1708,9 @@ export type Database = {
           reason_code: string
           requested_at?: string
           requested_by: string
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
           return_number: string
           status?: Database["public"]["Enums"]["return_status"]
           updated_at?: string
@@ -1652,6 +1726,9 @@ export type Database = {
           reason_code?: string
           requested_at?: string
           requested_by?: string
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
           return_number?: string
           status?: Database["public"]["Enums"]["return_status"]
           updated_at?: string
@@ -2049,6 +2126,10 @@ export type Database = {
         Returns: undefined
       }
       checkout_cart: { Args: { _notes?: string }; Returns: string }
+      close_return: {
+        Args: { _resolution: string; _return_id: string }
+        Returns: undefined
+      }
       courier_complete_delivery: {
         Args: { _job_id: string; _proof: Json }
         Returns: undefined
@@ -2132,6 +2213,16 @@ export type Database = {
       next_queue_no: { Args: { _date: string }; Returns: string }
       next_return_no: { Args: never; Returns: string }
       next_settlement_no: { Args: never; Returns: string }
+      process_return_refund: {
+        Args: {
+          _amount: number
+          _method: Database["public"]["Enums"]["payment_method"]
+          _notes?: string
+          _reference?: string
+          _return_id: string
+        }
+        Returns: string
+      }
       qc_decide: {
         Args: {
           _checklist?: Json
@@ -2271,6 +2362,7 @@ export type Database = {
         | "REJECTED"
         | "REFUNDED"
         | "CANCELLED"
+        | "CLOSED"
       service_zone: "JKT_INNER" | "JKT_OUTER" | "BODETABEK" | "OUT_OF_ZONE"
       settlement_status: "DRAFT" | "APPROVED" | "PAID" | "CANCELLED"
       sp_category:
@@ -2502,6 +2594,7 @@ export const Constants = {
         "REJECTED",
         "REFUNDED",
         "CANCELLED",
+        "CLOSED",
       ],
       service_zone: ["JKT_INNER", "JKT_OUTER", "BODETABEK", "OUT_OF_ZONE"],
       settlement_status: ["DRAFT", "APPROVED", "PAID", "CANCELLED"],
