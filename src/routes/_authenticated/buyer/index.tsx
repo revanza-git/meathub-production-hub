@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { listMyOrganizations } from "@/lib/orgs.functions";
-import { MapPin, Building2 } from "lucide-react";
+import { MapPin, Building2, Search } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/buyer/")({
   head: () => ({
