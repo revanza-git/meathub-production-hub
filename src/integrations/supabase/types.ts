@@ -379,6 +379,106 @@ export type Database = {
           },
         ]
       }
+      delivery_jobs: {
+        Row: {
+          courier_user_id: string | null
+          created_at: string
+          delivered_at: string | null
+          fulfillment_id: string
+          id: string
+          last_tracking_at: string | null
+          notes: string | null
+          proof_json: Json | null
+          queue_number: string
+          scheduled_date: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["delivery_status"]
+          updated_at: string
+          vehicle_label: string | null
+          version: number
+        }
+        Insert: {
+          courier_user_id?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          fulfillment_id: string
+          id?: string
+          last_tracking_at?: string | null
+          notes?: string | null
+          proof_json?: Json | null
+          queue_number: string
+          scheduled_date: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["delivery_status"]
+          updated_at?: string
+          vehicle_label?: string | null
+          version?: number
+        }
+        Update: {
+          courier_user_id?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          fulfillment_id?: string
+          id?: string
+          last_tracking_at?: string | null
+          notes?: string | null
+          proof_json?: Json | null
+          queue_number?: string
+          scheduled_date?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["delivery_status"]
+          updated_at?: string
+          vehicle_label?: string | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_jobs_fulfillment_id_fkey"
+            columns: ["fulfillment_id"]
+            isOneToOne: false
+            referencedRelation: "fulfillments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_tracking_points: {
+        Row: {
+          accuracy_m: number | null
+          delivery_job_id: string
+          id: number
+          latitude: number
+          longitude: number
+          recorded_at: string
+          speed_mps: number | null
+        }
+        Insert: {
+          accuracy_m?: number | null
+          delivery_job_id: string
+          id?: number
+          latitude: number
+          longitude: number
+          recorded_at?: string
+          speed_mps?: number | null
+        }
+        Update: {
+          accuracy_m?: number | null
+          delivery_job_id?: string
+          id?: number
+          latitude?: number
+          longitude?: number
+          recorded_at?: string
+          speed_mps?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_tracking_points_delivery_job_id_fkey"
+            columns: ["delivery_job_id"]
+            isOneToOne: false
+            referencedRelation: "delivery_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feature_flags: {
         Row: {
           description: string | null
@@ -402,6 +502,64 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: []
+      }
+      fulfillments: {
+        Row: {
+          buyer_org_id: string
+          created_at: string
+          delivery_address_id: string
+          hub_deadline_at: string | null
+          id: string
+          order_id: string
+          status: Database["public"]["Enums"]["fulfillment_status"]
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          buyer_org_id: string
+          created_at?: string
+          delivery_address_id: string
+          hub_deadline_at?: string | null
+          id?: string
+          order_id: string
+          status?: Database["public"]["Enums"]["fulfillment_status"]
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          buyer_org_id?: string
+          created_at?: string
+          delivery_address_id?: string
+          hub_deadline_at?: string | null
+          id?: string
+          order_id?: string
+          status?: Database["public"]["Enums"]["fulfillment_status"]
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fulfillments_buyer_org_id_fkey"
+            columns: ["buyer_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fulfillments_delivery_address_id_fkey"
+            columns: ["delivery_address_id"]
+            isOneToOne: false
+            referencedRelation: "addresses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fulfillments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       grades: {
         Row: {
@@ -438,6 +596,56 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      hub_receipts: {
+        Row: {
+          created_at: string
+          evidence_object_keys: Json | null
+          fulfillment_id: string
+          id: string
+          lot_expiry_json: Json | null
+          notes: string | null
+          packaging_condition: Database["public"]["Enums"]["packaging_condition"]
+          received_at: string
+          received_by: string
+          received_weight_kg: number
+          temperature_c: number | null
+        }
+        Insert: {
+          created_at?: string
+          evidence_object_keys?: Json | null
+          fulfillment_id: string
+          id?: string
+          lot_expiry_json?: Json | null
+          notes?: string | null
+          packaging_condition: Database["public"]["Enums"]["packaging_condition"]
+          received_at?: string
+          received_by: string
+          received_weight_kg: number
+          temperature_c?: number | null
+        }
+        Update: {
+          created_at?: string
+          evidence_object_keys?: Json | null
+          fulfillment_id?: string
+          id?: string
+          lot_expiry_json?: Json | null
+          notes?: string | null
+          packaging_condition?: Database["public"]["Enums"]["packaging_condition"]
+          received_at?: string
+          received_by?: string
+          received_weight_kg?: number
+          temperature_c?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hub_receipts_fulfillment_id_fkey"
+            columns: ["fulfillment_id"]
+            isOneToOne: false
+            referencedRelation: "fulfillments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       idempotency_keys: {
         Row: {
@@ -1150,6 +1358,125 @@ export type Database = {
         }
         Relationships: []
       }
+      qc_inspections: {
+        Row: {
+          checklist_json: Json
+          created_at: string
+          decision: Database["public"]["Enums"]["qc_decision"]
+          evidence_object_keys: Json | null
+          id: string
+          inspected_at: string
+          inspected_by: string
+          notes: string | null
+          packaging_condition:
+            | Database["public"]["Enums"]["packaging_condition"]
+            | null
+          return_request_id: string
+          vendor_fault: boolean | null
+        }
+        Insert: {
+          checklist_json?: Json
+          created_at?: string
+          decision: Database["public"]["Enums"]["qc_decision"]
+          evidence_object_keys?: Json | null
+          id?: string
+          inspected_at?: string
+          inspected_by: string
+          notes?: string | null
+          packaging_condition?:
+            | Database["public"]["Enums"]["packaging_condition"]
+            | null
+          return_request_id: string
+          vendor_fault?: boolean | null
+        }
+        Update: {
+          checklist_json?: Json
+          created_at?: string
+          decision?: Database["public"]["Enums"]["qc_decision"]
+          evidence_object_keys?: Json | null
+          id?: string
+          inspected_at?: string
+          inspected_by?: string
+          notes?: string | null
+          packaging_condition?:
+            | Database["public"]["Enums"]["packaging_condition"]
+            | null
+          return_request_id?: string
+          vendor_fault?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qc_inspections_return_request_id_fkey"
+            columns: ["return_request_id"]
+            isOneToOne: false
+            referencedRelation: "return_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      return_requests: {
+        Row: {
+          buyer_org_id: string
+          created_at: string
+          description: string | null
+          eligibility_deadline: string
+          evidence_object_keys: Json | null
+          id: string
+          order_id: string
+          reason_code: string
+          requested_at: string
+          requested_by: string
+          return_number: string
+          status: Database["public"]["Enums"]["return_status"]
+          updated_at: string
+        }
+        Insert: {
+          buyer_org_id: string
+          created_at?: string
+          description?: string | null
+          eligibility_deadline: string
+          evidence_object_keys?: Json | null
+          id?: string
+          order_id: string
+          reason_code: string
+          requested_at?: string
+          requested_by: string
+          return_number: string
+          status?: Database["public"]["Enums"]["return_status"]
+          updated_at?: string
+        }
+        Update: {
+          buyer_org_id?: string
+          created_at?: string
+          description?: string | null
+          eligibility_deadline?: string
+          evidence_object_keys?: Json | null
+          id?: string
+          order_id?: string
+          reason_code?: string
+          requested_at?: string
+          requested_by?: string
+          return_number?: string
+          status?: Database["public"]["Enums"]["return_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "return_requests_buyer_org_id_fkey"
+            columns: ["buyer_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "return_requests_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       species: {
         Row: {
           code: string
@@ -1260,11 +1587,34 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assign_courier: {
+        Args: { _courier: string; _job_id: string; _vehicle?: string }
+        Returns: undefined
+      }
       cancel_order: {
         Args: { _order_id: string; _reason: string }
         Returns: undefined
       }
       checkout_cart: { Args: { _notes?: string }; Returns: string }
+      courier_complete_delivery: {
+        Args: { _job_id: string; _proof: Json }
+        Returns: undefined
+      }
+      courier_post_location: {
+        Args: {
+          _accuracy?: number
+          _job_id: string
+          _lat: number
+          _lng: number
+          _speed?: number
+        }
+        Returns: undefined
+      }
+      courier_start_delivery: { Args: { _job_id: string }; Returns: undefined }
+      create_delivery_job: {
+        Args: { _fulfillment_id: string; _scheduled: string }
+        Returns: string
+      }
       create_organization: {
         Args: {
           _display_name: string
@@ -1287,12 +1637,47 @@ export type Database = {
         }
         Returns: boolean
       }
+      hub_receive: {
+        Args: {
+          _evidence?: Json
+          _fulfillment_id: string
+          _lot_expiry?: Json
+          _notes?: string
+          _packaging: Database["public"]["Enums"]["packaging_condition"]
+          _temperature: number
+          _weight: number
+        }
+        Returns: string
+      }
       is_internal: { Args: { _user_id: string }; Returns: boolean }
       is_org_member: {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
       next_order_no: { Args: never; Returns: string }
+      next_queue_no: { Args: { _date: string }; Returns: string }
+      next_return_no: { Args: never; Returns: string }
+      qc_decide: {
+        Args: {
+          _checklist?: Json
+          _decision: Database["public"]["Enums"]["qc_decision"]
+          _evidence?: Json
+          _notes?: string
+          _packaging?: Database["public"]["Enums"]["packaging_condition"]
+          _return_id: string
+          _vendor_fault?: boolean
+        }
+        Returns: string
+      }
+      request_return: {
+        Args: {
+          _description?: string
+          _evidence?: Json
+          _order_id: string
+          _reason: string
+        }
+        Returns: string
+      }
       review_organization: {
         Args: { _decision: string; _org_id: string; _reason?: string }
         Returns: undefined
@@ -1300,6 +1685,10 @@ export type Database = {
       submit_organization: { Args: { _org_id: string }; Returns: undefined }
       vendor_decide_order_item: {
         Args: { _decision: string; _item_id: string; _reason?: string }
+        Returns: undefined
+      }
+      vendor_dispatch_to_hub: {
+        Args: { _fulfillment_id: string; _notes?: string }
         Returns: undefined
       }
     }
@@ -1319,8 +1708,25 @@ export type Database = {
         | "auditor"
       cart_status: "ACTIVE" | "CHECKED_OUT" | "ABANDONED"
       catalog_status: "DRAFT" | "REVIEW" | "ACTIVE" | "SUSPENDED" | "ARCHIVED"
+      delivery_status:
+        | "PENDING_ASSIGNMENT"
+        | "ASSIGNED"
+        | "STARTED"
+        | "OUT_FOR_DELIVERY"
+        | "DELIVERED"
+        | "FAILED"
+        | "CANCELLED"
       evidence_status: "PENDING" | "APPROVED" | "REJECTED"
       evidence_type: "AWARD" | "ASSOCIATION" | "QC" | "DISCLOSURE"
+      fulfillment_status:
+        | "AWAITING_VENDOR_DISPATCH"
+        | "AWAITING_HUB_INBOUND"
+        | "HUB_RECEIVED"
+        | "READY_FOR_DISPATCH"
+        | "OUT_FOR_DELIVERY"
+        | "DELIVERED"
+        | "EXCEPTION"
+        | "CANCELLED"
       job_status: "PENDING" | "RUNNING" | "SUCCEEDED" | "FAILED" | "DEAD"
       kyb_doc_status: "PENDING" | "ACCEPTED" | "REJECTED"
       kyb_doc_type:
@@ -1350,12 +1756,26 @@ export type Database = {
         | "REJECTED"
         | "SUSPENDED"
       org_type: "BUYER" | "VENDOR" | "INTERNAL"
+      packaging_condition:
+        | "GOOD"
+        | "MINOR_DAMAGE"
+        | "MAJOR_DAMAGE"
+        | "TEMPERATURE_BREACH"
       product_tier:
         | "COMMODITY_PREMIUM"
         | "SUPER_PREMIUM"
         | "UNDERVALUED_QC"
         | "SBMEAT_HOUSE"
       purchase_type: "LOAF" | "CARTON" | "RETAIL"
+      qc_decision: "APPROVED" | "REJECTED" | "NEEDS_EVIDENCE"
+      return_status:
+        | "REQUESTED"
+        | "RECEIVED_AT_HUB"
+        | "QC_IN_REVIEW"
+        | "APPROVED"
+        | "REJECTED"
+        | "REFUNDED"
+        | "CANCELLED"
       service_zone: "JKT_INNER" | "JKT_OUTER" | "BODETABEK" | "OUT_OF_ZONE"
     }
     CompositeTypes: {
@@ -1500,8 +1920,27 @@ export const Constants = {
       ],
       cart_status: ["ACTIVE", "CHECKED_OUT", "ABANDONED"],
       catalog_status: ["DRAFT", "REVIEW", "ACTIVE", "SUSPENDED", "ARCHIVED"],
+      delivery_status: [
+        "PENDING_ASSIGNMENT",
+        "ASSIGNED",
+        "STARTED",
+        "OUT_FOR_DELIVERY",
+        "DELIVERED",
+        "FAILED",
+        "CANCELLED",
+      ],
       evidence_status: ["PENDING", "APPROVED", "REJECTED"],
       evidence_type: ["AWARD", "ASSOCIATION", "QC", "DISCLOSURE"],
+      fulfillment_status: [
+        "AWAITING_VENDOR_DISPATCH",
+        "AWAITING_HUB_INBOUND",
+        "HUB_RECEIVED",
+        "READY_FOR_DISPATCH",
+        "OUT_FOR_DELIVERY",
+        "DELIVERED",
+        "EXCEPTION",
+        "CANCELLED",
+      ],
       job_status: ["PENDING", "RUNNING", "SUCCEEDED", "FAILED", "DEAD"],
       kyb_doc_status: ["PENDING", "ACCEPTED", "REJECTED"],
       kyb_doc_type: [
@@ -1534,6 +1973,12 @@ export const Constants = {
         "SUSPENDED",
       ],
       org_type: ["BUYER", "VENDOR", "INTERNAL"],
+      packaging_condition: [
+        "GOOD",
+        "MINOR_DAMAGE",
+        "MAJOR_DAMAGE",
+        "TEMPERATURE_BREACH",
+      ],
       product_tier: [
         "COMMODITY_PREMIUM",
         "SUPER_PREMIUM",
@@ -1541,6 +1986,16 @@ export const Constants = {
         "SBMEAT_HOUSE",
       ],
       purchase_type: ["LOAF", "CARTON", "RETAIL"],
+      qc_decision: ["APPROVED", "REJECTED", "NEEDS_EVIDENCE"],
+      return_status: [
+        "REQUESTED",
+        "RECEIVED_AT_HUB",
+        "QC_IN_REVIEW",
+        "APPROVED",
+        "REJECTED",
+        "REFUNDED",
+        "CANCELLED",
+      ],
       service_zone: ["JKT_INNER", "JKT_OUTER", "BODETABEK", "OUT_OF_ZONE"],
     },
   },
