@@ -10,6 +10,10 @@ import {
   Search,
 } from "lucide-react";
 import heroMeat from "@/assets/hero-meat.jpg";
+import productSlice from "@/assets/product-slice.jpg";
+import productRibs from "@/assets/product-ribs.jpg";
+import productTenderloin from "@/assets/product-tenderloin.jpg";
+import productOxtail from "@/assets/product-oxtail.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
