@@ -60,11 +60,11 @@ function PartnerDashboard() {
                 ))}
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Link to="/onboarding">
-                <Button size="sm" variant="outline">Kelola onboarding</Button>
-              </Link>
+            <CardContent className="flex flex-wrap gap-2">
+              <Link to="/partner/vendor/offers"><Button size="sm">Kelola offers & inventory</Button></Link>
+              <Link to="/onboarding"><Button size="sm" variant="outline">Kelola onboarding</Button></Link>
             </CardContent>
+
           </Card>
         ) : null}
 
