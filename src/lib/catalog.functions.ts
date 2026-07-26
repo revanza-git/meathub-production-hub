@@ -149,12 +149,12 @@ export const upsertProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => UpsertProduct.parse(d))
   .handler(async ({ data, context }) => {
-    const payload: Record<string, unknown> = { ...data };
-    if (payload.primary_image_url === "") payload.primary_image_url = null;
+    const payload = { ...data, primary_image_url: data.primary_image_url === "" ? null : data.primary_image_url ?? null };
     const { data: row, error } = await context.supabase.from("products").upsert(payload).select("id").single();
     if (error) throw new Error(error.message);
     return { id: row.id as string };
   });
+
 
 const TransitionProduct = z.object({
   id: z.string().uuid(),
