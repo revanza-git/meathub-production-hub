@@ -72,6 +72,7 @@ function PartnerDashboard() {
               <Link to="/partner/vendor/offers"><Button size="sm">Kelola offers & inventory</Button></Link>
               <Link to="/partner/vendor/orders"><Button size="sm" variant="secondary">Order masuk</Button></Link>
               <Link to="/partner/vendor/fulfillments"><Button size="sm" variant="secondary">Fulfillment</Button></Link>
+              <Link to="/partner/vendor/reliability"><Button size="sm" variant="secondary">Reliability & SP</Button></Link>
               <Link to="/onboarding"><Button size="sm" variant="outline">Kelola onboarding</Button></Link>
             </CardContent>
           </Card>
