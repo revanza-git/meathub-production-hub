@@ -13,7 +13,7 @@ brew install k6              # macOS
 
 ```bash
 export BASE_URL="https://project--<id>-dev.lovable.app"
-export BUYER_EMAIL="loadtest+buyer@sbmeat.dev"
+export BUYER_EMAIL="loadtest+buyer@meathub.dev"
 export BUYER_PASSWORD="<test-only password>"
 ```
 
