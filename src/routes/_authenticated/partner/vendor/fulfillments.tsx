@@ -18,13 +18,16 @@ export const Route = createFileRoute("/_authenticated/partner/vendor/fulfillment
 
 function VendorFulfillmentsPage() {
   const qc = useQueryClient();
-  const roleFn = useServerFn(getMyRoleContext);
+  const roleFn = useServerFn(getMyRoles);
   const listFn = useServerFn(listVendorFulfillments);
   const dispatchFn = useServerFn(vendorDispatchToHub);
   const { data: role } = useQuery({ queryKey: ["role-ctx"], queryFn: () => roleFn() });
-  const vendorOrgs = (role?.memberships ?? []).filter((m) => m.org_type === "VENDOR");
+  const vendorOrgs = (role?.memberships ?? [])
+    .filter((m) => m.organization.type === "VENDOR")
+    .map((m) => ({ org_id: m.organization.id, display_name: m.organization.display_name }));
   const [vendorId, setVendorId] = useState<string>("");
   const active = vendorId || vendorOrgs[0]?.org_id || "";
+
 
   const { data: rows } = useQuery({
     queryKey: ["vendor-fulfillments", active],
