@@ -84,7 +84,7 @@ function JobCard({ job, onStart, onPing, onComplete }: { job: Job; onStart: () =
           <Badge variant="outline">{job.status.replaceAll("_"," ")}</Badge>
         </div>
         <div className="text-xs text-muted-foreground">
-          {job.fulfillment?.order?.address?.line1} {job.fulfillment?.order?.address?.city ? `· ${job.fulfillment.order.address.city}` : ""}
+          {job.fulfillment?.order?.address?.address_lines} {job.fulfillment?.order?.address?.city ? `· ${job.fulfillment.order.address.city}` : ""}
         </div>
       </CardHeader>
       <CardContent className="space-y-2">
