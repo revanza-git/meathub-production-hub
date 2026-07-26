@@ -25,6 +25,7 @@
   --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Archivo Expanded", "Archivo", sans-serif;
   --font-headline: "Archivo Black", "Archivo Expanded", "Archivo", sans-serif;
+  --font-serif: "Playfair Display", "Georgia", serif;
   --font-body-alt: "Hind", ui-sans-serif, system-ui, sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
