@@ -50,17 +50,22 @@ export const upsertMaster = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => UpsertMaster.parse(d))
   .handler(async ({ data, context }) => {
-    const payload: Record<string, unknown> = {
+    const payload = {
       code: data.code,
       name: data.name,
       description: data.description ?? null,
       is_active: data.is_active ?? true,
+      ...(data.id ? { id: data.id } : {}),
     };
-    if (data.id) payload.id = data.id;
-    const { error } = await context.supabase.from(data.entity).upsert(payload).select("id").single();
+    const { error } = await context.supabase
+      .from(data.entity)
+      .upsert(payload as never)
+      .select("id")
+      .single();
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
 
 const UpsertCut = z.object({
   id: z.string().uuid().optional(),
@@ -74,11 +79,12 @@ export const upsertCut = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => UpsertCut.parse(d))
   .handler(async ({ data, context }) => {
-    const payload: Record<string, unknown> = { ...data, is_active: data.is_active ?? true };
+    const payload = { ...data, is_active: data.is_active ?? true };
     const { error } = await context.supabase.from("cuts").upsert(payload).select("id").single();
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
 
 /** ---------- PRODUCTS ---------- */
 
