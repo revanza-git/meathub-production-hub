@@ -16,6 +16,8 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedPartnerIndexRouteImport } from './routes/_authenticated/partner/index'
 import { Route as AuthenticatedBuyerIndexRouteImport } from './routes/_authenticated/buyer/index'
+import { Route as AuthenticatedBuyerAddressesRouteImport } from './routes/_authenticated/buyer/addresses'
+import { Route as AuthenticatedPartnerAdminOrgsRouteImport } from './routes/_authenticated/partner/admin/orgs'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -52,22 +54,38 @@ const AuthenticatedBuyerIndexRoute = AuthenticatedBuyerIndexRouteImport.update({
   path: '/buyer/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBuyerAddressesRoute =
+  AuthenticatedBuyerAddressesRouteImport.update({
+    id: '/buyer/addresses',
+    path: '/buyer/addresses',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPartnerAdminOrgsRoute =
+  AuthenticatedPartnerAdminOrgsRouteImport.update({
+    id: '/partner/admin/orgs',
+    path: '/partner/admin/orgs',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/buyer/addresses': typeof AuthenticatedBuyerAddressesRoute
   '/buyer/': typeof AuthenticatedBuyerIndexRoute
   '/partner/': typeof AuthenticatedPartnerIndexRoute
+  '/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/buyer/addresses': typeof AuthenticatedBuyerAddressesRoute
   '/buyer': typeof AuthenticatedBuyerIndexRoute
   '/partner': typeof AuthenticatedPartnerIndexRoute
+  '/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -76,8 +94,10 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/buyer/addresses': typeof AuthenticatedBuyerAddressesRoute
   '/_authenticated/buyer/': typeof AuthenticatedBuyerIndexRoute
   '/_authenticated/partner/': typeof AuthenticatedPartnerIndexRoute
+  '/_authenticated/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -86,10 +106,20 @@ export interface FileRouteTypes {
     | '/auth'
     | '/dashboard'
     | '/onboarding'
+    | '/buyer/addresses'
     | '/buyer/'
     | '/partner/'
+    | '/partner/admin/orgs'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/onboarding' | '/buyer' | '/partner'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/onboarding'
+    | '/buyer/addresses'
+    | '/buyer'
+    | '/partner'
+    | '/partner/admin/orgs'
   id:
     | '__root__'
     | '/'
@@ -97,8 +127,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/dashboard'
     | '/_authenticated/onboarding'
+    | '/_authenticated/buyer/addresses'
     | '/_authenticated/buyer/'
     | '/_authenticated/partner/'
+    | '/_authenticated/partner/admin/orgs'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,21 +190,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBuyerIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/buyer/addresses': {
+      id: '/_authenticated/buyer/addresses'
+      path: '/buyer/addresses'
+      fullPath: '/buyer/addresses'
+      preLoaderRoute: typeof AuthenticatedBuyerAddressesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/partner/admin/orgs': {
+      id: '/_authenticated/partner/admin/orgs'
+      path: '/partner/admin/orgs'
+      fullPath: '/partner/admin/orgs'
+      preLoaderRoute: typeof AuthenticatedPartnerAdminOrgsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedBuyerAddressesRoute: typeof AuthenticatedBuyerAddressesRoute
   AuthenticatedBuyerIndexRoute: typeof AuthenticatedBuyerIndexRoute
   AuthenticatedPartnerIndexRoute: typeof AuthenticatedPartnerIndexRoute
+  AuthenticatedPartnerAdminOrgsRoute: typeof AuthenticatedPartnerAdminOrgsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedBuyerAddressesRoute: AuthenticatedBuyerAddressesRoute,
   AuthenticatedBuyerIndexRoute: AuthenticatedBuyerIndexRoute,
   AuthenticatedPartnerIndexRoute: AuthenticatedPartnerIndexRoute,
+  AuthenticatedPartnerAdminOrgsRoute: AuthenticatedPartnerAdminOrgsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

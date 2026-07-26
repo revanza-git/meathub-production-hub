@@ -311,6 +311,103 @@ export type Database = {
         }
         Relationships: []
       }
+      kyb_documents: {
+        Row: {
+          created_at: string
+          doc_type: Database["public"]["Enums"]["kyb_doc_type"]
+          file_name: string
+          id: string
+          mime_type: string | null
+          organization_id: string
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          size_bytes: number | null
+          status: Database["public"]["Enums"]["kyb_doc_status"]
+          storage_path: string
+          updated_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string
+          doc_type: Database["public"]["Enums"]["kyb_doc_type"]
+          file_name: string
+          id?: string
+          mime_type?: string | null
+          organization_id: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          size_bytes?: number | null
+          status?: Database["public"]["Enums"]["kyb_doc_status"]
+          storage_path: string
+          updated_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string
+          doc_type?: Database["public"]["Enums"]["kyb_doc_type"]
+          file_name?: string
+          id?: string
+          mime_type?: string | null
+          organization_id?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          size_bytes?: number | null
+          status?: Database["public"]["Enums"]["kyb_doc_status"]
+          storage_path?: string
+          updated_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kyb_documents_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      org_state_history: {
+        Row: {
+          actor_user_id: string | null
+          created_at: string
+          from_state: Database["public"]["Enums"]["org_status"] | null
+          id: string
+          organization_id: string
+          reason: string | null
+          to_state: Database["public"]["Enums"]["org_status"]
+        }
+        Insert: {
+          actor_user_id?: string | null
+          created_at?: string
+          from_state?: Database["public"]["Enums"]["org_status"] | null
+          id?: string
+          organization_id: string
+          reason?: string | null
+          to_state: Database["public"]["Enums"]["org_status"]
+        }
+        Update: {
+          actor_user_id?: string | null
+          created_at?: string
+          from_state?: Database["public"]["Enums"]["org_status"] | null
+          id?: string
+          organization_id?: string
+          reason?: string | null
+          to_state?: Database["public"]["Enums"]["org_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_state_history_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_members: {
         Row: {
           created_at: string
@@ -432,6 +529,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_organization: {
+        Args: {
+          _display_name: string
+          _legal_name: string
+          _type: Database["public"]["Enums"]["org_type"]
+        }
+        Returns: string
+      }
       has_any_role: {
         Args: {
           _roles: Database["public"]["Enums"]["app_role"][]
@@ -451,6 +556,11 @@ export type Database = {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
+      review_organization: {
+        Args: { _decision: string; _org_id: string; _reason?: string }
+        Returns: undefined
+      }
+      submit_organization: { Args: { _org_id: string }; Returns: undefined }
     }
     Enums: {
       app_role:
@@ -467,6 +577,14 @@ export type Database = {
         | "platform_admin"
         | "auditor"
       job_status: "PENDING" | "RUNNING" | "SUCCEEDED" | "FAILED" | "DEAD"
+      kyb_doc_status: "PENDING" | "ACCEPTED" | "REJECTED"
+      kyb_doc_type:
+        | "NPWP"
+        | "NIB"
+        | "KTP_DIREKTUR"
+        | "REKENING_KORAN"
+        | "SIUP"
+        | "OTHER"
       membership_status: "ACTIVE" | "INVITED" | "SUSPENDED" | "REMOVED"
       org_status:
         | "DRAFT"
@@ -619,6 +737,15 @@ export const Constants = {
         "auditor",
       ],
       job_status: ["PENDING", "RUNNING", "SUCCEEDED", "FAILED", "DEAD"],
+      kyb_doc_status: ["PENDING", "ACCEPTED", "REJECTED"],
+      kyb_doc_type: [
+        "NPWP",
+        "NIB",
+        "KTP_DIREKTUR",
+        "REKENING_KORAN",
+        "SIUP",
+        "OTHER",
+      ],
       membership_status: ["ACTIVE", "INVITED", "SUSPENDED", "REMOVED"],
       org_status: [
         "DRAFT",
