@@ -273,6 +273,19 @@ function OrderDetailPage() {
               </Card>
             ) : null}
 
+            {refunds && refunds.length > 0 ? (
+              <Card>
+                <CardHeader><CardTitle className="text-base">Refund</CardTitle></CardHeader>
+                <CardContent className="space-y-1 text-sm">
+                  {refunds.map((r) => (
+                    <div key={r.id} className="flex justify-between text-xs">
+                      <span>{new Date(r.created_at).toLocaleDateString("id-ID")} · {r.method}{r.reference ? ` · ${r.reference}` : ""}</span>
+                      <span className="font-semibold">{fmt(Number(r.amount))}</span>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+
 
             <Card>
               <CardHeader><CardTitle className="text-base">Riwayat status</CardTitle></CardHeader>
