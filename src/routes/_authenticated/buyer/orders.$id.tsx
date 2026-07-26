@@ -57,6 +57,16 @@ function OrderDetailPage() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+  const retMut = useMutation({
+    mutationFn: () => retFn({ data: { order_id: id, reason_code: retReason, description: retDesc || undefined } }),
+    onSuccess: () => {
+      toast.success("Permintaan retur dikirim");
+      setRetDesc("");
+      qc.invalidateQueries({ queryKey: ["returns", id] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
 
   const order = data?.order as
     | {
