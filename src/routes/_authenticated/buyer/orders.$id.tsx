@@ -53,6 +53,11 @@ function OrderDetailPage() {
     queryKey: ["invoice", id],
     queryFn: () => invFn({ data: { order_id: id } }),
   });
+  const refundsFn = useServerFn(listRefundsForOrder);
+  const { data: refunds } = useQuery({
+    queryKey: ["refunds", id],
+    queryFn: () => refundsFn({ data: { order_id: id } }),
+  });
 
 
 
