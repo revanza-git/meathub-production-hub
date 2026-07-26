@@ -47,6 +47,9 @@ function PartnerDashboard() {
             <CardContent className="flex flex-wrap gap-2">
               <Link to="/partner/admin/orgs"><Button size="sm">Antrian review organisasi</Button></Link>
               <Link to="/partner/admin/catalog"><Button size="sm" variant="secondary">Katalog & master data</Button></Link>
+              <Link to="/partner/admin/sp-warnings"><Button size="sm" variant="secondary">SP warnings</Button></Link>
+              <Link to="/partner/admin/flags"><Button size="sm" variant="secondary">Feature flags</Button></Link>
+              <Link to="/partner/admin/audit"><Button size="sm" variant="outline">Audit log</Button></Link>
             </CardContent>
 
           </Card>
