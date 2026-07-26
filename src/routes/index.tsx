@@ -57,10 +57,30 @@ function Landing() {
             </div>
           </Link>
           <nav className="hidden items-center gap-8 md:flex">
-            <span className="text-sm font-semibold text-maroon-dark">Beranda</span>
-            <span className="text-sm text-ink-soft">Produk</span>
-            <span className="text-sm text-ink-soft">Cara Kerja</span>
-            <span className="text-sm text-ink-soft">Kemitraan</span>
+            <a
+              href="#"
+              className="text-sm font-semibold text-maroon-dark transition-colors hover:text-maroon"
+            >
+              Beranda
+            </a>
+            <a
+              href="#produk"
+              className="text-sm text-ink-soft transition-colors hover:text-maroon-dark"
+            >
+              Produk
+            </a>
+            <a
+              href="#cara-kerja"
+              className="text-sm text-ink-soft transition-colors hover:text-maroon-dark"
+            >
+              Cara Kerja
+            </a>
+            <a
+              href="#kemitraan"
+              className="text-sm text-ink-soft transition-colors hover:text-maroon-dark"
+            >
+              Kemitraan
+            </a>
           </nav>
           <div className="flex items-center gap-2">
             <Button asChild variant="ghost" size="sm" className="text-ink hover:bg-ink/5">
@@ -192,7 +212,7 @@ function Landing() {
         </section>
 
         {/* Product catalog preview — grouped by pack size, BBF-style */}
-        <section className="bg-white px-4 py-16 md:py-24">
+        <section id="produk" className="bg-white px-4 py-16 md:py-24 scroll-mt-24">
           <div className="mx-auto max-w-6xl space-y-16">
             {CATALOG.map((group) => (
               <div key={group.title}>
@@ -249,7 +269,7 @@ function Landing() {
         </section>
 
         {/* How it works — cream continuous */}
-        <section className="bg-ivory px-4 py-16 md:py-20">
+        <section id="cara-kerja" className="bg-ivory px-4 py-16 md:py-20 scroll-mt-24">
           <div className="mx-auto max-w-6xl">
             <div className="mx-auto max-w-2xl text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-maroon-dark">
@@ -276,7 +296,7 @@ function Landing() {
         </section>
 
         {/* Final CTA */}
-        <section className="px-4 py-16 md:py-24">
+        <section id="kemitraan" className="px-4 py-16 md:py-24 scroll-mt-24">
           <div className="mx-auto max-w-4xl rounded-2xl bg-maroon-dark px-8 py-14 text-center text-warm-white shadow-[0_25px_60px_-30px_rgba(90,26,26,0.6)]">
             <h2 className="font-[family-name:var(--font-serif)] text-4xl md:text-5xl">
               Siap standardisasi pengadaan daging Anda?
