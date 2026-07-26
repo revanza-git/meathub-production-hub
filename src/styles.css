@@ -76,6 +76,16 @@
   --color-offwhite: var(--offwhite);
   --color-gold-muted: var(--gold-muted);
 
+  /* Warm Sand + Espresso landing palette */
+  --color-warm-white: var(--warm-white);
+  --color-sand: var(--sand);
+  --color-sand-dark: var(--sand-dark);
+  --color-tan: var(--tan);
+  --color-tan-deep: var(--tan-deep);
+  --color-espresso: var(--espresso);
+  --color-espresso-dark: var(--espresso-dark);
+  --color-espresso-light: var(--espresso-light);
+
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
