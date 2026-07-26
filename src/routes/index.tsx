@@ -366,6 +366,34 @@ const TIERS = [
   },
 ];
 
+const CATALOG: {
+  title: string;
+  pack: string;
+  items: { name: string; price: string; image: string }[];
+}[] = [
+  {
+    title: "Daging Sapi Segar Kemasan 1 Kg",
+    pack: "Meat Pack · 1 kg",
+    items: [
+      { name: "Daging Slice Low Fat 1 KG", price: "Rp130.000", image: productSlice },
+      { name: "Daging Teriyaki 1 KG", price: "Rp150.000", image: productRibs },
+      { name: "Tenderloin Steak 1 KG", price: "Rp285.000", image: productTenderloin },
+      { name: "Buntut Sapi 1 KG", price: "Rp150.000", image: productOxtail },
+    ],
+  },
+  {
+    title: "Daging Sapi Segar Kemasan 500 Gram",
+    pack: "Meat Pack · 500 g",
+    items: [
+      { name: "Beef Slice AUS 500 GR", price: "Rp84.000", image: productSlice },
+      { name: "Daging Teriyaki 500 GR", price: "Rp79.000", image: productRibs },
+      { name: "Tenderloin 500 GR", price: "Rp145.000", image: productTenderloin },
+      { name: "Buntut Sapi 500 GR", price: "Rp79.000", image: productOxtail },
+    ],
+  },
+];
+
+
 // Icon aliases retained for tree-shaking hints
 void Search;
 void ShieldCheck;
