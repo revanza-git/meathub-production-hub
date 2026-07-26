@@ -74,6 +74,13 @@ export type Database = {
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "addresses_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
+          },
         ]
       }
       agreements: {
@@ -114,6 +121,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agreements_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
           },
         ]
       }
@@ -170,6 +184,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_events_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
           },
         ]
       }
@@ -299,6 +320,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "carts_buyer_org_id_fkey"
+            columns: ["buyer_org_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
           },
         ]
       }
@@ -546,6 +574,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "fulfillments_buyer_org_id_fkey"
+            columns: ["buyer_org_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
+          },
+          {
             foreignKeyName: "fulfillments_delivery_address_id_fkey"
             columns: ["delivery_address_id"]
             isOneToOne: false
@@ -791,6 +826,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "invoices_buyer_org_id_fkey"
+            columns: ["buyer_org_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
+          },
+          {
             foreignKeyName: "invoices_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
@@ -904,6 +946,13 @@ export type Database = {
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "kyb_documents_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
+          },
         ]
       }
       order_items: {
@@ -983,6 +1032,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
           },
         ]
       }
@@ -1094,6 +1150,13 @@ export type Database = {
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "orders_buyer_org_id_fkey"
+            columns: ["buyer_org_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
+          },
         ]
       }
       org_state_history: {
@@ -1131,6 +1194,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "org_state_history_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
           },
         ]
       }
@@ -1172,6 +1242,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "organization_members_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
           },
         ]
       }
@@ -1588,6 +1665,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "return_requests_buyer_org_id_fkey"
+            columns: ["buyer_org_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
+          },
+          {
             foreignKeyName: "return_requests_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
@@ -1658,6 +1742,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "settlement_items_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
           },
         ]
       }
@@ -1732,6 +1823,92 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "settlements_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
+          },
+        ]
+      }
+      sp_warnings: {
+        Row: {
+          category: Database["public"]["Enums"]["sp_category"]
+          created_at: string
+          expires_at: string | null
+          id: string
+          issued_at: string
+          issued_by: string | null
+          reason: string
+          related_entity: string | null
+          related_entity_id: string | null
+          related_order_id: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: Database["public"]["Enums"]["sp_severity"]
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["sp_category"]
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          issued_at?: string
+          issued_by?: string | null
+          reason: string
+          related_entity?: string | null
+          related_entity_id?: string | null
+          related_order_id?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity: Database["public"]["Enums"]["sp_severity"]
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["sp_category"]
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          issued_at?: string
+          issued_by?: string | null
+          reason?: string
+          related_entity?: string | null
+          related_entity_id?: string | null
+          related_order_id?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: Database["public"]["Enums"]["sp_severity"]
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sp_warnings_related_order_id_fkey"
+            columns: ["related_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sp_warnings_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sp_warnings_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
           },
         ]
       }
@@ -1838,11 +2015,28 @@ export type Database = {
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "vendor_offers_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      vendor_reliability: {
+        Row: {
+          active_sp5: number | null
+          active_warnings: number | null
+          display_name: string | null
+          last_issued_at: string | null
+          reliability_score: number | null
+          vendor_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       approve_settlement: { Args: { _id: string }; Returns: undefined }
@@ -1918,6 +2112,17 @@ export type Database = {
         Returns: boolean
       }
       issue_invoice: { Args: { _order_id: string }; Returns: string }
+      issue_sp_warning: {
+        Args: {
+          _category: Database["public"]["Enums"]["sp_category"]
+          _expires_at?: string
+          _reason: string
+          _related_order_id?: string
+          _severity: Database["public"]["Enums"]["sp_severity"]
+          _vendor_id: string
+        }
+        Returns: string
+      }
       mark_settlement_paid: {
         Args: { _id: string; _reference: string }
         Returns: undefined
@@ -1958,8 +2163,16 @@ export type Database = {
         }
         Returns: string
       }
+      resolve_sp_warning: {
+        Args: { _id: string; _notes: string }
+        Returns: undefined
+      }
       review_organization: {
         Args: { _decision: string; _org_id: string; _reason?: string }
+        Returns: undefined
+      }
+      set_feature_flag: {
+        Args: { _description?: string; _enabled: boolean; _key: string }
         Returns: undefined
       }
       submit_organization: { Args: { _org_id: string }; Returns: undefined }
@@ -2060,6 +2273,15 @@ export type Database = {
         | "CANCELLED"
       service_zone: "JKT_INNER" | "JKT_OUTER" | "BODETABEK" | "OUT_OF_ZONE"
       settlement_status: "DRAFT" | "APPROVED" | "PAID" | "CANCELLED"
+      sp_category:
+        | "ORDER_REJECTION"
+        | "LATE_DISPATCH"
+        | "QC_FAIL"
+        | "RETURN_VENDOR_FAULT"
+        | "DOCUMENT_MISSING"
+        | "POLICY_VIOLATION"
+        | "OTHER"
+      sp_severity: "SP1" | "SP2" | "SP3" | "SP4" | "SP5"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2283,6 +2505,16 @@ export const Constants = {
       ],
       service_zone: ["JKT_INNER", "JKT_OUTER", "BODETABEK", "OUT_OF_ZONE"],
       settlement_status: ["DRAFT", "APPROVED", "PAID", "CANCELLED"],
+      sp_category: [
+        "ORDER_REJECTION",
+        "LATE_DISPATCH",
+        "QC_FAIL",
+        "RETURN_VENDOR_FAULT",
+        "DOCUMENT_MISSING",
+        "POLICY_VIOLATION",
+        "OTHER",
+      ],
+      sp_severity: ["SP1", "SP2", "SP3", "SP4", "SP5"],
     },
   },
 } as const
