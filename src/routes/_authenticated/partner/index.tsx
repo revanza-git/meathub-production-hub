@@ -25,6 +25,10 @@ function PartnerDashboard() {
   const vendorOrgs = (data?.memberships ?? []).filter((m) =>
     ["vendor_admin", "vendor_operator"].includes(m.role),
   );
+  const isHub = data?.memberships.some((m) => m.role === "hub_operator");
+  const isCourier = data?.memberships.some((m) => m.role === "courier");
+  const isQc = data?.memberships.some((m) => m.role === "qc_officer");
+
 
   return (
     <AppShell title="SBMEAT Partner" subtitle="Vendor & Ops portal">
