@@ -82,14 +82,20 @@ function BuyerHome() {
           </Card>
         </div>
 
-        <Card>
+        <Card className="border-primary/40">
           <CardHeader>
-            <CardTitle>Beranda pembeli</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Search className="h-4 w-4" /> Cari produk & vendor
+            </CardTitle>
             <CardDescription>
-              Pencarian, kategori, saldo deposit, dan antrian aktif akan diisi di Phase 3.
+              Cari daging berdasarkan nama, tier, purchase type, dan zona layanan.
             </CardDescription>
           </CardHeader>
+          <CardContent>
+            <Link to="/buyer/search"><Button size="sm">Mulai cari</Button></Link>
+          </CardContent>
         </Card>
+
       </div>
     </AppShell>
   );
