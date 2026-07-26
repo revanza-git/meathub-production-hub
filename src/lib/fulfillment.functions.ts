@@ -64,7 +64,7 @@ export const listCourierDeliveries = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("delivery_jobs")
-      .select("*, fulfillment:fulfillment_id(order_id, buyer_org_id, delivery_address_id)")
+      .select("*, fulfillment:fulfillment_id(order_id, buyer_org_id, delivery_address_id, order:order_id(order_no, address:address_id(line1, city)))")
       .eq("courier_user_id", context.userId)
       .order("scheduled_date", { ascending: true });
     if (error) throw new Error(error.message);
