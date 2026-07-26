@@ -1,4 +1,4 @@
-# SBMEAT Meat Hub — Deployment & Ops Runbook
+# MEATHUB Meat Hub — Deployment & Ops Runbook
 
 ## 1. Environments
 
