@@ -2483,7 +2483,7 @@ export type Database = {
         | "COMMODITY_PREMIUM"
         | "SUPER_PREMIUM"
         | "UNDERVALUED_QC"
-        | "SBMEAT_HOUSE"
+        | "MEATHUB_HOUSE"
       purchase_type: "LOAF" | "CARTON" | "RETAIL"
       qc_decision: "APPROVED" | "REJECTED" | "NEEDS_EVIDENCE"
       return_status:
@@ -2714,7 +2714,7 @@ export const Constants = {
         "COMMODITY_PREMIUM",
         "SUPER_PREMIUM",
         "UNDERVALUED_QC",
-        "SBMEAT_HOUSE",
+        "MEATHUB_HOUSE",
       ],
       purchase_type: ["LOAF", "CARTON", "RETAIL"],
       qc_decision: ["APPROVED", "REJECTED", "NEEDS_EVIDENCE"],
