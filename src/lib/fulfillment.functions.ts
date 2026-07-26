@@ -120,7 +120,7 @@ export const vendorDispatchToHub = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.rpc("vendor_dispatch_to_hub", {
       _fulfillment_id: data.fulfillment_id,
-      _notes: data.notes ?? null,
+      _notes: data.notes ?? undefined,
     });
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -145,9 +145,9 @@ export const hubReceive = createServerFn({ method: "POST" })
     const { data: id, error } = await context.supabase.rpc("hub_receive", {
       _fulfillment_id: data.fulfillment_id,
       _weight: data.weight_kg,
-      _temperature: data.temperature_c ?? null,
+      _temperature: data.temperature_c ?? undefined,
       _packaging: data.packaging,
-      _notes: data.notes ?? null,
+      _notes: data.notes ?? undefined,
       _evidence: [],
       _lot_expiry: null,
     });
@@ -184,7 +184,7 @@ export const assignCourier = createServerFn({ method: "POST" })
     const { error } = await context.supabase.rpc("assign_courier", {
       _job_id: data.job_id,
       _courier: data.courier_user_id,
-      _vehicle: data.vehicle_label ?? null,
+      _vehicle: data.vehicle_label ?? undefined,
     });
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -216,8 +216,8 @@ export const courierPostLocation = createServerFn({ method: "POST" })
       _job_id: data.job_id,
       _lat: data.latitude,
       _lng: data.longitude,
-      _accuracy: data.accuracy_m ?? null,
-      _speed: null,
+      _accuracy: data.accuracy_m ?? undefined,
+      _speed: undefined,
     });
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -258,7 +258,7 @@ export const requestReturn = createServerFn({ method: "POST" })
     const { data: id, error } = await context.supabase.rpc("request_return", {
       _order_id: data.order_id,
       _reason: data.reason_code,
-      _description: data.description ?? null,
+      _description: data.description ?? undefined,
       _evidence: [],
     });
     if (error) throw new Error(error.message);
@@ -283,9 +283,9 @@ export const qcDecide = createServerFn({ method: "POST" })
       _return_id: data.return_id,
       _decision: data.decision,
       _checklist: {},
-      _packaging: data.packaging ?? null,
-      _vendor_fault: data.vendor_fault ?? null,
-      _notes: data.notes ?? null,
+      _packaging: data.packaging ?? undefined,
+      _vendor_fault: data.vendor_fault ?? undefined,
+      _notes: data.notes ?? undefined,
       _evidence: [],
     });
     if (error) throw new Error(error.message);
