@@ -20,11 +20,14 @@ import { Route as AuthenticatedBuyerSearchRouteImport } from './routes/_authenti
 import { Route as AuthenticatedBuyerOrdersRouteImport } from './routes/_authenticated/buyer/orders'
 import { Route as AuthenticatedBuyerCartRouteImport } from './routes/_authenticated/buyer/cart'
 import { Route as AuthenticatedBuyerAddressesRouteImport } from './routes/_authenticated/buyer/addresses'
+import { Route as AuthenticatedPartnerVendorPayoutsRouteImport } from './routes/_authenticated/partner/vendor/payouts'
 import { Route as AuthenticatedPartnerVendorOrdersRouteImport } from './routes/_authenticated/partner/vendor/orders'
 import { Route as AuthenticatedPartnerVendorOffersRouteImport } from './routes/_authenticated/partner/vendor/offers'
 import { Route as AuthenticatedPartnerVendorFulfillmentsRouteImport } from './routes/_authenticated/partner/vendor/fulfillments'
 import { Route as AuthenticatedPartnerQcReturnsRouteImport } from './routes/_authenticated/partner/qc/returns'
 import { Route as AuthenticatedPartnerHubInboundRouteImport } from './routes/_authenticated/partner/hub/inbound'
+import { Route as AuthenticatedPartnerFinanceSettlementsRouteImport } from './routes/_authenticated/partner/finance/settlements'
+import { Route as AuthenticatedPartnerFinanceInvoicesRouteImport } from './routes/_authenticated/partner/finance/invoices'
 import { Route as AuthenticatedPartnerCourierDeliveriesRouteImport } from './routes/_authenticated/partner/courier/deliveries'
 import { Route as AuthenticatedPartnerAdminOrgsRouteImport } from './routes/_authenticated/partner/admin/orgs'
 import { Route as AuthenticatedPartnerAdminCatalogRouteImport } from './routes/_authenticated/partner/admin/catalog'
@@ -89,6 +92,12 @@ const AuthenticatedBuyerAddressesRoute =
     path: '/buyer/addresses',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPartnerVendorPayoutsRoute =
+  AuthenticatedPartnerVendorPayoutsRouteImport.update({
+    id: '/partner/vendor/payouts',
+    path: '/partner/vendor/payouts',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPartnerVendorOrdersRoute =
   AuthenticatedPartnerVendorOrdersRouteImport.update({
     id: '/partner/vendor/orders',
@@ -117,6 +126,18 @@ const AuthenticatedPartnerHubInboundRoute =
   AuthenticatedPartnerHubInboundRouteImport.update({
     id: '/partner/hub/inbound',
     path: '/partner/hub/inbound',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPartnerFinanceSettlementsRoute =
+  AuthenticatedPartnerFinanceSettlementsRouteImport.update({
+    id: '/partner/finance/settlements',
+    path: '/partner/finance/settlements',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPartnerFinanceInvoicesRoute =
+  AuthenticatedPartnerFinanceInvoicesRouteImport.update({
+    id: '/partner/finance/invoices',
+    path: '/partner/finance/invoices',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPartnerCourierDeliveriesRoute =
@@ -166,11 +187,14 @@ export interface FileRoutesByFullPath {
   '/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
   '/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
   '/partner/courier/deliveries': typeof AuthenticatedPartnerCourierDeliveriesRoute
+  '/partner/finance/invoices': typeof AuthenticatedPartnerFinanceInvoicesRoute
+  '/partner/finance/settlements': typeof AuthenticatedPartnerFinanceSettlementsRoute
   '/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
   '/partner/qc/returns': typeof AuthenticatedPartnerQcReturnsRoute
   '/partner/vendor/fulfillments': typeof AuthenticatedPartnerVendorFulfillmentsRoute
   '/partner/vendor/offers': typeof AuthenticatedPartnerVendorOffersRoute
   '/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
+  '/partner/vendor/payouts': typeof AuthenticatedPartnerVendorPayoutsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -188,11 +212,14 @@ export interface FileRoutesByTo {
   '/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
   '/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
   '/partner/courier/deliveries': typeof AuthenticatedPartnerCourierDeliveriesRoute
+  '/partner/finance/invoices': typeof AuthenticatedPartnerFinanceInvoicesRoute
+  '/partner/finance/settlements': typeof AuthenticatedPartnerFinanceSettlementsRoute
   '/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
   '/partner/qc/returns': typeof AuthenticatedPartnerQcReturnsRoute
   '/partner/vendor/fulfillments': typeof AuthenticatedPartnerVendorFulfillmentsRoute
   '/partner/vendor/offers': typeof AuthenticatedPartnerVendorOffersRoute
   '/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
+  '/partner/vendor/payouts': typeof AuthenticatedPartnerVendorPayoutsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -212,11 +239,14 @@ export interface FileRoutesById {
   '/_authenticated/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
   '/_authenticated/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
   '/_authenticated/partner/courier/deliveries': typeof AuthenticatedPartnerCourierDeliveriesRoute
+  '/_authenticated/partner/finance/invoices': typeof AuthenticatedPartnerFinanceInvoicesRoute
+  '/_authenticated/partner/finance/settlements': typeof AuthenticatedPartnerFinanceSettlementsRoute
   '/_authenticated/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
   '/_authenticated/partner/qc/returns': typeof AuthenticatedPartnerQcReturnsRoute
   '/_authenticated/partner/vendor/fulfillments': typeof AuthenticatedPartnerVendorFulfillmentsRoute
   '/_authenticated/partner/vendor/offers': typeof AuthenticatedPartnerVendorOffersRoute
   '/_authenticated/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
+  '/_authenticated/partner/vendor/payouts': typeof AuthenticatedPartnerVendorPayoutsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -236,11 +266,14 @@ export interface FileRouteTypes {
     | '/partner/admin/catalog'
     | '/partner/admin/orgs'
     | '/partner/courier/deliveries'
+    | '/partner/finance/invoices'
+    | '/partner/finance/settlements'
     | '/partner/hub/inbound'
     | '/partner/qc/returns'
     | '/partner/vendor/fulfillments'
     | '/partner/vendor/offers'
     | '/partner/vendor/orders'
+    | '/partner/vendor/payouts'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -258,11 +291,14 @@ export interface FileRouteTypes {
     | '/partner/admin/catalog'
     | '/partner/admin/orgs'
     | '/partner/courier/deliveries'
+    | '/partner/finance/invoices'
+    | '/partner/finance/settlements'
     | '/partner/hub/inbound'
     | '/partner/qc/returns'
     | '/partner/vendor/fulfillments'
     | '/partner/vendor/offers'
     | '/partner/vendor/orders'
+    | '/partner/vendor/payouts'
   id:
     | '__root__'
     | '/'
@@ -281,11 +317,14 @@ export interface FileRouteTypes {
     | '/_authenticated/partner/admin/catalog'
     | '/_authenticated/partner/admin/orgs'
     | '/_authenticated/partner/courier/deliveries'
+    | '/_authenticated/partner/finance/invoices'
+    | '/_authenticated/partner/finance/settlements'
     | '/_authenticated/partner/hub/inbound'
     | '/_authenticated/partner/qc/returns'
     | '/_authenticated/partner/vendor/fulfillments'
     | '/_authenticated/partner/vendor/offers'
     | '/_authenticated/partner/vendor/orders'
+    | '/_authenticated/partner/vendor/payouts'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -373,6 +412,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBuyerAddressesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/partner/vendor/payouts': {
+      id: '/_authenticated/partner/vendor/payouts'
+      path: '/partner/vendor/payouts'
+      fullPath: '/partner/vendor/payouts'
+      preLoaderRoute: typeof AuthenticatedPartnerVendorPayoutsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/partner/vendor/orders': {
       id: '/_authenticated/partner/vendor/orders'
       path: '/partner/vendor/orders'
@@ -406,6 +452,20 @@ declare module '@tanstack/react-router' {
       path: '/partner/hub/inbound'
       fullPath: '/partner/hub/inbound'
       preLoaderRoute: typeof AuthenticatedPartnerHubInboundRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/partner/finance/settlements': {
+      id: '/_authenticated/partner/finance/settlements'
+      path: '/partner/finance/settlements'
+      fullPath: '/partner/finance/settlements'
+      preLoaderRoute: typeof AuthenticatedPartnerFinanceSettlementsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/partner/finance/invoices': {
+      id: '/_authenticated/partner/finance/invoices'
+      path: '/partner/finance/invoices'
+      fullPath: '/partner/finance/invoices'
+      preLoaderRoute: typeof AuthenticatedPartnerFinanceInvoicesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/partner/courier/deliveries': {
@@ -473,11 +533,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPartnerAdminCatalogRoute: typeof AuthenticatedPartnerAdminCatalogRoute
   AuthenticatedPartnerAdminOrgsRoute: typeof AuthenticatedPartnerAdminOrgsRoute
   AuthenticatedPartnerCourierDeliveriesRoute: typeof AuthenticatedPartnerCourierDeliveriesRoute
+  AuthenticatedPartnerFinanceInvoicesRoute: typeof AuthenticatedPartnerFinanceInvoicesRoute
+  AuthenticatedPartnerFinanceSettlementsRoute: typeof AuthenticatedPartnerFinanceSettlementsRoute
   AuthenticatedPartnerHubInboundRoute: typeof AuthenticatedPartnerHubInboundRoute
   AuthenticatedPartnerQcReturnsRoute: typeof AuthenticatedPartnerQcReturnsRoute
   AuthenticatedPartnerVendorFulfillmentsRoute: typeof AuthenticatedPartnerVendorFulfillmentsRoute
   AuthenticatedPartnerVendorOffersRoute: typeof AuthenticatedPartnerVendorOffersRoute
   AuthenticatedPartnerVendorOrdersRoute: typeof AuthenticatedPartnerVendorOrdersRoute
+  AuthenticatedPartnerVendorPayoutsRoute: typeof AuthenticatedPartnerVendorPayoutsRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -494,12 +557,18 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPartnerAdminOrgsRoute: AuthenticatedPartnerAdminOrgsRoute,
   AuthenticatedPartnerCourierDeliveriesRoute:
     AuthenticatedPartnerCourierDeliveriesRoute,
+  AuthenticatedPartnerFinanceInvoicesRoute:
+    AuthenticatedPartnerFinanceInvoicesRoute,
+  AuthenticatedPartnerFinanceSettlementsRoute:
+    AuthenticatedPartnerFinanceSettlementsRoute,
   AuthenticatedPartnerHubInboundRoute: AuthenticatedPartnerHubInboundRoute,
   AuthenticatedPartnerQcReturnsRoute: AuthenticatedPartnerQcReturnsRoute,
   AuthenticatedPartnerVendorFulfillmentsRoute:
     AuthenticatedPartnerVendorFulfillmentsRoute,
   AuthenticatedPartnerVendorOffersRoute: AuthenticatedPartnerVendorOffersRoute,
   AuthenticatedPartnerVendorOrdersRoute: AuthenticatedPartnerVendorOrdersRoute,
+  AuthenticatedPartnerVendorPayoutsRoute:
+    AuthenticatedPartnerVendorPayoutsRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

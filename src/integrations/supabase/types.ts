@@ -724,6 +724,81 @@ export type Database = {
           },
         ]
       }
+      invoices: {
+        Row: {
+          amount_paid: number
+          buyer_org_id: string
+          created_at: string
+          due_date: string
+          id: string
+          invoice_no: string
+          issued_at: string
+          issued_by: string | null
+          notes: string | null
+          order_id: string
+          paid_at: string | null
+          shipping_fee: number
+          status: Database["public"]["Enums"]["invoice_status"]
+          subtotal: number
+          tax_amount: number
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          amount_paid?: number
+          buyer_org_id: string
+          created_at?: string
+          due_date: string
+          id?: string
+          invoice_no: string
+          issued_at?: string
+          issued_by?: string | null
+          notes?: string | null
+          order_id: string
+          paid_at?: string | null
+          shipping_fee: number
+          status?: Database["public"]["Enums"]["invoice_status"]
+          subtotal: number
+          tax_amount: number
+          total_amount: number
+          updated_at?: string
+        }
+        Update: {
+          amount_paid?: number
+          buyer_org_id?: string
+          created_at?: string
+          due_date?: string
+          id?: string
+          invoice_no?: string
+          issued_at?: string
+          issued_by?: string | null
+          notes?: string | null
+          order_id?: string
+          paid_at?: string | null
+          shipping_fee?: number
+          status?: Database["public"]["Enums"]["invoice_status"]
+          subtotal?: number
+          tax_amount?: number
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_buyer_org_id_fkey"
+            columns: ["buyer_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       jobs: {
         Row: {
           attempts: number
@@ -1145,6 +1220,50 @@ export type Database = {
         }
         Relationships: []
       }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          invoice_id: string
+          method: Database["public"]["Enums"]["payment_method"]
+          notes: string | null
+          received_at: string
+          recorded_by: string | null
+          reference: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          invoice_id: string
+          method: Database["public"]["Enums"]["payment_method"]
+          notes?: string | null
+          received_at?: string
+          recorded_by?: string | null
+          reference?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          invoice_id?: string
+          method?: Database["public"]["Enums"]["payment_method"]
+          notes?: string | null
+          received_at?: string
+          recorded_by?: string | null
+          reference?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_evidence: {
         Row: {
           created_at: string
@@ -1477,6 +1596,145 @@ export type Database = {
           },
         ]
       }
+      settlement_items: {
+        Row: {
+          commission_amount: number
+          created_at: string
+          id: string
+          line_gross: number
+          line_net: number
+          order_id: string
+          order_item_id: string
+          settlement_id: string
+          vendor_id: string
+        }
+        Insert: {
+          commission_amount: number
+          created_at?: string
+          id?: string
+          line_gross: number
+          line_net: number
+          order_id: string
+          order_item_id: string
+          settlement_id: string
+          vendor_id: string
+        }
+        Update: {
+          commission_amount?: number
+          created_at?: string
+          id?: string
+          line_gross?: number
+          line_net?: number
+          order_id?: string
+          order_item_id?: string
+          settlement_id?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "settlement_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "settlement_items_order_item_id_fkey"
+            columns: ["order_item_id"]
+            isOneToOne: false
+            referencedRelation: "order_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "settlement_items_settlement_id_fkey"
+            columns: ["settlement_id"]
+            isOneToOne: false
+            referencedRelation: "settlements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "settlement_items_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      settlements: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          commission_amount: number
+          commission_rate: number
+          created_at: string
+          gross_amount: number
+          id: string
+          net_amount: number
+          notes: string | null
+          paid_at: string | null
+          paid_by: string | null
+          payment_reference: string | null
+          period_end: string
+          period_start: string
+          scheduled_date: string | null
+          settlement_no: string
+          status: Database["public"]["Enums"]["settlement_status"]
+          updated_at: string
+          vendor_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string
+          gross_amount?: number
+          id?: string
+          net_amount?: number
+          notes?: string | null
+          paid_at?: string | null
+          paid_by?: string | null
+          payment_reference?: string | null
+          period_end: string
+          period_start: string
+          scheduled_date?: string | null
+          settlement_no: string
+          status?: Database["public"]["Enums"]["settlement_status"]
+          updated_at?: string
+          vendor_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string
+          gross_amount?: number
+          id?: string
+          net_amount?: number
+          notes?: string | null
+          paid_at?: string | null
+          paid_by?: string | null
+          payment_reference?: string | null
+          period_end?: string
+          period_start?: string
+          scheduled_date?: string | null
+          settlement_no?: string
+          status?: Database["public"]["Enums"]["settlement_status"]
+          updated_at?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "settlements_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       species: {
         Row: {
           code: string
@@ -1587,6 +1845,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_settlement: { Args: { _id: string }; Returns: undefined }
       assign_courier: {
         Args: { _courier: string; _job_id: string; _vehicle?: string }
         Returns: undefined
@@ -1623,6 +1882,10 @@ export type Database = {
         }
         Returns: string
       }
+      generate_settlements: {
+        Args: { _commission_rate?: number; _period_end?: string }
+        Returns: number
+      }
       has_any_role: {
         Args: {
           _roles: Database["public"]["Enums"]["app_role"][]
@@ -1654,9 +1917,16 @@ export type Database = {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
+      issue_invoice: { Args: { _order_id: string }; Returns: string }
+      mark_settlement_paid: {
+        Args: { _id: string; _reference: string }
+        Returns: undefined
+      }
+      next_invoice_no: { Args: never; Returns: string }
       next_order_no: { Args: never; Returns: string }
       next_queue_no: { Args: { _date: string }; Returns: string }
       next_return_no: { Args: never; Returns: string }
+      next_settlement_no: { Args: never; Returns: string }
       qc_decide: {
         Args: {
           _checklist?: Json
@@ -1666,6 +1936,16 @@ export type Database = {
           _packaging?: Database["public"]["Enums"]["packaging_condition"]
           _return_id: string
           _vendor_fault?: boolean
+        }
+        Returns: string
+      }
+      record_payment: {
+        Args: {
+          _amount: number
+          _invoice_id: string
+          _method: Database["public"]["Enums"]["payment_method"]
+          _notes?: string
+          _reference?: string
         }
         Returns: string
       }
@@ -1727,6 +2007,7 @@ export type Database = {
         | "DELIVERED"
         | "EXCEPTION"
         | "CANCELLED"
+      invoice_status: "ISSUED" | "PARTIALLY_PAID" | "PAID" | "OVERDUE" | "VOID"
       job_status: "PENDING" | "RUNNING" | "SUCCEEDED" | "FAILED" | "DEAD"
       kyb_doc_status: "PENDING" | "ACCEPTED" | "REJECTED"
       kyb_doc_type:
@@ -1761,6 +2042,7 @@ export type Database = {
         | "MINOR_DAMAGE"
         | "MAJOR_DAMAGE"
         | "TEMPERATURE_BREACH"
+      payment_method: "BANK_TRANSFER" | "VA" | "CASH" | "OTHER"
       product_tier:
         | "COMMODITY_PREMIUM"
         | "SUPER_PREMIUM"
@@ -1777,6 +2059,7 @@ export type Database = {
         | "REFUNDED"
         | "CANCELLED"
       service_zone: "JKT_INNER" | "JKT_OUTER" | "BODETABEK" | "OUT_OF_ZONE"
+      settlement_status: "DRAFT" | "APPROVED" | "PAID" | "CANCELLED"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1941,6 +2224,7 @@ export const Constants = {
         "EXCEPTION",
         "CANCELLED",
       ],
+      invoice_status: ["ISSUED", "PARTIALLY_PAID", "PAID", "OVERDUE", "VOID"],
       job_status: ["PENDING", "RUNNING", "SUCCEEDED", "FAILED", "DEAD"],
       kyb_doc_status: ["PENDING", "ACCEPTED", "REJECTED"],
       kyb_doc_type: [
@@ -1979,6 +2263,7 @@ export const Constants = {
         "MAJOR_DAMAGE",
         "TEMPERATURE_BREACH",
       ],
+      payment_method: ["BANK_TRANSFER", "VA", "CASH", "OTHER"],
       product_tier: [
         "COMMODITY_PREMIUM",
         "SUPER_PREMIUM",
@@ -1997,6 +2282,7 @@ export const Constants = {
         "CANCELLED",
       ],
       service_zone: ["JKT_INNER", "JKT_OUTER", "BODETABEK", "OUT_OF_ZONE"],
+      settlement_status: ["DRAFT", "APPROVED", "PAID", "CANCELLED"],
     },
   },
 } as const

@@ -28,6 +28,7 @@ function PartnerDashboard() {
   const isHub = data?.memberships.some((m) => m.role === "hub_operator");
   const isCourier = data?.memberships.some((m) => m.role === "courier");
   const isQc = data?.memberships.some((m) => m.role === "qc_officer");
+  const isFinance = data?.memberships.some((m) => ["finance_operator","platform_admin"].includes(m.role));
 
 
   return (
@@ -91,6 +92,22 @@ function PartnerDashboard() {
             <CardContent><Link to="/partner/qc/returns"><Button size="sm">Antrian retur</Button></Link></CardContent>
           </Card>
         ) : null}
+        {isFinance ? (
+          <Card>
+            <CardHeader><CardTitle className="text-base">Finance</CardTitle></CardHeader>
+            <CardContent className="flex flex-wrap gap-2">
+              <Link to="/partner/finance/invoices"><Button size="sm">Invoice pembeli</Button></Link>
+              <Link to="/partner/finance/settlements"><Button size="sm" variant="secondary">Settlement vendor</Button></Link>
+            </CardContent>
+          </Card>
+        ) : null}
+        {vendorOrgs.length > 0 ? (
+          <Card>
+            <CardHeader><CardTitle className="text-base">Payout vendor</CardTitle></CardHeader>
+            <CardContent><Link to="/partner/vendor/payouts"><Button size="sm">Lihat settlement saya</Button></Link></CardContent>
+          </Card>
+        ) : null}
+
 
 
         <Card>

@@ -11,6 +11,7 @@ import { ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { getOrderDetail, cancelOrder } from "@/lib/orders.functions";
 import { getFulfillmentByOrder, listMyReturns, requestReturn } from "@/lib/fulfillment.functions";
+import { getInvoiceByOrder } from "@/lib/finance.functions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -46,6 +47,12 @@ function OrderDetailPage() {
     queryKey: ["returns", id],
     queryFn: () => retListFn({ data: { order_id: id } }),
   });
+  const invFn = useServerFn(getInvoiceByOrder);
+  const { data: invoice } = useQuery({
+    queryKey: ["invoice", id],
+    queryFn: () => invFn({ data: { order_id: id } }),
+  });
+
 
 
   const cancelMut = useMutation({
@@ -235,6 +242,30 @@ function OrderDetailPage() {
               </Card>
             ) : null}
 
+
+            {invoice ? (
+              <Card>
+                <CardHeader><CardTitle className="text-base">Invoice</CardTitle></CardHeader>
+                <CardContent className="space-y-1 text-sm">
+                  <Row label="Nomor" value={invoice.invoice_no} />
+                  <Row label="Status" value={invoice.status} />
+                  <Row label="Jatuh tempo" value={new Date(invoice.due_date).toLocaleDateString("id-ID")} />
+                  <Row label="Total" value={fmt(Number(invoice.total_amount))} />
+                  <Row label="Terbayar" value={fmt(Number(invoice.amount_paid))} />
+                  {invoice.payments && invoice.payments.length > 0 && (
+                    <div className="pt-2">
+                      <div className="text-xs font-medium text-muted-foreground">Pembayaran</div>
+                      {invoice.payments.map((p: any) => (
+                        <div key={p.id} className="flex justify-between text-xs">
+                          <span>{new Date(p.received_at).toLocaleDateString("id-ID")} · {p.method}</span>
+                          <span>{fmt(Number(p.amount))}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ) : null}
 
 
             <Card>
