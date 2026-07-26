@@ -119,3 +119,26 @@ function ProductDetailPage() {
     </AppShell>
   );
 }
+
+function OfferRow({ offer, vendor, onAdd, pending }: { offer: { id: string; purchase_type: string; base_price_per_kg: number; min_qty: number; qty_step: number }; vendor: string; onAdd: (qty: number) => void; pending: boolean }) {
+  const [qty, setQty] = useState<number>(Number(offer.min_qty) || 1);
+  return (
+    <li className="flex flex-wrap items-center justify-between gap-3 py-3">
+      <div className="min-w-0">
+        <div className="font-medium">{vendor}</div>
+        <div className="text-xs text-muted-foreground">
+          {offer.purchase_type} · min {offer.min_qty} step {offer.qty_step}
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        <div className="text-right">
+          <div className="font-semibold">Rp {Number(offer.base_price_per_kg).toLocaleString("id-ID")}</div>
+          <div className="text-xs text-muted-foreground">/kg</div>
+        </div>
+        <Input type="number" min={offer.min_qty} step={offer.qty_step} value={qty} onChange={(e) => setQty(Number(e.currentTarget.value))} className="w-24" />
+        <Button size="sm" disabled={pending || qty < Number(offer.min_qty)} onClick={() => onAdd(qty)}>Tambah</Button>
+      </div>
+    </li>
+  );
+}
+
