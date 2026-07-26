@@ -10,6 +10,10 @@ import {
   Search,
 } from "lucide-react";
 import heroMeat from "@/assets/hero-meat.jpg";
+import productSlice from "@/assets/product-slice.jpg";
+import productRibs from "@/assets/product-ribs.jpg";
+import productTenderloin from "@/assets/product-tenderloin.jpg";
+import productOxtail from "@/assets/product-oxtail.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -187,6 +191,63 @@ function Landing() {
           </div>
         </section>
 
+        {/* Product catalog preview — grouped by pack size, BBF-style */}
+        <section className="bg-white px-4 py-16 md:py-24">
+          <div className="mx-auto max-w-6xl space-y-16">
+            {CATALOG.map((group) => (
+              <div key={group.title}>
+                <div className="text-center">
+                  <h2 className="font-[family-name:var(--font-serif)] text-3xl text-ink md:text-4xl">
+                    {group.title}
+                  </h2>
+                  <div className="mx-auto mt-3 h-px w-16 bg-maroon-dark/40" />
+                </div>
+                <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
+                  {group.items.map((p) => (
+                    <Link
+                      key={p.name}
+                      to="/auth"
+                      search={{ next: "/dashboard" }}
+                      className="group flex flex-col text-center"
+                    >
+                      <div className="aspect-square overflow-hidden rounded-lg bg-[#f5f2e6]">
+                        <img
+                          src={p.image}
+                          alt={p.name}
+                          width={800}
+                          height={800}
+                          loading="lazy"
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
+                      <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-soft">
+                        {group.pack}
+                      </p>
+                      <h3 className="mt-1 font-[family-name:var(--font-serif)] text-sm font-semibold uppercase tracking-wide text-ink group-hover:text-maroon-dark">
+                        {p.name}
+                      </h3>
+                      <p className="mt-1 text-sm text-ink-soft">{p.price}</p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            <div className="text-center">
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="rounded-full border-maroon-dark px-8 py-6 text-sm font-semibold text-maroon-dark hover:bg-maroon-dark hover:text-warm-white"
+              >
+                <Link to="/auth" search={{ next: "/dashboard" }}>
+                  Lihat Semua Produk →
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+
         {/* How it works — cream continuous */}
         <section className="bg-ivory px-4 py-16 md:py-20">
           <div className="mx-auto max-w-6xl">
@@ -304,6 +365,34 @@ const TIERS = [
     body: "House brand MEATHUB dengan standar marbling & pH terpajang.",
   },
 ];
+
+const CATALOG: {
+  title: string;
+  pack: string;
+  items: { name: string; price: string; image: string }[];
+}[] = [
+  {
+    title: "Daging Sapi Segar Kemasan 1 Kg",
+    pack: "Meat Pack · 1 kg",
+    items: [
+      { name: "Daging Slice Low Fat 1 KG", price: "Rp130.000", image: productSlice },
+      { name: "Daging Teriyaki 1 KG", price: "Rp150.000", image: productRibs },
+      { name: "Tenderloin Steak 1 KG", price: "Rp285.000", image: productTenderloin },
+      { name: "Buntut Sapi 1 KG", price: "Rp150.000", image: productOxtail },
+    ],
+  },
+  {
+    title: "Daging Sapi Segar Kemasan 500 Gram",
+    pack: "Meat Pack · 500 g",
+    items: [
+      { name: "Beef Slice AUS 500 GR", price: "Rp84.000", image: productSlice },
+      { name: "Daging Teriyaki 500 GR", price: "Rp79.000", image: productRibs },
+      { name: "Tenderloin 500 GR", price: "Rp145.000", image: productTenderloin },
+      { name: "Buntut Sapi 500 GR", price: "Rp79.000", image: productOxtail },
+    ],
+  },
+];
+
 
 // Icon aliases retained for tree-shaking hints
 void Search;
