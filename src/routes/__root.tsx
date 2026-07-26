@@ -84,7 +84,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "Marketplace daging premium B2B: importir tangan pertama, konfirmasi berat aktual, pembayaran cash, hub Kemayoran, pengiriman terlacak.",
+          "Marketplace daging premium B2B: importir tangan pertama, konfirmasi berat aktual, pembayaran cash, Hub MEATHUB, pengiriman terlacak.",
       },
       { name: "author", content: "MEATHUB" },
       { name: "theme-color", content: "#5a1a1a" },

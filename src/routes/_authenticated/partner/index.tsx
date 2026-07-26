@@ -80,7 +80,7 @@ function PartnerDashboard() {
 
         {isHub ? (
           <Card>
-            <CardHeader><CardTitle className="text-base">Hub Kemayoran</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base">Hub MEATHUB</CardTitle></CardHeader>
             <CardContent><Link to="/partner/hub/inbound"><Button size="sm">Inbound & dispatch</Button></Link></CardContent>
           </Card>
         ) : null}
