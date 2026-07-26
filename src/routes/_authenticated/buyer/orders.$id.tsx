@@ -10,6 +10,10 @@ import { Input } from "@/components/ui/input";
 import { ChevronLeft } from "lucide-react";
 import { toast } from "sonner";
 import { getOrderDetail, cancelOrder } from "@/lib/orders.functions";
+import { getFulfillmentByOrder, listMyReturns, requestReturn } from "@/lib/fulfillment.functions";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+
 
 export const Route = createFileRoute("/_authenticated/buyer/orders/$id")({
   head: () => ({ meta: [{ title: "Detail pesanan — SBMEAT" }, { name: "robots", content: "noindex" }] }),
@@ -23,12 +27,26 @@ function OrderDetailPage() {
   const qc = useQueryClient();
   const detail = useServerFn(getOrderDetail);
   const cancel = useServerFn(cancelOrder);
+  const fulFn = useServerFn(getFulfillmentByOrder);
+  const retListFn = useServerFn(listMyReturns);
+  const retFn = useServerFn(requestReturn);
   const [reason, setReason] = useState("");
+  const [retReason, setRetReason] = useState<"WRONG_ITEM"|"SPEC_MISMATCH"|"DAMAGED"|"TEMPERATURE_BREACH"|"OTHER">("DAMAGED");
+  const [retDesc, setRetDesc] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["order", id],
     queryFn: () => detail({ data: { order_id: id } }),
   });
+  const { data: ful } = useQuery({
+    queryKey: ["fulfillment", id],
+    queryFn: () => fulFn({ data: { order_id: id } }),
+  });
+  const { data: returns } = useQuery({
+    queryKey: ["returns", id],
+    queryFn: () => retListFn({ data: { order_id: id } }),
+  });
+
 
   const cancelMut = useMutation({
     mutationFn: () => cancel({ data: { order_id: id, reason } }),
@@ -39,6 +57,16 @@ function OrderDetailPage() {
     },
     onError: (e: Error) => toast.error(e.message),
   });
+  const retMut = useMutation({
+    mutationFn: () => retFn({ data: { order_id: id, reason_code: retReason, description: retDesc || undefined } }),
+    onSuccess: () => {
+      toast.success("Permintaan retur dikirim");
+      setRetDesc("");
+      qc.invalidateQueries({ queryKey: ["returns", id] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
 
   const order = data?.order as
     | {
@@ -148,6 +176,66 @@ function OrderDetailPage() {
                 </CardContent>
               </Card>
             ) : null}
+
+            {ful?.fulfillment ? (
+              <Card>
+                <CardHeader><CardTitle className="text-base">Pengiriman</CardTitle></CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Status fulfillment</span>
+                    <Badge variant="outline">{String(ful.fulfillment.status).replaceAll("_"," ")}</Badge>
+                  </div>
+                  {ful.delivery_jobs?.[0] ? (
+                    <div className="rounded-md border p-3 text-xs">
+                      <div className="font-semibold text-sm">Antrian {ful.delivery_jobs[0].queue_number}</div>
+                      <div>Status: {String(ful.delivery_jobs[0].status).replaceAll("_"," ")}</div>
+                      <div>Jadwal: {new Date(ful.delivery_jobs[0].scheduled_date).toLocaleDateString("id-ID")}</div>
+                      {ful.delivery_jobs[0].last_tracking_at ? (
+                        <div>Update lokasi terakhir: {new Date(ful.delivery_jobs[0].last_tracking_at).toLocaleString("id-ID")}</div>
+                      ) : null}
+                      {ful.delivery_jobs[0].delivered_at ? (
+                        <div>Diterima: {new Date(ful.delivery_jobs[0].delivered_at).toLocaleString("id-ID")}</div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </CardContent>
+              </Card>
+            ) : null}
+
+            {order.status === "DELIVERED" ? (
+              <Card>
+                <CardHeader><CardTitle className="text-base">Retur (jendela 2 jam setelah terima)</CardTitle></CardHeader>
+                <CardContent className="space-y-2">
+                  {(returns ?? []).map((r) => (
+                    <div key={r.id} className="rounded-md border p-2 text-xs">
+                      <div className="font-semibold">{r.return_number} · {r.status}</div>
+                      <div>Alasan: {r.reason_code}</div>
+                      {r.description ? <div>Catatan: {r.description}</div> : null}
+                    </div>
+                  ))}
+                  {(returns ?? []).length === 0 ? (
+                    <>
+                      <Select value={retReason} onValueChange={(v) => setRetReason(v as typeof retReason)}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="DAMAGED">Rusak</SelectItem>
+                          <SelectItem value="SPEC_MISMATCH">Spesifikasi tidak sesuai</SelectItem>
+                          <SelectItem value="WRONG_ITEM">Salah barang</SelectItem>
+                          <SelectItem value="TEMPERATURE_BREACH">Suhu di luar standar</SelectItem>
+                          <SelectItem value="OTHER">Lainnya</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Textarea placeholder="Deskripsi (opsional)" value={retDesc} onChange={(e) => setRetDesc(e.target.value)} />
+                      <Button onClick={() => retMut.mutate()} disabled={retMut.isPending}>
+                        {retMut.isPending ? "Mengirim…" : "Ajukan retur"}
+                      </Button>
+                    </>
+                  ) : null}
+                </CardContent>
+              </Card>
+            ) : null}
+
+
 
             <Card>
               <CardHeader><CardTitle className="text-base">Riwayat status</CardTitle></CardHeader>

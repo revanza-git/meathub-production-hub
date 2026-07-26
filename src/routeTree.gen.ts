@@ -22,6 +22,10 @@ import { Route as AuthenticatedBuyerCartRouteImport } from './routes/_authentica
 import { Route as AuthenticatedBuyerAddressesRouteImport } from './routes/_authenticated/buyer/addresses'
 import { Route as AuthenticatedPartnerVendorOrdersRouteImport } from './routes/_authenticated/partner/vendor/orders'
 import { Route as AuthenticatedPartnerVendorOffersRouteImport } from './routes/_authenticated/partner/vendor/offers'
+import { Route as AuthenticatedPartnerVendorFulfillmentsRouteImport } from './routes/_authenticated/partner/vendor/fulfillments'
+import { Route as AuthenticatedPartnerQcReturnsRouteImport } from './routes/_authenticated/partner/qc/returns'
+import { Route as AuthenticatedPartnerHubInboundRouteImport } from './routes/_authenticated/partner/hub/inbound'
+import { Route as AuthenticatedPartnerCourierDeliveriesRouteImport } from './routes/_authenticated/partner/courier/deliveries'
 import { Route as AuthenticatedPartnerAdminOrgsRouteImport } from './routes/_authenticated/partner/admin/orgs'
 import { Route as AuthenticatedPartnerAdminCatalogRouteImport } from './routes/_authenticated/partner/admin/catalog'
 import { Route as AuthenticatedBuyerProductsIdRouteImport } from './routes/_authenticated/buyer/products.$id'
@@ -97,6 +101,30 @@ const AuthenticatedPartnerVendorOffersRoute =
     path: '/partner/vendor/offers',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPartnerVendorFulfillmentsRoute =
+  AuthenticatedPartnerVendorFulfillmentsRouteImport.update({
+    id: '/partner/vendor/fulfillments',
+    path: '/partner/vendor/fulfillments',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPartnerQcReturnsRoute =
+  AuthenticatedPartnerQcReturnsRouteImport.update({
+    id: '/partner/qc/returns',
+    path: '/partner/qc/returns',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPartnerHubInboundRoute =
+  AuthenticatedPartnerHubInboundRouteImport.update({
+    id: '/partner/hub/inbound',
+    path: '/partner/hub/inbound',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPartnerCourierDeliveriesRoute =
+  AuthenticatedPartnerCourierDeliveriesRouteImport.update({
+    id: '/partner/courier/deliveries',
+    path: '/partner/courier/deliveries',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPartnerAdminOrgsRoute =
   AuthenticatedPartnerAdminOrgsRouteImport.update({
     id: '/partner/admin/orgs',
@@ -137,6 +165,10 @@ export interface FileRoutesByFullPath {
   '/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
   '/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
   '/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
+  '/partner/courier/deliveries': typeof AuthenticatedPartnerCourierDeliveriesRoute
+  '/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
+  '/partner/qc/returns': typeof AuthenticatedPartnerQcReturnsRoute
+  '/partner/vendor/fulfillments': typeof AuthenticatedPartnerVendorFulfillmentsRoute
   '/partner/vendor/offers': typeof AuthenticatedPartnerVendorOffersRoute
   '/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
 }
@@ -155,6 +187,10 @@ export interface FileRoutesByTo {
   '/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
   '/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
   '/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
+  '/partner/courier/deliveries': typeof AuthenticatedPartnerCourierDeliveriesRoute
+  '/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
+  '/partner/qc/returns': typeof AuthenticatedPartnerQcReturnsRoute
+  '/partner/vendor/fulfillments': typeof AuthenticatedPartnerVendorFulfillmentsRoute
   '/partner/vendor/offers': typeof AuthenticatedPartnerVendorOffersRoute
   '/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
 }
@@ -175,6 +211,10 @@ export interface FileRoutesById {
   '/_authenticated/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
   '/_authenticated/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
   '/_authenticated/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
+  '/_authenticated/partner/courier/deliveries': typeof AuthenticatedPartnerCourierDeliveriesRoute
+  '/_authenticated/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
+  '/_authenticated/partner/qc/returns': typeof AuthenticatedPartnerQcReturnsRoute
+  '/_authenticated/partner/vendor/fulfillments': typeof AuthenticatedPartnerVendorFulfillmentsRoute
   '/_authenticated/partner/vendor/offers': typeof AuthenticatedPartnerVendorOffersRoute
   '/_authenticated/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
 }
@@ -195,6 +235,10 @@ export interface FileRouteTypes {
     | '/buyer/products/$id'
     | '/partner/admin/catalog'
     | '/partner/admin/orgs'
+    | '/partner/courier/deliveries'
+    | '/partner/hub/inbound'
+    | '/partner/qc/returns'
+    | '/partner/vendor/fulfillments'
     | '/partner/vendor/offers'
     | '/partner/vendor/orders'
   fileRoutesByTo: FileRoutesByTo
@@ -213,6 +257,10 @@ export interface FileRouteTypes {
     | '/buyer/products/$id'
     | '/partner/admin/catalog'
     | '/partner/admin/orgs'
+    | '/partner/courier/deliveries'
+    | '/partner/hub/inbound'
+    | '/partner/qc/returns'
+    | '/partner/vendor/fulfillments'
     | '/partner/vendor/offers'
     | '/partner/vendor/orders'
   id:
@@ -232,6 +280,10 @@ export interface FileRouteTypes {
     | '/_authenticated/buyer/products/$id'
     | '/_authenticated/partner/admin/catalog'
     | '/_authenticated/partner/admin/orgs'
+    | '/_authenticated/partner/courier/deliveries'
+    | '/_authenticated/partner/hub/inbound'
+    | '/_authenticated/partner/qc/returns'
+    | '/_authenticated/partner/vendor/fulfillments'
     | '/_authenticated/partner/vendor/offers'
     | '/_authenticated/partner/vendor/orders'
   fileRoutesById: FileRoutesById
@@ -335,6 +387,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPartnerVendorOffersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/partner/vendor/fulfillments': {
+      id: '/_authenticated/partner/vendor/fulfillments'
+      path: '/partner/vendor/fulfillments'
+      fullPath: '/partner/vendor/fulfillments'
+      preLoaderRoute: typeof AuthenticatedPartnerVendorFulfillmentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/partner/qc/returns': {
+      id: '/_authenticated/partner/qc/returns'
+      path: '/partner/qc/returns'
+      fullPath: '/partner/qc/returns'
+      preLoaderRoute: typeof AuthenticatedPartnerQcReturnsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/partner/hub/inbound': {
+      id: '/_authenticated/partner/hub/inbound'
+      path: '/partner/hub/inbound'
+      fullPath: '/partner/hub/inbound'
+      preLoaderRoute: typeof AuthenticatedPartnerHubInboundRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/partner/courier/deliveries': {
+      id: '/_authenticated/partner/courier/deliveries'
+      path: '/partner/courier/deliveries'
+      fullPath: '/partner/courier/deliveries'
+      preLoaderRoute: typeof AuthenticatedPartnerCourierDeliveriesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/partner/admin/orgs': {
       id: '/_authenticated/partner/admin/orgs'
       path: '/partner/admin/orgs'
@@ -392,6 +472,10 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBuyerProductsIdRoute: typeof AuthenticatedBuyerProductsIdRoute
   AuthenticatedPartnerAdminCatalogRoute: typeof AuthenticatedPartnerAdminCatalogRoute
   AuthenticatedPartnerAdminOrgsRoute: typeof AuthenticatedPartnerAdminOrgsRoute
+  AuthenticatedPartnerCourierDeliveriesRoute: typeof AuthenticatedPartnerCourierDeliveriesRoute
+  AuthenticatedPartnerHubInboundRoute: typeof AuthenticatedPartnerHubInboundRoute
+  AuthenticatedPartnerQcReturnsRoute: typeof AuthenticatedPartnerQcReturnsRoute
+  AuthenticatedPartnerVendorFulfillmentsRoute: typeof AuthenticatedPartnerVendorFulfillmentsRoute
   AuthenticatedPartnerVendorOffersRoute: typeof AuthenticatedPartnerVendorOffersRoute
   AuthenticatedPartnerVendorOrdersRoute: typeof AuthenticatedPartnerVendorOrdersRoute
 }
@@ -408,6 +492,12 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBuyerProductsIdRoute: AuthenticatedBuyerProductsIdRoute,
   AuthenticatedPartnerAdminCatalogRoute: AuthenticatedPartnerAdminCatalogRoute,
   AuthenticatedPartnerAdminOrgsRoute: AuthenticatedPartnerAdminOrgsRoute,
+  AuthenticatedPartnerCourierDeliveriesRoute:
+    AuthenticatedPartnerCourierDeliveriesRoute,
+  AuthenticatedPartnerHubInboundRoute: AuthenticatedPartnerHubInboundRoute,
+  AuthenticatedPartnerQcReturnsRoute: AuthenticatedPartnerQcReturnsRoute,
+  AuthenticatedPartnerVendorFulfillmentsRoute:
+    AuthenticatedPartnerVendorFulfillmentsRoute,
   AuthenticatedPartnerVendorOffersRoute: AuthenticatedPartnerVendorOffersRoute,
   AuthenticatedPartnerVendorOrdersRoute: AuthenticatedPartnerVendorOrdersRoute,
 }
