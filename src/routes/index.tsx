@@ -6,14 +6,12 @@ import {
   Heart,
   MessageCircle,
   ChevronRight,
-  Truck,
   BadgeCheck,
-  Package,
-  Handshake,
   Sparkles,
   Star,
   Menu,
 } from "lucide-react";
+
 import heroMeat from "@/assets/hero-meat.jpg";
 import productSlice from "@/assets/product-slice.jpg";
 import productRibs from "@/assets/product-ribs.jpg";
@@ -257,25 +255,6 @@ function Landing() {
           </div>
         </section>
 
-        {/* Trust strip — moved below catalog */}
-        <section className="bg-ivory px-4 py-12 md:py-16">
-          <div className="mx-auto grid max-w-7xl grid-cols-2 gap-3 md:grid-cols-4">
-            {FEATURES.map((f) => (
-              <div
-                key={f.title}
-                className="flex items-center gap-3 rounded-xl border border-line bg-white p-4"
-              >
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-maroon-dark/10 text-maroon-dark">
-                  {f.icon}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[13px] font-bold text-ink">{f.title}</p>
-                  <p className="truncate text-[11px] text-ink-soft">{f.body}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
 
         {/* Final CTA — split persona cards */}
         <section id="kemitraan" className="px-4 py-14 md:py-20 scroll-mt-24">
@@ -472,28 +451,6 @@ const NAV_CATEGORIES = [
   "Promo",
 ];
 
-const FEATURES = [
-  {
-    icon: <Truck className="h-5 w-5" />,
-    title: "Cold-Chain Delivery",
-    body: "Kurir instan & armada terintegrasi",
-  },
-  {
-    icon: <BadgeCheck className="h-5 w-5" />,
-    title: "Halal & Higienis",
-    body: "Verified grade & sertifikat halal",
-  },
-  {
-    icon: <Package className="h-5 w-5" />,
-    title: "Vacuum Sealed",
-    body: "Packaging rapi menjaga freshness",
-  },
-  {
-    icon: <Handshake className="h-5 w-5" />,
-    title: "Harga B2B Transparan",
-    body: "Quote final berdasarkan berat aktual",
-  },
-];
 
 
 const BEST_SELLERS: Product[] = [
