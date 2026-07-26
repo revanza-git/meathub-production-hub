@@ -257,30 +257,23 @@ function Landing() {
           </div>
         </section>
 
-        {/* How it works */}
-        <section id="cara-kerja" className="bg-ivory px-4 py-14 md:py-20 scroll-mt-24">
-          <div className="mx-auto max-w-6xl">
-            <div className="mx-auto max-w-2xl text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-maroon-dark">
-                Alur Pemesanan
-              </p>
-              <h2 className="mt-3 font-[family-name:var(--font-serif)] text-3xl text-ink md:text-4xl">
-                Belanja Mudah, Terlacak, Terverifikasi
-              </h2>
-            </div>
-            <div className="mt-10 grid gap-6 md:grid-cols-4">
-              {STEPS.map((s, i) => (
-                <div key={s.title} className="text-center">
-                  <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-maroon-dark font-[family-name:var(--font-serif)] text-xl font-bold text-warm-white">
-                    {i + 1}
-                  </div>
-                  <h3 className="mt-4 font-[family-name:var(--font-serif)] text-lg font-bold text-ink">
-                    {s.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-soft">{s.body}</p>
+        {/* Trust strip — moved below catalog */}
+        <section className="bg-ivory px-4 py-12 md:py-16">
+          <div className="mx-auto grid max-w-7xl grid-cols-2 gap-3 md:grid-cols-4">
+            {FEATURES.map((f) => (
+              <div
+                key={f.title}
+                className="flex items-center gap-3 rounded-xl border border-line bg-white p-4"
+              >
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-maroon-dark/10 text-maroon-dark">
+                  {f.icon}
                 </div>
-              ))}
-            </div>
+                <div className="min-w-0">
+                  <p className="text-[13px] font-bold text-ink">{f.title}</p>
+                  <p className="truncate text-[11px] text-ink-soft">{f.body}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
