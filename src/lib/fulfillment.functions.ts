@@ -299,12 +299,19 @@ export const listCouriers = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("organization_members")
-      .select("user_id, profiles:user_id(display_name, email)")
+      .select("user_id")
       .eq("role", "courier")
       .eq("status", "ACTIVE");
     if (error) throw new Error(error.message);
-    return (data ?? []).map((r: { user_id: string; profiles: { display_name: string; email: string } | null }) => ({
-      user_id: r.user_id,
-      display_name: r.profiles?.display_name ?? r.profiles?.email ?? r.user_id,
+    const ids = Array.from(new Set((data ?? []).map((r) => r.user_id)));
+    if (!ids.length) return [];
+    const { data: profs } = await context.supabase
+      .from("profiles")
+      .select("id, display_name, email")
+      .in("id", ids);
+    return (profs ?? []).map((p) => ({
+      user_id: p.id,
+      display_name: p.display_name ?? p.email ?? p.id,
     }));
   });
+
