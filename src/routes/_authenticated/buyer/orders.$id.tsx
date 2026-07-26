@@ -47,6 +47,12 @@ function OrderDetailPage() {
     queryKey: ["returns", id],
     queryFn: () => retListFn({ data: { order_id: id } }),
   });
+  const invFn = useServerFn(getInvoiceByOrder);
+  const { data: invoice } = useQuery({
+    queryKey: ["invoice", id],
+    queryFn: () => invFn({ data: { order_id: id } }),
+  });
+
 
 
   const cancelMut = useMutation({
