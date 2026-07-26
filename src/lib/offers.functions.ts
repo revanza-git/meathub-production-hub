@@ -133,3 +133,64 @@ export const submitInventory = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+const BulkRow = z.object({
+  sku: z.string().min(1),
+  purchase_type: z.enum(["LOAF", "CARTON", "RETAIL"]),
+  base_price_per_kg: z.number().int().nonnegative(),
+  min_qty: z.number().positive(),
+  qty_step: z.number().positive(),
+  service_zones: z.array(z.enum(["JKT_INNER", "JKT_OUTER", "BODETABEK"])).min(1),
+  expected_min_kg: z.number().positive().optional(),
+  expected_max_kg: z.number().positive().optional(),
+});
+
+export const bulkUpsertOffers = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({
+      vendor_id: z.string().uuid(),
+      rows: z.array(BulkRow).min(1).max(500),
+    }).parse(d),
+  )
+  .handler(async ({ data, context }): Promise<{ inserted: number; updated: number; errors: string[] }> => {
+    // Feature flag check
+    const { data: flag } = await context.supabase
+      .from("feature_flags").select("enabled").eq("key", "vendor_csv_import").maybeSingle();
+    if (!flag?.enabled) throw new Error("Fitur CSV import belum diaktifkan admin");
+
+    const skus = Array.from(new Set(data.rows.map((r) => r.sku)));
+    const { data: prods, error: pErr } = await context.supabase
+      .from("products").select("id, sku").in("sku", skus);
+    if (pErr) throw new Error(pErr.message);
+    const bySku = new Map((prods ?? []).map((p) => [p.sku, p.id]));
+
+    const errors: string[] = [];
+    let inserted = 0, updated = 0;
+    for (const [i, r] of data.rows.entries()) {
+      const product_id = bySku.get(r.sku);
+      if (!product_id) { errors.push(`Baris ${i + 2}: SKU "${r.sku}" tidak ditemukan`); continue; }
+      // Look up existing offer for this vendor+product+purchase_type
+      const { data: existing } = await context.supabase
+        .from("vendor_offers").select("id")
+        .eq("vendor_id", data.vendor_id)
+        .eq("product_id", product_id)
+        .eq("purchase_type", r.purchase_type)
+        .maybeSingle();
+      const payload = {
+        vendor_id: data.vendor_id, product_id, purchase_type: r.purchase_type,
+        base_price_per_kg: r.base_price_per_kg, min_qty: r.min_qty, qty_step: r.qty_step,
+        service_zones: r.service_zones,
+        expected_min_kg: r.expected_min_kg ?? null, expected_max_kg: r.expected_max_kg ?? null,
+      };
+      if (existing) {
+        const { error } = await context.supabase.from("vendor_offers").update(payload).eq("id", existing.id);
+        if (error) errors.push(`Baris ${i + 2}: ${error.message}`); else updated++;
+      } else {
+        const { error } = await context.supabase.from("vendor_offers").insert(payload);
+        if (error) errors.push(`Baris ${i + 2}: ${error.message}`); else inserted++;
+      }
+    }
+    return { inserted, updated, errors };
+  });
+
