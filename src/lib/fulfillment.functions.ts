@@ -145,12 +145,13 @@ export const hubReceive = createServerFn({ method: "POST" })
     const { data: id, error } = await context.supabase.rpc("hub_receive", {
       _fulfillment_id: data.fulfillment_id,
       _weight: data.weight_kg,
-      _temperature: data.temperature_c ?? undefined,
+      _temperature: (data.temperature_c ?? null) as unknown as number,
       _packaging: data.packaging,
       _notes: data.notes ?? undefined,
       _evidence: [],
-      _lot_expiry: null,
+      _lot_expiry: null as unknown as undefined,
     });
+
     if (error) throw new Error(error.message);
     return { id: id as string };
   });
