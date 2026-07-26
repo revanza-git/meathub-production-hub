@@ -99,23 +99,16 @@ function ProductDetailPage() {
                     {data.offers.map((o) => {
                       const vendor = (o as unknown as { vendor: { display_name: string } | null }).vendor;
                       return (
-                        <li key={o.id} className="flex items-center justify-between gap-3 py-3">
-                          <div className="min-w-0">
-                            <div className="font-medium">{vendor?.display_name ?? "Vendor"}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {o.purchase_type} · min {o.min_qty} step {o.qty_step}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="text-right">
-                              <div className="font-semibold">Rp {Number(o.base_price_per_kg).toLocaleString("id-ID")}</div>
-                              <div className="text-xs text-muted-foreground">/kg</div>
-                            </div>
-                            <Button size="sm" disabled title="Order flow di Phase 3">Pesan</Button>
-                          </div>
-                        </li>
+                        <OfferRow
+                          key={o.id}
+                          offer={o}
+                          vendor={vendor?.display_name ?? "Vendor"}
+                          onAdd={(qty) => addMut.mutate({ offer_id: o.id, qty_kg: qty })}
+                          pending={addMut.isPending}
+                        />
                       );
                     })}
+
                   </ul>
                 )}
               </CardContent>
