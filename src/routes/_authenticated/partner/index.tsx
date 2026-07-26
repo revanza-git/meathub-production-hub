@@ -28,6 +28,7 @@ function PartnerDashboard() {
   const isHub = data?.memberships.some((m) => m.role === "hub_operator");
   const isCourier = data?.memberships.some((m) => m.role === "courier");
   const isQc = data?.memberships.some((m) => m.role === "qc_officer");
+  const isFinance = data?.memberships.some((m) => ["finance_operator","platform_admin"].includes(m.role));
 
 
   return (
