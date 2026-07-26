@@ -173,6 +173,39 @@ export type Database = {
           },
         ]
       }
+      brands: {
+        Row: {
+          code: string
+          country_origin: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          country_origin?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          country_origin?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       config_versions: {
         Row: {
           created_at: string
@@ -209,6 +242,47 @@ export type Database = {
         }
         Relationships: []
       }
+      cuts: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          species_id: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          species_id: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          species_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cuts_species_id_fkey"
+            columns: ["species_id"]
+            isOneToOne: false
+            referencedRelation: "species"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       feature_flags: {
         Row: {
           description: string | null
@@ -230,6 +304,42 @@ export type Database = {
           key?: string
           updated_at?: string
           updated_by?: string | null
+        }
+        Relationships: []
+      }
+      grades: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          rank: number | null
+          system: string | null
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          rank?: number | null
+          system?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          rank?: number | null
+          system?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -262,6 +372,53 @@ export type Database = {
           status_code?: number | null
         }
         Relationships: []
+      }
+      inventory_snapshots: {
+        Row: {
+          as_of: string
+          available_kg: number
+          created_at: string
+          created_by: string | null
+          id: string
+          offer_id: string
+          on_hand_kg: number
+          pack_count: number | null
+          source: string
+          version: number
+        }
+        Insert: {
+          as_of?: string
+          available_kg: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          offer_id: string
+          on_hand_kg: number
+          pack_count?: number | null
+          source?: string
+          version?: number
+        }
+        Update: {
+          as_of?: string
+          available_kg?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          offer_id?: string
+          on_hand_kg?: number
+          pack_count?: number | null
+          source?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_snapshots_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_offers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       jobs: {
         Row: {
@@ -494,6 +651,189 @@ export type Database = {
         }
         Relationships: []
       }
+      product_evidence: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          object_key: string | null
+          product_id: string
+          source_url: string | null
+          status: Database["public"]["Enums"]["evidence_status"]
+          title: string | null
+          type: Database["public"]["Enums"]["evidence_type"]
+          updated_at: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          object_key?: string | null
+          product_id: string
+          source_url?: string | null
+          status?: Database["public"]["Enums"]["evidence_status"]
+          title?: string | null
+          type: Database["public"]["Enums"]["evidence_type"]
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          object_key?: string | null
+          product_id?: string
+          source_url?: string | null
+          status?: Database["public"]["Enums"]["evidence_status"]
+          title?: string | null
+          type?: Database["public"]["Enums"]["evidence_type"]
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_evidence_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_media: {
+        Row: {
+          alt: string | null
+          created_at: string
+          id: string
+          kind: string
+          product_id: string
+          sort_order: number
+          url: string
+        }
+        Insert: {
+          alt?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          product_id: string
+          sort_order?: number
+          url: string
+        }
+        Update: {
+          alt?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          product_id?: string
+          sort_order?: number
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_media_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          brand_id: string
+          created_at: string
+          created_by: string | null
+          cut_id: string
+          description: string | null
+          disclosure_version: string | null
+          grade_id: string
+          id: string
+          name: string
+          primary_image_url: string | null
+          qc_standard_json: Json | null
+          sku: string
+          species_id: string
+          status: Database["public"]["Enums"]["catalog_status"]
+          tier: Database["public"]["Enums"]["product_tier"]
+          undervalued_disclosure: string | null
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          brand_id: string
+          created_at?: string
+          created_by?: string | null
+          cut_id: string
+          description?: string | null
+          disclosure_version?: string | null
+          grade_id: string
+          id?: string
+          name: string
+          primary_image_url?: string | null
+          qc_standard_json?: Json | null
+          sku: string
+          species_id: string
+          status?: Database["public"]["Enums"]["catalog_status"]
+          tier: Database["public"]["Enums"]["product_tier"]
+          undervalued_disclosure?: string | null
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          brand_id?: string
+          created_at?: string
+          created_by?: string | null
+          cut_id?: string
+          description?: string | null
+          disclosure_version?: string | null
+          grade_id?: string
+          id?: string
+          name?: string
+          primary_image_url?: string | null
+          qc_standard_json?: Json | null
+          sku?: string
+          species_id?: string
+          status?: Database["public"]["Enums"]["catalog_status"]
+          tier?: Database["public"]["Enums"]["product_tier"]
+          undervalued_disclosure?: string | null
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_cut_id_fkey"
+            columns: ["cut_id"]
+            isOneToOne: false
+            referencedRelation: "cuts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_grade_id_fkey"
+            columns: ["grade_id"]
+            isOneToOne: false
+            referencedRelation: "grades"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_species_id_fkey"
+            columns: ["species_id"]
+            isOneToOne: false
+            referencedRelation: "species"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -523,6 +863,111 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      species: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      vendor_offers: {
+        Row: {
+          base_price_per_kg: number
+          created_at: string
+          created_by: string | null
+          effective_from: string | null
+          effective_to: string | null
+          expected_max_kg: number | null
+          expected_min_kg: number | null
+          id: string
+          min_qty: number
+          product_id: string
+          purchase_type: Database["public"]["Enums"]["purchase_type"]
+          qty_step: number
+          service_zones: Database["public"]["Enums"]["service_zone"][]
+          status: Database["public"]["Enums"]["catalog_status"]
+          updated_at: string
+          vendor_id: string
+          version: number
+        }
+        Insert: {
+          base_price_per_kg: number
+          created_at?: string
+          created_by?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          expected_max_kg?: number | null
+          expected_min_kg?: number | null
+          id?: string
+          min_qty?: number
+          product_id: string
+          purchase_type: Database["public"]["Enums"]["purchase_type"]
+          qty_step?: number
+          service_zones?: Database["public"]["Enums"]["service_zone"][]
+          status?: Database["public"]["Enums"]["catalog_status"]
+          updated_at?: string
+          vendor_id: string
+          version?: number
+        }
+        Update: {
+          base_price_per_kg?: number
+          created_at?: string
+          created_by?: string | null
+          effective_from?: string | null
+          effective_to?: string | null
+          expected_max_kg?: number | null
+          expected_min_kg?: number | null
+          id?: string
+          min_qty?: number
+          product_id?: string
+          purchase_type?: Database["public"]["Enums"]["purchase_type"]
+          qty_step?: number
+          service_zones?: Database["public"]["Enums"]["service_zone"][]
+          status?: Database["public"]["Enums"]["catalog_status"]
+          updated_at?: string
+          vendor_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_offers_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vendor_offers_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -576,6 +1021,9 @@ export type Database = {
         | "support"
         | "platform_admin"
         | "auditor"
+      catalog_status: "DRAFT" | "REVIEW" | "ACTIVE" | "SUSPENDED" | "ARCHIVED"
+      evidence_status: "PENDING" | "APPROVED" | "REJECTED"
+      evidence_type: "AWARD" | "ASSOCIATION" | "QC" | "DISCLOSURE"
       job_status: "PENDING" | "RUNNING" | "SUCCEEDED" | "FAILED" | "DEAD"
       kyb_doc_status: "PENDING" | "ACCEPTED" | "REJECTED"
       kyb_doc_type:
@@ -594,6 +1042,12 @@ export type Database = {
         | "REJECTED"
         | "SUSPENDED"
       org_type: "BUYER" | "VENDOR" | "INTERNAL"
+      product_tier:
+        | "COMMODITY_PREMIUM"
+        | "SUPER_PREMIUM"
+        | "UNDERVALUED_QC"
+        | "SBMEAT_HOUSE"
+      purchase_type: "LOAF" | "CARTON" | "RETAIL"
       service_zone: "JKT_INNER" | "JKT_OUTER" | "BODETABEK" | "OUT_OF_ZONE"
     }
     CompositeTypes: {
@@ -736,6 +1190,9 @@ export const Constants = {
         "platform_admin",
         "auditor",
       ],
+      catalog_status: ["DRAFT", "REVIEW", "ACTIVE", "SUSPENDED", "ARCHIVED"],
+      evidence_status: ["PENDING", "APPROVED", "REJECTED"],
+      evidence_type: ["AWARD", "ASSOCIATION", "QC", "DISCLOSURE"],
       job_status: ["PENDING", "RUNNING", "SUCCEEDED", "FAILED", "DEAD"],
       kyb_doc_status: ["PENDING", "ACCEPTED", "REJECTED"],
       kyb_doc_type: [
@@ -756,6 +1213,13 @@ export const Constants = {
         "SUSPENDED",
       ],
       org_type: ["BUYER", "VENDOR", "INTERNAL"],
+      product_tier: [
+        "COMMODITY_PREMIUM",
+        "SUPER_PREMIUM",
+        "UNDERVALUED_QC",
+        "SBMEAT_HOUSE",
+      ],
+      purchase_type: ["LOAF", "CARTON", "RETAIL"],
       service_zone: ["JKT_INNER", "JKT_OUTER", "BODETABEK", "OUT_OF_ZONE"],
     },
   },
