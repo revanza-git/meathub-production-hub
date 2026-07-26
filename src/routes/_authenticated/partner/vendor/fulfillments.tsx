@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { getMyRoleContext } from "@/lib/roles.functions";
+import { getMyRoles } from "@/lib/roles.functions";
 import { listVendorFulfillments, vendorDispatchToHub } from "@/lib/fulfillment.functions";
 
 export const Route = createFileRoute("/_authenticated/partner/vendor/fulfillments")({
