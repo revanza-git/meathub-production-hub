@@ -277,32 +277,95 @@ function Landing() {
           </div>
         </section>
 
-        {/* Final CTA */}
+        {/* Final CTA — split persona cards */}
         <section id="kemitraan" className="px-4 py-14 md:py-20 scroll-mt-24">
-          <div className="mx-auto max-w-5xl rounded-2xl bg-maroon-dark px-8 py-12 text-center text-warm-white shadow-[0_25px_60px_-30px_rgba(90,26,26,0.6)] md:py-14">
-            <h2 className="font-[family-name:var(--font-serif)] text-3xl md:text-4xl">
-              Siap standardisasi pengadaan daging Anda?
-            </h2>
-            <p className="mx-auto mt-3 max-w-xl text-sm text-warm-white/85 md:text-base">
-              Bergabung sebagai pembeli atau vendor dan rasakan akurasi stok serta harga
-              final transparan yang belum pernah ada di pasar B2B Jabodetabek.
-            </p>
-            <div className="mt-7 flex flex-wrap justify-center gap-3">
-              <Button
-                asChild
-                size="lg"
-                className="rounded-full bg-gold px-7 py-6 text-sm font-bold text-maroon-dark hover:bg-gold-bright"
-              >
-                <Link to="/auth" search={{ next: "/dashboard" }}>Daftar sebagai pembeli</Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="rounded-full border-warm-white/40 bg-transparent px-7 py-6 text-sm font-semibold text-warm-white hover:bg-warm-white hover:text-maroon-dark"
-              >
-                <Link to="/auth" search={{ next: "/dashboard" }}>Daftar sebagai vendor</Link>
-              </Button>
+          <div className="mx-auto max-w-6xl">
+            <div className="mb-10 text-center">
+              <span className="inline-block rounded-full border border-maroon-dark/20 bg-maroon-dark/5 px-4 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-maroon-dark">
+                Kemitraan MEATHUB
+              </span>
+              <h2 className="mt-4 font-[family-name:var(--font-serif)] text-3xl leading-tight text-ink md:text-5xl">
+                Siap standardisasi pengadaan<br className="hidden md:block" /> daging Anda?
+              </h2>
+              <p className="mx-auto mt-3 max-w-2xl text-sm text-ink-soft md:text-base">
+                Pilih jalur yang sesuai. Onboarding gratis, tanpa biaya bulanan — bayar hanya saat transaksi berjalan.
+              </p>
+            </div>
+
+            <div className="grid gap-5 md:grid-cols-2">
+              {/* Buyer card */}
+              <div className="group relative overflow-hidden rounded-2xl bg-maroon-dark p-8 text-warm-white shadow-[0_25px_60px_-30px_rgba(90,26,26,0.6)] md:p-10">
+                <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-gold/15 blur-2xl" />
+                <div className="relative">
+                  <span className="inline-block rounded-full bg-gold/20 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-gold">
+                    Untuk Pembeli
+                  </span>
+                  <h3 className="mt-4 font-[family-name:var(--font-serif)] text-2xl md:text-3xl">
+                    Restoran, hotel, katering & retailer
+                  </h3>
+                  <ul className="mt-6 space-y-3 text-sm text-warm-white/90">
+                    {[
+                      "Harga final transparan berdasarkan berat aktual",
+                      "Multi-vendor terverifikasi dalam satu invoice",
+                      "Cold-chain door-to-door se-Jabodetabek",
+                      "Term pembayaran fleksibel & rekap pengadaan",
+                    ].map((t) => (
+                      <li key={t} className="flex items-start gap-2">
+                        <span className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                        <span>{t}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button
+                    asChild
+                    size="lg"
+                    className="mt-8 rounded-full bg-gold px-7 py-6 text-sm font-bold text-maroon-dark hover:bg-gold-bright"
+                  >
+                    <Link to="/auth" search={{ next: "/dashboard" }}>Daftar sebagai pembeli →</Link>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Vendor card */}
+              <div className="group relative overflow-hidden rounded-2xl border border-maroon-dark/15 bg-warm-white p-8 shadow-[0_25px_60px_-30px_rgba(90,26,26,0.25)] md:p-10">
+                <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-maroon-dark/5 blur-2xl" />
+                <div className="relative">
+                  <span className="inline-block rounded-full bg-maroon-dark/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-maroon-dark">
+                    Untuk Vendor
+                  </span>
+                  <h3 className="mt-4 font-[family-name:var(--font-serif)] text-2xl text-ink md:text-3xl">
+                    RPH, importir & distributor bersertifikasi
+                  </h3>
+                  <ul className="mt-6 space-y-3 text-sm text-ink-soft">
+                    {[
+                      "Akses ribuan pembeli B2B aktif",
+                      "Kelola stok, offer & konfirmasi berat real-time",
+                      "Settlement T+3 otomatis via Lovable Cloud",
+                      "Reputasi & reliability score untuk visibilitas premium",
+                    ].map((t) => (
+                      <li key={t} className="flex items-start gap-2">
+                        <span className="mt-[6px] h-1.5 w-1.5 shrink-0 rounded-full bg-maroon-dark" />
+                        <span>{t}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button
+                    asChild
+                    size="lg"
+                    variant="outline"
+                    className="mt-8 rounded-full border-maroon-dark bg-transparent px-7 py-6 text-sm font-bold text-maroon-dark hover:bg-maroon-dark hover:text-warm-white"
+                  >
+                    <Link to="/auth" search={{ next: "/dashboard" }}>Daftar sebagai vendor →</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Reassurance strip */}
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-xs text-ink-soft">
+              <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-maroon-dark" /> Onboarding &lt; 24 jam</span>
+              <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-maroon-dark" /> Tanpa biaya bulanan</span>
+              <span className="flex items-center gap-2"><span className="h-1.5 w-1.5 rounded-full bg-maroon-dark" /> Support dedicated 7 hari</span>
             </div>
           </div>
         </section>
