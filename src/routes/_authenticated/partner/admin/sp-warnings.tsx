@@ -18,7 +18,7 @@ import {
 
 export const Route = createFileRoute("/_authenticated/partner/admin/sp-warnings")({
   head: () => ({ meta: [
-    { title: "SP Warnings — SBMEAT" },
+    { title: "SP Warnings — MEATHUB" },
     { name: "description", content: "Kelola surat peringatan (SP) vendor." },
     { name: "robots", content: "noindex" },
   ] }),

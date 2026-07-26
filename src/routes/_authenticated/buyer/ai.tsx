@@ -15,7 +15,7 @@ import {
 
 export const Route = createFileRoute("/_authenticated/buyer/ai")({
   head: () => ({ meta: [
-    { title: "AI Meat Consultant — SBMEAT" },
+    { title: "AI Meat Consultant — MEATHUB" },
     { name: "description", content: "Tanya AI konsultan daging untuk rekomendasi cut, grade, dan porsi." },
     { name: "robots", content: "noindex" },
   ] }),

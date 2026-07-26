@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-export type ProductTier = "COMMODITY_PREMIUM" | "SUPER_PREMIUM" | "UNDERVALUED_QC" | "SBMEAT_HOUSE";
+export type ProductTier = "COMMODITY_PREMIUM" | "SUPER_PREMIUM" | "UNDERVALUED_QC" | "MEATHUB_HOUSE";
 export type CatalogStatus = "DRAFT" | "REVIEW" | "ACTIVE" | "SUSPENDED" | "ARCHIVED";
 export type EvidenceType = "AWARD" | "ASSOCIATION" | "QC" | "DISCLOSURE";
 export type EvidenceStatus = "PENDING" | "APPROVED" | "REJECTED";
@@ -139,7 +139,7 @@ const UpsertProduct = z.object({
   cut_id: z.string().uuid(),
   brand_id: z.string().uuid(),
   grade_id: z.string().uuid(),
-  tier: z.enum(["COMMODITY_PREMIUM", "SUPER_PREMIUM", "UNDERVALUED_QC", "SBMEAT_HOUSE"]),
+  tier: z.enum(["COMMODITY_PREMIUM", "SUPER_PREMIUM", "UNDERVALUED_QC", "MEATHUB_HOUSE"]),
   description: z.string().max(2000).optional(),
   primary_image_url: z.string().url().optional().or(z.literal("")),
   undervalued_disclosure: z.string().max(2000).optional(),
@@ -285,7 +285,7 @@ export const searchOffers = createServerFn({ method: "GET" })
       .object({
         q: z.string().max(120).optional(),
         purchase_type: z.enum(["LOAF", "CARTON", "RETAIL"]).optional(),
-        tier: z.enum(["COMMODITY_PREMIUM", "SUPER_PREMIUM", "UNDERVALUED_QC", "SBMEAT_HOUSE"]).optional(),
+        tier: z.enum(["COMMODITY_PREMIUM", "SUPER_PREMIUM", "UNDERVALUED_QC", "MEATHUB_HOUSE"]).optional(),
         service_zone: z.enum(["JKT_INNER", "JKT_OUTER", "BODETABEK"]).optional(),
       })
       .parse(d ?? {}),

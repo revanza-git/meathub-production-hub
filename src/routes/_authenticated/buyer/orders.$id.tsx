@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 
 export const Route = createFileRoute("/_authenticated/buyer/orders/$id")({
-  head: () => ({ meta: [{ title: "Detail pesanan — SBMEAT" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Detail pesanan — MEATHUB" }, { name: "robots", content: "noindex" }] }),
   component: OrderDetailPage,
 });
 
@@ -100,7 +100,7 @@ function OrderDetailPage() {
   const cancellable = order && !["FULFILLING", "DELIVERED", "CLOSED", "CANCELLED"].includes(order.status);
 
   return (
-    <AppShell title="SBMEAT" subtitle="Detail pesanan">
+    <AppShell title="MEATHUB" subtitle="Detail pesanan">
       <div className="mx-auto max-w-4xl space-y-4 px-4 py-6">
         <Link to="/buyer/orders" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ChevronLeft className="h-4 w-4" /> Kembali

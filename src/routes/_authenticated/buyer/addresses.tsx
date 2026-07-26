@@ -33,7 +33,7 @@ import { Plus, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/buyer/addresses")({
   head: () => ({
-    meta: [{ title: "Alamat Pengiriman — SBMEAT" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "Alamat Pengiriman — MEATHUB" }, { name: "robots", content: "noindex" }],
   }),
   component: AddressesPage,
 });
@@ -72,7 +72,7 @@ function AddressesPage() {
 
   if (buyerOrgs.length === 0) {
     return (
-      <AppShell title="SBMEAT Buyer" subtitle="Alamat pengiriman">
+      <AppShell title="MEATHUB Buyer" subtitle="Alamat pengiriman">
         <div className="mx-auto max-w-2xl px-4 py-8">
           <Card>
             <CardHeader>
@@ -94,7 +94,7 @@ function AddressesPage() {
   }
 
   return (
-    <AppShell title="SBMEAT Buyer" subtitle="Alamat pengiriman">
+    <AppShell title="MEATHUB Buyer" subtitle="Alamat pengiriman">
       <div className="mx-auto max-w-4xl space-y-4 px-4 py-6">
         {buyerOrgs.length > 1 ? (
           <Card>

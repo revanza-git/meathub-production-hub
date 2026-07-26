@@ -9,7 +9,7 @@ import { listFeatureFlags, setFeatureFlag } from "@/lib/governance.functions";
 
 export const Route = createFileRoute("/_authenticated/partner/admin/flags")({
   head: () => ({ meta: [
-    { title: "Feature flags — SBMEAT" },
+    { title: "Feature flags — MEATHUB" },
     { name: "description", content: "Aktifkan / non-aktifkan fitur platform." },
     { name: "robots", content: "noindex" },
   ] }),

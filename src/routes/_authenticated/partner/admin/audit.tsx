@@ -11,7 +11,7 @@ import { listAuditEvents } from "@/lib/governance.functions";
 
 export const Route = createFileRoute("/_authenticated/partner/admin/audit")({
   head: () => ({ meta: [
-    { title: "Audit log — SBMEAT" },
+    { title: "Audit log — MEATHUB" },
     { name: "description", content: "Log audit lintas modul." },
     { name: "robots", content: "noindex" },
   ] }),

@@ -35,7 +35,7 @@ export function AppShell({
       </a>
       <header className="sticky top-0 z-20 border-b bg-ink text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-          <Link to="/" className="flex items-center gap-2" aria-label="Beranda SBMEAT">
+          <Link to="/" className="flex items-center gap-2" aria-label="Beranda MEATHUB">
             <span className="grid h-8 w-8 place-items-center rounded-md bg-white/10 text-[10px] font-bold tracking-widest">
               SB
             </span>

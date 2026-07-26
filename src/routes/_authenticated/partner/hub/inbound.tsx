@@ -18,7 +18,7 @@ import {
 } from "@/lib/fulfillment.functions";
 
 export const Route = createFileRoute("/_authenticated/partner/hub/inbound")({
-  head: () => ({ meta: [{ title: "Hub Kemayoran — SBMEAT" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Hub Kemayoran — MEATHUB" }, { name: "robots", content: "noindex" }] }),
   component: HubInboundPage,
 });
 

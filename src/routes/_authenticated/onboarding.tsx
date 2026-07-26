@@ -36,7 +36,7 @@ import { Trash2, UploadCloud } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({
-    meta: [{ title: "Onboarding — SBMEAT" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "Onboarding — MEATHUB" }, { name: "robots", content: "noindex" }],
   }),
   component: OnboardingPage,
 });
@@ -70,7 +70,7 @@ function OnboardingPage() {
   const activeId = selectedId ?? orgs?.[0]?.id ?? null;
 
   return (
-    <AppShell title="SBMEAT" subtitle="Onboarding organisasi">
+    <AppShell title="MEATHUB" subtitle="Onboarding organisasi">
       <div className="mx-auto grid max-w-5xl gap-6 px-4 py-6 md:grid-cols-[280px_1fr]">
         <aside className="space-y-3">
           <Card>

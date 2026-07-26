@@ -13,7 +13,7 @@ import { getMyCart, updateCartItem, removeCartItem, setCartAddress, checkoutCart
 import { listAddresses, type Address } from "@/lib/addresses.functions";
 
 export const Route = createFileRoute("/_authenticated/buyer/cart")({
-  head: () => ({ meta: [{ title: "Keranjang — SBMEAT" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Keranjang — MEATHUB" }, { name: "robots", content: "noindex" }] }),
   component: CartPage,
 });
 
@@ -66,7 +66,7 @@ function CartPage() {
   const addrs = addrQ.data ?? [];
 
   return (
-    <AppShell title="SBMEAT" subtitle="Keranjang belanja">
+    <AppShell title="MEATHUB" subtitle="Keranjang belanja">
       <div className="mx-auto max-w-4xl space-y-4 px-4 py-6">
         {cartQ.isLoading ? <div className="text-sm text-muted-foreground">Memuat…</div> : null}
         {cartQ.data && !cart ? (

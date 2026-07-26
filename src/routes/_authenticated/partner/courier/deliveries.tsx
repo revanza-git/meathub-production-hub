@@ -16,7 +16,7 @@ import {
 } from "@/lib/fulfillment.functions";
 
 export const Route = createFileRoute("/_authenticated/partner/courier/deliveries")({
-  head: () => ({ meta: [{ title: "Kurir — SBMEAT" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Kurir — MEATHUB" }, { name: "robots", content: "noindex" }] }),
   component: CourierDeliveriesPage,
 });
 

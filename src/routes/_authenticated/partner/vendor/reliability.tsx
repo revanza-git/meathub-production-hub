@@ -9,7 +9,7 @@ import { getMyRoles } from "@/lib/roles.functions";
 
 export const Route = createFileRoute("/_authenticated/partner/vendor/reliability")({
   head: () => ({ meta: [
-    { title: "Reliability saya — SBMEAT" },
+    { title: "Reliability saya — MEATHUB" },
     { name: "description", content: "Skor reliability & riwayat SP vendor." },
     { name: "robots", content: "noindex" },
   ] }),

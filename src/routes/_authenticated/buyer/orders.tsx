@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { listMyOrders } from "@/lib/orders.functions";
 
 export const Route = createFileRoute("/_authenticated/buyer/orders")({
-  head: () => ({ meta: [{ title: "Pesanan — SBMEAT" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Pesanan — MEATHUB" }, { name: "robots", content: "noindex" }] }),
   component: OrdersPage,
 });
 
@@ -18,7 +18,7 @@ function OrdersPage() {
   const { data, isLoading } = useQuery({ queryKey: ["orders"], queryFn: () => list() });
 
   return (
-    <AppShell title="SBMEAT" subtitle="Riwayat pesanan">
+    <AppShell title="MEATHUB" subtitle="Riwayat pesanan">
       <div className="mx-auto max-w-4xl space-y-4 px-4 py-6">
         <Card>
           <CardHeader><CardTitle className="text-base">Semua pesanan</CardTitle></CardHeader>
