@@ -83,6 +83,8 @@ function VendorSection({ vendorId, vendorName }: { vendorId: string; vendorName:
         />
       ) : null}
 
+      <CsvImportPanel vendorId={vendorId} onImported={() => qc.invalidateQueries({ queryKey: ["vendor-offers", vendorId] })} />
+
       {offers.isLoading ? <div className="text-sm text-muted-foreground">Memuat…</div> : null}
       <div className="grid gap-3">
         {(offers.data ?? []).map((o) => (
