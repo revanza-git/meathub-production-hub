@@ -432,15 +432,6 @@ const FEATURES = [
   },
 ];
 
-const STEPS = [
-  { title: "Cari & Pilih", body: "Cari cut, brand, grade. Lihat harga landed & ETA." },
-  {
-    title: "Harga Final Transparan",
-    body: "Vendor konfirmasi berat aktual dalam 2 jam. Anda menerima quote final sebelum bayar.",
-  },
-  { title: "Bayar Aman", body: "Pembayaran via deposit atau VA. Refund otomatis." },
-  { title: "Lacak & Terima", body: "Dispatch dari Hub MEATHUB, lacak sampai POD." },
-];
 
 const BEST_SELLERS: Product[] = [
   {
