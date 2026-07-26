@@ -82,10 +82,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "MEATHUB Meat Hub — Marketplace daging premium B2B Jabodetabek" },
       {
-        name: "description",
-        content:
-          "Marketplace daging premium B2B: importir tangan pertama, konfirmasi berat aktual, pembayaran cash, Hub MEATHUB, pengiriman terlacak.",
-      },
+          name: "description",
+          content:
+            "Marketplace daging premium B2B: importir tangan pertama, quote final berdasarkan berat aktual, pembayaran cash, Hub MEATHUB, pengiriman terlacak.",
+        },
       { name: "author", content: "MEATHUB" },
       { name: "theme-color", content: "#5a1a1a" },
       { name: "apple-mobile-web-app-capable", content: "yes" },

@@ -22,13 +22,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "MEATHUB menghubungkan importir daging premium dengan restoran, hotel, dan katering di Jabodetabek. Stok akurat, konfirmasi berat 2 jam, pengiriman dari Hub MEATHUB.",
+          "MEATHUB menghubungkan importir daging premium dengan restoran, hotel, dan katering di Jabodetabek. Stok akurat, quote final berdasarkan berat aktual, pengiriman dari Hub MEATHUB.",
       },
       { property: "og:title", content: "MEATHUB — Marketplace daging premium B2B" },
       {
         property: "og:description",
         content:
-          "Order daging premium dengan verifikasi grade, konfirmasi berat aktual, dan pengiriman terlacak dari Hub MEATHUB.",
+          "Order daging premium dengan verifikasi grade, quote final transparan, dan pengiriman terlacak dari Hub MEATHUB.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -103,8 +103,8 @@ function Landing() {
               </h1>
               <p className="mt-6 max-w-lg text-base leading-relaxed text-ink-soft md:text-lg">
                 MEATHUB adalah marketplace daging premium untuk restoran, hotel, dan katering
-                di Jabodetabek. Stok akurat, konfirmasi berat aktual dalam 2 jam, dan
-                pengiriman terlacak dari cold storage Hub MEATHUB.
+                di Jabodetabek. Stok akurat, quote final berdasarkan berat aktual dalam 2 jam,
+                dan pengiriman terlacak dari cold storage Hub MEATHUB.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-4">
                 <Button
@@ -283,7 +283,7 @@ function Landing() {
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-base text-warm-white/85">
               Bergabung sebagai pembeli atau vendor dan rasakan akurasi stok serta
-              konfirmasi berat yang belum pernah ada di pasar B2B Jabodetabek.
+              harga final transparan yang belum pernah ada di pasar B2B Jabodetabek.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Button
@@ -338,7 +338,7 @@ const FEATURES = [
 
 const STEPS = [
   { title: "Cari & Pilih", body: "Cari cut, brand, grade. Lihat harga landed & ETA." },
-  { title: "Konfirmasi Berat", body: "Vendor konfirmasi berat aktual dalam 2 jam." },
+  { title: "Harga Final Transparan", body: "Vendor mengonfirmasi berat aktual dalam 2 jam. Anda menerima quote final dan bisa setuju sebelum membayar." },
   { title: "Bayar Aman", body: "Pembayaran via deposit atau VA. Refund otomatis." },
   { title: "Lacak & Terima", body: "Dispatch dari Hub MEATHUB, lacak sampai POD." },
 ];
