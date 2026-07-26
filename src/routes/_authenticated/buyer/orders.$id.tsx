@@ -177,6 +177,66 @@ function OrderDetailPage() {
               </Card>
             ) : null}
 
+            {ful?.fulfillment ? (
+              <Card>
+                <CardHeader><CardTitle className="text-base">Pengiriman</CardTitle></CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Status fulfillment</span>
+                    <Badge variant="outline">{String(ful.fulfillment.status).replaceAll("_"," ")}</Badge>
+                  </div>
+                  {ful.delivery_jobs?.[0] ? (
+                    <div className="rounded-md border p-3 text-xs">
+                      <div className="font-semibold text-sm">Antrian {ful.delivery_jobs[0].queue_number}</div>
+                      <div>Status: {String(ful.delivery_jobs[0].status).replaceAll("_"," ")}</div>
+                      <div>Jadwal: {new Date(ful.delivery_jobs[0].scheduled_date).toLocaleDateString("id-ID")}</div>
+                      {ful.delivery_jobs[0].last_tracking_at ? (
+                        <div>Update lokasi terakhir: {new Date(ful.delivery_jobs[0].last_tracking_at).toLocaleString("id-ID")}</div>
+                      ) : null}
+                      {ful.delivery_jobs[0].delivered_at ? (
+                        <div>Diterima: {new Date(ful.delivery_jobs[0].delivered_at).toLocaleString("id-ID")}</div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </CardContent>
+              </Card>
+            ) : null}
+
+            {order.status === "DELIVERED" ? (
+              <Card>
+                <CardHeader><CardTitle className="text-base">Retur (jendela 2 jam setelah terima)</CardTitle></CardHeader>
+                <CardContent className="space-y-2">
+                  {(returns ?? []).map((r) => (
+                    <div key={r.id} className="rounded-md border p-2 text-xs">
+                      <div className="font-semibold">{r.return_number} · {r.status}</div>
+                      <div>Alasan: {r.reason_code}</div>
+                      {r.description ? <div>Catatan: {r.description}</div> : null}
+                    </div>
+                  ))}
+                  {(returns ?? []).length === 0 ? (
+                    <>
+                      <Select value={retReason} onValueChange={(v) => setRetReason(v as typeof retReason)}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="DAMAGED">Rusak</SelectItem>
+                          <SelectItem value="SPEC_MISMATCH">Spesifikasi tidak sesuai</SelectItem>
+                          <SelectItem value="WRONG_ITEM">Salah barang</SelectItem>
+                          <SelectItem value="TEMPERATURE_BREACH">Suhu di luar standar</SelectItem>
+                          <SelectItem value="OTHER">Lainnya</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Textarea placeholder="Deskripsi (opsional)" value={retDesc} onChange={(e) => setRetDesc(e.target.value)} />
+                      <Button onClick={() => retMut.mutate()} disabled={retMut.isPending}>
+                        {retMut.isPending ? "Mengirim…" : "Ajukan retur"}
+                      </Button>
+                    </>
+                  ) : null}
+                </CardContent>
+              </Card>
+            ) : null}
+
+
+
             <Card>
               <CardHeader><CardTitle className="text-base">Riwayat status</CardTitle></CardHeader>
               <CardContent>
