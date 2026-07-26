@@ -22,13 +22,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "MEATHUB menghubungkan importir daging premium dengan restoran, hotel, dan katering di Jabodetabek. Stok akurat, konfirmasi berat 2 jam, pengiriman dari hub Kemayoran.",
+          "MEATHUB menghubungkan importir daging premium dengan restoran, hotel, dan katering di Jabodetabek. Stok akurat, konfirmasi berat 2 jam, pengiriman dari Hub MEATHUB.",
       },
       { property: "og:title", content: "MEATHUB — Marketplace daging premium B2B" },
       {
         property: "og:description",
         content:
-          "Order daging premium dengan verifikasi grade, konfirmasi berat aktual, dan pengiriman terlacak dari hub Kemayoran.",
+          "Order daging premium dengan verifikasi grade, konfirmasi berat aktual, dan pengiriman terlacak dari Hub MEATHUB.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -99,12 +99,12 @@ function Landing() {
               </p>
               <h1 className="mt-4 font-[family-name:var(--font-serif)] text-5xl leading-[1.05] text-ink md:text-6xl lg:text-[64px]">
                 Daging Sapi Premium,{" "}
-                <em className="italic text-maroon-dark">Langsung</em> dari Hub Kemayoran
+                <em className="italic text-maroon-dark">Langsung</em> dari Hub MEATHUB
               </h1>
               <p className="mt-6 max-w-lg text-base leading-relaxed text-ink-soft md:text-lg">
                 MEATHUB adalah marketplace daging premium untuk restoran, hotel, dan katering
                 di Jabodetabek. Stok akurat, konfirmasi berat aktual dalam 2 jam, dan
-                pengiriman terlacak dari cold storage Kemayoran.
+                pengiriman terlacak dari cold storage Hub MEATHUB.
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-4">
                 <Button
@@ -317,7 +317,7 @@ const FEATURES = [
   {
     icon: <Truck className="h-5 w-5" />,
     title: "Integrasi Ojek Online",
-    body: "Kurir instan & armada cold-chain terintegrasi dari hub Kemayoran.",
+    body: "Kurir instan & armada cold-chain terintegrasi dari Hub MEATHUB.",
   },
   {
     icon: <BadgeCheck className="h-5 w-5" />,
@@ -340,7 +340,7 @@ const STEPS = [
   { title: "Cari & Pilih", body: "Cari cut, brand, grade. Lihat harga landed & ETA." },
   { title: "Konfirmasi Berat", body: "Vendor konfirmasi berat aktual dalam 2 jam." },
   { title: "Bayar Aman", body: "Pembayaran via deposit atau VA. Refund otomatis." },
-  { title: "Lacak & Terima", body: "Dispatch dari hub Kemayoran, lacak sampai POD." },
+  { title: "Lacak & Terima", body: "Dispatch dari Hub MEATHUB, lacak sampai POD." },
 ];
 
 const TIERS = [

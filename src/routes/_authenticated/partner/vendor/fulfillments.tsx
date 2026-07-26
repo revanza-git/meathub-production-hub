@@ -42,7 +42,7 @@ function VendorFulfillmentsPage() {
   });
 
   return (
-    <AppShell title="Fulfillment" subtitle="Dispatch ke hub Kemayoran">
+    <AppShell title="Fulfillment" subtitle="Dispatch ke Hub MEATHUB">
       <div className="mx-auto max-w-4xl space-y-4 px-4 py-6">
         {vendorOrgs.length > 1 ? (
           <Select value={active} onValueChange={setVendorId}>
