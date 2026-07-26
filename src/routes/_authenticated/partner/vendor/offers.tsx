@@ -260,3 +260,85 @@ function InventoryPanel({ offerId, latest }: {
     </div>
   );
 }
+
+function CsvImportPanel({ vendorId, onImported }: { vendorId: string; onImported: () => void }) {
+  const flagFn = useServerFn(getFlag);
+  const bulkFn = useServerFn(bulkUpsertOffers);
+  const [csv, setCsv] = useState("");
+  const [result, setResult] = useState<{ inserted: number; updated: number; errors: string[] } | null>(null);
+  const { data: flag } = useQuery({
+    queryKey: ["flag", "vendor_csv_import"],
+    queryFn: () => flagFn({ data: { key: "vendor_csv_import" } }),
+  });
+
+  const mut = useMutation({
+    mutationFn: (rows: Array<Record<string, unknown>>) => bulkFn({ data: { vendor_id: vendorId, rows: rows as never } }),
+    onSuccess: (r) => {
+      setResult(r);
+      toast.success(`${r.inserted} baru, ${r.updated} update, ${r.errors.length} error`);
+      onImported();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  if (!flag?.enabled) return null;
+
+  function parseAndSubmit() {
+    setResult(null);
+    const lines = csv.trim().split(/\r?\n/).filter(Boolean);
+    if (lines.length < 2) { toast.error("CSV kosong atau tanpa header"); return; }
+    const header = lines[0].split(",").map((s) => s.trim().toLowerCase());
+    const required = ["sku", "purchase_type", "base_price_per_kg", "min_qty", "qty_step", "service_zones"];
+    for (const r of required) if (!header.includes(r)) { toast.error(`Kolom hilang: ${r}`); return; }
+    const rows: Array<Record<string, unknown>> = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(",").map((s) => s.trim());
+      const obj: Record<string, string> = {};
+      header.forEach((h, idx) => { obj[h] = cols[idx] ?? ""; });
+      rows.push({
+        sku: obj.sku,
+        purchase_type: obj.purchase_type.toUpperCase(),
+        base_price_per_kg: Number(obj.base_price_per_kg),
+        min_qty: Number(obj.min_qty),
+        qty_step: Number(obj.qty_step),
+        service_zones: obj.service_zones.split("|").map((z) => z.trim()).filter(Boolean),
+        expected_min_kg: obj.expected_min_kg ? Number(obj.expected_min_kg) : undefined,
+        expected_max_kg: obj.expected_max_kg ? Number(obj.expected_max_kg) : undefined,
+      });
+    }
+    mut.mutate(rows);
+  }
+
+  const sample = "sku,purchase_type,base_price_per_kg,min_qty,qty_step,service_zones,expected_min_kg,expected_max_kg\nBEEF-RIB-001,CARTON,180000,5,1,JKT_INNER|JKT_OUTER,4.5,5.5";
+
+  return (
+    <Card className="border-dashed">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm">Import CSV offer</CardTitle>
+        <CardDescription className="text-xs">
+          Header wajib: sku, purchase_type, base_price_per_kg, min_qty, qty_step, service_zones (pipe-separated).
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        <Textarea rows={5} value={csv} onChange={(e) => setCsv(e.target.value)}
+          placeholder={sample} className="font-mono text-xs" />
+        <div className="flex gap-2">
+          <Button size="sm" onClick={parseAndSubmit} disabled={mut.isPending || !csv.trim()}>
+            {mut.isPending ? "Mengimpor…" : "Import"}
+          </Button>
+          <Button size="sm" variant="outline" onClick={() => setCsv(sample)}>Isi contoh</Button>
+        </div>
+        {result ? (
+          <div className="rounded border bg-muted/30 p-2 text-xs">
+            <div>Berhasil: {result.inserted} baru, {result.updated} update</div>
+            {result.errors.length > 0 && (
+              <ul className="mt-1 list-disc pl-4 text-destructive">
+                {result.errors.slice(0, 10).map((e, i) => <li key={i}>{e}</li>)}
+              </ul>
+            )}
+          </div>
+        ) : null}
+      </CardContent>
+    </Card>
+  );
+}
