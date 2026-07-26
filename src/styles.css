@@ -24,6 +24,8 @@
 @theme inline {
   --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Archivo Expanded", "Archivo", sans-serif;
+  --font-headline: "Archivo Black", "Archivo Expanded", "Archivo", sans-serif;
+  --font-body-alt: "Hind", ui-sans-serif, system-ui, sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -61,6 +63,11 @@
   --color-success: var(--success);
   --color-line: var(--line);
 
+  --color-noir: var(--noir);
+  --color-noir-surface: var(--noir-surface);
+  --color-gold-bright: var(--gold-bright);
+  --color-gold-cream: var(--gold-cream);
+
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -88,6 +95,12 @@
   --gold-soft: oklch(0.94 0.03 85);
   --success: oklch(0.5 0.09 155);
   --line: oklch(0.92 0.005 90);
+
+  /* Noir & Gold editorial landing tokens */
+  --noir: oklch(0.14 0.005 80);
+  --noir-surface: oklch(0.2 0.01 80);
+  --gold-bright: oklch(0.72 0.12 82);
+  --gold-cream: oklch(0.9 0.07 85);
 
   /* Semantic tokens (light theme) */
   --background: oklch(0.985 0.003 90);
@@ -146,6 +159,21 @@
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
   --ring: var(--gold);
+}
+
+@utility fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @layer base {
