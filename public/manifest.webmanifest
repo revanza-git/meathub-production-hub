@@ -9,6 +9,6 @@
   "theme_color": "#5a1a1a",
   "orientation": "portrait-primary",
   "icons": [
-    { "src": "/favicon.ico", "sizes": "64x64 32x32 24x24 16x16", "type": "image/x-icon" }
+    { "src": "/favicon.png", "sizes": "512x512 192x192 180x180 152x152 144x144 120x120 96x96 72x72 64x64 32x32 24x24 16x16", "type": "image/png" }
   ]
 }
