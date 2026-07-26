@@ -102,6 +102,7 @@ function PartnerDashboard() {
             <CardContent className="flex flex-wrap gap-2">
               <Link to="/partner/finance/invoices"><Button size="sm">Invoice pembeli</Button></Link>
               <Link to="/partner/finance/settlements"><Button size="sm" variant="secondary">Settlement vendor</Button></Link>
+              <Link to="/partner/finance/returns"><Button size="sm" variant="secondary">Refund retur</Button></Link>
             </CardContent>
           </Card>
         ) : null}
