@@ -13,7 +13,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getMyRoles } from "@/lib/roles.functions";
 import { listMasters, listProducts } from "@/lib/catalog.functions";
-import { listVendorOffers, submitInventory, transitionOffer, upsertOffer } from "@/lib/offers.functions";
+import { bulkUpsertOffers, listVendorOffers, submitInventory, transitionOffer, upsertOffer } from "@/lib/offers.functions";
+import { getFlag } from "@/lib/ai.functions";
+import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/_authenticated/partner/vendor/offers")({
   head: () => ({ meta: [{ title: "Offers Vendor — SBMEAT" }, { name: "robots", content: "noindex" }] }),
