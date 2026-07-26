@@ -955,6 +955,66 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          kind: string
+          read_at: string | null
+          recipient_org_id: string | null
+          recipient_user_id: string | null
+          severity: string
+          title: string
+          url: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          kind: string
+          read_at?: string | null
+          recipient_org_id?: string | null
+          recipient_user_id?: string | null
+          severity?: string
+          title: string
+          url?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          kind?: string
+          read_at?: string | null
+          recipient_org_id?: string | null
+          recipient_user_id?: string | null
+          severity?: string
+          title?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_recipient_org_id_fkey"
+            columns: ["recipient_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_recipient_org_id_fkey"
+            columns: ["recipient_org_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           created_at: string
@@ -2204,6 +2264,8 @@ export type Database = {
         }
         Returns: string
       }
+      mark_all_notifications_read: { Args: never; Returns: number }
+      mark_notification_read: { Args: { _id: string }; Returns: undefined }
       mark_settlement_paid: {
         Args: { _id: string; _reference: string }
         Returns: undefined
@@ -2213,6 +2275,20 @@ export type Database = {
       next_queue_no: { Args: { _date: string }; Returns: string }
       next_return_no: { Args: never; Returns: string }
       next_settlement_no: { Args: never; Returns: string }
+      notify: {
+        Args: {
+          _body: string
+          _entity_id: string
+          _entity_type: string
+          _kind: string
+          _org_id: string
+          _severity?: string
+          _title: string
+          _url: string
+          _user_id: string
+        }
+        Returns: undefined
+      }
       process_return_refund: {
         Args: {
           _amount: number
