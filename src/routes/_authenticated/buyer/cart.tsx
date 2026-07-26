@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { getMyCart, updateCartItem, removeCartItem, setCartAddress, checkoutCart } from "@/lib/cart.functions";
-import { listMyAddresses } from "@/lib/addresses.functions";
+import { listAddresses, type Address } from "@/lib/addresses.functions";
 
 export const Route = createFileRoute("/_authenticated/buyer/cart")({
   head: () => ({ meta: [{ title: "Keranjang — SBMEAT" }, { name: "robots", content: "noindex" }] }),
@@ -23,7 +23,7 @@ function CartPage() {
   const qc = useQueryClient();
   const nav = useNavigate();
   const getCart = useServerFn(getMyCart);
-  const listAddrs = useServerFn(listMyAddresses);
+  const listAddrs = useServerFn(listAddresses);
   const upd = useServerFn(updateCartItem);
   const rm = useServerFn(removeCartItem);
   const setAddr = useServerFn(setCartAddress);
@@ -132,7 +132,7 @@ function CartPage() {
                     <Select value={cart.address_id ?? ""} onValueChange={(v) => addrMut.mutate({ cart_id: cart.id, address_id: v })}>
                       <SelectTrigger><SelectValue placeholder="Pilih alamat" /></SelectTrigger>
                       <SelectContent>
-                        {addrs.map((a) => (
+                        {addrs.map((a: Address) => (
                           <SelectItem key={a.id} value={a.id}>{a.label} — {a.city} ({a.service_zone ?? "?"})</SelectItem>
                         ))}
                       </SelectContent>

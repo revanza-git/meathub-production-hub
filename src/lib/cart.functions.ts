@@ -176,8 +176,9 @@ export const checkoutCart = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => z.object({ notes: z.string().max(500).optional() }).parse(d))
   .handler(async ({ data, context }) => {
     const { data: orderId, error } = await context.supabase.rpc("checkout_cart", {
-      _notes: data.notes ?? null,
+      _notes: data.notes ?? undefined,
     });
+
     if (error) throw new Error(error.message);
     return { order_id: orderId as string };
   });

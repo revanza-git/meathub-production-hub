@@ -96,8 +96,9 @@ export const decideOrderItem = createServerFn({ method: "POST" })
     const { error } = await context.supabase.rpc("vendor_decide_order_item", {
       _item_id: data.item_id,
       _decision: data.decision,
-      _reason: data.reason ?? null,
+      _reason: data.reason ?? undefined,
     });
+
     if (error) throw new Error(error.message);
     return { ok: true };
   });
