@@ -1,11 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import { getProductDetail } from "@/lib/catalog.functions";
+import { addToCart } from "@/lib/cart.functions";
 import { ChevronLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/buyer/products/$id")({
@@ -13,13 +17,22 @@ export const Route = createFileRoute("/_authenticated/buyer/products/$id")({
   component: ProductDetailPage,
 });
 
+
 function ProductDetailPage() {
   const { id } = Route.useParams();
+  const qc = useQueryClient();
   const detailFn = useServerFn(getProductDetail);
+  const addFn = useServerFn(addToCart);
   const { data, isLoading, error } = useQuery({
     queryKey: ["product-detail", id],
     queryFn: () => detailFn({ data: { product_id: id } }),
   });
+  const addMut = useMutation({
+    mutationFn: (v: { offer_id: string; qty_kg: number }) => addFn({ data: v }),
+    onSuccess: () => { toast.success("Ditambahkan ke keranjang"); qc.invalidateQueries({ queryKey: ["cart"] }); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
 
   return (
     <AppShell title="SBMEAT" subtitle="Detail produk">
