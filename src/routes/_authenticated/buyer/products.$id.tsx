@@ -1,11 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { AppShell } from "@/components/app-shell";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import { getProductDetail } from "@/lib/catalog.functions";
+import { addToCart } from "@/lib/cart.functions";
 import { ChevronLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/buyer/products/$id")({
@@ -13,13 +17,22 @@ export const Route = createFileRoute("/_authenticated/buyer/products/$id")({
   component: ProductDetailPage,
 });
 
+
 function ProductDetailPage() {
   const { id } = Route.useParams();
+  const qc = useQueryClient();
   const detailFn = useServerFn(getProductDetail);
+  const addFn = useServerFn(addToCart);
   const { data, isLoading, error } = useQuery({
     queryKey: ["product-detail", id],
     queryFn: () => detailFn({ data: { product_id: id } }),
   });
+  const addMut = useMutation({
+    mutationFn: (v: { offer_id: string; qty_kg: number }) => addFn({ data: v }),
+    onSuccess: () => { toast.success("Ditambahkan ke keranjang"); qc.invalidateQueries({ queryKey: ["cart"] }); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
 
   return (
     <AppShell title="SBMEAT" subtitle="Detail produk">
@@ -86,23 +99,16 @@ function ProductDetailPage() {
                     {data.offers.map((o) => {
                       const vendor = (o as unknown as { vendor: { display_name: string } | null }).vendor;
                       return (
-                        <li key={o.id} className="flex items-center justify-between gap-3 py-3">
-                          <div className="min-w-0">
-                            <div className="font-medium">{vendor?.display_name ?? "Vendor"}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {o.purchase_type} · min {o.min_qty} step {o.qty_step}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="text-right">
-                              <div className="font-semibold">Rp {Number(o.base_price_per_kg).toLocaleString("id-ID")}</div>
-                              <div className="text-xs text-muted-foreground">/kg</div>
-                            </div>
-                            <Button size="sm" disabled title="Order flow di Phase 3">Pesan</Button>
-                          </div>
-                        </li>
+                        <OfferRow
+                          key={o.id}
+                          offer={o}
+                          vendor={vendor?.display_name ?? "Vendor"}
+                          onAdd={(qty) => addMut.mutate({ offer_id: o.id, qty_kg: qty })}
+                          pending={addMut.isPending}
+                        />
                       );
                     })}
+
                   </ul>
                 )}
               </CardContent>
@@ -113,3 +119,26 @@ function ProductDetailPage() {
     </AppShell>
   );
 }
+
+function OfferRow({ offer, vendor, onAdd, pending }: { offer: { id: string; purchase_type: string; base_price_per_kg: number; min_qty: number; qty_step: number }; vendor: string; onAdd: (qty: number) => void; pending: boolean }) {
+  const [qty, setQty] = useState<number>(Number(offer.min_qty) || 1);
+  return (
+    <li className="flex flex-wrap items-center justify-between gap-3 py-3">
+      <div className="min-w-0">
+        <div className="font-medium">{vendor}</div>
+        <div className="text-xs text-muted-foreground">
+          {offer.purchase_type} · min {offer.min_qty} step {offer.qty_step}
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        <div className="text-right">
+          <div className="font-semibold">Rp {Number(offer.base_price_per_kg).toLocaleString("id-ID")}</div>
+          <div className="text-xs text-muted-foreground">/kg</div>
+        </div>
+        <Input type="number" min={offer.min_qty} step={offer.qty_step} value={qty} onChange={(e) => setQty(Number(e.currentTarget.value))} className="w-24" />
+        <Button size="sm" disabled={pending || qty < Number(offer.min_qty)} onClick={() => onAdd(qty)}>Tambah</Button>
+      </div>
+    </li>
+  );
+}
+

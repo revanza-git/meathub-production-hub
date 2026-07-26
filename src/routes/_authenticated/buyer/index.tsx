@@ -91,9 +91,12 @@ function BuyerHome() {
               Cari daging berdasarkan nama, tier, purchase type, dan zona layanan.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex flex-wrap gap-2">
             <Link to="/buyer/search"><Button size="sm">Mulai cari</Button></Link>
+            <Link to="/buyer/cart"><Button size="sm" variant="secondary">Keranjang</Button></Link>
+            <Link to="/buyer/orders"><Button size="sm" variant="outline">Pesanan</Button></Link>
           </CardContent>
+
         </Card>
 
       </div>

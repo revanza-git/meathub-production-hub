@@ -206,6 +206,102 @@ export type Database = {
         }
         Relationships: []
       }
+      cart_items: {
+        Row: {
+          cart_id: string
+          created_at: string
+          hold_expires_at: string
+          id: string
+          offer_id: string
+          qty_kg: number
+          unit_price_snapshot: number
+          updated_at: string
+        }
+        Insert: {
+          cart_id: string
+          created_at?: string
+          hold_expires_at?: string
+          id?: string
+          offer_id: string
+          qty_kg: number
+          unit_price_snapshot: number
+          updated_at?: string
+        }
+        Update: {
+          cart_id?: string
+          created_at?: string
+          hold_expires_at?: string
+          id?: string
+          offer_id?: string
+          qty_kg?: number
+          unit_price_snapshot?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cart_items_cart_id_fkey"
+            columns: ["cart_id"]
+            isOneToOne: false
+            referencedRelation: "carts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cart_items_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      carts: {
+        Row: {
+          address_id: string | null
+          buyer_org_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          status: Database["public"]["Enums"]["cart_status"]
+          updated_at: string
+        }
+        Insert: {
+          address_id?: string | null
+          buyer_org_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["cart_status"]
+          updated_at?: string
+        }
+        Update: {
+          address_id?: string | null
+          buyer_org_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["cart_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "carts_address_id_fkey"
+            columns: ["address_id"]
+            isOneToOne: false
+            referencedRelation: "addresses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "carts_buyer_org_id_fkey"
+            columns: ["buyer_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       config_versions: {
         Row: {
           created_at: string
@@ -521,6 +617,196 @@ export type Database = {
           {
             foreignKeyName: "kyb_documents_organization_id_fkey"
             columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          line_total: number
+          offer_id: string
+          order_id: string
+          product_id: string
+          qty_kg: number
+          unit_price: number
+          updated_at: string
+          vendor_decided_at: string | null
+          vendor_decided_by: string | null
+          vendor_id: string
+          vendor_reject_reason: string | null
+          vendor_status: Database["public"]["Enums"]["order_line_status"]
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          line_total: number
+          offer_id: string
+          order_id: string
+          product_id: string
+          qty_kg: number
+          unit_price: number
+          updated_at?: string
+          vendor_decided_at?: string | null
+          vendor_decided_by?: string | null
+          vendor_id: string
+          vendor_reject_reason?: string | null
+          vendor_status?: Database["public"]["Enums"]["order_line_status"]
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          line_total?: number
+          offer_id?: string
+          order_id?: string
+          product_id?: string
+          qty_kg?: number
+          unit_price?: number
+          updated_at?: string
+          vendor_decided_at?: string | null
+          vendor_decided_by?: string | null
+          vendor_id?: string
+          vendor_reject_reason?: string | null
+          vendor_status?: Database["public"]["Enums"]["order_line_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_offers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_state_history: {
+        Row: {
+          actor_user_id: string | null
+          created_at: string
+          from_state: Database["public"]["Enums"]["order_status"] | null
+          id: string
+          order_id: string
+          reason: string | null
+          to_state: Database["public"]["Enums"]["order_status"]
+        }
+        Insert: {
+          actor_user_id?: string | null
+          created_at?: string
+          from_state?: Database["public"]["Enums"]["order_status"] | null
+          id?: string
+          order_id: string
+          reason?: string | null
+          to_state: Database["public"]["Enums"]["order_status"]
+        }
+        Update: {
+          actor_user_id?: string | null
+          created_at?: string
+          from_state?: Database["public"]["Enums"]["order_status"] | null
+          id?: string
+          order_id?: string
+          reason?: string | null
+          to_state?: Database["public"]["Enums"]["order_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_state_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          address_id: string | null
+          buyer_org_id: string
+          created_at: string
+          id: string
+          notes: string | null
+          order_no: string
+          placed_at: string
+          placed_by: string | null
+          service_zone: Database["public"]["Enums"]["service_zone"] | null
+          shipping_fee: number
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal: number
+          tax_amount: number
+          total_amount: number
+          total_kg: number
+          updated_at: string
+        }
+        Insert: {
+          address_id?: string | null
+          buyer_org_id: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_no: string
+          placed_at?: string
+          placed_by?: string | null
+          service_zone?: Database["public"]["Enums"]["service_zone"] | null
+          shipping_fee?: number
+          status?: Database["public"]["Enums"]["order_status"]
+          subtotal?: number
+          tax_amount?: number
+          total_amount?: number
+          total_kg?: number
+          updated_at?: string
+        }
+        Update: {
+          address_id?: string | null
+          buyer_org_id?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_no?: string
+          placed_at?: string
+          placed_by?: string | null
+          service_zone?: Database["public"]["Enums"]["service_zone"] | null
+          shipping_fee?: number
+          status?: Database["public"]["Enums"]["order_status"]
+          subtotal?: number
+          tax_amount?: number
+          total_amount?: number
+          total_kg?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_address_id_fkey"
+            columns: ["address_id"]
+            isOneToOne: false
+            referencedRelation: "addresses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_buyer_org_id_fkey"
+            columns: ["buyer_org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
             referencedColumns: ["id"]
@@ -974,6 +1260,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cancel_order: {
+        Args: { _order_id: string; _reason: string }
+        Returns: undefined
+      }
+      checkout_cart: { Args: { _notes?: string }; Returns: string }
       create_organization: {
         Args: {
           _display_name: string
@@ -1001,11 +1292,16 @@ export type Database = {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
+      next_order_no: { Args: never; Returns: string }
       review_organization: {
         Args: { _decision: string; _org_id: string; _reason?: string }
         Returns: undefined
       }
       submit_organization: { Args: { _org_id: string }; Returns: undefined }
+      vendor_decide_order_item: {
+        Args: { _decision: string; _item_id: string; _reason?: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role:
@@ -1021,6 +1317,7 @@ export type Database = {
         | "support"
         | "platform_admin"
         | "auditor"
+      cart_status: "ACTIVE" | "CHECKED_OUT" | "ABANDONED"
       catalog_status: "DRAFT" | "REVIEW" | "ACTIVE" | "SUSPENDED" | "ARCHIVED"
       evidence_status: "PENDING" | "APPROVED" | "REJECTED"
       evidence_type: "AWARD" | "ASSOCIATION" | "QC" | "DISCLOSURE"
@@ -1034,6 +1331,17 @@ export type Database = {
         | "SIUP"
         | "OTHER"
       membership_status: "ACTIVE" | "INVITED" | "SUSPENDED" | "REMOVED"
+      order_line_status: "PENDING" | "CONFIRMED" | "REJECTED"
+      order_status:
+        | "PLACED"
+        | "VENDOR_REVIEW"
+        | "CONFIRMED"
+        | "PARTIALLY_CONFIRMED"
+        | "REJECTED"
+        | "CANCELLED"
+        | "FULFILLING"
+        | "DELIVERED"
+        | "CLOSED"
       org_status:
         | "DRAFT"
         | "SUBMITTED"
@@ -1190,6 +1498,7 @@ export const Constants = {
         "platform_admin",
         "auditor",
       ],
+      cart_status: ["ACTIVE", "CHECKED_OUT", "ABANDONED"],
       catalog_status: ["DRAFT", "REVIEW", "ACTIVE", "SUSPENDED", "ARCHIVED"],
       evidence_status: ["PENDING", "APPROVED", "REJECTED"],
       evidence_type: ["AWARD", "ASSOCIATION", "QC", "DISCLOSURE"],
@@ -1204,6 +1513,18 @@ export const Constants = {
         "OTHER",
       ],
       membership_status: ["ACTIVE", "INVITED", "SUSPENDED", "REMOVED"],
+      order_line_status: ["PENDING", "CONFIRMED", "REJECTED"],
+      order_status: [
+        "PLACED",
+        "VENDOR_REVIEW",
+        "CONFIRMED",
+        "PARTIALLY_CONFIRMED",
+        "REJECTED",
+        "CANCELLED",
+        "FULFILLING",
+        "DELIVERED",
+        "CLOSED",
+      ],
       org_status: [
         "DRAFT",
         "SUBMITTED",
