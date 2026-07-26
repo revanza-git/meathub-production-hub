@@ -26,7 +26,7 @@ type Job = {
   status: string;
   scheduled_date: string;
   vehicle_label: string | null;
-  picked_up_at: string | null;
+  picked_up_at?: string | null;
   delivered_at: string | null;
   fulfillment: { order: { order_no: string; address: { line1: string; city: string | null } | null } | null } | null;
 };
