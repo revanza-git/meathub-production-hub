@@ -67,12 +67,31 @@ function PartnerDashboard() {
             <CardContent className="flex flex-wrap gap-2">
               <Link to="/partner/vendor/offers"><Button size="sm">Kelola offers & inventory</Button></Link>
               <Link to="/partner/vendor/orders"><Button size="sm" variant="secondary">Order masuk</Button></Link>
+              <Link to="/partner/vendor/fulfillments"><Button size="sm" variant="secondary">Fulfillment</Button></Link>
               <Link to="/onboarding"><Button size="sm" variant="outline">Kelola onboarding</Button></Link>
             </CardContent>
-
-
           </Card>
         ) : null}
+
+        {isHub ? (
+          <Card>
+            <CardHeader><CardTitle className="text-base">Hub Kemayoran</CardTitle></CardHeader>
+            <CardContent><Link to="/partner/hub/inbound"><Button size="sm">Inbound & dispatch</Button></Link></CardContent>
+          </Card>
+        ) : null}
+        {isCourier ? (
+          <Card>
+            <CardHeader><CardTitle className="text-base">Kurir</CardTitle></CardHeader>
+            <CardContent><Link to="/partner/courier/deliveries"><Button size="sm">Delivery saya</Button></Link></CardContent>
+          </Card>
+        ) : null}
+        {isQc ? (
+          <Card>
+            <CardHeader><CardTitle className="text-base">QC</CardTitle></CardHeader>
+            <CardContent><Link to="/partner/qc/returns"><Button size="sm">Antrian retur</Button></Link></CardContent>
+          </Card>
+        ) : null}
+
 
         <Card>
           <CardHeader>
