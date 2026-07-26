@@ -76,6 +76,16 @@
   --color-offwhite: var(--offwhite);
   --color-gold-muted: var(--gold-muted);
 
+  /* Warm Sand + Espresso landing palette */
+  --color-warm-white: var(--warm-white);
+  --color-sand: var(--sand);
+  --color-sand-dark: var(--sand-dark);
+  --color-tan: var(--tan);
+  --color-tan-deep: var(--tan-deep);
+  --color-espresso: var(--espresso);
+  --color-espresso-dark: var(--espresso-dark);
+  --color-espresso-light: var(--espresso-light);
+
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -119,6 +129,16 @@
   --burgundy: oklch(0.34 0.09 22);
   --burgundy-deep: oklch(0.26 0.08 22);
   --offwhite: oklch(0.95 0.008 85);
+
+  /* Warm Sand + Espresso landing palette */
+  --warm-white: oklch(0.97 0.01 85);
+  --sand: oklch(0.93 0.02 82);
+  --sand-dark: oklch(0.88 0.025 82);
+  --tan: oklch(0.78 0.05 82);
+  --tan-deep: oklch(0.68 0.06 82);
+  --espresso: oklch(0.52 0.07 65);
+  --espresso-dark: oklch(0.4 0.06 65);
+  --espresso-light: oklch(0.62 0.06 65);
 
   /* Semantic tokens (light theme) */
   --background: oklch(0.985 0.003 90);
