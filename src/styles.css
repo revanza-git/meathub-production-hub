@@ -67,6 +67,14 @@
   --color-noir-surface: var(--noir-surface);
   --color-gold-bright: var(--gold-bright);
   --color-gold-cream: var(--gold-cream);
+  --color-ivory: var(--ivory);
+  --color-ivory-warm: var(--ivory-warm);
+  --color-charcoal: var(--charcoal);
+  --color-cream: var(--cream);
+  --color-burgundy: var(--burgundy);
+  --color-burgundy-deep: var(--burgundy-deep);
+  --color-offwhite: var(--offwhite);
+  --color-gold-muted: var(--gold-muted);
 
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
