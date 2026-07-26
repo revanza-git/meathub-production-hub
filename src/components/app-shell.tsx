@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { NotificationBell } from "@/components/notification-bell";
 
 export function AppShell({
   title,
@@ -41,14 +42,17 @@ export function AppShell({
               ) : null}
             </div>
           </Link>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={signOut}
-            className="gap-2 text-white hover:bg-white/10 hover:text-white"
-          >
-            <LogOut className="h-4 w-4" /> Keluar
-          </Button>
+          <div className="flex items-center gap-1">
+            <NotificationBell />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={signOut}
+              className="gap-2 text-white hover:bg-white/10 hover:text-white"
+            >
+              <LogOut className="h-4 w-4" /> Keluar
+            </Button>
+          </div>
         </div>
       </header>
       <main className="flex-1">{children}</main>
