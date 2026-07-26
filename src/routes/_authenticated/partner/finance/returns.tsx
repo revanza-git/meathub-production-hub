@@ -38,7 +38,7 @@ function FinanceReturnsPage() {
   const { data } = useQuery({ queryKey: ["finance-returns"], queryFn: () => listFn() as Promise<Row[]> });
 
   const refundMut = useMutation({
-    mutationFn: (v: Parameters<typeof refundFn>[0]["data"]) => refundFn({ data: v }),
+    mutationFn: (v: { amount: number; method: "BANK_TRANSFER"|"VIRTUAL_ACCOUNT"|"CASH"|"OTHER"; reference?: string; notes?: string; return_id: string }) => refundFn({ data: v }),
     onSuccess: () => { toast.success("Refund diposting"); qc.invalidateQueries({ queryKey: ["finance-returns"] }); },
     onError: (e: Error) => toast.error(e.message),
   });
