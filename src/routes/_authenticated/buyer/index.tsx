@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { listMyOrganizations } from "@/lib/orgs.functions";
-import { MapPin, Building2 } from "lucide-react";
+import { MapPin, Building2, Search } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/buyer/")({
   head: () => ({
@@ -82,14 +82,20 @@ function BuyerHome() {
           </Card>
         </div>
 
-        <Card>
+        <Card className="border-primary/40">
           <CardHeader>
-            <CardTitle>Beranda pembeli</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Search className="h-4 w-4" /> Cari produk & vendor
+            </CardTitle>
             <CardDescription>
-              Pencarian, kategori, saldo deposit, dan antrian aktif akan diisi di Phase 3.
+              Cari daging berdasarkan nama, tier, purchase type, dan zona layanan.
             </CardDescription>
           </CardHeader>
+          <CardContent>
+            <Link to="/buyer/search"><Button size="sm">Mulai cari</Button></Link>
+          </CardContent>
         </Card>
+
       </div>
     </AppShell>
   );
