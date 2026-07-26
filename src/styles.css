@@ -67,6 +67,14 @@
   --color-noir-surface: var(--noir-surface);
   --color-gold-bright: var(--gold-bright);
   --color-gold-cream: var(--gold-cream);
+  --color-ivory: var(--ivory);
+  --color-ivory-warm: var(--ivory-warm);
+  --color-charcoal: var(--charcoal);
+  --color-cream: var(--cream);
+  --color-burgundy: var(--burgundy);
+  --color-burgundy-deep: var(--burgundy-deep);
+  --color-offwhite: var(--offwhite);
+  --color-gold-muted: var(--gold-muted);
 
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
@@ -97,10 +105,20 @@
   --line: oklch(0.92 0.005 90);
 
   /* Noir & Gold editorial landing tokens */
-  --noir: oklch(0.14 0.005 80);
-  --noir-surface: oklch(0.2 0.01 80);
+  --noir: oklch(0.16 0.006 60);
+  --noir-surface: oklch(0.22 0.01 60);
   --gold-bright: oklch(0.72 0.12 82);
   --gold-cream: oklch(0.9 0.07 85);
+  --gold-muted: oklch(0.68 0.08 82);
+
+  /* Warm neutrals + accent for editorial contrast sections */
+  --ivory: oklch(0.96 0.015 85);
+  --ivory-warm: oklch(0.93 0.025 82);
+  --charcoal: oklch(0.26 0.008 60);
+  --cream: oklch(0.9 0.035 82);
+  --burgundy: oklch(0.34 0.09 22);
+  --burgundy-deep: oklch(0.26 0.08 22);
+  --offwhite: oklch(0.95 0.008 85);
 
   /* Semantic tokens (light theme) */
   --background: oklch(0.985 0.003 90);
