@@ -27,12 +27,26 @@ function OrderDetailPage() {
   const qc = useQueryClient();
   const detail = useServerFn(getOrderDetail);
   const cancel = useServerFn(cancelOrder);
+  const fulFn = useServerFn(getFulfillmentByOrder);
+  const retListFn = useServerFn(listMyReturns);
+  const retFn = useServerFn(requestReturn);
   const [reason, setReason] = useState("");
+  const [retReason, setRetReason] = useState<"WRONG_ITEM"|"SPEC_MISMATCH"|"DAMAGED"|"TEMPERATURE_BREACH"|"OTHER">("DAMAGED");
+  const [retDesc, setRetDesc] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["order", id],
     queryFn: () => detail({ data: { order_id: id } }),
   });
+  const { data: ful } = useQuery({
+    queryKey: ["fulfillment", id],
+    queryFn: () => fulFn({ data: { order_id: id } }),
+  });
+  const { data: returns } = useQuery({
+    queryKey: ["returns", id],
+    queryFn: () => retListFn({ data: { order_id: id } }),
+  });
+
 
   const cancelMut = useMutation({
     mutationFn: () => cancel({ data: { order_id: id, reason } }),
