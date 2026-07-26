@@ -194,25 +194,6 @@ function Landing() {
           </div>
         </section>
 
-        {/* Trust strip */}
-        <section className="px-4 pb-4">
-          <div className="mx-auto grid max-w-7xl grid-cols-2 gap-3 md:grid-cols-4">
-            {FEATURES.map((f) => (
-              <div
-                key={f.title}
-                className="flex items-center gap-3 rounded-xl border border-line bg-white p-3 md:p-4"
-              >
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-maroon-dark/10 text-maroon-dark">
-                  {f.icon}
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[13px] font-bold text-ink">{f.title}</p>
-                  <p className="truncate text-[11px] text-ink-soft">{f.body}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
 
         {/* Best Seller — ecommerce card grid */}
         <section id="best-seller" className="px-4 py-10 md:py-14">
