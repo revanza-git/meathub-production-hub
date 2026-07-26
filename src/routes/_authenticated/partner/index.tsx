@@ -39,11 +39,11 @@ function PartnerDashboard() {
                 Setujui / tolak pendaftaran organisasi pembeli & vendor.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Link to="/partner/admin/orgs">
-                <Button size="sm">Buka antrian review</Button>
-              </Link>
+            <CardContent className="flex flex-wrap gap-2">
+              <Link to="/partner/admin/orgs"><Button size="sm">Antrian review organisasi</Button></Link>
+              <Link to="/partner/admin/catalog"><Button size="sm" variant="secondary">Katalog & master data</Button></Link>
             </CardContent>
+
           </Card>
         ) : null}
 
