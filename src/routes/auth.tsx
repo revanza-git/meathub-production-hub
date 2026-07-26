@@ -22,11 +22,11 @@ export const Route = createFileRoute("/auth")({
   validateSearch: authSearch,
   head: () => ({
     meta: [
-      { title: "Masuk — SBMEAT Meat Hub" },
+      { title: "Masuk — MEATHUB Meat Hub" },
       {
         name: "description",
         content:
-          "Masuk atau daftar akun bisnis SBMEAT Meat Hub untuk pemesanan daging premium di Jabodetabek.",
+          "Masuk atau daftar akun bisnis MEATHUB Meat Hub untuk pemesanan daging premium di Jabodetabek.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -76,7 +76,7 @@ function AuthPage() {
             <span className="grid h-9 w-9 place-items-center rounded-md bg-ink text-[10px] font-bold tracking-widest text-white">
               SB
             </span>
-            <span className="font-display text-xl font-bold text-ink">SBMEAT</span>
+            <span className="font-display text-xl font-bold text-ink">MEATHUB</span>
           </Link>
           <p className="mt-2 text-xs uppercase tracking-widest text-ink-soft">
             Meat Hub • Jabodetabek
@@ -119,7 +119,7 @@ function AuthPage() {
                 <Link to="/" className="underline">
                   Kebijakan Privasi
                 </Link>{" "}
-                SBMEAT.
+                MEATHUB.
               </p>
             </CardContent>
           </Tabs>
@@ -251,7 +251,7 @@ function GoogleButton({ nextPath }: { nextPath: string | undefined }) {
   async function onClick() {
     setLoading(true);
     try {
-      if (nextPath) sessionStorage.setItem("sbmeat.next", nextPath);
+      if (nextPath) sessionStorage.setItem("meathub.next", nextPath);
     } catch {}
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,

@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { listReturnsForFinance, processReturnRefund, closeReturn } from "@/lib/returns.functions";
 
 export const Route = createFileRoute("/_authenticated/partner/finance/returns")({
-  head: () => ({ meta: [{ title: "Refund Retur — SBMEAT" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Refund Retur — MEATHUB" }, { name: "robots", content: "noindex" }] }),
   component: FinanceReturnsPage,
 });
 

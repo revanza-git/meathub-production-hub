@@ -12,7 +12,7 @@ import { searchOffers, type SearchOfferHit } from "@/lib/catalog.functions";
 import { Search } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/buyer/search")({
-  head: () => ({ meta: [{ title: "Cari produk — SBMEAT" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Cari produk — MEATHUB" }, { name: "robots", content: "noindex" }] }),
   component: BuyerSearchPage,
 });
 
@@ -35,7 +35,7 @@ function BuyerSearchPage() {
   });
 
   return (
-    <AppShell title="SBMEAT" subtitle="Cari produk & vendor">
+    <AppShell title="MEATHUB" subtitle="Cari produk & vendor">
       <div className="mx-auto max-w-4xl space-y-4 px-4 py-6">
         <Card>
           <CardContent className="pt-6">

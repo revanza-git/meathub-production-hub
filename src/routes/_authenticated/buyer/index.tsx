@@ -11,7 +11,7 @@ import { MapPin, Building2, Search } from "lucide-react";
 export const Route = createFileRoute("/_authenticated/buyer/")({
   head: () => ({
     meta: [
-      { title: "Beranda Pembeli — SBMEAT" },
+      { title: "Beranda Pembeli — MEATHUB" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -26,7 +26,7 @@ function BuyerHome() {
   const pending = buyerOrgs.filter((o) => o.status !== "APPROVED");
 
   return (
-    <AppShell title="SBMEAT" subtitle="Beranda pembeli">
+    <AppShell title="MEATHUB" subtitle="Beranda pembeli">
       <div className="mx-auto max-w-3xl space-y-4 px-4 py-6">
         {pending.length > 0 ? (
           <Card className="border-gold/50 bg-gold/10">

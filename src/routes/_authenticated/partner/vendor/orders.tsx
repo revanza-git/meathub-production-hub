@@ -13,7 +13,7 @@ import { getMyRoles } from "@/lib/roles.functions";
 import { listVendorOrderItems, decideOrderItem } from "@/lib/orders.functions";
 
 export const Route = createFileRoute("/_authenticated/partner/vendor/orders")({
-  head: () => ({ meta: [{ title: "Order masuk — SBMEAT" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Order masuk — MEATHUB" }, { name: "robots", content: "noindex" }] }),
   component: VendorOrdersPage,
 });
 
@@ -48,7 +48,7 @@ function VendorOrdersPage() {
   });
 
   return (
-    <AppShell title="SBMEAT Vendor" subtitle="Order masuk">
+    <AppShell title="MEATHUB Vendor" subtitle="Order masuk">
       <div className="mx-auto max-w-5xl space-y-4 px-4 py-6">
         {vendorOrgs.length === 0 ? (
           <Card><CardContent className="p-6 text-sm text-muted-foreground">Anda bukan anggota organisasi Vendor.</CardContent></Card>

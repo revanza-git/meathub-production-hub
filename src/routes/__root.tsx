@@ -80,16 +80,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "SBMEAT Meat Hub — Marketplace daging premium B2B Jabodetabek" },
+      { title: "MEATHUB Meat Hub — Marketplace daging premium B2B Jabodetabek" },
       {
         name: "description",
         content:
           "Marketplace daging premium B2B: importir tangan pertama, konfirmasi berat aktual, pembayaran cash, hub Kemayoran, pengiriman terlacak.",
       },
-      { name: "author", content: "SBMEAT" },
+      { name: "author", content: "MEATHUB" },
       { name: "theme-color", content: "#5a1a1a" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-title", content: "SBMEAT" },
+      { name: "apple-mobile-web-app-title", content: "MEATHUB" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

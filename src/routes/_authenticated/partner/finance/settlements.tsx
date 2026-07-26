@@ -19,7 +19,7 @@ import {
 
 export const Route = createFileRoute("/_authenticated/partner/finance/settlements")({
   head: () => ({ meta: [
-    { title: "Settlement vendor — SBMEAT" },
+    { title: "Settlement vendor — MEATHUB" },
     { name: "description", content: "Generate, review, dan tandai lunas payout vendor." },
     { name: "robots", content: "noindex" },
   ] }),

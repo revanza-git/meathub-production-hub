@@ -12,7 +12,7 @@ import { getMyRoles } from "@/lib/roles.functions";
 import { listVendorFulfillments, vendorDispatchToHub } from "@/lib/fulfillment.functions";
 
 export const Route = createFileRoute("/_authenticated/partner/vendor/fulfillments")({
-  head: () => ({ meta: [{ title: "Fulfillment vendor — SBMEAT" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Fulfillment vendor — MEATHUB" }, { name: "robots", content: "noindex" }] }),
   component: VendorFulfillmentsPage,
 });
 

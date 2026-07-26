@@ -32,7 +32,7 @@ import { FileText } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/partner/admin/orgs")({
   head: () => ({
-    meta: [{ title: "Review Organisasi — SBMEAT" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "Review Organisasi — MEATHUB" }, { name: "robots", content: "noindex" }],
   }),
   component: AdminOrgsPage,
 });
@@ -63,7 +63,7 @@ function AdminOrgsPage() {
   if (!isAdmin) return <Navigate to="/partner" replace />;
 
   return (
-    <AppShell title="SBMEAT Admin" subtitle="Review organisasi (KYB)">
+    <AppShell title="MEATHUB Admin" subtitle="Review organisasi (KYB)">
       <div className="mx-auto max-w-6xl px-4 py-6">
         <Tabs defaultValue="PENDING" className="space-y-4">
           <TabsList>

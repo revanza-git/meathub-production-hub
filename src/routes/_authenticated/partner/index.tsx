@@ -11,7 +11,7 @@ import { ShieldCheck } from "lucide-react";
 export const Route = createFileRoute("/_authenticated/partner/")({
   head: () => ({
     meta: [
-      { title: "Partner Portal — SBMEAT" },
+      { title: "Partner Portal — MEATHUB" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -32,7 +32,7 @@ function PartnerDashboard() {
 
 
   return (
-    <AppShell title="SBMEAT Partner" subtitle="Vendor & Ops portal">
+    <AppShell title="MEATHUB Partner" subtitle="Vendor & Ops portal">
       <div className="mx-auto max-w-5xl space-y-4 px-4 py-6">
         {isAdmin ? (
           <Card className="border-primary/40">

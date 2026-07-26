@@ -8,7 +8,7 @@ import { listSettlements } from "@/lib/finance.functions";
 
 export const Route = createFileRoute("/_authenticated/partner/vendor/payouts")({
   head: () => ({ meta: [
-    { title: "Payout saya — SBMEAT" },
+    { title: "Payout saya — MEATHUB" },
     { name: "description", content: "Riwayat settlement & payout vendor." },
     { name: "robots", content: "noindex" },
   ] }),
@@ -20,7 +20,7 @@ function PayoutsPage() {
   const { data } = useQuery({ queryKey: ["my-settlements"], queryFn: () => listFn({ data: {} }) });
 
   return (
-    <AppShell title="Payout saya" subtitle="Settlement dari SBMEAT">
+    <AppShell title="Payout saya" subtitle="Settlement dari MEATHUB">
       <div className="mx-auto max-w-4xl space-y-4 px-4 py-6">
         <Card>
           <CardHeader>

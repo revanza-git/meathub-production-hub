@@ -13,7 +13,7 @@ import { addToCart } from "@/lib/cart.functions";
 import { ChevronLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/buyer/products/$id")({
-  head: () => ({ meta: [{ title: "Detail produk — SBMEAT" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Detail produk — MEATHUB" }, { name: "robots", content: "noindex" }] }),
   component: ProductDetailPage,
 });
 
@@ -35,7 +35,7 @@ function ProductDetailPage() {
 
 
   return (
-    <AppShell title="SBMEAT" subtitle="Detail produk">
+    <AppShell title="MEATHUB" subtitle="Detail produk">
       <div className="mx-auto max-w-4xl space-y-4 px-4 py-6">
         <Link to="/buyer/search" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ChevronLeft className="h-4 w-4" /> Kembali ke pencarian

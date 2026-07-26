@@ -4,13 +4,13 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SBMEAT Meat Hub — Marketplace daging premium B2B Jabodetabek" },
+      { title: "MEATHUB Meat Hub — Marketplace daging premium B2B Jabodetabek" },
       {
         name: "description",
         content:
-          "SBMEAT Meat Hub menghubungkan importir/distributor daging premium dengan restoran, hotel, dan katering di Jabodetabek. Stok akurat, pembayaran aman, pengiriman lewat cold storage Kemayoran.",
+          "MEATHUB Meat Hub menghubungkan importir/distributor daging premium dengan restoran, hotel, dan katering di Jabodetabek. Stok akurat, pembayaran aman, pengiriman lewat cold storage Kemayoran.",
       },
-      { property: "og:title", content: "SBMEAT Meat Hub — Marketplace daging premium B2B" },
+      { property: "og:title", content: "MEATHUB Meat Hub — Marketplace daging premium B2B" },
       {
         property: "og:description",
         content:
@@ -30,10 +30,10 @@ function Landing() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
             <span className="grid h-9 w-9 place-items-center rounded-md bg-white/10 text-[10px] font-bold tracking-widest">
-              SB
+              MH
             </span>
             <div>
-              <div className="font-display text-lg font-bold leading-none">SBMEAT</div>
+              <div className="font-display text-lg font-bold leading-none">MEATHUB</div>
               <div className="text-[10px] uppercase tracking-widest text-white/60">
                 Meat Hub
               </div>
@@ -65,7 +65,7 @@ function Landing() {
                 stok, atau ongkir.
               </h1>
               <p className="max-w-lg text-base text-white/70">
-                SBMEAT Meat Hub menghubungkan importir tangan pertama dengan restoran, hotel,
+                MEATHUB Meat Hub menghubungkan importir tangan pertama dengan restoran, hotel,
                 dan katering di Jabodetabek — dengan konfirmasi berat aktual, pembayaran cash
                 sebelum pengiriman, dan pelacakan lewat cold storage Kemayoran.
               </p>
@@ -133,7 +133,7 @@ function Landing() {
       </main>
 
       <footer className="border-t bg-ink py-8 text-center text-xs text-white/50">
-        © {new Date().getFullYear()} SBMEAT Meat Hub. Jabodetabek B2B.
+        © {new Date().getFullYear()} MEATHUB Meat Hub. Jabodetabek B2B.
       </footer>
     </div>
   );
@@ -159,5 +159,5 @@ const TIERS = [
   { name: "Commodity / Premium", body: "Platform pilih vendor terbaik berdasar harga landed & keandalan." },
   { name: "Super Premium", body: "Pilih brand dengan bukti sertifikasi asosiasi/award terverifikasi." },
   { name: "Undervalued — QC Verified", body: "Produk premium underpriced karena administrasi, dengan QC eksplisit." },
-  { name: "SBMEAT Product Line", body: "House brand SBMEAT dengan standar marbling & pH terpajang." },
+  { name: "MEATHUB Product Line", body: "House brand MEATHUB dengan standar marbling & pH terpajang." },
 ];

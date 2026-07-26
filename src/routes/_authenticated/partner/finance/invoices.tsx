@@ -19,7 +19,7 @@ import {
 
 export const Route = createFileRoute("/_authenticated/partner/finance/invoices")({
   head: () => ({ meta: [
-    { title: "Invoice pembeli — SBMEAT" },
+    { title: "Invoice pembeli — MEATHUB" },
     { name: "description", content: "Terbitkan invoice dan catat pembayaran pembeli." },
     { name: "robots", content: "noindex" },
   ] }),

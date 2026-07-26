@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { listPendingReturns, qcDecide } from "@/lib/fulfillment.functions";
 
 export const Route = createFileRoute("/_authenticated/partner/qc/returns")({
-  head: () => ({ meta: [{ title: "QC Returns — SBMEAT" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "QC Returns — MEATHUB" }, { name: "robots", content: "noindex" }] }),
   component: QcReturnsPage,
 });
 

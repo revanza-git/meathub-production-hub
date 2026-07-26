@@ -18,7 +18,7 @@ import { getFlag } from "@/lib/ai.functions";
 import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/_authenticated/partner/vendor/offers")({
-  head: () => ({ meta: [{ title: "Offers Vendor — SBMEAT" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Offers Vendor — MEATHUB" }, { name: "robots", content: "noindex" }] }),
   component: VendorOffersPage,
 });
 
@@ -34,7 +34,7 @@ function VendorOffersPage() {
   if (vendorMemberships.length === 0) return <Navigate to="/partner" replace />;
 
   return (
-    <AppShell title="SBMEAT Vendor" subtitle="Offers & inventory">
+    <AppShell title="MEATHUB Vendor" subtitle="Offers & inventory">
       <div className="mx-auto max-w-6xl space-y-6 px-4 py-6">
         {vendorMemberships.map((m) => (
           <VendorSection key={m.organization_id} vendorId={m.organization_id} vendorName={m.organization.display_name} />

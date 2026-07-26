@@ -11,7 +11,7 @@ import { getMyRoles } from "@/lib/roles.functions";
  */
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
-    meta: [{ title: "Dashboard — SBMEAT" }, { name: "robots", content: "noindex" }],
+    meta: [{ title: "Dashboard — MEATHUB" }, { name: "robots", content: "noindex" }],
   }),
   component: DashboardRouter,
 });

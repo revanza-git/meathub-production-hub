@@ -28,11 +28,11 @@ import {
 } from "@/lib/catalog.functions";
 
 export const Route = createFileRoute("/_authenticated/partner/admin/catalog")({
-  head: () => ({ meta: [{ title: "Katalog Admin — SBMEAT" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Katalog Admin — MEATHUB" }, { name: "robots", content: "noindex" }] }),
   component: AdminCatalogPage,
 });
 
-const TIERS: ProductTier[] = ["COMMODITY_PREMIUM", "SUPER_PREMIUM", "UNDERVALUED_QC", "SBMEAT_HOUSE"];
+const TIERS: ProductTier[] = ["COMMODITY_PREMIUM", "SUPER_PREMIUM", "UNDERVALUED_QC", "MEATHUB_HOUSE"];
 const STATUSES = ["DRAFT", "REVIEW", "ACTIVE", "SUSPENDED", "ARCHIVED"] as const;
 
 function AdminCatalogPage() {
@@ -43,7 +43,7 @@ function AdminCatalogPage() {
   if (!isAdmin) return <Navigate to="/partner" replace />;
 
   return (
-    <AppShell title="SBMEAT Admin" subtitle="Katalog & master data">
+    <AppShell title="MEATHUB Admin" subtitle="Katalog & master data">
       <div className="mx-auto max-w-6xl px-4 py-6">
         <Tabs defaultValue="products" className="space-y-4">
           <TabsList>
