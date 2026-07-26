@@ -23,6 +23,7 @@ import { Route as AuthenticatedBuyerAddressesRouteImport } from './routes/_authe
 import { Route as AuthenticatedPartnerVendorOrdersRouteImport } from './routes/_authenticated/partner/vendor/orders'
 import { Route as AuthenticatedPartnerVendorOffersRouteImport } from './routes/_authenticated/partner/vendor/offers'
 import { Route as AuthenticatedPartnerVendorFulfillmentsRouteImport } from './routes/_authenticated/partner/vendor/fulfillments'
+import { Route as AuthenticatedPartnerHubInboundRouteImport } from './routes/_authenticated/partner/hub/inbound'
 import { Route as AuthenticatedPartnerAdminOrgsRouteImport } from './routes/_authenticated/partner/admin/orgs'
 import { Route as AuthenticatedPartnerAdminCatalogRouteImport } from './routes/_authenticated/partner/admin/catalog'
 import { Route as AuthenticatedBuyerProductsIdRouteImport } from './routes/_authenticated/buyer/products.$id'
@@ -104,6 +105,12 @@ const AuthenticatedPartnerVendorFulfillmentsRoute =
     path: '/partner/vendor/fulfillments',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPartnerHubInboundRoute =
+  AuthenticatedPartnerHubInboundRouteImport.update({
+    id: '/partner/hub/inbound',
+    path: '/partner/hub/inbound',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPartnerAdminOrgsRoute =
   AuthenticatedPartnerAdminOrgsRouteImport.update({
     id: '/partner/admin/orgs',
@@ -144,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
   '/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
   '/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
+  '/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
   '/partner/vendor/fulfillments': typeof AuthenticatedPartnerVendorFulfillmentsRoute
   '/partner/vendor/offers': typeof AuthenticatedPartnerVendorOffersRoute
   '/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
@@ -163,6 +171,7 @@ export interface FileRoutesByTo {
   '/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
   '/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
   '/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
+  '/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
   '/partner/vendor/fulfillments': typeof AuthenticatedPartnerVendorFulfillmentsRoute
   '/partner/vendor/offers': typeof AuthenticatedPartnerVendorOffersRoute
   '/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
@@ -184,6 +193,7 @@ export interface FileRoutesById {
   '/_authenticated/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
   '/_authenticated/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
   '/_authenticated/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
+  '/_authenticated/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
   '/_authenticated/partner/vendor/fulfillments': typeof AuthenticatedPartnerVendorFulfillmentsRoute
   '/_authenticated/partner/vendor/offers': typeof AuthenticatedPartnerVendorOffersRoute
   '/_authenticated/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/buyer/products/$id'
     | '/partner/admin/catalog'
     | '/partner/admin/orgs'
+    | '/partner/hub/inbound'
     | '/partner/vendor/fulfillments'
     | '/partner/vendor/offers'
     | '/partner/vendor/orders'
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/buyer/products/$id'
     | '/partner/admin/catalog'
     | '/partner/admin/orgs'
+    | '/partner/hub/inbound'
     | '/partner/vendor/fulfillments'
     | '/partner/vendor/offers'
     | '/partner/vendor/orders'
@@ -244,6 +256,7 @@ export interface FileRouteTypes {
     | '/_authenticated/buyer/products/$id'
     | '/_authenticated/partner/admin/catalog'
     | '/_authenticated/partner/admin/orgs'
+    | '/_authenticated/partner/hub/inbound'
     | '/_authenticated/partner/vendor/fulfillments'
     | '/_authenticated/partner/vendor/offers'
     | '/_authenticated/partner/vendor/orders'
@@ -355,6 +368,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPartnerVendorFulfillmentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/partner/hub/inbound': {
+      id: '/_authenticated/partner/hub/inbound'
+      path: '/partner/hub/inbound'
+      fullPath: '/partner/hub/inbound'
+      preLoaderRoute: typeof AuthenticatedPartnerHubInboundRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/partner/admin/orgs': {
       id: '/_authenticated/partner/admin/orgs'
       path: '/partner/admin/orgs'
@@ -412,6 +432,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedBuyerProductsIdRoute: typeof AuthenticatedBuyerProductsIdRoute
   AuthenticatedPartnerAdminCatalogRoute: typeof AuthenticatedPartnerAdminCatalogRoute
   AuthenticatedPartnerAdminOrgsRoute: typeof AuthenticatedPartnerAdminOrgsRoute
+  AuthenticatedPartnerHubInboundRoute: typeof AuthenticatedPartnerHubInboundRoute
   AuthenticatedPartnerVendorFulfillmentsRoute: typeof AuthenticatedPartnerVendorFulfillmentsRoute
   AuthenticatedPartnerVendorOffersRoute: typeof AuthenticatedPartnerVendorOffersRoute
   AuthenticatedPartnerVendorOrdersRoute: typeof AuthenticatedPartnerVendorOrdersRoute
@@ -429,6 +450,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedBuyerProductsIdRoute: AuthenticatedBuyerProductsIdRoute,
   AuthenticatedPartnerAdminCatalogRoute: AuthenticatedPartnerAdminCatalogRoute,
   AuthenticatedPartnerAdminOrgsRoute: AuthenticatedPartnerAdminOrgsRoute,
+  AuthenticatedPartnerHubInboundRoute: AuthenticatedPartnerHubInboundRoute,
   AuthenticatedPartnerVendorFulfillmentsRoute:
     AuthenticatedPartnerVendorFulfillmentsRoute,
   AuthenticatedPartnerVendorOffersRoute: AuthenticatedPartnerVendorOffersRoute,
