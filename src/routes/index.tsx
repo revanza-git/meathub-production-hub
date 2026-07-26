@@ -1,13 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
+  Search,
   ShoppingCart,
-  ShieldCheck,
-  Package,
-  Handshake,
+  Heart,
+  MessageCircle,
+  ChevronRight,
   Truck,
   BadgeCheck,
-  Search,
+  Package,
+  Handshake,
+  Sparkles,
+  Star,
+  Menu,
 } from "lucide-react";
 import heroMeat from "@/assets/hero-meat.jpg";
 import productSlice from "@/assets/product-slice.jpg";
@@ -18,17 +23,17 @@ import productOxtail from "@/assets/product-oxtail.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MEATHUB — Marketplace daging premium B2B Jabodetabek" },
+      { title: "MEATHUB — Belanja Daging Premium B2B Online Jabodetabek" },
       {
         name: "description",
         content:
-          "MEATHUB menghubungkan importir daging premium dengan restoran, hotel, dan katering di Jabodetabek. Stok akurat, quote final berdasarkan berat aktual, pengiriman dari Hub MEATHUB.",
+          "MEATHUB: toko daging premium B2B online. Best seller, harga transparan, quote final berdasarkan berat aktual, gratis ongkir min. order tertentu, kirim dari Hub MEATHUB.",
       },
-      { property: "og:title", content: "MEATHUB — Marketplace daging premium B2B" },
+      { property: "og:title", content: "MEATHUB — Belanja Daging Premium B2B Online" },
       {
         property: "og:description",
         content:
-          "Order daging premium dengan verifikasi grade, quote final transparan, dan pengiriman terlacak dari Hub MEATHUB.",
+          "Belanja daging premium untuk restoran, hotel, dan katering. Halal, higienis, dan pengiriman cold-chain terlacak.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -40,15 +45,23 @@ export const Route = createFileRoute("/")({
 function Landing() {
   return (
     <div className="min-h-screen bg-[#f5f2e6] font-[family-name:var(--font-body-alt)] text-ink">
-      {/* Top nav — light cream with dark text */}
-      <header className="sticky top-0 z-20 border-b border-line/60 bg-[#f5f2e6]/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center gap-3" aria-label="MEATHUB beranda">
-            <span className="grid h-11 w-11 place-items-center rounded-full bg-maroon-dark font-headline text-[11px] font-bold tracking-widest text-warm-white shadow-sm">
+      {/* Promo bar */}
+      <div className="bg-maroon-dark text-warm-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-center gap-2 px-4 py-2 text-center text-[12px] font-semibold tracking-wide">
+          <Sparkles className="h-3.5 w-3.5 text-gold" aria-hidden="true" />
+          <span>Super Value Deals — Hemat lebih banyak! · Gratis ongkir min. order 20 kg</span>
+        </div>
+      </div>
+
+      {/* Header with search + cart */}
+      <header className="sticky top-0 z-30 border-b border-line/60 bg-[#f5f2e6]/95 backdrop-blur">
+        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 md:gap-6 md:py-4">
+          <Link to="/" className="flex shrink-0 items-center gap-3" aria-label="MEATHUB beranda">
+            <span className="grid h-10 w-10 place-items-center rounded-full bg-maroon-dark font-headline text-[10px] font-bold tracking-widest text-warm-white shadow-sm md:h-11 md:w-11">
               MH
             </span>
-            <div className="leading-tight">
-              <div className="font-[family-name:var(--font-serif)] text-xl font-bold text-maroon-dark">
+            <div className="hidden leading-tight sm:block">
+              <div className="font-[family-name:var(--font-serif)] text-lg font-bold text-maroon-dark md:text-xl">
                 MEATHUB
               </div>
               <div className="text-[10px] uppercase tracking-[0.25em] text-ink-soft">
@@ -56,236 +69,231 @@ function Landing() {
               </div>
             </div>
           </Link>
-          <nav className="hidden items-center gap-8 md:flex">
-            <a
-              href="#"
-              className="text-sm font-semibold text-maroon-dark transition-colors hover:text-maroon"
+
+          {/* Search */}
+          <div className="relative flex-1">
+            <label htmlFor="search" className="sr-only">
+              Cari daging, cut, brand
+            </label>
+            <Search
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft"
+              aria-hidden="true"
+            />
+            <input
+              id="search"
+              type="search"
+              placeholder="Cari daging, cut, brand..."
+              className="h-11 w-full rounded-full border border-line bg-white pl-10 pr-4 text-sm text-ink placeholder:text-ink-soft focus:border-maroon-dark focus:outline-none focus:ring-2 focus:ring-maroon-dark/20"
+            />
+          </div>
+
+          <div className="flex shrink-0 items-center gap-1 md:gap-2">
+            <Link
+              to="/auth"
+              search={{ next: "/dashboard" }}
+              aria-label="Wishlist"
+              className="hidden h-10 w-10 place-items-center rounded-full text-ink-soft transition-colors hover:bg-maroon-dark/5 hover:text-maroon-dark sm:grid"
             >
-              Beranda
-            </a>
-            <a
-              href="#produk"
-              className="text-sm text-ink-soft transition-colors hover:text-maroon-dark"
+              <Heart className="h-5 w-5" />
+            </Link>
+            <Link
+              to="/auth"
+              search={{ next: "/buyer/cart" }}
+              aria-label="Keranjang"
+              className="relative grid h-10 w-10 place-items-center rounded-full text-ink-soft transition-colors hover:bg-maroon-dark/5 hover:text-maroon-dark"
             >
-              Produk
-            </a>
-            <a
-              href="#cara-kerja"
-              className="text-sm text-ink-soft transition-colors hover:text-maroon-dark"
-            >
-              Cara Kerja
-            </a>
-            <a
-              href="#kemitraan"
-              className="text-sm text-ink-soft transition-colors hover:text-maroon-dark"
-            >
-              Kemitraan
-            </a>
-          </nav>
-          <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="sm" className="text-ink hover:bg-ink/5">
-              <Link to="/auth">Masuk</Link>
-            </Button>
+              <ShoppingCart className="h-5 w-5" />
+              <span className="absolute -right-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-maroon-dark px-1 text-[10px] font-bold text-warm-white">
+                0
+              </span>
+            </Link>
             <Button
               asChild
               size="sm"
-              className="bg-maroon-dark text-warm-white hover:bg-maroon"
+              className="ml-1 hidden bg-maroon-dark text-warm-white hover:bg-maroon md:inline-flex"
             >
-              <Link to="/auth" search={{ next: "/dashboard" }}>Daftar</Link>
+              <Link to="/auth">Masuk</Link>
             </Button>
+          </div>
+        </div>
+
+        {/* Category chip strip */}
+        <div className="border-t border-line/60 bg-[#f5f2e6]">
+          <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-4 py-2 text-sm">
+            <button className="flex shrink-0 items-center gap-1.5 rounded-full bg-maroon-dark px-3 py-1.5 text-xs font-semibold text-warm-white">
+              <Menu className="h-3.5 w-3.5" aria-hidden="true" />
+              Kategori
+            </button>
+            {NAV_CATEGORIES.map((c) => (
+              <a
+                key={c}
+                href="#produk"
+                className="shrink-0 rounded-full border border-transparent px-3 py-1.5 text-xs font-medium text-ink-soft transition-colors hover:border-maroon-dark/20 hover:bg-white hover:text-maroon-dark"
+              >
+                {c}
+              </a>
+            ))}
           </div>
         </div>
       </header>
 
       <main>
-        {/* Split hero — image left, headline right */}
-        <section className="px-4 py-14 md:py-20">
-          <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-16">
-            <div className="order-2 lg:order-1 fade-in-up">
-              <div className="overflow-hidden rounded-2xl shadow-[0_25px_60px_-25px_rgba(90,26,26,0.35)]">
-                <img
-                  src={heroMeat}
-                  alt="Potongan ribeye premium dengan rempah segar di atas papan slate"
-                  width={1200}
-                  height={900}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-            </div>
-
-            <div className="order-1 lg:order-2 fade-in-up" style={{ animationDelay: "0.1s" }}>
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-maroon-dark">
-                MEATHUB · B2B
-              </p>
-              <h1 className="mt-4 font-[family-name:var(--font-serif)] text-5xl leading-[1.05] text-ink md:text-6xl lg:text-[64px]">
-                Daging Sapi Premium,{" "}
-                <em className="italic text-maroon-dark">Langsung</em> dari Hub MEATHUB
-              </h1>
-              <p className="mt-6 max-w-lg text-base leading-relaxed text-ink-soft md:text-lg">
-                MEATHUB adalah marketplace daging premium untuk restoran, hotel, dan katering
-                di Jabodetabek. Stok akurat, quote final berdasarkan berat aktual dalam 2 jam,
-                dan pengiriman terlacak dari cold storage Hub MEATHUB.
-              </p>
-              <div className="mt-8 flex flex-wrap items-center gap-4">
-                <Button
-                  asChild
-                  size="lg"
-                  className="rounded-full bg-maroon-dark px-8 py-6 text-sm font-semibold text-warm-white hover:bg-maroon"
-                >
-                  <Link to="/auth" search={{ next: "/dashboard" }}>
-                    <ShoppingCart className="mr-2 h-4 w-4" aria-hidden="true" />
-                    Mulai Belanja
-                  </Link>
-                </Button>
-                <Link
-                  to="/auth"
-                  search={{ next: "/dashboard" }}
-                  className="text-sm font-semibold text-maroon-dark underline-offset-4 hover:underline"
-                >
-                  Daftar sebagai vendor →
-                </Link>
+        {/* Hero — ecommerce banner style */}
+        <section className="px-4 py-6 md:py-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-maroon-dark via-maroon to-[#3d1010] shadow-[0_25px_60px_-25px_rgba(90,26,26,0.5)]">
+              <div className="grid items-center gap-6 lg:grid-cols-2">
+                <div className="px-6 py-10 md:px-12 md:py-14 lg:py-16">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-gold/20 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-gold">
+                    <BadgeCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                    Halal · Murah · Berkualitas
+                  </span>
+                  <h1 className="mt-5 font-[family-name:var(--font-serif)] text-4xl leading-[1.05] text-warm-white md:text-5xl lg:text-6xl">
+                    Daging Beku &{" "}
+                    <em className="italic text-gold">Frozen Food</em> Premium
+                  </h1>
+                  <p className="mt-4 max-w-md text-sm leading-relaxed text-warm-white/85 md:text-base">
+                    MEATHUB — marketplace daging premium B2B untuk restoran, hotel, dan
+                    katering. Stok akurat, quote final transparan, kirim cold-chain dari
+                    Hub MEATHUB.
+                  </p>
+                  <div className="mt-7 flex flex-wrap items-center gap-3">
+                    <Button
+                      asChild
+                      size="lg"
+                      className="rounded-full bg-gold px-7 py-6 text-sm font-bold text-maroon-dark shadow-lg hover:bg-gold-bright"
+                    >
+                      <Link to="/auth" search={{ next: "/dashboard" }}>
+                        <ShoppingCart className="mr-2 h-4 w-4" aria-hidden="true" />
+                        Belanja Sekarang
+                      </Link>
+                    </Button>
+                    <a
+                      href="https://wa.me/6281234567890?text=Halo%2C+saya+ingin+memesan."
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-warm-white/40 bg-warm-white/5 px-6 py-3 text-sm font-semibold text-warm-white transition-colors hover:bg-warm-white hover:text-maroon-dark"
+                    >
+                      <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                      Chat WhatsApp
+                    </a>
+                  </div>
+                </div>
+                <div className="relative hidden aspect-[5/4] lg:block">
+                  <img
+                    src={heroMeat}
+                    alt="Potongan ribeye premium dengan rempah segar"
+                    width={1200}
+                    height={900}
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-maroon-dark/40" />
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Feature strip — maroon with cream cards */}
-        <section className="bg-maroon-dark px-4 py-14">
-          <div className="mx-auto grid max-w-6xl gap-5 md:grid-cols-2 lg:grid-cols-4">
+        {/* Trust strip */}
+        <section className="px-4 pb-4">
+          <div className="mx-auto grid max-w-7xl grid-cols-2 gap-3 md:grid-cols-4">
             {FEATURES.map((f) => (
               <div
                 key={f.title}
-                className="rounded-xl bg-[#f5f2e6] p-6 shadow-sm transition-transform hover:-translate-y-1"
+                className="flex items-center gap-3 rounded-xl border border-line bg-white p-3 md:p-4"
               >
-                <div className="grid h-11 w-11 place-items-center rounded-full bg-maroon-dark/10 text-maroon-dark">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-maroon-dark/10 text-maroon-dark">
                   {f.icon}
                 </div>
-                <h3 className="mt-4 font-[family-name:var(--font-serif)] text-xl font-bold text-ink">
-                  {f.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-ink-soft">{f.body}</p>
+                <div className="min-w-0">
+                  <p className="text-[13px] font-bold text-ink">{f.title}</p>
+                  <p className="truncate text-[11px] text-ink-soft">{f.body}</p>
+                </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Product tiers on light bg */}
-        <section className="px-4 py-16 md:py-24">
-          <div className="mx-auto max-w-6xl">
-            <div className="mx-auto max-w-2xl text-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-maroon-dark">
-                Product Line
-              </p>
-              <h2 className="mt-3 font-[family-name:var(--font-serif)] text-4xl text-ink md:text-5xl">
-                Empat Tier Daging Premium
-              </h2>
-              <p className="mt-4 text-base text-ink-soft">
-                Setiap tier punya standar grade, brand, dan verifikasi yang transparan —
-                cocok untuk kebutuhan menu dan budget yang berbeda.
-              </p>
+        {/* Best Seller — ecommerce card grid */}
+        <section id="best-seller" className="px-4 py-10 md:py-14">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex items-end justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <Sparkles className="h-6 w-6 text-gold" aria-hidden="true" />
+                <div>
+                  <h2 className="font-[family-name:var(--font-serif)] text-2xl font-bold text-ink md:text-3xl">
+                    Best Seller
+                  </h2>
+                  <p className="text-sm text-ink-soft">Produk terlaris pilihan pelanggan</p>
+                </div>
+              </div>
+              <Link
+                to="/auth"
+                search={{ next: "/dashboard" }}
+                className="hidden shrink-0 items-center gap-1 text-sm font-semibold text-maroon-dark hover:underline md:inline-flex"
+              >
+                Lihat Semua <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
             </div>
 
-            <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {TIERS.map((t, i) => (
-                <div
-                  key={t.name}
-                  className="group flex flex-col overflow-hidden rounded-xl border border-line bg-white transition-shadow hover:shadow-lg"
-                >
-                  <div className="aspect-[4/3] bg-gradient-to-br from-maroon-dark to-burgundy-deep p-6 text-warm-white">
-                    <span className="font-[family-name:var(--font-serif)] text-4xl text-gold">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <p className="mt-6 text-[10px] font-bold uppercase tracking-[0.25em] text-gold">
-                      {t.tag}
-                    </p>
-                    <h3 className="mt-2 font-[family-name:var(--font-serif)] text-2xl leading-tight text-warm-white">
-                      {t.name}
-                    </h3>
-                  </div>
-                  <div className="flex flex-1 flex-col justify-between p-5">
-                    <p className="text-sm leading-relaxed text-ink-soft">{t.body}</p>
-                  </div>
-                </div>
+            <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
+              {BEST_SELLERS.map((p) => (
+                <ProductCard key={p.name} product={p} />
               ))}
             </div>
           </div>
         </section>
 
-        {/* Product catalog preview — grouped by pack size, BBF-style */}
-        <section id="produk" className="bg-white px-4 py-16 md:py-24 scroll-mt-24">
-          <div className="mx-auto max-w-6xl space-y-16">
+        {/* Product catalog — grouped by pack size */}
+        <section id="produk" className="bg-white px-4 py-12 md:py-16 scroll-mt-24">
+          <div className="mx-auto max-w-7xl space-y-12">
             {CATALOG.map((group) => (
               <div key={group.title}>
-                <div className="text-center">
-                  <h2 className="font-[family-name:var(--font-serif)] text-3xl text-ink md:text-4xl">
-                    {group.title}
-                  </h2>
-                  <div className="mx-auto mt-3 h-px w-16 bg-maroon-dark/40" />
+                <div className="flex items-end justify-between gap-4">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-maroon-dark">
+                      {group.pack}
+                    </p>
+                    <h3 className="mt-1 font-[family-name:var(--font-serif)] text-2xl font-bold text-ink md:text-3xl">
+                      {group.title}
+                    </h3>
+                  </div>
+                  <Link
+                    to="/auth"
+                    search={{ next: "/dashboard" }}
+                    className="hidden shrink-0 items-center gap-1 text-sm font-semibold text-maroon-dark hover:underline md:inline-flex"
+                  >
+                    Lihat Semua <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
                 </div>
-                <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
+                <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
                   {group.items.map((p) => (
-                    <Link
-                      key={p.name}
-                      to="/auth"
-                      search={{ next: "/dashboard" }}
-                      className="group flex flex-col text-center"
-                    >
-                      <div className="aspect-square overflow-hidden rounded-lg bg-[#f5f2e6]">
-                        <img
-                          src={p.image}
-                          alt={p.name}
-                          width={800}
-                          height={800}
-                          loading="lazy"
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                      </div>
-                      <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-soft">
-                        {group.pack}
-                      </p>
-                      <h3 className="mt-1 font-[family-name:var(--font-serif)] text-sm font-semibold uppercase tracking-wide text-ink group-hover:text-maroon-dark">
-                        {p.name}
-                      </h3>
-                      <p className="mt-1 text-sm text-ink-soft">{p.price}</p>
-                    </Link>
+                    <ProductCard key={p.name} product={p} />
                   ))}
                 </div>
               </div>
             ))}
-
-            <div className="text-center">
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="rounded-full border-maroon-dark px-8 py-6 text-sm font-semibold text-maroon-dark hover:bg-maroon-dark hover:text-warm-white"
-              >
-                <Link to="/auth" search={{ next: "/dashboard" }}>
-                  Lihat Semua Produk →
-                </Link>
-              </Button>
-            </div>
           </div>
         </section>
 
-        {/* How it works — cream continuous */}
-        <section id="cara-kerja" className="bg-ivory px-4 py-16 md:py-20 scroll-mt-24">
+        {/* How it works */}
+        <section id="cara-kerja" className="bg-ivory px-4 py-14 md:py-20 scroll-mt-24">
           <div className="mx-auto max-w-6xl">
             <div className="mx-auto max-w-2xl text-center">
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-maroon-dark">
                 Alur Pemesanan
               </p>
-              <h2 className="mt-3 font-[family-name:var(--font-serif)] text-4xl text-ink md:text-5xl">
-                Sederhana, Terlacak, Terverifikasi
+              <h2 className="mt-3 font-[family-name:var(--font-serif)] text-3xl text-ink md:text-4xl">
+                Belanja Mudah, Terlacak, Terverifikasi
               </h2>
             </div>
-            <div className="mt-12 grid gap-6 md:grid-cols-4">
+            <div className="mt-10 grid gap-6 md:grid-cols-4">
               {STEPS.map((s, i) => (
                 <div key={s.title} className="text-center">
                   <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-maroon-dark font-[family-name:var(--font-serif)] text-xl font-bold text-warm-white">
                     {i + 1}
                   </div>
-                  <h3 className="mt-4 font-[family-name:var(--font-serif)] text-xl font-bold text-ink">
+                  <h3 className="mt-4 font-[family-name:var(--font-serif)] text-lg font-bold text-ink">
                     {s.title}
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-ink-soft">{s.body}</p>
@@ -296,20 +304,20 @@ function Landing() {
         </section>
 
         {/* Final CTA */}
-        <section id="kemitraan" className="px-4 py-16 md:py-24 scroll-mt-24">
-          <div className="mx-auto max-w-4xl rounded-2xl bg-maroon-dark px-8 py-14 text-center text-warm-white shadow-[0_25px_60px_-30px_rgba(90,26,26,0.6)]">
-            <h2 className="font-[family-name:var(--font-serif)] text-4xl md:text-5xl">
+        <section id="kemitraan" className="px-4 py-14 md:py-20 scroll-mt-24">
+          <div className="mx-auto max-w-5xl rounded-2xl bg-maroon-dark px-8 py-12 text-center text-warm-white shadow-[0_25px_60px_-30px_rgba(90,26,26,0.6)] md:py-14">
+            <h2 className="font-[family-name:var(--font-serif)] text-3xl md:text-4xl">
               Siap standardisasi pengadaan daging Anda?
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-base text-warm-white/85">
-              Bergabung sebagai pembeli atau vendor dan rasakan akurasi stok serta
-              harga final transparan yang belum pernah ada di pasar B2B Jabodetabek.
+            <p className="mx-auto mt-3 max-w-xl text-sm text-warm-white/85 md:text-base">
+              Bergabung sebagai pembeli atau vendor dan rasakan akurasi stok serta harga
+              final transparan yang belum pernah ada di pasar B2B Jabodetabek.
             </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <div className="mt-7 flex flex-wrap justify-center gap-3">
               <Button
                 asChild
                 size="lg"
-                className="rounded-full bg-gold px-8 py-6 text-sm font-semibold text-maroon-dark hover:bg-gold-bright"
+                className="rounded-full bg-gold px-7 py-6 text-sm font-bold text-maroon-dark hover:bg-gold-bright"
               >
                 <Link to="/auth" search={{ next: "/dashboard" }}>Daftar sebagai pembeli</Link>
               </Button>
@@ -317,7 +325,7 @@ function Landing() {
                 asChild
                 size="lg"
                 variant="outline"
-                className="rounded-full border-warm-white/40 bg-transparent px-8 py-6 text-sm font-semibold text-warm-white hover:bg-warm-white hover:text-maroon-dark"
+                className="rounded-full border-warm-white/40 bg-transparent px-7 py-6 text-sm font-semibold text-warm-white hover:bg-warm-white hover:text-maroon-dark"
               >
                 <Link to="/auth" search={{ next: "/dashboard" }}>Daftar sebagai vendor</Link>
               </Button>
@@ -329,91 +337,277 @@ function Landing() {
       <footer className="border-t border-line/60 bg-[#f5f2e6] py-8 text-center text-xs text-ink-soft">
         <p>© {new Date().getFullYear()} MEATHUB Meat Hub · Jabodetabek B2B Marketplace</p>
       </footer>
+
+      {/* Floating WhatsApp */}
+      <a
+        href="https://wa.me/6281234567890?text=Halo%2C+saya+ingin+memesan."
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Chat WhatsApp"
+        className="fixed bottom-5 right-5 z-40 grid h-14 w-14 place-items-center rounded-full bg-[#25D366] text-white shadow-lg transition-transform hover:scale-105"
+      >
+        <MessageCircle className="h-6 w-6" aria-hidden="true" />
+      </a>
     </div>
   );
 }
 
+type Product = {
+  name: string;
+  price: string;
+  oldPrice?: string;
+  discount?: number;
+  category: string;
+  stock: string;
+  rating: number;
+  reviews: number;
+  image: string;
+  badge?: "Best Seller" | "Baru" | "Promo";
+};
+
+function ProductCard({ product: p }: { product: Product }) {
+  return (
+    <Link
+      to="/auth"
+      search={{ next: "/dashboard" }}
+      className="group flex flex-col overflow-hidden rounded-xl border border-line bg-white transition-all hover:-translate-y-0.5 hover:border-maroon-dark/30 hover:shadow-lg"
+    >
+      <div className="relative aspect-square overflow-hidden bg-[#f5f2e6]">
+        {p.badge && (
+          <span className="absolute left-2 top-2 z-10 inline-flex items-center gap-1 rounded-md bg-maroon-dark px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-warm-white shadow-sm">
+            <Star className="h-3 w-3 fill-gold text-gold" aria-hidden="true" /> {p.badge}
+          </span>
+        )}
+        {p.discount ? (
+          <span className="absolute right-2 top-2 z-10 rounded-md bg-gold px-2 py-1 text-[11px] font-bold text-maroon-dark shadow-sm">
+            -{p.discount}%
+          </span>
+        ) : null}
+        <img
+          src={p.image}
+          alt={p.name}
+          width={800}
+          height={800}
+          loading="lazy"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+      </div>
+      <div className="flex flex-1 flex-col p-3 md:p-4">
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-ink-soft">
+          {p.category}
+        </p>
+        <h3 className="mt-1 line-clamp-2 text-sm font-semibold text-ink group-hover:text-maroon-dark md:text-[15px]">
+          {p.name}
+        </h3>
+        <div className="mt-1 flex items-center gap-1 text-[11px] text-ink-soft">
+          <Star className="h-3 w-3 fill-gold text-gold" aria-hidden="true" />
+          <span className="font-semibold text-ink">{p.rating.toFixed(1)}</span>
+          <span>({p.reviews})</span>
+        </div>
+        <div className="mt-2 flex items-baseline gap-2">
+          <span className="font-[family-name:var(--font-serif)] text-base font-bold text-maroon-dark md:text-lg">
+            {p.price}
+          </span>
+          {p.oldPrice && (
+            <span className="text-xs text-ink-soft line-through">{p.oldPrice}</span>
+          )}
+        </div>
+        <p className="mt-1 text-[11px] text-ink-soft">Stok: {p.stock}</p>
+        <button
+          type="button"
+          className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-lg border border-maroon-dark bg-white px-3 py-2 text-xs font-bold text-maroon-dark transition-colors group-hover:bg-maroon-dark group-hover:text-warm-white"
+        >
+          <ShoppingCart className="h-3.5 w-3.5" aria-hidden="true" />+ Keranjang
+        </button>
+      </div>
+    </Link>
+  );
+}
+
+const NAV_CATEGORIES = [
+  "Semua Produk",
+  "Daging Sapi",
+  "Tenderloin",
+  "Sirloin",
+  "Ribs & Buntut",
+  "Slice & Yakiniku",
+  "Frozen Food",
+  "Promo",
+];
+
 const FEATURES = [
   {
     icon: <Truck className="h-5 w-5" />,
-    title: "Integrasi Ojek Online",
-    body: "Kurir instan & armada cold-chain terintegrasi dari Hub MEATHUB.",
+    title: "Cold-Chain Delivery",
+    body: "Kurir instan & armada terintegrasi",
   },
   {
     icon: <BadgeCheck className="h-5 w-5" />,
     title: "Halal & Higienis",
-    body: "Setiap potongan diverifikasi grade, brand, dan sertifikat halal.",
+    body: "Verified grade & sertifikat halal",
   },
   {
     icon: <Package className="h-5 w-5" />,
-    title: "Packaging Rapi & Aman",
-    body: "Vacuum-sealed dan dikemas cold-chain untuk menjaga freshness.",
+    title: "Vacuum Sealed",
+    body: "Packaging rapi menjaga freshness",
   },
   {
     icon: <Handshake className="h-5 w-5" />,
-    title: "Peluang Kemitraan",
-    body: "Program vendor & distributor terbuka untuk importir tangan pertama.",
+    title: "Harga B2B Transparan",
+    body: "Quote final berdasarkan berat aktual",
   },
 ];
 
 const STEPS = [
   { title: "Cari & Pilih", body: "Cari cut, brand, grade. Lihat harga landed & ETA." },
-  { title: "Harga Final Transparan", body: "Vendor mengonfirmasi berat aktual dalam 2 jam. Anda menerima quote final dan bisa setuju sebelum membayar." },
+  {
+    title: "Harga Final Transparan",
+    body: "Vendor konfirmasi berat aktual dalam 2 jam. Anda menerima quote final sebelum bayar.",
+  },
   { title: "Bayar Aman", body: "Pembayaran via deposit atau VA. Refund otomatis." },
   { title: "Lacak & Terima", body: "Dispatch dari Hub MEATHUB, lacak sampai POD." },
 ];
 
-const TIERS = [
+const BEST_SELLERS: Product[] = [
   {
-    name: "Commodity / Premium",
-    tag: "Workhorse",
-    body: "Platform memilih vendor terbaik berdasarkan harga landed dan keandalan.",
+    name: "Tenderloin Steak Premium 1 KG",
+    category: "Daging Sapi",
+    price: "Rp285.000",
+    oldPrice: "Rp320.000",
+    discount: 11,
+    stock: "25 kg",
+    rating: 4.9,
+    reviews: 45,
+    image: productTenderloin,
+    badge: "Best Seller",
   },
   {
-    name: "Super Premium",
-    tag: "Certified",
-    body: "Brand dengan sertifikasi asosiasi atau award terverifikasi.",
+    name: "Beef Slice Low Fat 1 KG",
+    category: "Daging Sapi",
+    price: "Rp130.000",
+    oldPrice: "Rp145.000",
+    discount: 10,
+    stock: "40 kg",
+    rating: 4.8,
+    reviews: 62,
+    image: productSlice,
+    badge: "Best Seller",
   },
   {
-    name: "Undervalued QC",
-    tag: "Daily Deals",
-    body: "Produk premium underpriced karena administrasi, dengan QC eksplisit.",
+    name: "Buntut Sapi Fresh 1 KG",
+    category: "Daging Sapi",
+    price: "Rp150.000",
+    stock: "18 kg",
+    rating: 4.7,
+    reviews: 28,
+    image: productOxtail,
+    badge: "Best Seller",
   },
   {
-    name: "MEATHUB House",
-    tag: "House Brand",
-    body: "House brand MEATHUB dengan standar marbling & pH terpajang.",
+    name: "Daging Teriyaki Marinated 1 KG",
+    category: "Daging Sapi",
+    price: "Rp150.000",
+    oldPrice: "Rp165.000",
+    discount: 9,
+    stock: "22 kg",
+    rating: 4.8,
+    reviews: 37,
+    image: productRibs,
+    badge: "Promo",
   },
 ];
 
 const CATALOG: {
   title: string;
   pack: string;
-  items: { name: string; price: string; image: string }[];
+  items: Product[];
 }[] = [
   {
     title: "Daging Sapi Segar Kemasan 1 Kg",
     pack: "Meat Pack · 1 kg",
     items: [
-      { name: "Daging Slice Low Fat 1 KG", price: "Rp130.000", image: productSlice },
-      { name: "Daging Teriyaki 1 KG", price: "Rp150.000", image: productRibs },
-      { name: "Tenderloin Steak 1 KG", price: "Rp285.000", image: productTenderloin },
-      { name: "Buntut Sapi 1 KG", price: "Rp150.000", image: productOxtail },
+      {
+        name: "Daging Slice Low Fat 1 KG",
+        category: "Daging Sapi",
+        price: "Rp130.000",
+        stock: "40 kg",
+        rating: 4.8,
+        reviews: 62,
+        image: productSlice,
+      },
+      {
+        name: "Daging Teriyaki 1 KG",
+        category: "Daging Sapi",
+        price: "Rp150.000",
+        stock: "22 kg",
+        rating: 4.7,
+        reviews: 37,
+        image: productRibs,
+      },
+      {
+        name: "Tenderloin Steak 1 KG",
+        category: "Daging Sapi",
+        price: "Rp285.000",
+        stock: "25 kg",
+        rating: 4.9,
+        reviews: 45,
+        image: productTenderloin,
+        badge: "Best Seller",
+      },
+      {
+        name: "Buntut Sapi 1 KG",
+        category: "Daging Sapi",
+        price: "Rp150.000",
+        stock: "18 kg",
+        rating: 4.7,
+        reviews: 28,
+        image: productOxtail,
+      },
     ],
   },
   {
     title: "Daging Sapi Segar Kemasan 500 Gram",
     pack: "Meat Pack · 500 g",
     items: [
-      { name: "Beef Slice AUS 500 GR", price: "Rp84.000", image: productSlice },
-      { name: "Daging Teriyaki 500 GR", price: "Rp79.000", image: productRibs },
-      { name: "Tenderloin 500 GR", price: "Rp145.000", image: productTenderloin },
-      { name: "Buntut Sapi 500 GR", price: "Rp79.000", image: productOxtail },
+      {
+        name: "Beef Slice AUS 500 GR",
+        category: "Daging Sapi",
+        price: "Rp84.000",
+        oldPrice: "Rp95.000",
+        discount: 11,
+        stock: "60 pcs",
+        rating: 4.8,
+        reviews: 52,
+        image: productSlice,
+        badge: "Promo",
+      },
+      {
+        name: "Daging Teriyaki 500 GR",
+        category: "Daging Sapi",
+        price: "Rp79.000",
+        stock: "35 pcs",
+        rating: 4.6,
+        reviews: 24,
+        image: productRibs,
+      },
+      {
+        name: "Tenderloin 500 GR",
+        category: "Daging Sapi",
+        price: "Rp145.000",
+        stock: "20 pcs",
+        rating: 4.9,
+        reviews: 31,
+        image: productTenderloin,
+      },
+      {
+        name: "Buntut Sapi 500 GR",
+        category: "Daging Sapi",
+        price: "Rp79.000",
+        stock: "28 pcs",
+        rating: 4.7,
+        reviews: 19,
+        image: productOxtail,
+      },
     ],
   },
 ];
-
-
-// Icon aliases retained for tree-shaking hints
-void Search;
-void ShieldCheck;
