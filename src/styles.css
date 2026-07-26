@@ -24,6 +24,8 @@
 @theme inline {
   --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Archivo Expanded", "Archivo", sans-serif;
+  --font-headline: "Archivo Black", "Archivo Expanded", "Archivo", sans-serif;
+  --font-body-alt: "Hind", ui-sans-serif, system-ui, sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -60,6 +62,11 @@
   --color-gold-soft: var(--gold-soft);
   --color-success: var(--success);
   --color-line: var(--line);
+
+  --color-noir: var(--noir);
+  --color-noir-surface: var(--noir-surface);
+  --color-gold-bright: var(--gold-bright);
+  --color-gold-cream: var(--gold-cream);
 
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
