@@ -18,8 +18,8 @@ export const processReturnRefund = createServerFn({ method: "POST" })
       _return_id: data.return_id,
       _amount: data.amount,
       _method: data.method as never,
-      _reference: data.reference ?? null,
-      _notes: data.notes ?? null,
+      _reference: data.reference,
+      _notes: data.notes,
     });
     if (error) throw new Error(error.message);
     return { refund_id: refundId };
