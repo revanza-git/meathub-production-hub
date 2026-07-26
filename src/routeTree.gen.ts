@@ -17,11 +17,15 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedPartnerIndexRouteImport } from './routes/_authenticated/partner/index'
 import { Route as AuthenticatedBuyerIndexRouteImport } from './routes/_authenticated/buyer/index'
 import { Route as AuthenticatedBuyerSearchRouteImport } from './routes/_authenticated/buyer/search'
+import { Route as AuthenticatedBuyerOrdersRouteImport } from './routes/_authenticated/buyer/orders'
+import { Route as AuthenticatedBuyerCartRouteImport } from './routes/_authenticated/buyer/cart'
 import { Route as AuthenticatedBuyerAddressesRouteImport } from './routes/_authenticated/buyer/addresses'
+import { Route as AuthenticatedPartnerVendorOrdersRouteImport } from './routes/_authenticated/partner/vendor/orders'
 import { Route as AuthenticatedPartnerVendorOffersRouteImport } from './routes/_authenticated/partner/vendor/offers'
 import { Route as AuthenticatedPartnerAdminOrgsRouteImport } from './routes/_authenticated/partner/admin/orgs'
 import { Route as AuthenticatedPartnerAdminCatalogRouteImport } from './routes/_authenticated/partner/admin/catalog'
 import { Route as AuthenticatedBuyerProductsIdRouteImport } from './routes/_authenticated/buyer/products.$id'
+import { Route as AuthenticatedBuyerOrdersIdRouteImport } from './routes/_authenticated/buyer/orders.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -64,10 +68,27 @@ const AuthenticatedBuyerSearchRoute =
     path: '/buyer/search',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedBuyerOrdersRoute =
+  AuthenticatedBuyerOrdersRouteImport.update({
+    id: '/buyer/orders',
+    path: '/buyer/orders',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedBuyerCartRoute = AuthenticatedBuyerCartRouteImport.update({
+  id: '/buyer/cart',
+  path: '/buyer/cart',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedBuyerAddressesRoute =
   AuthenticatedBuyerAddressesRouteImport.update({
     id: '/buyer/addresses',
     path: '/buyer/addresses',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPartnerVendorOrdersRoute =
+  AuthenticatedPartnerVendorOrdersRouteImport.update({
+    id: '/partner/vendor/orders',
+    path: '/partner/vendor/orders',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPartnerVendorOffersRoute =
@@ -94,6 +115,12 @@ const AuthenticatedBuyerProductsIdRoute =
     path: '/buyer/products/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedBuyerOrdersIdRoute =
+  AuthenticatedBuyerOrdersIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedBuyerOrdersRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -101,13 +128,17 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/buyer/addresses': typeof AuthenticatedBuyerAddressesRoute
+  '/buyer/cart': typeof AuthenticatedBuyerCartRoute
+  '/buyer/orders': typeof AuthenticatedBuyerOrdersRouteWithChildren
   '/buyer/search': typeof AuthenticatedBuyerSearchRoute
   '/buyer/': typeof AuthenticatedBuyerIndexRoute
   '/partner/': typeof AuthenticatedPartnerIndexRoute
+  '/buyer/orders/$id': typeof AuthenticatedBuyerOrdersIdRoute
   '/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
   '/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
   '/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
   '/partner/vendor/offers': typeof AuthenticatedPartnerVendorOffersRoute
+  '/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -115,13 +146,17 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/buyer/addresses': typeof AuthenticatedBuyerAddressesRoute
+  '/buyer/cart': typeof AuthenticatedBuyerCartRoute
+  '/buyer/orders': typeof AuthenticatedBuyerOrdersRouteWithChildren
   '/buyer/search': typeof AuthenticatedBuyerSearchRoute
   '/buyer': typeof AuthenticatedBuyerIndexRoute
   '/partner': typeof AuthenticatedPartnerIndexRoute
+  '/buyer/orders/$id': typeof AuthenticatedBuyerOrdersIdRoute
   '/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
   '/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
   '/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
   '/partner/vendor/offers': typeof AuthenticatedPartnerVendorOffersRoute
+  '/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -131,13 +166,17 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/buyer/addresses': typeof AuthenticatedBuyerAddressesRoute
+  '/_authenticated/buyer/cart': typeof AuthenticatedBuyerCartRoute
+  '/_authenticated/buyer/orders': typeof AuthenticatedBuyerOrdersRouteWithChildren
   '/_authenticated/buyer/search': typeof AuthenticatedBuyerSearchRoute
   '/_authenticated/buyer/': typeof AuthenticatedBuyerIndexRoute
   '/_authenticated/partner/': typeof AuthenticatedPartnerIndexRoute
+  '/_authenticated/buyer/orders/$id': typeof AuthenticatedBuyerOrdersIdRoute
   '/_authenticated/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
   '/_authenticated/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
   '/_authenticated/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
   '/_authenticated/partner/vendor/offers': typeof AuthenticatedPartnerVendorOffersRoute
+  '/_authenticated/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -147,13 +186,17 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/onboarding'
     | '/buyer/addresses'
+    | '/buyer/cart'
+    | '/buyer/orders'
     | '/buyer/search'
     | '/buyer/'
     | '/partner/'
+    | '/buyer/orders/$id'
     | '/buyer/products/$id'
     | '/partner/admin/catalog'
     | '/partner/admin/orgs'
     | '/partner/vendor/offers'
+    | '/partner/vendor/orders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -161,13 +204,17 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/onboarding'
     | '/buyer/addresses'
+    | '/buyer/cart'
+    | '/buyer/orders'
     | '/buyer/search'
     | '/buyer'
     | '/partner'
+    | '/buyer/orders/$id'
     | '/buyer/products/$id'
     | '/partner/admin/catalog'
     | '/partner/admin/orgs'
     | '/partner/vendor/offers'
+    | '/partner/vendor/orders'
   id:
     | '__root__'
     | '/'
@@ -176,13 +223,17 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/onboarding'
     | '/_authenticated/buyer/addresses'
+    | '/_authenticated/buyer/cart'
+    | '/_authenticated/buyer/orders'
     | '/_authenticated/buyer/search'
     | '/_authenticated/buyer/'
     | '/_authenticated/partner/'
+    | '/_authenticated/buyer/orders/$id'
     | '/_authenticated/buyer/products/$id'
     | '/_authenticated/partner/admin/catalog'
     | '/_authenticated/partner/admin/orgs'
     | '/_authenticated/partner/vendor/offers'
+    | '/_authenticated/partner/vendor/orders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -249,11 +300,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBuyerSearchRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/buyer/orders': {
+      id: '/_authenticated/buyer/orders'
+      path: '/buyer/orders'
+      fullPath: '/buyer/orders'
+      preLoaderRoute: typeof AuthenticatedBuyerOrdersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/buyer/cart': {
+      id: '/_authenticated/buyer/cart'
+      path: '/buyer/cart'
+      fullPath: '/buyer/cart'
+      preLoaderRoute: typeof AuthenticatedBuyerCartRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/buyer/addresses': {
       id: '/_authenticated/buyer/addresses'
       path: '/buyer/addresses'
       fullPath: '/buyer/addresses'
       preLoaderRoute: typeof AuthenticatedBuyerAddressesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/partner/vendor/orders': {
+      id: '/_authenticated/partner/vendor/orders'
+      path: '/partner/vendor/orders'
+      fullPath: '/partner/vendor/orders'
+      preLoaderRoute: typeof AuthenticatedPartnerVendorOrdersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/partner/vendor/offers': {
@@ -284,13 +356,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBuyerProductsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/buyer/orders/$id': {
+      id: '/_authenticated/buyer/orders/$id'
+      path: '/$id'
+      fullPath: '/buyer/orders/$id'
+      preLoaderRoute: typeof AuthenticatedBuyerOrdersIdRouteImport
+      parentRoute: typeof AuthenticatedBuyerOrdersRoute
+    }
   }
 }
+
+interface AuthenticatedBuyerOrdersRouteChildren {
+  AuthenticatedBuyerOrdersIdRoute: typeof AuthenticatedBuyerOrdersIdRoute
+}
+
+const AuthenticatedBuyerOrdersRouteChildren: AuthenticatedBuyerOrdersRouteChildren =
+  {
+    AuthenticatedBuyerOrdersIdRoute: AuthenticatedBuyerOrdersIdRoute,
+  }
+
+const AuthenticatedBuyerOrdersRouteWithChildren =
+  AuthenticatedBuyerOrdersRoute._addFileChildren(
+    AuthenticatedBuyerOrdersRouteChildren,
+  )
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedBuyerAddressesRoute: typeof AuthenticatedBuyerAddressesRoute
+  AuthenticatedBuyerCartRoute: typeof AuthenticatedBuyerCartRoute
+  AuthenticatedBuyerOrdersRoute: typeof AuthenticatedBuyerOrdersRouteWithChildren
   AuthenticatedBuyerSearchRoute: typeof AuthenticatedBuyerSearchRoute
   AuthenticatedBuyerIndexRoute: typeof AuthenticatedBuyerIndexRoute
   AuthenticatedPartnerIndexRoute: typeof AuthenticatedPartnerIndexRoute
@@ -298,12 +393,15 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPartnerAdminCatalogRoute: typeof AuthenticatedPartnerAdminCatalogRoute
   AuthenticatedPartnerAdminOrgsRoute: typeof AuthenticatedPartnerAdminOrgsRoute
   AuthenticatedPartnerVendorOffersRoute: typeof AuthenticatedPartnerVendorOffersRoute
+  AuthenticatedPartnerVendorOrdersRoute: typeof AuthenticatedPartnerVendorOrdersRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedBuyerAddressesRoute: AuthenticatedBuyerAddressesRoute,
+  AuthenticatedBuyerCartRoute: AuthenticatedBuyerCartRoute,
+  AuthenticatedBuyerOrdersRoute: AuthenticatedBuyerOrdersRouteWithChildren,
   AuthenticatedBuyerSearchRoute: AuthenticatedBuyerSearchRoute,
   AuthenticatedBuyerIndexRoute: AuthenticatedBuyerIndexRoute,
   AuthenticatedPartnerIndexRoute: AuthenticatedPartnerIndexRoute,
@@ -311,6 +409,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPartnerAdminCatalogRoute: AuthenticatedPartnerAdminCatalogRoute,
   AuthenticatedPartnerAdminOrgsRoute: AuthenticatedPartnerAdminOrgsRoute,
   AuthenticatedPartnerVendorOffersRoute: AuthenticatedPartnerVendorOffersRoute,
+  AuthenticatedPartnerVendorOrdersRoute: AuthenticatedPartnerVendorOrdersRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { listMyOrders } from "@/lib/orders.functions";
 
-export const Route = createFileRoute("/_authenticated/buyer/orders/")({
+export const Route = createFileRoute("/_authenticated/buyer/orders")({
   head: () => ({ meta: [{ title: "Pesanan — SBMEAT" }, { name: "robots", content: "noindex" }] }),
   component: OrdersPage,
 });
