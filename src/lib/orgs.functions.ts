@@ -46,7 +46,7 @@ export const reviewOrganization = createServerFn({ method: "POST" })
     const { error } = await context.supabase.rpc("review_organization", {
       _org_id: data.org_id,
       _decision: data.decision,
-      _reason: data.reason ?? null,
+      _reason: data.reason,
     });
     if (error) throw new Error(error.message);
     return { ok: true };
