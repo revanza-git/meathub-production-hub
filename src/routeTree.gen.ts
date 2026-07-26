@@ -19,6 +19,7 @@ import { Route as AuthenticatedBuyerIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedBuyerSearchRouteImport } from './routes/_authenticated/buyer/search'
 import { Route as AuthenticatedBuyerOrdersRouteImport } from './routes/_authenticated/buyer/orders'
 import { Route as AuthenticatedBuyerCartRouteImport } from './routes/_authenticated/buyer/cart'
+import { Route as AuthenticatedBuyerAiRouteImport } from './routes/_authenticated/buyer/ai'
 import { Route as AuthenticatedBuyerAddressesRouteImport } from './routes/_authenticated/buyer/addresses'
 import { Route as AuthenticatedPartnerVendorReliabilityRouteImport } from './routes/_authenticated/partner/vendor/reliability'
 import { Route as AuthenticatedPartnerVendorPayoutsRouteImport } from './routes/_authenticated/partner/vendor/payouts'
@@ -89,6 +90,11 @@ const AuthenticatedBuyerOrdersRoute =
 const AuthenticatedBuyerCartRoute = AuthenticatedBuyerCartRouteImport.update({
   id: '/buyer/cart',
   path: '/buyer/cart',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBuyerAiRoute = AuthenticatedBuyerAiRouteImport.update({
+  id: '/buyer/ai',
+  path: '/buyer/ai',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedBuyerAddressesRoute =
@@ -212,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/buyer/addresses': typeof AuthenticatedBuyerAddressesRoute
+  '/buyer/ai': typeof AuthenticatedBuyerAiRoute
   '/buyer/cart': typeof AuthenticatedBuyerCartRoute
   '/buyer/orders': typeof AuthenticatedBuyerOrdersRouteWithChildren
   '/buyer/search': typeof AuthenticatedBuyerSearchRoute
@@ -242,6 +249,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/buyer/addresses': typeof AuthenticatedBuyerAddressesRoute
+  '/buyer/ai': typeof AuthenticatedBuyerAiRoute
   '/buyer/cart': typeof AuthenticatedBuyerCartRoute
   '/buyer/orders': typeof AuthenticatedBuyerOrdersRouteWithChildren
   '/buyer/search': typeof AuthenticatedBuyerSearchRoute
@@ -274,6 +282,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/buyer/addresses': typeof AuthenticatedBuyerAddressesRoute
+  '/_authenticated/buyer/ai': typeof AuthenticatedBuyerAiRoute
   '/_authenticated/buyer/cart': typeof AuthenticatedBuyerCartRoute
   '/_authenticated/buyer/orders': typeof AuthenticatedBuyerOrdersRouteWithChildren
   '/_authenticated/buyer/search': typeof AuthenticatedBuyerSearchRoute
@@ -306,6 +315,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/onboarding'
     | '/buyer/addresses'
+    | '/buyer/ai'
     | '/buyer/cart'
     | '/buyer/orders'
     | '/buyer/search'
@@ -336,6 +346,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/onboarding'
     | '/buyer/addresses'
+    | '/buyer/ai'
     | '/buyer/cart'
     | '/buyer/orders'
     | '/buyer/search'
@@ -367,6 +378,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/onboarding'
     | '/_authenticated/buyer/addresses'
+    | '/_authenticated/buyer/ai'
     | '/_authenticated/buyer/cart'
     | '/_authenticated/buyer/orders'
     | '/_authenticated/buyer/search'
@@ -468,6 +480,13 @@ declare module '@tanstack/react-router' {
       path: '/buyer/cart'
       fullPath: '/buyer/cart'
       preLoaderRoute: typeof AuthenticatedBuyerCartRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/buyer/ai': {
+      id: '/_authenticated/buyer/ai'
+      path: '/buyer/ai'
+      fullPath: '/buyer/ai'
+      preLoaderRoute: typeof AuthenticatedBuyerAiRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/buyer/addresses': {
@@ -624,6 +643,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedBuyerAddressesRoute: typeof AuthenticatedBuyerAddressesRoute
+  AuthenticatedBuyerAiRoute: typeof AuthenticatedBuyerAiRoute
   AuthenticatedBuyerCartRoute: typeof AuthenticatedBuyerCartRoute
   AuthenticatedBuyerOrdersRoute: typeof AuthenticatedBuyerOrdersRouteWithChildren
   AuthenticatedBuyerSearchRoute: typeof AuthenticatedBuyerSearchRoute
@@ -652,6 +672,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedBuyerAddressesRoute: AuthenticatedBuyerAddressesRoute,
+  AuthenticatedBuyerAiRoute: AuthenticatedBuyerAiRoute,
   AuthenticatedBuyerCartRoute: AuthenticatedBuyerCartRoute,
   AuthenticatedBuyerOrdersRoute: AuthenticatedBuyerOrdersRouteWithChildren,
   AuthenticatedBuyerSearchRoute: AuthenticatedBuyerSearchRoute,
