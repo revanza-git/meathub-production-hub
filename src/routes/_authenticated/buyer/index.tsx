@@ -95,6 +95,7 @@ function BuyerHome() {
             <Link to="/buyer/search"><Button size="sm">Mulai cari</Button></Link>
             <Link to="/buyer/cart"><Button size="sm" variant="secondary">Keranjang</Button></Link>
             <Link to="/buyer/orders"><Button size="sm" variant="outline">Pesanan</Button></Link>
+            <Link to="/buyer/ai"><Button size="sm" variant="outline">AI Konsultan</Button></Link>
           </CardContent>
 
         </Card>
