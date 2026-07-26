@@ -25,6 +25,7 @@ import { Route as AuthenticatedPartnerVendorOffersRouteImport } from './routes/_
 import { Route as AuthenticatedPartnerVendorFulfillmentsRouteImport } from './routes/_authenticated/partner/vendor/fulfillments'
 import { Route as AuthenticatedPartnerQcReturnsRouteImport } from './routes/_authenticated/partner/qc/returns'
 import { Route as AuthenticatedPartnerHubInboundRouteImport } from './routes/_authenticated/partner/hub/inbound'
+import { Route as AuthenticatedPartnerFinanceInvoicesRouteImport } from './routes/_authenticated/partner/finance/invoices'
 import { Route as AuthenticatedPartnerCourierDeliveriesRouteImport } from './routes/_authenticated/partner/courier/deliveries'
 import { Route as AuthenticatedPartnerAdminOrgsRouteImport } from './routes/_authenticated/partner/admin/orgs'
 import { Route as AuthenticatedPartnerAdminCatalogRouteImport } from './routes/_authenticated/partner/admin/catalog'
@@ -119,6 +120,12 @@ const AuthenticatedPartnerHubInboundRoute =
     path: '/partner/hub/inbound',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPartnerFinanceInvoicesRoute =
+  AuthenticatedPartnerFinanceInvoicesRouteImport.update({
+    id: '/partner/finance/invoices',
+    path: '/partner/finance/invoices',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPartnerCourierDeliveriesRoute =
   AuthenticatedPartnerCourierDeliveriesRouteImport.update({
     id: '/partner/courier/deliveries',
@@ -166,6 +173,7 @@ export interface FileRoutesByFullPath {
   '/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
   '/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
   '/partner/courier/deliveries': typeof AuthenticatedPartnerCourierDeliveriesRoute
+  '/partner/finance/invoices': typeof AuthenticatedPartnerFinanceInvoicesRoute
   '/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
   '/partner/qc/returns': typeof AuthenticatedPartnerQcReturnsRoute
   '/partner/vendor/fulfillments': typeof AuthenticatedPartnerVendorFulfillmentsRoute
@@ -188,6 +196,7 @@ export interface FileRoutesByTo {
   '/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
   '/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
   '/partner/courier/deliveries': typeof AuthenticatedPartnerCourierDeliveriesRoute
+  '/partner/finance/invoices': typeof AuthenticatedPartnerFinanceInvoicesRoute
   '/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
   '/partner/qc/returns': typeof AuthenticatedPartnerQcReturnsRoute
   '/partner/vendor/fulfillments': typeof AuthenticatedPartnerVendorFulfillmentsRoute
@@ -212,6 +221,7 @@ export interface FileRoutesById {
   '/_authenticated/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
   '/_authenticated/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
   '/_authenticated/partner/courier/deliveries': typeof AuthenticatedPartnerCourierDeliveriesRoute
+  '/_authenticated/partner/finance/invoices': typeof AuthenticatedPartnerFinanceInvoicesRoute
   '/_authenticated/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
   '/_authenticated/partner/qc/returns': typeof AuthenticatedPartnerQcReturnsRoute
   '/_authenticated/partner/vendor/fulfillments': typeof AuthenticatedPartnerVendorFulfillmentsRoute
@@ -236,6 +246,7 @@ export interface FileRouteTypes {
     | '/partner/admin/catalog'
     | '/partner/admin/orgs'
     | '/partner/courier/deliveries'
+    | '/partner/finance/invoices'
     | '/partner/hub/inbound'
     | '/partner/qc/returns'
     | '/partner/vendor/fulfillments'
@@ -258,6 +269,7 @@ export interface FileRouteTypes {
     | '/partner/admin/catalog'
     | '/partner/admin/orgs'
     | '/partner/courier/deliveries'
+    | '/partner/finance/invoices'
     | '/partner/hub/inbound'
     | '/partner/qc/returns'
     | '/partner/vendor/fulfillments'
@@ -281,6 +293,7 @@ export interface FileRouteTypes {
     | '/_authenticated/partner/admin/catalog'
     | '/_authenticated/partner/admin/orgs'
     | '/_authenticated/partner/courier/deliveries'
+    | '/_authenticated/partner/finance/invoices'
     | '/_authenticated/partner/hub/inbound'
     | '/_authenticated/partner/qc/returns'
     | '/_authenticated/partner/vendor/fulfillments'
@@ -408,6 +421,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPartnerHubInboundRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/partner/finance/invoices': {
+      id: '/_authenticated/partner/finance/invoices'
+      path: '/partner/finance/invoices'
+      fullPath: '/partner/finance/invoices'
+      preLoaderRoute: typeof AuthenticatedPartnerFinanceInvoicesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/partner/courier/deliveries': {
       id: '/_authenticated/partner/courier/deliveries'
       path: '/partner/courier/deliveries'
@@ -473,6 +493,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPartnerAdminCatalogRoute: typeof AuthenticatedPartnerAdminCatalogRoute
   AuthenticatedPartnerAdminOrgsRoute: typeof AuthenticatedPartnerAdminOrgsRoute
   AuthenticatedPartnerCourierDeliveriesRoute: typeof AuthenticatedPartnerCourierDeliveriesRoute
+  AuthenticatedPartnerFinanceInvoicesRoute: typeof AuthenticatedPartnerFinanceInvoicesRoute
   AuthenticatedPartnerHubInboundRoute: typeof AuthenticatedPartnerHubInboundRoute
   AuthenticatedPartnerQcReturnsRoute: typeof AuthenticatedPartnerQcReturnsRoute
   AuthenticatedPartnerVendorFulfillmentsRoute: typeof AuthenticatedPartnerVendorFulfillmentsRoute
@@ -494,6 +515,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPartnerAdminOrgsRoute: AuthenticatedPartnerAdminOrgsRoute,
   AuthenticatedPartnerCourierDeliveriesRoute:
     AuthenticatedPartnerCourierDeliveriesRoute,
+  AuthenticatedPartnerFinanceInvoicesRoute:
+    AuthenticatedPartnerFinanceInvoicesRoute,
   AuthenticatedPartnerHubInboundRoute: AuthenticatedPartnerHubInboundRoute,
   AuthenticatedPartnerQcReturnsRoute: AuthenticatedPartnerQcReturnsRoute,
   AuthenticatedPartnerVendorFulfillmentsRoute:
