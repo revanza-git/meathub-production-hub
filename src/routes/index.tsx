@@ -30,7 +30,7 @@ function Landing() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <Link to="/" className="flex items-center gap-2">
             <span className="grid h-9 w-9 place-items-center rounded-md bg-white/10 text-[10px] font-bold tracking-widest">
-              SB
+              MH
             </span>
             <div>
               <div className="font-display text-lg font-bold leading-none">MEATHUB</div>

@@ -37,7 +37,7 @@ export function AppShell({
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <Link to="/" className="flex items-center gap-2" aria-label="Beranda MEATHUB">
             <span className="grid h-8 w-8 place-items-center rounded-md bg-white/10 text-[10px] font-bold tracking-widest">
-              SB
+              MH
             </span>
             <div className="leading-tight">
               <div className="font-display text-sm font-bold">{title}</div>
