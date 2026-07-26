@@ -112,5 +112,8 @@ export const listAuditEvents = createServerFn({ method: "GET" })
     if (data.organization_id) q = q.eq("organization_id", data.organization_id);
     const { data: rows, error } = await q;
     if (error) throw new Error(error.message);
-    return rows ?? [];
+    return (rows ?? []).map((r) => ({
+      ...r,
+      ip_address: r.ip_address ? String(r.ip_address) : null,
+    })) as Array<Omit<NonNullable<typeof rows>[number], "ip_address"> & { ip_address: string | null }>;
   });
