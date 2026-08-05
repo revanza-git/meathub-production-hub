@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as KeranjangRouteImport } from './routes/keranjang'
+import { Route as KelolaRouteImport } from './routes/kelola'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -55,6 +56,11 @@ import { Route as AuthenticatedBuyerOrdersIdRouteImport } from './routes/_authen
 const KeranjangRoute = KeranjangRouteImport.update({
   id: '/keranjang',
   path: '/keranjang',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KelolaRoute = KelolaRouteImport.update({
+  id: '/kelola',
+  path: '/kelola',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -288,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
+  '/kelola': typeof KelolaRoute
   '/keranjang': typeof KeranjangRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -331,6 +338,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
+  '/kelola': typeof KelolaRoute
   '/keranjang': typeof KeranjangRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -376,6 +384,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
+  '/kelola': typeof KelolaRoute
   '/keranjang': typeof KeranjangRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -421,6 +430,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/checkout'
+    | '/kelola'
     | '/keranjang'
     | '/dashboard'
     | '/onboarding'
@@ -464,6 +474,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/checkout'
+    | '/kelola'
     | '/keranjang'
     | '/dashboard'
     | '/onboarding'
@@ -508,6 +519,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/checkout'
+    | '/kelola'
     | '/keranjang'
     | '/_authenticated/dashboard'
     | '/_authenticated/onboarding'
@@ -553,6 +565,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   CheckoutRoute: typeof CheckoutRoute
+  KelolaRoute: typeof KelolaRoute
   KeranjangRoute: typeof KeranjangRoute
   AkunWishlistRoute: typeof AkunWishlistRoute
   BayarOrderIdRoute: typeof BayarOrderIdRoute
@@ -573,6 +586,13 @@ declare module '@tanstack/react-router' {
       path: '/keranjang'
       fullPath: '/keranjang'
       preLoaderRoute: typeof KeranjangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kelola': {
+      id: '/kelola'
+      path: '/kelola'
+      fullPath: '/kelola'
+      preLoaderRoute: typeof KelolaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -953,6 +973,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   CheckoutRoute: CheckoutRoute,
+  KelolaRoute: KelolaRoute,
   KeranjangRoute: KeranjangRoute,
   AkunWishlistRoute: AkunWishlistRoute,
   BayarOrderIdRoute: BayarOrderIdRoute,
