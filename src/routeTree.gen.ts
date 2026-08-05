@@ -21,6 +21,7 @@ import { Route as ProdukIdRouteImport } from './routes/produk.$id'
 import { Route as BayarOrderIdRouteImport } from './routes/bayar.$orderId'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AkunPesananIndexRouteImport } from './routes/akun.pesanan.index'
 import { Route as AuthenticatedPartnerIndexRouteImport } from './routes/_authenticated/partner/index'
 import { Route as AuthenticatedBuyerIndexRouteImport } from './routes/_authenticated/buyer/index'
 import { Route as AuthenticatedBuyerSearchRouteImport } from './routes/_authenticated/buyer/search'
@@ -105,6 +106,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AkunPesananIndexRoute = AkunPesananIndexRouteImport.update({
+  id: '/akun/pesanan/',
+  path: '/akun/pesanan/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedPartnerIndexRoute =
   AuthenticatedPartnerIndexRouteImport.update({
@@ -273,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/buyer/search': typeof AuthenticatedBuyerSearchRoute
   '/buyer/': typeof AuthenticatedBuyerIndexRoute
   '/partner/': typeof AuthenticatedPartnerIndexRoute
+  '/akun/pesanan/': typeof AkunPesananIndexRoute
   '/buyer/orders/$id': typeof AuthenticatedBuyerOrdersIdRoute
   '/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
   '/partner/admin/audit': typeof AuthenticatedPartnerAdminAuditRoute
@@ -311,6 +318,7 @@ export interface FileRoutesByTo {
   '/buyer/search': typeof AuthenticatedBuyerSearchRoute
   '/buyer': typeof AuthenticatedBuyerIndexRoute
   '/partner': typeof AuthenticatedPartnerIndexRoute
+  '/akun/pesanan': typeof AkunPesananIndexRoute
   '/buyer/orders/$id': typeof AuthenticatedBuyerOrdersIdRoute
   '/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
   '/partner/admin/audit': typeof AuthenticatedPartnerAdminAuditRoute
@@ -351,6 +359,7 @@ export interface FileRoutesById {
   '/_authenticated/buyer/search': typeof AuthenticatedBuyerSearchRoute
   '/_authenticated/buyer/': typeof AuthenticatedBuyerIndexRoute
   '/_authenticated/partner/': typeof AuthenticatedPartnerIndexRoute
+  '/akun/pesanan/': typeof AkunPesananIndexRoute
   '/_authenticated/buyer/orders/$id': typeof AuthenticatedBuyerOrdersIdRoute
   '/_authenticated/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
   '/_authenticated/partner/admin/audit': typeof AuthenticatedPartnerAdminAuditRoute
@@ -391,6 +400,7 @@ export interface FileRouteTypes {
     | '/buyer/search'
     | '/buyer/'
     | '/partner/'
+    | '/akun/pesanan/'
     | '/buyer/orders/$id'
     | '/buyer/products/$id'
     | '/partner/admin/audit'
@@ -429,6 +439,7 @@ export interface FileRouteTypes {
     | '/buyer/search'
     | '/buyer'
     | '/partner'
+    | '/akun/pesanan'
     | '/buyer/orders/$id'
     | '/buyer/products/$id'
     | '/partner/admin/audit'
@@ -468,6 +479,7 @@ export interface FileRouteTypes {
     | '/_authenticated/buyer/search'
     | '/_authenticated/buyer/'
     | '/_authenticated/partner/'
+    | '/akun/pesanan/'
     | '/_authenticated/buyer/orders/$id'
     | '/_authenticated/buyer/products/$id'
     | '/_authenticated/partner/admin/audit'
@@ -499,6 +511,7 @@ export interface RootRouteChildren {
   TokoSlugRoute: typeof TokoSlugRoute
   AkunIndexRoute: typeof AkunIndexRoute
   ProdukIndexRoute: typeof ProdukIndexRoute
+  AkunPesananIndexRoute: typeof AkunPesananIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -586,6 +599,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/akun/pesanan/': {
+      id: '/akun/pesanan/'
+      path: '/akun/pesanan'
+      fullPath: '/akun/pesanan/'
+      preLoaderRoute: typeof AkunPesananIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/partner/': {
       id: '/_authenticated/partner/'
@@ -859,6 +879,7 @@ const rootRouteChildren: RootRouteChildren = {
   TokoSlugRoute: TokoSlugRoute,
   AkunIndexRoute: AkunIndexRoute,
   ProdukIndexRoute: ProdukIndexRoute,
+  AkunPesananIndexRoute: AkunPesananIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
