@@ -9,13 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as KeranjangRouteImport } from './routes/keranjang'
+import { Route as KelolaRouteImport } from './routes/kelola'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProdukIndexRouteImport } from './routes/produk.index'
+import { Route as MitraIndexRouteImport } from './routes/mitra.index'
+import { Route as AkunIndexRouteImport } from './routes/akun.index'
+import { Route as TokoSlugRouteImport } from './routes/toko.$slug'
+import { Route as ProdukIdRouteImport } from './routes/produk.$id'
+import { Route as MitraDaftarRouteImport } from './routes/mitra.daftar'
+import { Route as BayarOrderIdRouteImport } from './routes/bayar.$orderId'
+import { Route as AkunWishlistRouteImport } from './routes/akun.wishlist'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AkunPesananIndexRouteImport } from './routes/akun.pesanan.index'
 import { Route as AuthenticatedPartnerIndexRouteImport } from './routes/_authenticated/partner/index'
 import { Route as AuthenticatedBuyerIndexRouteImport } from './routes/_authenticated/buyer/index'
+import { Route as AkunPesananIdRouteImport } from './routes/akun.pesanan.$id'
 import { Route as AuthenticatedBuyerSearchRouteImport } from './routes/_authenticated/buyer/search'
 import { Route as AuthenticatedBuyerOrdersRouteImport } from './routes/_authenticated/buyer/orders'
 import { Route as AuthenticatedBuyerCartRouteImport } from './routes/_authenticated/buyer/cart'
@@ -40,6 +53,21 @@ import { Route as AuthenticatedPartnerAdminAuditRouteImport } from './routes/_au
 import { Route as AuthenticatedBuyerProductsIdRouteImport } from './routes/_authenticated/buyer/products.$id'
 import { Route as AuthenticatedBuyerOrdersIdRouteImport } from './routes/_authenticated/buyer/orders.$id'
 
+const KeranjangRoute = KeranjangRouteImport.update({
+  id: '/keranjang',
+  path: '/keranjang',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KelolaRoute = KelolaRouteImport.update({
+  id: '/kelola',
+  path: '/kelola',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -54,6 +82,46 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProdukIndexRoute = ProdukIndexRouteImport.update({
+  id: '/produk/',
+  path: '/produk/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MitraIndexRoute = MitraIndexRouteImport.update({
+  id: '/mitra/',
+  path: '/mitra/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AkunIndexRoute = AkunIndexRouteImport.update({
+  id: '/akun/',
+  path: '/akun/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TokoSlugRoute = TokoSlugRouteImport.update({
+  id: '/toko/$slug',
+  path: '/toko/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProdukIdRoute = ProdukIdRouteImport.update({
+  id: '/produk/$id',
+  path: '/produk/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MitraDaftarRoute = MitraDaftarRouteImport.update({
+  id: '/mitra/daftar',
+  path: '/mitra/daftar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BayarOrderIdRoute = BayarOrderIdRouteImport.update({
+  id: '/bayar/$orderId',
+  path: '/bayar/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AkunWishlistRoute = AkunWishlistRouteImport.update({
+  id: '/akun/wishlist',
+  path: '/akun/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -63,6 +131,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AkunPesananIndexRoute = AkunPesananIndexRouteImport.update({
+  id: '/akun/pesanan/',
+  path: '/akun/pesanan/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedPartnerIndexRoute =
   AuthenticatedPartnerIndexRouteImport.update({
@@ -74,6 +147,11 @@ const AuthenticatedBuyerIndexRoute = AuthenticatedBuyerIndexRouteImport.update({
   id: '/buyer/',
   path: '/buyer/',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AkunPesananIdRoute = AkunPesananIdRouteImport.update({
+  id: '/akun/pesanan/$id',
+  path: '/akun/pesanan/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedBuyerSearchRoute =
   AuthenticatedBuyerSearchRouteImport.update({
@@ -215,15 +293,28 @@ const AuthenticatedBuyerOrdersIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
+  '/kelola': typeof KelolaRoute
+  '/keranjang': typeof KeranjangRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/akun/wishlist': typeof AkunWishlistRoute
+  '/bayar/$orderId': typeof BayarOrderIdRoute
+  '/mitra/daftar': typeof MitraDaftarRoute
+  '/produk/$id': typeof ProdukIdRoute
+  '/toko/$slug': typeof TokoSlugRoute
+  '/akun/': typeof AkunIndexRoute
+  '/mitra/': typeof MitraIndexRoute
+  '/produk/': typeof ProdukIndexRoute
   '/buyer/addresses': typeof AuthenticatedBuyerAddressesRoute
   '/buyer/ai': typeof AuthenticatedBuyerAiRoute
   '/buyer/cart': typeof AuthenticatedBuyerCartRoute
   '/buyer/orders': typeof AuthenticatedBuyerOrdersRouteWithChildren
   '/buyer/search': typeof AuthenticatedBuyerSearchRoute
+  '/akun/pesanan/$id': typeof AkunPesananIdRoute
   '/buyer/': typeof AuthenticatedBuyerIndexRoute
   '/partner/': typeof AuthenticatedPartnerIndexRoute
+  '/akun/pesanan/': typeof AkunPesananIndexRoute
   '/buyer/orders/$id': typeof AuthenticatedBuyerOrdersIdRoute
   '/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
   '/partner/admin/audit': typeof AuthenticatedPartnerAdminAuditRoute
@@ -246,15 +337,28 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
+  '/kelola': typeof KelolaRoute
+  '/keranjang': typeof KeranjangRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/akun/wishlist': typeof AkunWishlistRoute
+  '/bayar/$orderId': typeof BayarOrderIdRoute
+  '/mitra/daftar': typeof MitraDaftarRoute
+  '/produk/$id': typeof ProdukIdRoute
+  '/toko/$slug': typeof TokoSlugRoute
+  '/akun': typeof AkunIndexRoute
+  '/mitra': typeof MitraIndexRoute
+  '/produk': typeof ProdukIndexRoute
   '/buyer/addresses': typeof AuthenticatedBuyerAddressesRoute
   '/buyer/ai': typeof AuthenticatedBuyerAiRoute
   '/buyer/cart': typeof AuthenticatedBuyerCartRoute
   '/buyer/orders': typeof AuthenticatedBuyerOrdersRouteWithChildren
   '/buyer/search': typeof AuthenticatedBuyerSearchRoute
+  '/akun/pesanan/$id': typeof AkunPesananIdRoute
   '/buyer': typeof AuthenticatedBuyerIndexRoute
   '/partner': typeof AuthenticatedPartnerIndexRoute
+  '/akun/pesanan': typeof AkunPesananIndexRoute
   '/buyer/orders/$id': typeof AuthenticatedBuyerOrdersIdRoute
   '/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
   '/partner/admin/audit': typeof AuthenticatedPartnerAdminAuditRoute
@@ -279,15 +383,28 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/checkout': typeof CheckoutRoute
+  '/kelola': typeof KelolaRoute
+  '/keranjang': typeof KeranjangRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/akun/wishlist': typeof AkunWishlistRoute
+  '/bayar/$orderId': typeof BayarOrderIdRoute
+  '/mitra/daftar': typeof MitraDaftarRoute
+  '/produk/$id': typeof ProdukIdRoute
+  '/toko/$slug': typeof TokoSlugRoute
+  '/akun/': typeof AkunIndexRoute
+  '/mitra/': typeof MitraIndexRoute
+  '/produk/': typeof ProdukIndexRoute
   '/_authenticated/buyer/addresses': typeof AuthenticatedBuyerAddressesRoute
   '/_authenticated/buyer/ai': typeof AuthenticatedBuyerAiRoute
   '/_authenticated/buyer/cart': typeof AuthenticatedBuyerCartRoute
   '/_authenticated/buyer/orders': typeof AuthenticatedBuyerOrdersRouteWithChildren
   '/_authenticated/buyer/search': typeof AuthenticatedBuyerSearchRoute
+  '/akun/pesanan/$id': typeof AkunPesananIdRoute
   '/_authenticated/buyer/': typeof AuthenticatedBuyerIndexRoute
   '/_authenticated/partner/': typeof AuthenticatedPartnerIndexRoute
+  '/akun/pesanan/': typeof AkunPesananIndexRoute
   '/_authenticated/buyer/orders/$id': typeof AuthenticatedBuyerOrdersIdRoute
   '/_authenticated/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
   '/_authenticated/partner/admin/audit': typeof AuthenticatedPartnerAdminAuditRoute
@@ -312,15 +429,28 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/checkout'
+    | '/kelola'
+    | '/keranjang'
     | '/dashboard'
     | '/onboarding'
+    | '/akun/wishlist'
+    | '/bayar/$orderId'
+    | '/mitra/daftar'
+    | '/produk/$id'
+    | '/toko/$slug'
+    | '/akun/'
+    | '/mitra/'
+    | '/produk/'
     | '/buyer/addresses'
     | '/buyer/ai'
     | '/buyer/cart'
     | '/buyer/orders'
     | '/buyer/search'
+    | '/akun/pesanan/$id'
     | '/buyer/'
     | '/partner/'
+    | '/akun/pesanan/'
     | '/buyer/orders/$id'
     | '/buyer/products/$id'
     | '/partner/admin/audit'
@@ -343,15 +473,28 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/checkout'
+    | '/kelola'
+    | '/keranjang'
     | '/dashboard'
     | '/onboarding'
+    | '/akun/wishlist'
+    | '/bayar/$orderId'
+    | '/mitra/daftar'
+    | '/produk/$id'
+    | '/toko/$slug'
+    | '/akun'
+    | '/mitra'
+    | '/produk'
     | '/buyer/addresses'
     | '/buyer/ai'
     | '/buyer/cart'
     | '/buyer/orders'
     | '/buyer/search'
+    | '/akun/pesanan/$id'
     | '/buyer'
     | '/partner'
+    | '/akun/pesanan'
     | '/buyer/orders/$id'
     | '/buyer/products/$id'
     | '/partner/admin/audit'
@@ -375,15 +518,28 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/checkout'
+    | '/kelola'
+    | '/keranjang'
     | '/_authenticated/dashboard'
     | '/_authenticated/onboarding'
+    | '/akun/wishlist'
+    | '/bayar/$orderId'
+    | '/mitra/daftar'
+    | '/produk/$id'
+    | '/toko/$slug'
+    | '/akun/'
+    | '/mitra/'
+    | '/produk/'
     | '/_authenticated/buyer/addresses'
     | '/_authenticated/buyer/ai'
     | '/_authenticated/buyer/cart'
     | '/_authenticated/buyer/orders'
     | '/_authenticated/buyer/search'
+    | '/akun/pesanan/$id'
     | '/_authenticated/buyer/'
     | '/_authenticated/partner/'
+    | '/akun/pesanan/'
     | '/_authenticated/buyer/orders/$id'
     | '/_authenticated/buyer/products/$id'
     | '/_authenticated/partner/admin/audit'
@@ -408,10 +564,44 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CheckoutRoute: typeof CheckoutRoute
+  KelolaRoute: typeof KelolaRoute
+  KeranjangRoute: typeof KeranjangRoute
+  AkunWishlistRoute: typeof AkunWishlistRoute
+  BayarOrderIdRoute: typeof BayarOrderIdRoute
+  MitraDaftarRoute: typeof MitraDaftarRoute
+  ProdukIdRoute: typeof ProdukIdRoute
+  TokoSlugRoute: typeof TokoSlugRoute
+  AkunIndexRoute: typeof AkunIndexRoute
+  MitraIndexRoute: typeof MitraIndexRoute
+  ProdukIndexRoute: typeof ProdukIndexRoute
+  AkunPesananIdRoute: typeof AkunPesananIdRoute
+  AkunPesananIndexRoute: typeof AkunPesananIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/keranjang': {
+      id: '/keranjang'
+      path: '/keranjang'
+      fullPath: '/keranjang'
+      preLoaderRoute: typeof KeranjangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kelola': {
+      id: '/kelola'
+      path: '/kelola'
+      fullPath: '/kelola'
+      preLoaderRoute: typeof KelolaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -433,6 +623,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/produk/': {
+      id: '/produk/'
+      path: '/produk'
+      fullPath: '/produk/'
+      preLoaderRoute: typeof ProdukIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mitra/': {
+      id: '/mitra/'
+      path: '/mitra'
+      fullPath: '/mitra/'
+      preLoaderRoute: typeof MitraIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/akun/': {
+      id: '/akun/'
+      path: '/akun'
+      fullPath: '/akun/'
+      preLoaderRoute: typeof AkunIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/toko/$slug': {
+      id: '/toko/$slug'
+      path: '/toko/$slug'
+      fullPath: '/toko/$slug'
+      preLoaderRoute: typeof TokoSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/produk/$id': {
+      id: '/produk/$id'
+      path: '/produk/$id'
+      fullPath: '/produk/$id'
+      preLoaderRoute: typeof ProdukIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mitra/daftar': {
+      id: '/mitra/daftar'
+      path: '/mitra/daftar'
+      fullPath: '/mitra/daftar'
+      preLoaderRoute: typeof MitraDaftarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bayar/$orderId': {
+      id: '/bayar/$orderId'
+      path: '/bayar/$orderId'
+      fullPath: '/bayar/$orderId'
+      preLoaderRoute: typeof BayarOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/akun/wishlist': {
+      id: '/akun/wishlist'
+      path: '/akun/wishlist'
+      fullPath: '/akun/wishlist'
+      preLoaderRoute: typeof AkunWishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/onboarding': {
       id: '/_authenticated/onboarding'
       path: '/onboarding'
@@ -447,6 +693,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/akun/pesanan/': {
+      id: '/akun/pesanan/'
+      path: '/akun/pesanan'
+      fullPath: '/akun/pesanan/'
+      preLoaderRoute: typeof AkunPesananIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/partner/': {
       id: '/_authenticated/partner/'
       path: '/partner'
@@ -460,6 +713,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/buyer/'
       preLoaderRoute: typeof AuthenticatedBuyerIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/akun/pesanan/$id': {
+      id: '/akun/pesanan/$id'
+      path: '/akun/pesanan/$id'
+      fullPath: '/akun/pesanan/$id'
+      preLoaderRoute: typeof AkunPesananIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/buyer/search': {
       id: '/_authenticated/buyer/search'
@@ -712,17 +972,20 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  CheckoutRoute: CheckoutRoute,
+  KelolaRoute: KelolaRoute,
+  KeranjangRoute: KeranjangRoute,
+  AkunWishlistRoute: AkunWishlistRoute,
+  BayarOrderIdRoute: BayarOrderIdRoute,
+  MitraDaftarRoute: MitraDaftarRoute,
+  ProdukIdRoute: ProdukIdRoute,
+  TokoSlugRoute: TokoSlugRoute,
+  AkunIndexRoute: AkunIndexRoute,
+  MitraIndexRoute: MitraIndexRoute,
+  ProdukIndexRoute: ProdukIndexRoute,
+  AkunPesananIdRoute: AkunPesananIdRoute,
+  AkunPesananIndexRoute: AkunPesananIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
