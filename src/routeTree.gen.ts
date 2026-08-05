@@ -19,6 +19,7 @@ import { Route as AkunIndexRouteImport } from './routes/akun.index'
 import { Route as TokoSlugRouteImport } from './routes/toko.$slug'
 import { Route as ProdukIdRouteImport } from './routes/produk.$id'
 import { Route as BayarOrderIdRouteImport } from './routes/bayar.$orderId'
+import { Route as AkunWishlistRouteImport } from './routes/akun.wishlist'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AkunPesananIndexRouteImport } from './routes/akun.pesanan.index'
@@ -96,6 +97,11 @@ const ProdukIdRoute = ProdukIdRouteImport.update({
 const BayarOrderIdRoute = BayarOrderIdRouteImport.update({
   id: '/bayar/$orderId',
   path: '/bayar/$orderId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AkunWishlistRoute = AkunWishlistRouteImport.update({
+  id: '/akun/wishlist',
+  path: '/akun/wishlist',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
@@ -273,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/keranjang': typeof KeranjangRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/akun/wishlist': typeof AkunWishlistRoute
   '/bayar/$orderId': typeof BayarOrderIdRoute
   '/produk/$id': typeof ProdukIdRoute
   '/toko/$slug': typeof TokoSlugRoute
@@ -313,6 +320,7 @@ export interface FileRoutesByTo {
   '/keranjang': typeof KeranjangRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/akun/wishlist': typeof AkunWishlistRoute
   '/bayar/$orderId': typeof BayarOrderIdRoute
   '/produk/$id': typeof ProdukIdRoute
   '/toko/$slug': typeof TokoSlugRoute
@@ -355,6 +363,7 @@ export interface FileRoutesById {
   '/keranjang': typeof KeranjangRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/akun/wishlist': typeof AkunWishlistRoute
   '/bayar/$orderId': typeof BayarOrderIdRoute
   '/produk/$id': typeof ProdukIdRoute
   '/toko/$slug': typeof TokoSlugRoute
@@ -397,6 +406,7 @@ export interface FileRouteTypes {
     | '/keranjang'
     | '/dashboard'
     | '/onboarding'
+    | '/akun/wishlist'
     | '/bayar/$orderId'
     | '/produk/$id'
     | '/toko/$slug'
@@ -437,6 +447,7 @@ export interface FileRouteTypes {
     | '/keranjang'
     | '/dashboard'
     | '/onboarding'
+    | '/akun/wishlist'
     | '/bayar/$orderId'
     | '/produk/$id'
     | '/toko/$slug'
@@ -478,6 +489,7 @@ export interface FileRouteTypes {
     | '/keranjang'
     | '/_authenticated/dashboard'
     | '/_authenticated/onboarding'
+    | '/akun/wishlist'
     | '/bayar/$orderId'
     | '/produk/$id'
     | '/toko/$slug'
@@ -518,6 +530,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CheckoutRoute: typeof CheckoutRoute
   KeranjangRoute: typeof KeranjangRoute
+  AkunWishlistRoute: typeof AkunWishlistRoute
   BayarOrderIdRoute: typeof BayarOrderIdRoute
   ProdukIdRoute: typeof ProdukIdRoute
   TokoSlugRoute: typeof TokoSlugRoute
@@ -597,6 +610,13 @@ declare module '@tanstack/react-router' {
       path: '/bayar/$orderId'
       fullPath: '/bayar/$orderId'
       preLoaderRoute: typeof BayarOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/akun/wishlist': {
+      id: '/akun/wishlist'
+      path: '/akun/wishlist'
+      fullPath: '/akun/wishlist'
+      preLoaderRoute: typeof AkunWishlistRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/onboarding': {
@@ -894,6 +914,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CheckoutRoute: CheckoutRoute,
   KeranjangRoute: KeranjangRoute,
+  AkunWishlistRoute: AkunWishlistRoute,
   BayarOrderIdRoute: BayarOrderIdRoute,
   ProdukIdRoute: ProdukIdRoute,
   TokoSlugRoute: TokoSlugRoute,
