@@ -2232,6 +2232,14 @@ export type Database = {
       }
     }
     Functions: {
+      _caller_may_inspect: { Args: { _user_id: string }; Returns: boolean }
+      _role_check_internal: {
+        Args: {
+          _roles: Database["public"]["Enums"]["app_role"][]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       approve_settlement: { Args: { _id: string }; Returns: undefined }
       assign_courier: {
         Args: { _courier: string; _job_id: string; _vehicle?: string }
