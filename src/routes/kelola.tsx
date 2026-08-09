@@ -274,58 +274,82 @@ function InterventionPanel() {
   );
 }
 
+function vendorName(id: string) {
+  return ALL_VENDORS.find((v) => v.id === id)?.name ?? id;
+}
+
+/** Rekonsiliasi dana mengendap + antrean persetujuan penarikan vendor. */
 function WithdrawalQueue() {
-  const [, setTick] = useState(0);
-  const items = listWithdrawals();
-  if (items.length === 0) {
-    return <p className="p-4 text-sm text-muted-foreground">Belum ada permintaan penarikan saldo.</p>;
-  }
+  const [items, setItems] = useState<WithdrawalRequest[]>([]);
+  const [totals, setTotals] = useState(() => ({ held: 0, pendingRelease: 0, claimable: 0, processing: 0, paid: 0 }));
+  const refresh = useCallback(() => {
+    setItems(listWithdrawals());
+    setTotals(platformEscrowTotals());
+  }, []);
+  useEffect(() => { refresh(); }, [refresh]);
+
   return (
-    <ul className="divide-y divide-border rounded-xl border border-border bg-card">
-      {items.map((w) => (
-        <li key={w.id} className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
-          <span className="min-w-0">
-            <span className="block font-medium text-ink">{rupiah(w.amount)}</span>
-            <span className="block text-xs text-muted-foreground">
-              {w.bankAccount} · diajukan {tanggalJam(w.requestedAt)}
-            </span>
-          </span>
-          <span className="flex shrink-0 items-center gap-2">
-            <Badge variant="outline" className={WITHDRAWAL_TONE[w.status]}>
-              {w.status.replaceAll("_", " ").toLowerCase()}
-            </Badge>
-            {w.status === "MENUNGGU_PERSETUJUAN" && (
-              <>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    decideWithdrawal(w.id, true);
-                    toast.success("Penarikan disetujui.");
-                    setTick((t) => t + 1);
-                  }}
-                >
-                  Setujui
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="text-destructive"
-                  onClick={() => {
-                    decideWithdrawal(w.id, false, "Ditolak admin");
-                    toast.success("Penarikan ditolak, saldo dikembalikan.");
-                    setTick((t) => t + 1);
-                  }}
-                >
-                  Tolak
-                </Button>
-              </>
-            )}
-          </span>
-        </li>
-      ))}
-    </ul>
+    <div className="space-y-4">
+      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Kpi icon={Wallet} label="Dana ditahan" value={rupiah(totals.held + totals.pendingRelease)} />
+        <Kpi icon={Wallet} label="Bisa dicairkan vendor" value={rupiah(Math.max(0, totals.claimable - totals.processing - totals.paid))} />
+        <Kpi icon={Wallet} label="Menunggu persetujuan" value={rupiah(totals.processing)} />
+        <Kpi icon={Wallet} label="Sudah dibayarkan" value={rupiah(totals.paid)} />
+      </dl>
+
+      {items.length === 0 ? (
+        <p className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">
+          Belum ada permintaan pencairan dari vendor.
+        </p>
+      ) : (
+        <ul className="divide-y divide-border rounded-xl border border-border bg-card">
+          {items.map((w) => (
+            <li key={w.id} className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
+              <span className="min-w-0">
+                <span className="block font-medium text-ink">{rupiah(w.amount)} · {vendorName(w.vendorId)}</span>
+                <span className="block text-xs text-muted-foreground">
+                  {w.bankAccount} · diajukan {tanggalJam(w.requestedAt)}
+                </span>
+              </span>
+              <span className="flex shrink-0 items-center gap-2">
+                <Badge variant="outline" className={WITHDRAWAL_TONE[w.status]}>
+                  {w.status.replaceAll("_", " ").toLowerCase()}
+                </Badge>
+                {w.status === "MENUNGGU_PERSETUJUAN" && (
+                  <>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        decideWithdrawal(w.id, true);
+                        toast.success("Penarikan disetujui & ditandai dibayarkan.");
+                        refresh();
+                      }}
+                    >
+                      Setujui & bayar
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-destructive"
+                      onClick={() => {
+                        decideWithdrawal(w.id, false, "Ditolak admin");
+                        toast.success("Penarikan ditolak, dana kembali ke saldo vendor.");
+                        refresh();
+                      }}
+                    >
+                      Tolak
+                    </Button>
+                  </>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
+
 
 const CONFIG_FIELDS: { key: keyof PlatformConfig; label: string; hint: string }[] = [
   { key: "appFeePerKg", label: "App fee per kg (Rp)", hint: "Berlaku untuk seluruh grade non-A5." },
