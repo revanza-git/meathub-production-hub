@@ -31,7 +31,7 @@ function VendorDashboard() {
     o.subOrders.filter((so) => so.vendorId === VENDOR.id).map((so) => ({ so, order: o })),
   );
   const omzet = subOrders.reduce((s, x) => s + x.so.subtotal, 0);
-  const komisi = commissionOf(omzet);
+  const appFee = subOrders.reduce((s, x) => s + x.so.appFee, 0);
 
   return (
     <MarketLayout>
