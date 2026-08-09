@@ -61,20 +61,9 @@ export function MarketHeader() {
           </form>
 
           <div className="flex shrink-0 items-center gap-1">
-            <div className="hidden items-center gap-1 lg:flex">
+            <div className="hidden items-center gap-1.5 lg:flex">
               <MapPin className="h-4 w-4 text-maroon" aria-hidden="true" />
-              <Select value={kota} onValueChange={setKota}>
-                <SelectTrigger className="h-9 w-[130px] border-none shadow-none" aria-label="Lokasi pengiriman">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {KOTA.map((k) => (
-                    <SelectItem key={k} value={k}>
-                      {k}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <span className="text-sm font-medium text-ink">Seluruh Indonesia</span>
             </div>
 
             <Link to="/akun/wishlist" className="hidden sm:block">
