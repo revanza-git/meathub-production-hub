@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "@/lib/market/cart";
 import { vendorById } from "@/lib/market/data";
 import { rupiah } from "@/lib/market/format";
+import { lineAppFee, tierForKg, nextTierHint, TIER_SEGMENT, FEE_DISCLOSURE } from "@/lib/market/pricing";
 
 export const Route = createFileRoute("/keranjang")({
   head: () => ({
@@ -24,6 +25,14 @@ export const Route = createFileRoute("/keranjang")({
 function CartPage() {
   const nav = useNavigate();
   const { groups, full, setQty, remove, toggleSelect, selectVendor, notes, setNote, totals } = useCart();
+  const appFeeTotal = groups
+    .flatMap((g) => g.lines.filter((l) => l.selected))
+    .reduce((sum, l) => {
+      const v = l.product.variants.find((x) => x.id === l.variantId);
+      return sum + lineAppFee(l.product, v?.weightGram ?? 1000, l.qty);
+    }, 0);
+  const tier = tierForKg(totals.totalKg);
+  const hint = nextTierHint(totals.totalKg);
   const selectedCount = full.filter((l) => l.selected).length;
 
   if (full.length === 0) {
@@ -171,20 +180,27 @@ function CartPage() {
                 <Row label={`Subtotal (${selectedCount} item)`} value={rupiah(totals.subtotal)} />
                 <Row label="Total berat" value={`${totals.totalKg.toFixed(1)} kg`} />
                 <Row label="Estimasi hemat" value={`− ${rupiah(totals.discount)}`} tone="text-success" />
+                <Row label="App fee MEATHUB" value={rupiah(appFeeTotal)} />
+                <Row label="Tier transaksi" value={`${tier} · ${TIER_SEGMENT[tier]}`} />
               </dl>
+              {hint && (
+                <p className="mt-2 rounded-lg bg-accent/15 px-3 py-2 text-[11px] text-ink-soft">
+                  Tambah {hint.kgNeeded.toFixed(1)} kg lagi untuk naik ke tier {hint.tier}.
+                </p>
+              )}
               <div className="mt-3 flex justify-between border-t border-border pt-3">
                 <span className="font-semibold text-ink">Total</span>
-                <span className="font-display text-xl font-bold text-maroon">{rupiah(totals.subtotal)}</span>
+                <span className="font-display text-xl font-bold text-maroon">{rupiah(totals.subtotal + appFeeTotal)}</span>
               </div>
               <p className="mt-1 text-[11px] text-muted-foreground">
-                Ongkir dan biaya layanan dihitung pada halaman checkout.
+                Ongkir dihitung pada halaman checkout. {FEE_DISCLOSURE}
               </p>
               <Button
                 className="mt-4 w-full"
                 disabled={selectedCount === 0}
                 onClick={() => nav({ to: "/checkout" })}
               >
-                Lanjut ke checkout
+                Kirim Purchase Order
               </Button>
               <Link to="/produk" search={{}}>
                 <Button variant="outline" className="mt-2 w-full">Lanjut belanja</Button>
