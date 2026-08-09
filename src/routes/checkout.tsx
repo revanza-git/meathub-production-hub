@@ -19,7 +19,6 @@ import {
   TIER_SEGMENT,
 } from "@/lib/market/pricing";
 import { balance as depositBalance } from "@/lib/market/deposit";
-import { fakePaylaterProvider, PAYLATER_TERMS, PAYLATER_SIMULATION_NOTE, type PaylaterEligibility } from "@/lib/market/paylater";
 import {
   saveOrder,
   makeTimeline,
@@ -35,9 +34,9 @@ export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
       { title: "Kirim Purchase Order — MEATHUB" },
-      { name: "description", content: "Kirim PO ke vendor, pilih pengiriman, dan tentukan jalur pembayaran CBD atau TOP." },
+      { name: "description", content: "Kirim PO ke vendor, pilih pengiriman, dan tentukan jalur pembayaran CBD." },
       { property: "og:title", content: "Kirim Purchase Order — MEATHUB" },
-      { property: "og:description", content: "Kirim PO, pilih pengiriman, dan jalur pembayaran CBD atau TOP." },
+      { property: "og:description", content: "Kirim PO, pilih pengiriman, dan jalur pembayaran CBD." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -63,7 +62,6 @@ function CheckoutPage() {
   const [paymentPath, setPaymentPath] = useState<PaymentPath>("CBD_VA");
   const [submitting, setSubmitting] = useState(false);
   const [saldo, setSaldo] = useState(0);
-  const [eligibility, setEligibility] = useState<PaylaterEligibility | null>(null);
 
   useEffect(() => setSaldo(depositBalance()), []);
 
@@ -100,17 +98,6 @@ function CheckoutPage() {
 
   const tier = tierForKg(computed.totalKg);
 
-  useEffect(() => {
-    let alive = true;
-    if (paymentPath !== "TOP_PAYLATER") return;
-    fakePaylaterProvider
-      .checkEligibility({ buyerCompany: buyer.company, amount: computed.total })
-      .then((e) => alive && setEligibility(e));
-    return () => {
-      alive = false;
-    };
-  }, [paymentPath, buyer.company, computed.total]);
-
   if (activeGroups.length === 0) {
     return (
       <MarketLayout>
@@ -128,7 +115,6 @@ function CheckoutPage() {
   }
 
   const depositCukup = saldo >= computed.total;
-  const topBlocked = paymentPath === "TOP_PAYLATER" && eligibility ? !eligibility.eligible : false;
 
   function submitPO() {
     if (!buyer.name || !buyer.phone || !buyer.address) {
@@ -137,10 +123,6 @@ function CheckoutPage() {
     }
     if (paymentPath === "CBD_DEPOSIT" && !depositCukup) {
       toast.error("Saldo deposit tidak mencukupi. Top-up dulu atau pilih Virtual Account.");
-      return;
-    }
-    if (topBlocked) {
-      toast.error(eligibility?.reason ?? "Limit paylater tidak mencukupi.");
       return;
     }
 
@@ -173,7 +155,7 @@ function CheckoutPage() {
       timeline: makeTimeline("Menunggu Verifikasi Gudang", createdAt),
       verification: newVerification(createdAt),
       payoutStatus: "Menunggu Konfirmasi Terima",
-      fundedBy: paymentPath === "TOP_PAYLATER" ? "PAYLATER" : "MEATHUB",
+      fundedBy: "MEATHUB",
     }));
 
     const order: Order = {
@@ -282,7 +264,7 @@ function CheckoutPage() {
                 <PayOption
                   id="CBD_VA"
                   title="CBD — Virtual Account"
-                  desc="Bayar per order lewat VA setelah verifikasi gudang disetujui."
+                  desc="Bayar per order lewat VA bank, QRIS, atau gerai retail (iPaymu)."
                   badge="Default"
                 />
                 <PayOption
@@ -290,12 +272,6 @@ function CheckoutPage() {
                   title="CBD — Deposit auto-cut"
                   desc={`Saldo Anda ${rupiah(saldo)} · terpotong otomatis saat PO disetujui.`}
                   badge={depositCukup ? "Saldo cukup" : "Saldo kurang"}
-                />
-                <PayOption
-                  id="TOP_PAYLATER"
-                  title="TOP — Paylater B2B"
-                  desc="Mitra paylater membayar vendor cash penuh; Anda melunasi ke mitra sesuai tenor."
-                  badge="Simulasi"
                 />
               </RadioGroup>
 
@@ -306,22 +282,6 @@ function CheckoutPage() {
                 </p>
               )}
 
-              {paymentPath === "TOP_PAYLATER" && (
-                <div className="mt-3 rounded-lg border border-border bg-muted/40 p-3 text-xs">
-                  <ul className="list-disc space-y-1 pl-4 text-ink-soft">
-                    {PAYLATER_TERMS.map((t) => (
-                      <li key={t}>{t}</li>
-                    ))}
-                  </ul>
-                  {eligibility && (
-                    <p className={`mt-2 ${eligibility.eligible ? "text-success" : "text-destructive"}`}>
-                      Limit tersedia {rupiah(eligibility.available)} dari plafon {rupiah(eligibility.limit)}.
-                      {eligibility.reason ? ` ${eligibility.reason}` : ""}
-                    </p>
-                  )}
-                  <p className="mt-2 text-muted-foreground">{PAYLATER_SIMULATION_NOTE}</p>
-                </div>
-              )}
             </section>
           </div>
 
