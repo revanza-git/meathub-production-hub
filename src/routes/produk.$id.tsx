@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PRODUCTS, REVIEWS, productById, vendorById, categoryBySlug } from "@/lib/market/data";
+import { appFeePerKg } from "@/lib/market/pricing";
 import { rupiah, beratLabel } from "@/lib/market/format";
 import { useCart } from "@/lib/market/cart";
 import { cn } from "@/lib/utils";
@@ -137,7 +138,7 @@ function ProductDetail() {
                   )}
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Harga grosir B2B, belum termasuk PPN. Minimum order {product.moq} {product.unit}.
+                  Harga vendor. App fee MEATHUB {rupiah(appFeePerKg(product))}/kg ditambahkan di keranjang — tanpa PPN terpisah. Minimum order {product.moq} {product.unit}.
                 </p>
               </div>
 
