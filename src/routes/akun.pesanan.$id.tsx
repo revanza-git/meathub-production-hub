@@ -264,6 +264,17 @@ function OrderDetail() {
                 )}
               </div>
 
+              {so.shipment?.dispatchedAt ? (
+                <div className="mt-2 rounded-lg border border-border bg-muted/40 p-3 text-xs">
+                  <div className="font-semibold text-ink">Pengiriman vendor</div>
+                  <p className="mt-1 text-ink-soft">
+                    {so.shipment.courier ?? "—"} · resi {so.shipment.trackingNo || "—"} · berangkat{" "}
+                    {tanggalJam(so.shipment.dispatchedAt)}
+                    {so.shipment.deliveredAt ? ` · sampai ${tanggalJam(so.shipment.deliveredAt)}` : ""}
+                  </p>
+                </div>
+              ) : null}
+
               <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <Truck className="h-3.5 w-3.5" aria-hidden="true" /> {so.deliveryOption} ·{" "}
