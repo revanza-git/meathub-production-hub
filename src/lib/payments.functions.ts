@@ -76,7 +76,7 @@ export const createOrderPayment = createServerFn({ method: "POST" })
         status: "PENDING",
         expires_at: expiresAt,
         request_payload: { referenceId, channel: data.channelId, amount: data.amount },
-        response_payload: res as unknown as Record<string, unknown>,
+        response_payload: JSON.parse(JSON.stringify(res)),
       })
       .select("id")
       .single();
@@ -126,7 +126,7 @@ export const getPaymentStatus = createServerFn({ method: "POST" })
         .update({
           status: mapped,
           paid_at: mapped === "PAID" ? new Date().toISOString() : null,
-          response_payload: res as unknown as Record<string, unknown>,
+          response_payload: JSON.parse(JSON.stringify(res)),
         })
         .eq("id", intent.id);
     }
