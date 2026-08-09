@@ -112,17 +112,12 @@ function CheckoutPage() {
     );
   }
 
-  const depositCukup = saldo >= computed.total;
-
   function submitPO() {
     if (!buyer.name || !buyer.phone || !buyer.address) {
       toast.error("Lengkapi nama, telepon, dan alamat pengiriman");
       return;
     }
-    if (paymentPath === "CBD_DEPOSIT" && !depositCukup) {
-      toast.error("Saldo deposit tidak mencukupi. Top-up dulu atau pilih Virtual Account.");
-      return;
-    }
+
 
     setSubmitting(true);
     const createdAt = new Date().toISOString();
