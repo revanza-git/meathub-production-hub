@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PRODUCTS, VENDORS } from "@/lib/market/data";
-import { listOrders, adminForceCancel, adminExtendSla, STATUS_TONE, FLOW } from "@/lib/market/orders-store";
+import {
+  listOrders,
+  adminForceCancel,
+  adminExtendSla,
+  STATUS_TONE,
+  FLOW,
+} from "@/lib/market/orders-store";
 import { rupiah, tanggal, tanggalJam } from "@/lib/market/format";
 import { useCallback, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -26,9 +32,15 @@ export const Route = createFileRoute("/kelola")({
   head: () => ({
     meta: [
       { title: "Konsol Admin Marketplace — MEATHUB" },
-      { name: "description", content: "Pantau vendor, transaksi, app fee, dan sengketa marketplace MEATHUB." },
+      {
+        name: "description",
+        content: "Pantau vendor, transaksi, app fee, dan sengketa marketplace MEATHUB.",
+      },
       { property: "og:title", content: "Konsol Admin Marketplace — MEATHUB" },
-      { property: "og:description", content: "Pantau vendor, transaksi, app fee, dan sengketa marketplace." },
+      {
+        property: "og:description",
+        content: "Pantau vendor, transaksi, app fee, dan sengketa marketplace.",
+      },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -71,28 +83,52 @@ function AdminConsole() {
               <table className="w-full min-w-[720px] text-sm">
                 <thead className="bg-muted/60 text-left text-xs uppercase tracking-widest text-muted-foreground">
                   <tr>
-                    <th scope="col" className="p-3">Vendor</th>
-                    <th scope="col" className="p-3">Kota</th>
-                    <th scope="col" className="p-3">Rating</th>
-                    <th scope="col" className="p-3">Transaksi</th>
-                    <th scope="col" className="p-3">Status</th>
-                    <th scope="col" className="p-3">Aksi</th>
+                    <th scope="col" className="p-3">
+                      Vendor
+                    </th>
+                    <th scope="col" className="p-3">
+                      Kota
+                    </th>
+                    <th scope="col" className="p-3">
+                      Rating
+                    </th>
+                    <th scope="col" className="p-3">
+                      Transaksi
+                    </th>
+                    <th scope="col" className="p-3">
+                      Status
+                    </th>
+                    <th scope="col" className="p-3">
+                      Aksi
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {VENDORS.map((v) => (
                     <tr key={v.id}>
                       <td className="p-3">
-                        <Link to="/toko/$slug" params={{ slug: v.slug }} className="font-medium text-ink hover:text-maroon">
+                        <Link
+                          to="/toko/$slug"
+                          params={{ slug: v.slug }}
+                          className="font-medium text-ink hover:text-maroon"
+                        >
                           {v.name}
                         </Link>
                       </td>
                       <td className="p-3 text-muted-foreground">{v.city}</td>
                       <td className="p-3">{v.rating.toFixed(1)}</td>
-                      <td className="p-3 text-muted-foreground">{v.transactions.toLocaleString("id-ID")}</td>
-                      <td className="p-3"><Badge variant="outline">{v.settlementStatus}</Badge></td>
+                      <td className="p-3 text-muted-foreground">
+                        {v.transactions.toLocaleString("id-ID")}
+                      </td>
                       <td className="p-3">
-                        <Button size="sm" variant="outline" onClick={() => toast.success(`${v.name} disetujui (demo)`)}>
+                        <Badge variant="outline">{v.settlementStatus}</Badge>
+                      </td>
+                      <td className="p-3">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => toast.success(`${v.name} disetujui (demo)`)}
+                        >
                           Setujui
                         </Button>
                       </td>
@@ -108,12 +144,24 @@ function AdminConsole() {
               <table className="w-full min-w-[720px] text-sm">
                 <thead className="bg-muted/60 text-left text-xs uppercase tracking-widest text-muted-foreground">
                   <tr>
-                    <th scope="col" className="p-3">Pesanan</th>
-                    <th scope="col" className="p-3">Tanggal</th>
-                    <th scope="col" className="p-3">Vendor</th>
-                    <th scope="col" className="p-3">Nilai</th>
-                    <th scope="col" className="p-3">Komisi</th>
-                    <th scope="col" className="p-3">Status</th>
+                    <th scope="col" className="p-3">
+                      Pesanan
+                    </th>
+                    <th scope="col" className="p-3">
+                      Tanggal
+                    </th>
+                    <th scope="col" className="p-3">
+                      Vendor
+                    </th>
+                    <th scope="col" className="p-3">
+                      Nilai
+                    </th>
+                    <th scope="col" className="p-3">
+                      Komisi
+                    </th>
+                    <th scope="col" className="p-3">
+                      Status
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
@@ -124,7 +172,9 @@ function AdminConsole() {
                       <td className="p-3 text-muted-foreground">{o.subOrders.length}</td>
                       <td className="p-3">{rupiah(o.total)}</td>
                       <td className="p-3">{rupiah(o.appFee)}</td>
-                      <td className="p-3"><Badge variant="outline">{o.status}</Badge></td>
+                      <td className="p-3">
+                        <Badge variant="outline">{o.status}</Badge>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -135,12 +185,18 @@ function AdminConsole() {
           <TabsContent value="katalog">
             <div className="rounded-xl border border-border bg-card p-5 text-sm">
               <p className="text-ink-soft">
-                {PRODUCTS.length} produk aktif dari {VENDORS.length} vendor. Produk baru masuk antrean
-                moderasi sebelum tampil di katalog publik.
+                {PRODUCTS.length} produk aktif dari {VENDORS.length} vendor. Produk baru masuk
+                antrean moderasi sebelum tampil di katalog publik.
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <Button size="sm" onClick={() => toast.success("3 produk disetujui (demo)")}>Setujui antrean</Button>
-                <Link to="/produk" search={{}}><Button size="sm" variant="outline">Buka katalog publik</Button></Link>
+                <Button size="sm" onClick={() => toast.success("3 produk disetujui (demo)")}>
+                  Setujui antrean
+                </Button>
+                <Link to="/produk" search={{}}>
+                  <Button size="sm" variant="outline">
+                    Buka katalog publik
+                  </Button>
+                </Link>
               </div>
             </div>
           </TabsContent>
@@ -153,17 +209,28 @@ function AdminConsole() {
             ) : (
               <ul className="space-y-2">
                 {sengketa.map((o) => (
-                  <li key={o.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+                  <li
+                    key={o.id}
+                    className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4"
+                  >
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 font-semibold text-ink">
-                        <ShieldAlert className="h-4 w-4 shrink-0 text-destructive" aria-hidden="true" />
+                        <ShieldAlert
+                          className="h-4 w-4 shrink-0 text-destructive"
+                          aria-hidden="true"
+                        />
                         <span className="truncate">{o.id}</span>
                       </div>
                       <div className="text-xs text-muted-foreground">
                         {tanggal(o.createdAt)} · {rupiah(o.total)}
                       </div>
                     </div>
-                    <Button size="sm" variant="outline" className="shrink-0" onClick={() => toast.success(`Sengketa ${o.id} diselesaikan (demo)`)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="shrink-0"
+                      onClick={() => toast.success(`Sengketa ${o.id} diselesaikan (demo)`)}
+                    >
                       Selesaikan
                     </Button>
                   </li>
@@ -205,11 +272,17 @@ function InterventionPanel() {
   const [reason, setReason] = useState<Record<string, string>>({});
   const [orders, setOrders] = useState(() => listOrders());
   const refresh = useCallback(() => setOrders(listOrders()), []);
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
   const active = orders.filter((o) => FLOW.includes(o.status) && o.status !== "Selesai");
 
   if (active.length === 0) {
-    return <p className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">Tidak ada pesanan berjalan.</p>;
+    return (
+      <p className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">
+        Tidak ada pesanan berjalan.
+      </p>
+    );
   }
 
   return (
@@ -223,7 +296,9 @@ function InterventionPanel() {
                 {tanggal(o.createdAt)} · {rupiah(o.total)} · {o.subOrders.length} sub-PO
               </div>
             </div>
-            <Badge variant="outline" className={STATUS_TONE[o.status] ?? ""}>{o.status}</Badge>
+            <Badge variant="outline" className={STATUS_TONE[o.status] ?? ""}>
+              {o.status}
+            </Badge>
           </div>
           <Input
             className="mt-3"
@@ -264,7 +339,9 @@ function InterventionPanel() {
           {o.adminLog?.length ? (
             <ul className="mt-2 space-y-1 text-[11px] text-muted-foreground">
               {o.adminLog.map((l) => (
-                <li key={l.at}>{tanggalJam(l.at)} · {l.action} — {l.reason}</li>
+                <li key={l.at}>
+                  {tanggalJam(l.at)} · {l.action} — {l.reason}
+                </li>
               ))}
             </ul>
           ) : null}
@@ -281,18 +358,34 @@ function vendorName(id: string) {
 /** Rekonsiliasi dana mengendap + antrean persetujuan penarikan vendor. */
 function WithdrawalQueue() {
   const [items, setItems] = useState<WithdrawalRequest[]>([]);
-  const [totals, setTotals] = useState(() => ({ held: 0, pendingRelease: 0, claimable: 0, processing: 0, paid: 0 }));
+  const [totals, setTotals] = useState(() => ({
+    held: 0,
+    pendingRelease: 0,
+    claimable: 0,
+    processing: 0,
+    paid: 0,
+  }));
   const refresh = useCallback(() => {
     setItems(listWithdrawals());
     setTotals(platformEscrowTotals());
   }, []);
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   return (
     <div className="space-y-4">
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi icon={Wallet} label="Dana ditahan" value={rupiah(totals.held + totals.pendingRelease)} />
-        <Kpi icon={Wallet} label="Bisa dicairkan vendor" value={rupiah(Math.max(0, totals.claimable - totals.processing - totals.paid))} />
+        <Kpi
+          icon={Wallet}
+          label="Dana ditahan"
+          value={rupiah(totals.held + totals.pendingRelease)}
+        />
+        <Kpi
+          icon={Wallet}
+          label="Bisa dicairkan vendor"
+          value={rupiah(Math.max(0, totals.claimable - totals.processing - totals.paid))}
+        />
         <Kpi icon={Wallet} label="Menunggu persetujuan" value={rupiah(totals.processing)} />
         <Kpi icon={Wallet} label="Sudah dibayarkan" value={rupiah(totals.paid)} />
       </dl>
@@ -304,9 +397,14 @@ function WithdrawalQueue() {
       ) : (
         <ul className="divide-y divide-border rounded-xl border border-border bg-card">
           {items.map((w) => (
-            <li key={w.id} className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
+            <li
+              key={w.id}
+              className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm"
+            >
               <span className="min-w-0">
-                <span className="block font-medium text-ink">{rupiah(w.amount)} · {vendorName(w.vendorId)}</span>
+                <span className="block font-medium text-ink">
+                  {rupiah(w.amount)} · {vendorName(w.vendorId)}
+                </span>
                 <span className="block text-xs text-muted-foreground">
                   {w.bankAccount} · diajukan {tanggalJam(w.requestedAt)}
                 </span>
@@ -350,17 +448,44 @@ function WithdrawalQueue() {
   );
 }
 
-
 const CONFIG_FIELDS: { key: keyof PlatformConfig; label: string; hint: string }[] = [
   { key: "appFeePerKg", label: "App fee per kg (Rp)", hint: "Berlaku untuk seluruh grade non-A5." },
-  { key: "appFeePerKgA5", label: "App fee per kg A5 (Rp)", hint: "Otomatis dipakai bila grade produk A5/MB5+." },
-  { key: "vendorConfirmationHours", label: "SLA konfirmasi vendor (jam)", hint: "Lewat batas → PO batal otomatis." },
-  { key: "paymentExpiryHours", label: "Masa berlaku pembayaran (jam)", hint: "VA/QRIS kedaluwarsa setelah batas ini." },
-  { key: "buyerCheckHours", label: "SLA cek fisik pembeli (jam)", hint: "Lewat batas → dianggap sesuai." },
-  { key: "autoConfirmDays", label: "Auto-confirm tanpa respons (hari)", hint: "Default 14 hari, dana vendor cair." },
+  {
+    key: "appFeePerKgA5",
+    label: "App fee per kg A5 (Rp)",
+    hint: "Otomatis dipakai bila grade produk A5/MB5+.",
+  },
+  {
+    key: "vendorConfirmationHours",
+    label: "SLA konfirmasi vendor (jam)",
+    hint: "Lewat batas → PO batal otomatis.",
+  },
+  {
+    key: "paymentExpiryHours",
+    label: "Masa berlaku pembayaran (jam)",
+    hint: "VA/QRIS kedaluwarsa setelah batas ini.",
+  },
+  {
+    key: "buyerCheckHours",
+    label: "SLA cek fisik pembeli (jam)",
+    hint: "Lewat batas → dianggap sesuai.",
+  },
+  {
+    key: "autoConfirmDays",
+    label: "Auto-confirm tanpa respons (hari)",
+    hint: "Default 14 hari, dana vendor cair.",
+  },
   { key: "refundWorkingHours", label: "SLA refund (jam kerja)", hint: "Setelah retur disetujui." },
-  { key: "payoutHoldDays", label: "Masa tahan dana vendor (hari)", hint: "Dihitung sejak pesanan Selesai." },
-  { key: "payoutMinWithdrawal", label: "Minimum penarikan vendor (Rp)", hint: "Penarikan wajib disetujui admin." },
+  {
+    key: "payoutHoldDays",
+    label: "Masa tahan dana vendor (hari)",
+    hint: "Dihitung sejak pesanan Selesai.",
+  },
+  {
+    key: "payoutMinWithdrawal",
+    label: "Minimum penarikan vendor (Rp)",
+    hint: "Penarikan wajib disetujui admin.",
+  },
   { key: "freeDeliveryKg", label: "Gratis ongkir mulai (kg)", hint: "Per pesanan vendor." },
 ];
 
@@ -375,7 +500,10 @@ function ConfigEditor() {
       <div className="grid gap-3 sm:grid-cols-2">
         {CONFIG_FIELDS.map((f) => (
           <div key={f.key}>
-            <Label htmlFor={`cfg-${f.key}`} className="mb-1 block text-xs uppercase tracking-widest text-muted-foreground">
+            <Label
+              htmlFor={`cfg-${f.key}`}
+              className="mb-1 block text-xs uppercase tracking-widest text-muted-foreground"
+            >
               {f.label}
             </Label>
             <Input

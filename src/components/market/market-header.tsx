@@ -1,6 +1,17 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Search, ShoppingCart, Heart, MapPin, Menu, User, LayoutGrid, Home, Package, LayoutDashboard } from "lucide-react";
+import {
+  Search,
+  ShoppingCart,
+  Heart,
+  MapPin,
+  Menu,
+  User,
+  LayoutGrid,
+  Home,
+  Package,
+  LayoutDashboard,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -41,7 +52,9 @@ export function MarketHeader() {
             <span className="grid h-9 w-9 place-items-center rounded-md bg-maroon text-xs font-bold tracking-widest text-white">
               MH
             </span>
-            <span className="hidden font-display text-lg font-bold text-maroon sm:block">MEATHUB</span>
+            <span className="hidden font-display text-lg font-bold text-maroon sm:block">
+              MEATHUB
+            </span>
           </Link>
 
           <form onSubmit={submit} className="min-w-0" role="search">
@@ -187,7 +200,10 @@ function RoleSwitcher({ role, setRole }: { role: Role; setRole: (r: Role) => voi
           nav({ to: ROLE_HOME[r] as never });
         }}
       >
-        <SelectTrigger className="h-7 w-[150px] border-none bg-transparent text-xs shadow-none" aria-label="Ganti peran demo">
+        <SelectTrigger
+          className="h-7 w-[150px] border-none bg-transparent text-xs shadow-none"
+          aria-label="Ganti peran demo"
+        >
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

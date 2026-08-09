@@ -47,7 +47,9 @@ export function vendorPayable(so: SubOrder) {
 }
 
 function releaseAt(order: Order): string | undefined {
-  const base = order.receipt.confirmedAt ?? order.subOrders.find((s) => s.shipment?.deliveredAt)?.shipment?.deliveredAt;
+  const base =
+    order.receipt.confirmedAt ??
+    order.subOrders.find((s) => s.shipment?.deliveredAt)?.shipment?.deliveredAt;
   if (!base) return undefined;
   return new Date(new Date(base).getTime() + getConfig().payoutHoldDays * 86400000).toISOString();
 }
@@ -112,9 +114,12 @@ export type VendorBalance = {
 
 export function vendorBalance(vendorId: string): VendorBalance {
   const rows = listEscrow(vendorId);
-  const sum = (s: EscrowState) => rows.filter((r) => r.state === s).reduce((t, r) => t + r.amount, 0);
+  const sum = (s: EscrowState) =>
+    rows.filter((r) => r.state === s).reduce((t, r) => t + r.amount, 0);
   const wd = listWithdrawals(vendorId);
-  const processing = wd.filter((w) => w.status === "MENUNGGU_PERSETUJUAN").reduce((t, w) => t + w.amount, 0);
+  const processing = wd
+    .filter((w) => w.status === "MENUNGGU_PERSETUJUAN")
+    .reduce((t, w) => t + w.amount, 0);
   const paid = wd.filter((w) => w.status === "DIBAYARKAN").reduce((t, w) => t + w.amount, 0);
   return {
     held: sum("DITAHAN"),
@@ -128,13 +133,16 @@ export function vendorBalance(vendorId: string): VendorBalance {
 /** Total dana mengendap di MEATHUB (semua vendor) — untuk rekonsiliasi admin. */
 export function platformEscrowTotals() {
   const rows = listEscrow();
-  const sum = (s: EscrowState) => rows.filter((r) => r.state === s).reduce((t, r) => t + r.amount, 0);
+  const sum = (s: EscrowState) =>
+    rows.filter((r) => r.state === s).reduce((t, r) => t + r.amount, 0);
   const wd = listWithdrawals();
   return {
     held: sum("DITAHAN"),
     pendingRelease: sum("MENUNGGU_MASA_TAHAN"),
     claimable: sum("BISA_DICAIRKAN"),
-    processing: wd.filter((w) => w.status === "MENUNGGU_PERSETUJUAN").reduce((t, w) => t + w.amount, 0),
+    processing: wd
+      .filter((w) => w.status === "MENUNGGU_PERSETUJUAN")
+      .reduce((t, w) => t + w.amount, 0),
     paid: wd.filter((w) => w.status === "DIBAYARKAN").reduce((t, w) => t + w.amount, 0),
   };
 }
@@ -142,8 +150,10 @@ export function platformEscrowTotals() {
 export function requestWithdrawal(vendorId: string, amount: number, bankAccount: string) {
   const min = getConfig().payoutMinWithdrawal;
   if (!bankAccount.trim()) return { ok: false as const, error: "Isi nomor rekening tujuan." };
-  if (!Number.isFinite(amount) || amount <= 0) return { ok: false as const, error: "Nominal penarikan tidak valid." };
-  if (amount < min) return { ok: false as const, error: `Minimum penarikan Rp${min.toLocaleString("id-ID")}.` };
+  if (!Number.isFinite(amount) || amount <= 0)
+    return { ok: false as const, error: "Nominal penarikan tidak valid." };
+  if (amount < min)
+    return { ok: false as const, error: `Minimum penarikan Rp${min.toLocaleString("id-ID")}.` };
   if (amount > vendorBalance(vendorId).claimable) {
     return { ok: false as const, error: "Nominal melebihi dana yang bisa dicairkan." };
   }

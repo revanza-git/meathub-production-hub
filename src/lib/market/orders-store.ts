@@ -126,7 +126,10 @@ export function daysFrom(iso: string, days: number) {
 }
 
 export function newVerification(createdAt: string): VendorConfirmation {
-  return { status: "MENUNGGU", deadlineAt: hoursFrom(createdAt, getConfig().vendorConfirmationHours) };
+  return {
+    status: "MENUNGGU",
+    deadlineAt: hoursFrom(createdAt, getConfig().vendorConfirmationHours),
+  };
 }
 
 export function newReceipt(): ReceiptCheck {
@@ -200,12 +203,19 @@ function withStatus(o: Order, status: OrderStatus): Order {
   return {
     ...o,
     status,
-    subOrders: o.subOrders.map((so) => ({ ...so, status, timeline: timelineFor(status, o.createdAt) })),
+    subOrders: o.subOrders.map((so) => ({
+      ...so,
+      status,
+      timeline: timelineFor(status, o.createdAt),
+    })),
   };
 }
 
 function logAdmin(o: Order, action: string, reason: string): Order {
-  return { ...o, adminLog: [{ at: new Date().toISOString(), action, reason }, ...(o.adminLog ?? [])] };
+  return {
+    ...o,
+    adminLog: [{ at: new Date().toISOString(), action, reason }, ...(o.adminLog ?? [])],
+  };
 }
 
 /* --------------------------------------------------------------- vendor */
@@ -241,7 +251,11 @@ export function submitVendorConfirmation(
 }
 
 /** Vendor menandai sub-PO sudah berangkat dari cold storage-nya. */
-export function markDispatched(orderId: string, subOrderId: string, shipment: { courier: string; trackingNo?: string }) {
+export function markDispatched(
+  orderId: string,
+  subOrderId: string,
+  shipment: { courier: string; trackingNo?: string },
+) {
   return mutateOrder(orderId, (o) => ({
     ...o,
     subOrders: o.subOrders.map((so) =>
@@ -319,10 +333,18 @@ export function requestSwap(orderId: string, reason: string) {
 }
 
 /** Buyer menyelesaikan cek fisik + video 360° dalam SLA. */
-export function confirmReceipt(orderId: string, data: { videoName?: string; condition: string; notes?: string }) {
+export function confirmReceipt(
+  orderId: string,
+  data: { videoName?: string; condition: string; notes?: string },
+) {
   return mutateOrder(orderId, (o) => ({
     ...withStatus(o, "Selesai"),
-    receipt: { ...o.receipt, ...data, status: "DIKONFIRMASI", confirmedAt: new Date().toISOString() },
+    receipt: {
+      ...o.receipt,
+      ...data,
+      status: "DIKONFIRMASI",
+      confirmedAt: new Date().toISOString(),
+    },
     subOrders: o.subOrders.map((so) => ({
       ...so,
       status: "Selesai" as OrderStatus,
@@ -347,7 +369,10 @@ export function adminExtendSla(orderId: string, hours: number, reason: string) {
         ...o,
         subOrders: o.subOrders.map((so) => ({
           ...so,
-          verification: { ...so.verification, deadlineAt: hoursFrom(so.verification.deadlineAt, hours) },
+          verification: {
+            ...so.verification,
+            deadlineAt: hoursFrom(so.verification.deadlineAt, hours),
+          },
         })),
       },
       `Perpanjang SLA +${hours} jam`,

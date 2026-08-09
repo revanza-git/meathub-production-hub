@@ -10,7 +10,11 @@ import { rupiah, tanggalJam } from "@/lib/market/format";
 import { getOrder, updateOrderPayment, type Order } from "@/lib/market/orders-store";
 
 import { PAY_CHANNELS, DEFAULT_CHANNEL_ID, channelById } from "@/lib/market/channels";
-import { createOrderPayment, getPaymentStatus, type CreatedPayment } from "@/lib/payments.functions";
+import {
+  createOrderPayment,
+  getPaymentStatus,
+  type CreatedPayment,
+} from "@/lib/payments.functions";
 import type { PaymentStatus } from "@/lib/market/payment";
 
 export const Route = createFileRoute("/bayar/$orderId")({
@@ -20,7 +24,11 @@ export const Route = createFileRoute("/bayar/$orderId")({
   head: () => ({
     meta: [
       { title: "Pembayaran Pesanan — MEATHUB" },
-      { name: "description", content: "Selesaikan pembayaran pesanan MEATHUB via Virtual Account, QRIS, atau gerai retail." },
+      {
+        name: "description",
+        content:
+          "Selesaikan pembayaran pesanan MEATHUB via Virtual Account, QRIS, atau gerai retail.",
+      },
       { property: "og:title", content: "Pembayaran Pesanan — MEATHUB" },
       { property: "og:description", content: "Selesaikan pembayaran pesanan Anda dengan aman." },
       { name: "robots", content: "noindex" },
@@ -37,7 +45,9 @@ function PaymentPage() {
   const nav = useNavigate();
 
   const [order, setOrder] = useState<Order | undefined>();
-  const [channelId, setChannelId] = useState<string>(channelById(metode) ? metode : DEFAULT_CHANNEL_ID);
+  const [channelId, setChannelId] = useState<string>(
+    channelById(metode) ? metode : DEFAULT_CHANNEL_ID,
+  );
   const [intent, setIntent] = useState<CreatedPayment | null>(null);
   const [status, setStatus] = useState<PaymentStatus>("PENDING");
   const [creating, setCreating] = useState(false);
@@ -146,10 +156,13 @@ function PaymentPage() {
             <CheckCircle2 className="mx-auto h-14 w-14 text-success" aria-hidden="true" />
             <h1 className="mt-4 font-display text-2xl font-bold text-ink">Pembayaran berhasil</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Pesanan {order.id} sedang diteruskan ke {order.subOrders.length} vendor untuk dikonfirmasi.
+              Pesanan {order.id} sedang diteruskan ke {order.subOrders.length} vendor untuk
+              dikonfirmasi.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
-              <Button onClick={() => nav({ to: "/akun/pesanan/$id", params: { id: order.id } })}>Lacak pesanan</Button>
+              <Button onClick={() => nav({ to: "/akun/pesanan/$id", params: { id: order.id } })}>
+                Lacak pesanan
+              </Button>
               <Link to="/produk" search={{}}>
                 <Button variant="outline">Belanja lagi</Button>
               </Link>
@@ -169,7 +182,9 @@ function PaymentPage() {
             <h1 className="mt-4 font-display text-2xl font-bold text-ink">
               {status === "EXPIRED" ? "Pembayaran kedaluwarsa" : "Pembayaran gagal"}
             </h1>
-            <p className="mt-1 text-sm text-muted-foreground">Silakan buat pembayaran baru atau pilih kanal lain.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Silakan buat pembayaran baru atau pilih kanal lain.
+            </p>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               <Button
                 onClick={() => {
@@ -208,10 +223,16 @@ function PaymentPage() {
           </div>
 
           <div className="my-5 rounded-lg bg-maroon/5 p-4 text-center">
-            <div className="text-xs uppercase tracking-widest text-muted-foreground">Total tagihan</div>
-            <div className="font-display text-3xl font-bold text-maroon">{rupiah(intent?.amount ?? order.total)}</div>
+            <div className="text-xs uppercase tracking-widest text-muted-foreground">
+              Total tagihan
+            </div>
+            <div className="font-display text-3xl font-bold text-maroon">
+              {rupiah(intent?.amount ?? order.total)}
+            </div>
             {intent?.fee ? (
-              <div className="mt-1 text-xs text-muted-foreground">Biaya kanal {rupiah(intent.fee)} ditanggung MEATHUB</div>
+              <div className="mt-1 text-xs text-muted-foreground">
+                Biaya kanal {rupiah(intent.fee)} ditanggung MEATHUB
+              </div>
             ) : null}
           </div>
 
@@ -232,7 +253,9 @@ function PaymentPage() {
                           onClick={() => setChannelId(c.id)}
                           aria-pressed={channelId === c.id}
                           className={`rounded-lg border p-3 text-left text-sm transition ${
-                            channelId === c.id ? "border-maroon bg-maroon/5" : "border-border hover:border-maroon/40"
+                            channelId === c.id
+                              ? "border-maroon bg-maroon/5"
+                              : "border-border hover:border-maroon/40"
                           }`}
                         >
                           <span className="block font-medium text-ink">{c.label}</span>
@@ -246,29 +269,40 @@ function PaymentPage() {
 
               {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
 
-              <Button className="mt-5 w-full" disabled={creating} onClick={() => void startPayment()}>
+              <Button
+                className="mt-5 w-full"
+                disabled={creating}
+                onClick={() => void startPayment()}
+              >
                 {creating ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> Membuat pembayaran…
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" /> Membuat
+                    pembayaran…
                   </>
                 ) : (
                   `Bayar dengan ${channel?.label ?? "kanal terpilih"}`
                 )}
               </Button>
               <p className="mt-2 text-center text-[11px] text-muted-foreground">
-                Pembayaran diproses oleh iPaymu. Status lunas hanya dikonfirmasi oleh sistem pembayaran.
+                Pembayaran diproses oleh iPaymu. Status lunas hanya dikonfirmasi oleh sistem
+                pembayaran.
               </p>
             </>
           ) : (
             <>
               {channel?.method === "qris" && intent.qrString ? (
                 <div className="mx-auto w-fit rounded-lg border-4 border-ink bg-white p-3">
-                  <QRCodeCanvas value={intent.qrString} size={196} aria-label="Kode QRIS pembayaran" />
+                  <QRCodeCanvas
+                    value={intent.qrString}
+                    size={196}
+                    aria-label="Kode QRIS pembayaran"
+                  />
                 </div>
               ) : (
                 <div className="rounded-lg border border-dashed border-border p-4 text-center">
                   <div className="text-xs uppercase tracking-widest text-muted-foreground">
-                    {channel?.method === "cstore" ? "Kode pembayaran" : "Nomor Virtual Account"} · {intent.paymentName}
+                    {channel?.method === "cstore" ? "Kode pembayaran" : "Nomor Virtual Account"} ·{" "}
+                    {intent.paymentName}
                   </div>
                   <div className="mt-1 flex items-center justify-center gap-2 font-display text-xl font-bold tracking-wider text-ink">
                     {intent.paymentNo ?? "—"}
@@ -291,12 +325,20 @@ function PaymentPage() {
 
               <p className="mt-4 text-center text-sm text-ink-soft">{channel?.hint}</p>
               <p className="mt-1 text-center text-xs text-muted-foreground">
-                Bayar tepat sejumlah {rupiah(intent.amount)}. Status akan diperbarui otomatis setelah pembayaran diterima.
+                Bayar tepat sejumlah {rupiah(intent.amount)}. Status akan diperbarui otomatis
+                setelah pembayaran diterima.
               </p>
 
               <div className="mt-6 flex flex-wrap justify-center gap-2">
-                <Button variant="outline" disabled={checking} onClick={() => void refreshStatus(false)}>
-                  <RefreshCw className={`mr-2 h-4 w-4 ${checking ? "animate-spin" : ""}`} aria-hidden="true" />
+                <Button
+                  variant="outline"
+                  disabled={checking}
+                  onClick={() => void refreshStatus(false)}
+                >
+                  <RefreshCw
+                    className={`mr-2 h-4 w-4 ${checking ? "animate-spin" : ""}`}
+                    aria-hidden="true"
+                  />
                   Saya sudah bayar
                 </Button>
                 <Button
