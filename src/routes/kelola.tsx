@@ -244,7 +244,8 @@ function WithdrawalQueue() {
 const CONFIG_FIELDS: { key: keyof PlatformConfig; label: string; hint: string }[] = [
   { key: "appFeePerKg", label: "App fee per kg (Rp)", hint: "Berlaku untuk seluruh grade non-A5." },
   { key: "appFeePerKgA5", label: "App fee per kg A5 (Rp)", hint: "Otomatis dipakai bila grade produk A5/MB5+." },
-  { key: "warehouseVerificationHours", label: "SLA verifikasi gudang (jam)", hint: "Lewat batas → PO batal otomatis." },
+  { key: "vendorConfirmationHours", label: "SLA konfirmasi vendor (jam)", hint: "Lewat batas → PO batal otomatis." },
+  { key: "paymentExpiryHours", label: "Masa berlaku pembayaran (jam)", hint: "VA/QRIS kedaluwarsa setelah batas ini." },
   { key: "buyerCheckHours", label: "SLA cek fisik pembeli (jam)", hint: "Lewat batas → dianggap sesuai." },
   { key: "autoConfirmDays", label: "Auto-confirm tanpa respons (hari)", hint: "Default 14 hari, dana vendor cair." },
   { key: "refundWorkingHours", label: "SLA refund (jam kerja)", hint: "Setelah retur disetujui." },
