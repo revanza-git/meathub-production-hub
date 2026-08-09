@@ -165,8 +165,8 @@ function DepositPage() {
                         <ArrowUpCircle className="h-4 w-4 shrink-0 text-maroon" aria-hidden="true" />
                       )}
                       <span className="min-w-0">
-                        <span className="block text-ink">{e.description}</span>
-                        <span className="block text-xs text-muted-foreground">{tanggalJam(e.at)}</span>
+                        <span className="block text-ink">{e.note ?? e.kind.replaceAll("_", " ")}</span>
+                        <span className="block text-xs text-muted-foreground">{tanggalJam(e.createdAt)}</span>
                       </span>
                     </span>
                     <span className={`shrink-0 font-medium ${masuk ? "text-success" : "text-ink"}`}>
