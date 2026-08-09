@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { MarketLayout } from "@/components/market/market-layout";
 import { Button } from "@/components/ui/button";
@@ -9,28 +9,48 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/lib/market/cart";
-import { DELIVERY_OPTIONS, PAYMENT_METHODS, vendorById } from "@/lib/market/data";
+import { DELIVERY_OPTIONS, vendorById } from "@/lib/market/data";
 import { rupiah } from "@/lib/market/format";
-import { commissionOf, saveOrder, makeTimeline, type Order, type SubOrder } from "@/lib/market/orders-store";
+import {
+  getConfig,
+  lineAppFee,
+  tierForKg,
+  FEE_DISCLOSURE,
+  TIER_SEGMENT,
+} from "@/lib/market/pricing";
+import { balance as depositBalance } from "@/lib/market/deposit";
+import { fakePaylaterProvider, PAYLATER_TERMS, PAYLATER_SIMULATION_NOTE, type PaylaterEligibility } from "@/lib/market/paylater";
+import {
+  saveOrder,
+  makeTimeline,
+  newVerification,
+  newReceipt,
+  PAYMENT_PATH_LABEL,
+  type Order,
+  type PaymentPath,
+  type SubOrder,
+} from "@/lib/market/orders-store";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
-      { title: "Checkout Pesanan — MEATHUB" },
-      { name: "description", content: "Konfirmasi alamat, pengiriman, dan metode pembayaran pesanan MEATHUB." },
-      { property: "og:title", content: "Checkout Pesanan — MEATHUB" },
-      { property: "og:description", content: "Konfirmasi alamat, pengiriman, dan pembayaran pesanan Anda." },
+      { title: "Kirim Purchase Order — MEATHUB" },
+      { name: "description", content: "Kirim PO ke vendor, pilih pengiriman, dan tentukan jalur pembayaran CBD atau TOP." },
+      { property: "og:title", content: "Kirim Purchase Order — MEATHUB" },
+      { property: "og:description", content: "Kirim PO, pilih pengiriman, dan jalur pembayaran CBD atau TOP." },
       { name: "robots", content: "noindex" },
     ],
   }),
   component: CheckoutPage,
 });
 
-const SERVICE_FEE = 5000;
+const PICKUP = { id: "pickup", name: "Ambil sendiri di gudang vendor", eta: "Sesuai jam operasional gudang", fee: 0 } as const;
+const SHIPPING_CHOICES = [...DELIVERY_OPTIONS, PICKUP];
 
 function CheckoutPage() {
   const nav = useNavigate();
-  const { groups, notes, totals, clear } = useCart();
+  const config = getConfig();
+  const { groups, notes, clear } = useCart();
   const activeGroups = groups.filter((g) => g.lines.some((l) => l.selected));
 
   const [buyer, setBuyer] = useState({
@@ -40,29 +60,56 @@ function CheckoutPage() {
     address: "Jl. Kemang Raya No. 21, Jakarta Selatan 12730",
   });
   const [delivery, setDelivery] = useState<Record<string, string>>({});
-  const [payment, setPayment] = useState<string>("qris");
-  const [voucher, setVoucher] = useState("");
-  const [discount, setDiscount] = useState(0);
+  const [paymentPath, setPaymentPath] = useState<PaymentPath>("CBD_VA");
   const [submitting, setSubmitting] = useState(false);
+  const [saldo, setSaldo] = useState(0);
+  const [eligibility, setEligibility] = useState<PaylaterEligibility | null>(null);
+
+  useEffect(() => setSaldo(depositBalance()), []);
 
   const deliveryFor = (vendorId: string) =>
-    DELIVERY_OPTIONS.find((d) => d.id === (delivery[vendorId] ?? "regular"))!;
+    SHIPPING_CHOICES.find((d) => d.id === (delivery[vendorId] ?? "regular")) ?? SHIPPING_CHOICES[0];
 
-  const subtotal = activeGroups.reduce((s, g) => s + g.subtotal, 0);
-  const deliveryFee = useMemo(
-    () =>
-      activeGroups.reduce((s, g) => {
-        const kg = g.lines
-          .filter((l) => l.selected)
-          .reduce((k, l) => {
-            const v = l.product.variants.find((x) => x.id === l.variantId);
-            return k + ((v?.weightGram ?? 1000) / 1000) * l.qty;
-          }, 0);
-        return s + (kg >= 20 ? 0 : deliveryFor(g.vendorId).fee);
-      }, 0),
-    [activeGroups, delivery],
-  );
-  const total = subtotal + deliveryFee + SERVICE_FEE - discount;
+  const computed = useMemo(() => {
+    const perVendor = activeGroups.map((g) => {
+      const lines = g.lines.filter((l) => l.selected);
+      const kg = lines.reduce((k, l) => {
+        const v = l.product.variants.find((x) => x.id === l.variantId);
+        return k + ((v?.weightGram ?? 1000) / 1000) * l.qty;
+      }, 0);
+      const appFee = lines.reduce((s, l) => {
+        const v = l.product.variants.find((x) => x.id === l.variantId);
+        return s + lineAppFee(l.product, v?.weightGram ?? 1000, l.qty, config);
+      }, 0);
+      const opt = deliveryFor(g.vendorId);
+      return {
+        group: g,
+        lines,
+        kg,
+        appFee,
+        option: opt,
+        deliveryFee: kg >= config.freeDeliveryKg ? 0 : opt.fee,
+      };
+    });
+    const subtotal = perVendor.reduce((s, v) => s + v.group.subtotal, 0);
+    const appFee = perVendor.reduce((s, v) => s + v.appFee, 0);
+    const deliveryFee = perVendor.reduce((s, v) => s + v.deliveryFee, 0);
+    const totalKg = perVendor.reduce((s, v) => s + v.kg, 0);
+    return { perVendor, subtotal, appFee, deliveryFee, totalKg, total: subtotal + appFee + deliveryFee };
+  }, [activeGroups, delivery, config]);
+
+  const tier = tierForKg(computed.totalKg);
+
+  useEffect(() => {
+    let alive = true;
+    if (paymentPath !== "TOP_PAYLATER") return;
+    fakePaylaterProvider
+      .checkEligibility({ buyerCompany: buyer.company, amount: computed.total })
+      .then((e) => alive && setEligibility(e));
+    return () => {
+      alive = false;
+    };
+  }, [paymentPath, buyer.company, computed.total]);
 
   if (activeGroups.length === 0) {
     return (
@@ -70,7 +117,7 @@ function CheckoutPage() {
         <div className="mx-auto max-w-xl px-4 py-20 text-center">
           <h1 className="font-display text-2xl font-bold text-ink">Tidak ada item terpilih</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Pilih produk di keranjang terlebih dahulu untuk melanjutkan checkout.
+            Pilih produk di keranjang terlebih dahulu untuk mengirim Purchase Order.
           </p>
           <Link to="/keranjang">
             <Button className="mt-5">Kembali ke keranjang</Button>
@@ -80,79 +127,88 @@ function CheckoutPage() {
     );
   }
 
-  function applyVoucher() {
-    const code = voucher.trim().toUpperCase();
-    if (code === "MEATHUB10") {
-      setDiscount(Math.round(subtotal * 0.1));
-      toast.success("Voucher MEATHUB10 diterapkan — hemat 10%");
-    } else if (code === "ONGKIRGRATIS") {
-      setDiscount(deliveryFee);
-      toast.success("Voucher ongkir gratis diterapkan");
-    } else {
-      setDiscount(0);
-      toast.error("Kode voucher tidak dikenali");
-    }
-  }
+  const depositCukup = saldo >= computed.total;
+  const topBlocked = paymentPath === "TOP_PAYLATER" && eligibility ? !eligibility.eligible : false;
 
-  function placeOrder() {
+  function submitPO() {
     if (!buyer.name || !buyer.phone || !buyer.address) {
       toast.error("Lengkapi nama, telepon, dan alamat pengiriman");
       return;
     }
+    if (paymentPath === "CBD_DEPOSIT" && !depositCukup) {
+      toast.error("Saldo deposit tidak mencukupi. Top-up dulu atau pilih Virtual Account.");
+      return;
+    }
+    if (topBlocked) {
+      toast.error(eligibility?.reason ?? "Limit paylater tidak mencukupi.");
+      return;
+    }
+
     setSubmitting(true);
     const createdAt = new Date().toISOString();
     const orderId = `MH-${Date.now().toString().slice(-6)}`;
-    const subOrders: SubOrder[] = activeGroups.map((g, i) => {
-      const items = g.lines
-        .filter((l) => l.selected)
-        .map((l) => ({
+
+    const subOrders: SubOrder[] = computed.perVendor.map((v, i) => ({
+      id: `${orderId}-${i + 1}`,
+      vendorId: v.group.vendorId,
+      items: v.lines.map((l) => {
+        const variant = l.product.variants.find((x) => x.id === l.variantId);
+        const gram = variant?.weightGram ?? 1000;
+        return {
           productId: l.product.id,
           name: l.product.name,
           variantLabel: l.variantLabel,
           qty: l.qty,
           unitPrice: l.unitPrice,
-        }));
-      const opt = deliveryFor(g.vendorId);
-      return {
-        id: `${orderId}-${i + 1}`,
-        vendorId: g.vendorId,
-        items,
-        subtotal: g.subtotal,
-        deliveryOption: opt.name,
-        deliveryFee: opt.fee,
-        note: notes[g.vendorId],
-        status: "Menunggu Pembayaran",
-        timeline: makeTimeline("Menunggu Pembayaran", createdAt),
-        commission: commissionOf(g.subtotal),
-        settlementStatus: "Tertunda",
-      };
-    });
+          weightKg: (gram / 1000) * l.qty,
+          appFee: lineAppFee(l.product, gram, l.qty, config),
+        };
+      }),
+      subtotal: v.group.subtotal,
+      appFee: v.appFee,
+      deliveryOption: v.option.name,
+      deliveryFee: v.deliveryFee,
+      note: notes[v.group.vendorId],
+      status: "Menunggu Verifikasi Gudang",
+      timeline: makeTimeline("Menunggu Verifikasi Gudang", createdAt),
+      verification: newVerification(createdAt),
+      payoutStatus: "Menunggu Konfirmasi Terima",
+      fundedBy: paymentPath === "TOP_PAYLATER" ? "PAYLATER" : "MEATHUB",
+    }));
 
     const order: Order = {
       id: orderId,
       createdAt,
       buyer,
       subOrders,
-      subtotal,
-      discount,
-      deliveryFee,
-      serviceFee: SERVICE_FEE,
-      total,
-      paymentMethod: PAYMENT_METHODS.find((m) => m.id === payment)?.name ?? "QRIS",
+      subtotal: computed.subtotal,
+      appFee: computed.appFee,
+      discount: 0,
+      deliveryFee: computed.deliveryFee,
+      total: computed.total,
+      totalKg: computed.totalKg,
+      tier,
+      paymentPath,
+      paymentMethod: PAYMENT_PATH_LABEL[paymentPath],
       paymentStatus: "PENDING",
-      status: "Menunggu Pembayaran",
+      status: "Menunggu Verifikasi Gudang",
+      receipt: newReceipt(),
     };
     saveOrder(order);
     clear();
-    nav({ to: "/bayar/$orderId", params: { orderId }, search: { metode: payment } });
+    toast.success(`PO ${orderId} terkirim. Gudang vendor wajib verifikasi dalam ${config.warehouseVerificationHours} jam.`);
+    nav({ to: "/akun/pesanan/$id", params: { id: orderId } });
   }
 
   return (
     <MarketLayout>
       <div className="mx-auto max-w-7xl px-4 py-6">
-        <h1 className="mb-4 font-display text-2xl font-bold text-ink">Checkout</h1>
+        <h1 className="mb-1 font-display text-2xl font-bold text-ink">Kirim Purchase Order</h1>
+        <p className="mb-4 text-sm text-muted-foreground">
+          Dana baru keluar setelah gudang vendor memverifikasi fisik barang dan Anda menyetujui hasilnya.
+        </p>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div className="space-y-4">
             <section className="rounded-xl border border-border bg-card p-4">
               <h2 className="mb-3 font-display text-lg font-bold text-ink">Alamat pengiriman</h2>
@@ -169,13 +225,13 @@ function CheckoutPage() {
               </div>
             </section>
 
-            {activeGroups.map((g) => {
-              const vendor = vendorById(g.vendorId);
+            {computed.perVendor.map((v) => {
+              const vendor = vendorById(v.group.vendorId);
               return (
-                <section key={g.vendorId} className="rounded-xl border border-border bg-card p-4">
+                <section key={v.group.vendorId} className="rounded-xl border border-border bg-card p-4">
                   <h2 className="mb-2 font-semibold text-ink">{vendor.name}</h2>
                   <ul className="mb-3 space-y-1 text-sm">
-                    {g.lines.filter((l) => l.selected).map((l) => (
+                    {v.lines.map((l) => (
                       <li key={l.key} className="flex justify-between gap-3">
                         <span className="min-w-0 truncate text-ink-soft">
                           {l.product.name} · {l.variantLabel} × {l.qty}
@@ -184,85 +240,132 @@ function CheckoutPage() {
                       </li>
                     ))}
                   </ul>
+                  <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                    <span>Berat: {v.kg.toFixed(1)} kg</span>
+                    <span>App fee: {rupiah(v.appFee)}</span>
+                    <span>{v.deliveryFee === 0 ? "Ongkir gratis" : `Ongkir ${rupiah(v.deliveryFee)}`}</span>
+                  </div>
                   <fieldset>
                     <legend className="mb-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                      Opsi pengiriman
+                      Metode pengiriman
                     </legend>
                     <RadioGroup
-                      value={delivery[g.vendorId] ?? "regular"}
-                      onValueChange={(v) => setDelivery((p) => ({ ...p, [g.vendorId]: v }))}
+                      value={delivery[v.group.vendorId] ?? "regular"}
+                      onValueChange={(val) => setDelivery((p) => ({ ...p, [v.group.vendorId]: val }))}
                       className="gap-2"
                     >
-                      {DELIVERY_OPTIONS.map((d) => (
-                        <label
-                          key={d.id}
-                          className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3 text-sm"
-                        >
-                          <RadioGroupItem value={d.id} id={`${g.vendorId}-${d.id}`} />
+                      {SHIPPING_CHOICES.map((d) => (
+                        <label key={d.id} className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3 text-sm">
+                          <RadioGroupItem value={d.id} id={`${v.group.vendorId}-${d.id}`} />
                           <span className="min-w-0 flex-1">
                             <span className="block font-medium text-ink">{d.name}</span>
                             <span className="block text-xs text-muted-foreground">{d.eta}</span>
                           </span>
-                          <span className="shrink-0 text-sm font-medium">{rupiah(d.fee)}</span>
+                          <span className="shrink-0 text-sm font-medium">{d.fee === 0 ? "Gratis" : rupiah(d.fee)}</span>
                         </label>
                       ))}
                     </RadioGroup>
                   </fieldset>
-                  {notes[g.vendorId] ? (
-                    <p className="mt-2 text-xs text-muted-foreground">Catatan: {notes[g.vendorId]}</p>
+                  {notes[v.group.vendorId] ? (
+                    <p className="mt-2 text-xs text-muted-foreground">Catatan: {notes[v.group.vendorId]}</p>
                   ) : null}
                 </section>
               );
             })}
 
             <section className="rounded-xl border border-border bg-card p-4">
-              <h2 className="mb-3 font-display text-lg font-bold text-ink">Metode pembayaran</h2>
-              <RadioGroup value={payment} onValueChange={setPayment} className="grid gap-2 sm:grid-cols-2">
-                {PAYMENT_METHODS.map((m) => (
-                  <label key={m.id} className="flex cursor-pointer items-center gap-3 rounded-lg border border-border p-3 text-sm">
-                    <RadioGroupItem value={m.id} id={`pay-${m.id}`} />
-                    <span className="flex-1 font-medium text-ink">{m.name}</span>
-                    <Badge variant="outline" className="shrink-0 text-[10px]">{m.group}</Badge>
-                  </label>
-                ))}
-              </RadioGroup>
-              <p className="mt-2 text-[11px] text-muted-foreground">
-                Pembayaran bersifat simulasi. Tidak ada transaksi uang sungguhan pada demo ini.
+              <h2 className="mb-1 font-display text-lg font-bold text-ink">Jalur pembayaran</h2>
+              <p className="mb-3 text-xs text-muted-foreground">
+                CBD adalah metode default: dana keluar sebelum barang dikirim. Vendor tidak pernah menunggu pembayaran Anda.
               </p>
+              <RadioGroup value={paymentPath} onValueChange={(v) => setPaymentPath(v as PaymentPath)} className="gap-2">
+                <PayOption
+                  id="CBD_VA"
+                  title="CBD — Virtual Account"
+                  desc="Bayar per order lewat VA setelah verifikasi gudang disetujui."
+                  badge="Default"
+                />
+                <PayOption
+                  id="CBD_DEPOSIT"
+                  title="CBD — Deposit auto-cut"
+                  desc={`Saldo Anda ${rupiah(saldo)} · terpotong otomatis saat PO disetujui.`}
+                  badge={depositCukup ? "Saldo cukup" : "Saldo kurang"}
+                />
+                <PayOption
+                  id="TOP_PAYLATER"
+                  title="TOP — Paylater B2B"
+                  desc="Mitra paylater membayar vendor cash penuh; Anda melunasi ke mitra sesuai tenor."
+                  badge="Simulasi"
+                />
+              </RadioGroup>
+
+              {paymentPath === "CBD_DEPOSIT" && !depositCukup && (
+                <p className="mt-2 text-xs text-destructive">
+                  Saldo kurang {rupiah(computed.total - saldo)}.{" "}
+                  <Link to="/akun/deposit" className="underline">Top-up deposit</Link>
+                </p>
+              )}
+
+              {paymentPath === "TOP_PAYLATER" && (
+                <div className="mt-3 rounded-lg border border-border bg-muted/40 p-3 text-xs">
+                  <ul className="list-disc space-y-1 pl-4 text-ink-soft">
+                    {PAYLATER_TERMS.map((t) => (
+                      <li key={t}>{t}</li>
+                    ))}
+                  </ul>
+                  {eligibility && (
+                    <p className={`mt-2 ${eligibility.eligible ? "text-success" : "text-destructive"}`}>
+                      Limit tersedia {rupiah(eligibility.available)} dari plafon {rupiah(eligibility.limit)}.
+                      {eligibility.reason ? ` ${eligibility.reason}` : ""}
+                    </p>
+                  )}
+                  <p className="mt-2 text-muted-foreground">{PAYLATER_SIMULATION_NOTE}</p>
+                </div>
+              )}
             </section>
           </div>
 
           <aside className="lg:sticky lg:top-24 lg:h-fit">
             <div className="rounded-xl border border-border bg-card p-4">
-              <h2 className="mb-3 font-display text-lg font-bold text-ink">Ringkasan pesanan</h2>
-              <div className="mb-3 flex gap-2">
-                <Input
-                  value={voucher}
-                  onChange={(e) => setVoucher(e.target.value)}
-                  placeholder="Kode voucher"
-                  aria-label="Kode voucher"
-                />
-                <Button variant="outline" onClick={applyVoucher}>Pakai</Button>
+              <h2 className="mb-1 font-display text-lg font-bold text-ink">Landed price</h2>
+              <div className="mb-3 flex items-center gap-2">
+                <Badge variant="outline" className="border-maroon/30 text-maroon">Tier {tier}</Badge>
+                <span className="text-[11px] text-muted-foreground">{TIER_SEGMENT[tier]}</span>
               </div>
               <dl className="space-y-1.5 text-sm">
-                <Row label="Subtotal produk" value={rupiah(subtotal)} />
-                <Row label="Ongkos kirim" value={deliveryFee === 0 ? "Gratis" : rupiah(deliveryFee)} />
-                <Row label="Biaya layanan" value={rupiah(SERVICE_FEE)} />
-                {discount > 0 && <Row label="Diskon voucher" value={`− ${rupiah(discount)}`} tone="text-success" />}
-                <Row label="Total berat" value={`${totals.totalKg.toFixed(1)} kg`} />
+                <Row label="Harga vendor" value={rupiah(computed.subtotal)} />
+                <Row label={`App fee MEATHUB (${computed.totalKg.toFixed(1)} kg)`} value={rupiah(computed.appFee)} />
+                <Row label="Ongkos kirim" value={computed.deliveryFee === 0 ? "Gratis" : rupiah(computed.deliveryFee)} />
               </dl>
               <div className="mt-3 flex justify-between border-t border-border pt-3">
-                <span className="font-semibold text-ink">Total bayar</span>
-                <span className="font-display text-xl font-bold text-maroon">{rupiah(total)}</span>
+                <span className="font-semibold text-ink">Total landed</span>
+                <span className="font-display text-xl font-bold text-maroon">{rupiah(computed.total)}</span>
               </div>
-              <Button className="mt-4 w-full" disabled={submitting} onClick={placeOrder}>
-                {submitting ? "Memproses…" : "Buat pesanan & bayar"}
+              <p className="mt-2 text-[11px] text-muted-foreground">{FEE_DISCLOSURE}</p>
+              <Button className="mt-4 w-full" disabled={submitting} onClick={submitPO}>
+                {submitting ? "Mengirim PO…" : "Kirim Purchase Order"}
               </Button>
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                Gudang vendor wajib verifikasi fisik dalam {config.warehouseVerificationHours} jam. Lewat batas → PO batal otomatis.
+              </p>
             </div>
           </aside>
         </div>
       </div>
     </MarketLayout>
+  );
+}
+
+function PayOption({ id, title, desc, badge }: { id: string; title: string; desc: string; badge: string }) {
+  return (
+    <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border p-3 text-sm">
+      <RadioGroupItem value={id} id={`path-${id}`} className="mt-1" />
+      <span className="min-w-0 flex-1">
+        <span className="block font-medium text-ink">{title}</span>
+        <span className="block text-xs text-muted-foreground">{desc}</span>
+      </span>
+      <Badge variant="outline" className="shrink-0 text-[10px]">{badge}</Badge>
+    </label>
   );
 }
 

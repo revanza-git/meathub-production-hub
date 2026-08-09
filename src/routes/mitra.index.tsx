@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PRODUCTS, VENDORS } from "@/lib/market/data";
-import { listOrders, commissionOf } from "@/lib/market/orders-store";
+import { listOrders } from "@/lib/market/orders-store";
 import { rupiah, tanggal } from "@/lib/market/format";
 
 export const Route = createFileRoute("/mitra/")({
@@ -31,7 +31,7 @@ function VendorDashboard() {
     o.subOrders.filter((so) => so.vendorId === VENDOR.id).map((so) => ({ so, order: o })),
   );
   const omzet = subOrders.reduce((s, x) => s + x.so.subtotal, 0);
-  const komisi = commissionOf(omzet);
+  const appFee = subOrders.reduce((s, x) => s + x.so.appFee, 0);
 
   return (
     <MarketLayout>
@@ -49,7 +49,7 @@ function VendorDashboard() {
         <dl className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
           <Kpi icon={TrendingUp} label="Omzet 30 hari" value={rupiah(omzet)} />
           <Kpi icon={Package} label="Pesanan masuk" value={String(subOrders.length)} />
-          <Kpi icon={Wallet} label="Estimasi cair" value={rupiah(omzet - komisi)} />
+          <Kpi icon={Wallet} label="Estimasi cair" value={rupiah(omzet)} />
           <Kpi icon={Star} label="Rating toko" value={VENDOR.rating.toFixed(1)} />
         </dl>
 
@@ -133,12 +133,13 @@ function VendorDashboard() {
           <TabsContent value="payout">
             <div className="rounded-xl border border-border bg-card p-5">
               <dl className="grid gap-3 sm:grid-cols-3">
-                <Kpi label="Omzet kotor" value={rupiah(omzet)} />
-                <Kpi label="Komisi platform 5%" value={`− ${rupiah(komisi)}`} />
-                <Kpi label="Dana bersih" value={rupiah(omzet - komisi)} />
+                <Kpi label="Omzet vendor" value={rupiah(omzet)} />
+                <Kpi label="App fee dibayar pembeli" value={rupiah(appFee)} />
+                <Kpi label="Dana diterima vendor" value={rupiah(omzet)} />
               </dl>
               <p className="mt-4 text-sm text-muted-foreground">
-                Pencairan dijadwalkan T+3 hari kerja setelah pesanan berstatus Terkirim. Status mitra saat
+                Harga vendor dibayar penuh — app fee MEATHUB ditanggung pembeli di luar harga vendor. Pencairan
+                dijadwalkan setelah pembeli menekan Done atau otomatis lewat batas konfirmasi. Status mitra saat
                 ini: <strong className="text-ink">{VENDOR.settlementStatus}</strong>.
               </p>
               <Button className="mt-4" onClick={() => toast.success("Permintaan pencairan dikirim (demo)")}>

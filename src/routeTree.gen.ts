@@ -20,9 +20,11 @@ import { Route as MitraIndexRouteImport } from './routes/mitra.index'
 import { Route as AkunIndexRouteImport } from './routes/akun.index'
 import { Route as TokoSlugRouteImport } from './routes/toko.$slug'
 import { Route as ProdukIdRouteImport } from './routes/produk.$id'
+import { Route as MitraGudangRouteImport } from './routes/mitra.gudang'
 import { Route as MitraDaftarRouteImport } from './routes/mitra.daftar'
 import { Route as BayarOrderIdRouteImport } from './routes/bayar.$orderId'
 import { Route as AkunWishlistRouteImport } from './routes/akun.wishlist'
+import { Route as AkunDepositRouteImport } from './routes/akun.deposit'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AkunPesananIndexRouteImport } from './routes/akun.pesanan.index'
@@ -107,6 +109,11 @@ const ProdukIdRoute = ProdukIdRouteImport.update({
   path: '/produk/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MitraGudangRoute = MitraGudangRouteImport.update({
+  id: '/mitra/gudang',
+  path: '/mitra/gudang',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MitraDaftarRoute = MitraDaftarRouteImport.update({
   id: '/mitra/daftar',
   path: '/mitra/daftar',
@@ -120,6 +127,11 @@ const BayarOrderIdRoute = BayarOrderIdRouteImport.update({
 const AkunWishlistRoute = AkunWishlistRouteImport.update({
   id: '/akun/wishlist',
   path: '/akun/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AkunDepositRoute = AkunDepositRouteImport.update({
+  id: '/akun/deposit',
+  path: '/akun/deposit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
@@ -298,9 +310,11 @@ export interface FileRoutesByFullPath {
   '/keranjang': typeof KeranjangRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/akun/deposit': typeof AkunDepositRoute
   '/akun/wishlist': typeof AkunWishlistRoute
   '/bayar/$orderId': typeof BayarOrderIdRoute
   '/mitra/daftar': typeof MitraDaftarRoute
+  '/mitra/gudang': typeof MitraGudangRoute
   '/produk/$id': typeof ProdukIdRoute
   '/toko/$slug': typeof TokoSlugRoute
   '/akun/': typeof AkunIndexRoute
@@ -342,9 +356,11 @@ export interface FileRoutesByTo {
   '/keranjang': typeof KeranjangRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/akun/deposit': typeof AkunDepositRoute
   '/akun/wishlist': typeof AkunWishlistRoute
   '/bayar/$orderId': typeof BayarOrderIdRoute
   '/mitra/daftar': typeof MitraDaftarRoute
+  '/mitra/gudang': typeof MitraGudangRoute
   '/produk/$id': typeof ProdukIdRoute
   '/toko/$slug': typeof TokoSlugRoute
   '/akun': typeof AkunIndexRoute
@@ -388,9 +404,11 @@ export interface FileRoutesById {
   '/keranjang': typeof KeranjangRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/akun/deposit': typeof AkunDepositRoute
   '/akun/wishlist': typeof AkunWishlistRoute
   '/bayar/$orderId': typeof BayarOrderIdRoute
   '/mitra/daftar': typeof MitraDaftarRoute
+  '/mitra/gudang': typeof MitraGudangRoute
   '/produk/$id': typeof ProdukIdRoute
   '/toko/$slug': typeof TokoSlugRoute
   '/akun/': typeof AkunIndexRoute
@@ -434,9 +452,11 @@ export interface FileRouteTypes {
     | '/keranjang'
     | '/dashboard'
     | '/onboarding'
+    | '/akun/deposit'
     | '/akun/wishlist'
     | '/bayar/$orderId'
     | '/mitra/daftar'
+    | '/mitra/gudang'
     | '/produk/$id'
     | '/toko/$slug'
     | '/akun/'
@@ -478,9 +498,11 @@ export interface FileRouteTypes {
     | '/keranjang'
     | '/dashboard'
     | '/onboarding'
+    | '/akun/deposit'
     | '/akun/wishlist'
     | '/bayar/$orderId'
     | '/mitra/daftar'
+    | '/mitra/gudang'
     | '/produk/$id'
     | '/toko/$slug'
     | '/akun'
@@ -523,9 +545,11 @@ export interface FileRouteTypes {
     | '/keranjang'
     | '/_authenticated/dashboard'
     | '/_authenticated/onboarding'
+    | '/akun/deposit'
     | '/akun/wishlist'
     | '/bayar/$orderId'
     | '/mitra/daftar'
+    | '/mitra/gudang'
     | '/produk/$id'
     | '/toko/$slug'
     | '/akun/'
@@ -567,9 +591,11 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   KelolaRoute: typeof KelolaRoute
   KeranjangRoute: typeof KeranjangRoute
+  AkunDepositRoute: typeof AkunDepositRoute
   AkunWishlistRoute: typeof AkunWishlistRoute
   BayarOrderIdRoute: typeof BayarOrderIdRoute
   MitraDaftarRoute: typeof MitraDaftarRoute
+  MitraGudangRoute: typeof MitraGudangRoute
   ProdukIdRoute: typeof ProdukIdRoute
   TokoSlugRoute: typeof TokoSlugRoute
   AkunIndexRoute: typeof AkunIndexRoute
@@ -658,6 +684,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdukIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mitra/gudang': {
+      id: '/mitra/gudang'
+      path: '/mitra/gudang'
+      fullPath: '/mitra/gudang'
+      preLoaderRoute: typeof MitraGudangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mitra/daftar': {
       id: '/mitra/daftar'
       path: '/mitra/daftar'
@@ -677,6 +710,13 @@ declare module '@tanstack/react-router' {
       path: '/akun/wishlist'
       fullPath: '/akun/wishlist'
       preLoaderRoute: typeof AkunWishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/akun/deposit': {
+      id: '/akun/deposit'
+      path: '/akun/deposit'
+      fullPath: '/akun/deposit'
+      preLoaderRoute: typeof AkunDepositRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/onboarding': {
@@ -975,9 +1015,11 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   KelolaRoute: KelolaRoute,
   KeranjangRoute: KeranjangRoute,
+  AkunDepositRoute: AkunDepositRoute,
   AkunWishlistRoute: AkunWishlistRoute,
   BayarOrderIdRoute: BayarOrderIdRoute,
   MitraDaftarRoute: MitraDaftarRoute,
+  MitraGudangRoute: MitraGudangRoute,
   ProdukIdRoute: ProdukIdRoute,
   TokoSlugRoute: TokoSlugRoute,
   AkunIndexRoute: AkunIndexRoute,
@@ -989,13 +1031,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
