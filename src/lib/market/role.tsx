@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-export type Role = "guest" | "buyer" | "vendor" | "warehouse" | "admin";
+export type Role = "guest" | "buyer" | "vendor" | "admin";
 
 const KEY = "meathub.demo.role";
 
