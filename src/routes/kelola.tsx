@@ -6,16 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PRODUCTS, VENDORS } from "@/lib/market/data";
-import { listOrders, commissionOf } from "@/lib/market/orders-store";
+import { listOrders } from "@/lib/market/orders-store";
 import { rupiah, tanggal } from "@/lib/market/format";
 
 export const Route = createFileRoute("/kelola")({
   head: () => ({
     meta: [
       { title: "Konsol Admin Marketplace — MEATHUB" },
-      { name: "description", content: "Pantau vendor, transaksi, komisi, dan sengketa marketplace MEATHUB." },
+      { name: "description", content: "Pantau vendor, transaksi, app fee, dan sengketa marketplace MEATHUB." },
       { property: "og:title", content: "Konsol Admin Marketplace — MEATHUB" },
-      { property: "og:description", content: "Pantau vendor, transaksi, komisi, dan sengketa marketplace." },
+      { property: "og:description", content: "Pantau vendor, transaksi, app fee, dan sengketa marketplace." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/kelola")({
 function AdminConsole() {
   const orders = listOrders();
   const gmv = orders.filter((o) => o.paymentStatus === "PAID").reduce((s, o) => s + o.total, 0);
-  const komisi = commissionOf(gmv);
+  const appFee = orders.filter((o) => o.paymentStatus === "PAID").reduce((s, o) => s + o.appFee, 0);
   const sengketa = orders.filter((o) => o.status === "Dalam Sengketa");
 
   return (
@@ -36,7 +36,7 @@ function AdminConsole() {
 
         <dl className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
           <Kpi icon={ShoppingBag} label="GMV terbayar" value={rupiah(gmv)} />
-          <Kpi icon={Wallet} label="Komisi platform" value={rupiah(komisi)} />
+          <Kpi icon={Wallet} label="Pendapatan app fee" value={rupiah(appFee)} />
           <Kpi icon={Store} label="Vendor aktif" value={String(VENDORS.length)} />
           <Kpi icon={Users} label="Total pesanan" value={String(orders.length)} />
         </dl>
@@ -106,7 +106,7 @@ function AdminConsole() {
                       <td className="p-3 text-muted-foreground">{tanggal(o.createdAt)}</td>
                       <td className="p-3 text-muted-foreground">{o.subOrders.length}</td>
                       <td className="p-3">{rupiah(o.total)}</td>
-                      <td className="p-3">{rupiah(commissionOf(o.subtotal))}</td>
+                      <td className="p-3">{rupiah(o.appFee)}</td>
                       <td className="p-3"><Badge variant="outline">{o.status}</Badge></td>
                     </tr>
                   ))}
