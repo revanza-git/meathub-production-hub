@@ -22,7 +22,7 @@ export function RoleNav({ current }: { current: Role }) {
         {items.map((it) => (
           <Link
             key={`${it.to}-${it.label}`}
-            to={it.to}
+            to={it.to as never}
             className="rounded-lg border border-border px-3 py-2 text-left transition-colors hover:border-maroon hover:bg-maroon/5"
             activeProps={{ className: "border-maroon bg-maroon/10" }}
             activeOptions={{ exact: true }}
@@ -40,7 +40,7 @@ export function RoleNav({ current }: { current: Role }) {
         {others.map((r) => (
           <Link
             key={r}
-            to={ROLE_HOME[r]}
+            to={ROLE_HOME[r] as never}
             onClick={() => setRole(r)}
             className="rounded-full border border-dashed border-accent px-3 py-1 text-[11px] text-ink-soft hover:bg-accent/10"
           >
