@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useCallback, useEffect, useState } from "react";
 import { CheckCircle2, Circle, Truck, MapPin, Receipt, ClipboardCheck, Video, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { MarketLayout } from "@/components/market/market-layout";
@@ -34,8 +34,10 @@ export const Route = createFileRoute("/akun/pesanan/$id")({
 
 function OrderDetail() {
   const { id } = Route.useParams();
-  const router = useRouter();
-  const order = getOrder(id);
+  // localStorage-backed store: keep a state copy so mutations re-render immediately.
+  const [order, setOrder] = useState(() => getOrder(id));
+  const refresh = useCallback(() => setOrder(getOrder(id)), [id]);
+  useEffect(() => { refresh(); }, [refresh]);
   const config = getConfig();
   const [swapReason, setSwapReason] = useState("");
   const [condition, setCondition] = useState("Sesuai");
@@ -54,8 +56,6 @@ function OrderDetail() {
       </MarketLayout>
     );
   }
-
-  const refresh = () => router.invalidate();
 
   return (
     <MarketLayout>

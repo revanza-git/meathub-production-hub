@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Users, Store, ShoppingBag, Wallet, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { MarketLayout } from "@/components/market/market-layout";
@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PRODUCTS, VENDORS } from "@/lib/market/data";
 import { listOrders, adminForceCancel, adminExtendSla, STATUS_TONE, FLOW } from "@/lib/market/orders-store";
 import { rupiah, tanggal, tanggalJam } from "@/lib/market/format";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getConfig, saveConfig, type PlatformConfig } from "@/lib/market/pricing";
@@ -195,9 +195,11 @@ function Kpi({ icon: Icon, label, value }: { icon: typeof Users; label: string; 
 
 /** Panel intervensi admin: batal paksa & perpanjang SLA, semuanya tercatat beralasan. */
 function InterventionPanel() {
-  const router = useRouter();
   const [reason, setReason] = useState<Record<string, string>>({});
-  const active = listOrders().filter((o) => FLOW.includes(o.status) && o.status !== "Selesai");
+  const [orders, setOrders] = useState(() => listOrders());
+  const refresh = useCallback(() => setOrders(listOrders()), []);
+  useEffect(() => { refresh(); }, [refresh]);
+  const active = orders.filter((o) => FLOW.includes(o.status) && o.status !== "Selesai");
 
   if (active.length === 0) {
     return <p className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">Tidak ada pesanan berjalan.</p>;
@@ -232,7 +234,7 @@ function InterventionPanel() {
                 if (!r) return toast.error("Isi alasan intervensi.");
                 adminExtendSla(o.id, 2, r);
                 toast.success("SLA konfirmasi vendor diperpanjang 2 jam.");
-                router.invalidate();
+                refresh();
               }}
             >
               Perpanjang SLA +2 jam
@@ -246,7 +248,7 @@ function InterventionPanel() {
                 if (!r) return toast.error("Isi alasan intervensi.");
                 adminForceCancel(o.id, r);
                 toast.success("Pesanan dibatalkan paksa.");
-                router.invalidate();
+                refresh();
               }}
             >
               Batalkan paksa
