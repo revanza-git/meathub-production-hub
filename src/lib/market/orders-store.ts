@@ -1,6 +1,6 @@
-import { PRODUCTS, VENDORS, productById } from "./data";
+import { PRODUCTS, VENDORS } from "./data";
 import type { PaymentStatus } from "./payment";
-import { getConfig, lineAppFee, tierForKg, type TransactionTier } from "./pricing";
+import { getConfig, type TransactionTier } from "./pricing";
 
 /**
  * Alur pesanan tunggal MEATHUB (konsolidasi BRD v1.2):
@@ -117,7 +117,7 @@ export type Order = {
   adminLog?: { at: string; action: string; reason: string }[];
 };
 
-const KEY = "meathub.demo.orders";
+const KEY = "meathub.orders.v2";
 
 export function hoursFrom(iso: string, hours: number) {
   return new Date(new Date(iso).getTime() + hours * 3600000).toISOString();
