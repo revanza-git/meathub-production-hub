@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { rupiah, tanggalJam } from "@/lib/market/format";
 import { getOrder, updateOrderPayment, type Order } from "@/lib/market/orders-store";
+import { autoCut } from "@/lib/market/deposit";
 import { mockPaymentService, type PaymentIntent, type PaymentStatus } from "@/lib/market/payment";
 
 export const Route = createFileRoute("/bayar/$orderId")({
@@ -58,6 +59,9 @@ function PaymentPage() {
       setTimeout(() => void mockPaymentService.simulate(intent, outcome).then(resolve), 1200),
     );
     setStatus(done.status);
+    if (done.status === "PAID" && order?.paymentPath === "CBD_DEPOSIT") {
+      autoCut(order.total, order.id);
+    }
     updateOrderPayment(orderId, done.status);
     setOrder(getOrder(orderId));
     if (done.status === "PAID") toast.success("Pembayaran berhasil (simulasi)");
