@@ -18,7 +18,7 @@ import {
   FEE_DISCLOSURE,
   TIER_SEGMENT,
 } from "@/lib/market/pricing";
-import { balance as depositBalance } from "@/lib/market/deposit";
+
 import {
   saveOrder,
   makeTimeline,
