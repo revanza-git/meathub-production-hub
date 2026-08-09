@@ -254,33 +254,20 @@ function CheckoutPage() {
             })}
 
             <section className="rounded-xl border border-border bg-card p-4">
-              <h2 className="mb-1 font-display text-lg font-bold text-ink">Jalur pembayaran</h2>
+              <h2 className="mb-1 font-display text-lg font-bold text-ink">Pembayaran</h2>
               <p className="mb-3 text-xs text-muted-foreground">
-                CBD adalah metode default: dana keluar sebelum barang dikirim. Vendor tidak pernah menunggu pembayaran Anda.
+                Bayar per pesanan setelah vendor mengonfirmasi stok. Tidak ada saldo atau deposit yang perlu
+                Anda simpan di MEATHUB.
               </p>
-              <RadioGroup value={paymentPath} onValueChange={(v) => setPaymentPath(v as PaymentPath)} className="gap-2">
-                <PayOption
-                  id="CBD_VA"
-                  title="CBD — Virtual Account"
-                  desc="Bayar per order lewat VA bank, QRIS, atau gerai retail (iPaymu)."
-                  badge="Default"
-                />
-                <PayOption
-                  id="CBD_DEPOSIT"
-                  title="CBD — Deposit auto-cut"
-                  desc={`Saldo Anda ${rupiah(saldo)} · terpotong otomatis saat PO disetujui.`}
-                  badge={depositCukup ? "Saldo cukup" : "Saldo kurang"}
-                />
-              </RadioGroup>
-
-              {paymentPath === "CBD_DEPOSIT" && !depositCukup && (
-                <p className="mt-2 text-xs text-destructive">
-                  Saldo kurang {rupiah(computed.total - saldo)}.{" "}
-                  <Link to="/akun/deposit" className="underline">Top-up deposit</Link>
+              <div className="rounded-lg border border-border p-3 text-sm">
+                <div className="font-medium text-ink">Virtual Account, QRIS, atau gerai retail</div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Dana masuk ke rekening MEATHUB dan ditahan sampai Anda mengonfirmasi barang diterima,
+                  baru diteruskan ke vendor.
                 </p>
-              )}
-
+              </div>
             </section>
+
           </div>
 
           <aside className="lg:sticky lg:top-24 lg:h-fit">
