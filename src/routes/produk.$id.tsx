@@ -171,9 +171,8 @@ function ProductDetail() {
               <p className="text-sm leading-relaxed text-ink-soft">{product.description}</p>
 
               <div className="grid gap-2 sm:grid-cols-3">
-                <InfoChip icon={Truck} text="Cold-chain Jabodetabek" />
+                <InfoChip icon={Truck} text="Cold-chain nasional" />
                 <InfoChip icon={Snowflake} text={product.storageTemp} />
-                <InfoChip icon={ShieldCheck} text="Garansi kualitas 2 jam" />
               </div>
             </div>
           </div>
@@ -305,7 +304,7 @@ function ProductDetail() {
 
           <TabsContent value="pengiriman">
             <div className="space-y-2 rounded-xl border border-border bg-card p-5 text-sm text-ink-soft">
-              <p>Pengiriman cold-chain reguler Jabodetabek 1–2 hari kerja, same day sebelum pukul 21.00.</p>
+              <p>Pengiriman cold-chain reguler ke seluruh Indonesia, estimasi 1–3 hari kerja.</p>
               <p>Gratis ongkir untuk total pesanan ≥ 20 kg per vendor.</p>
               <p>Produk beku dikirim pada suhu {product.storageTemp} dengan boks berinsulasi dan dry ice.</p>
               <p>Klaim kualitas dapat diajukan maksimal 2 jam setelah barang diterima di lokasi Anda.</p>

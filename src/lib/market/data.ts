@@ -112,7 +112,7 @@ export const VENDORS: Vendor[] = [
     since: "2020",
     transactions: 2610,
     responseTime: "± 25 menit",
-    description: "Spesialis suplai harian untuk restoran dan katering di Jabodetabek.",
+    description: "Spesialis suplai harian untuk restoran dan katering di seluruh Indonesia.",
     settlementStatus: "ACTIVE",
   },
   {
@@ -301,7 +301,7 @@ export const PROMOS = [
   {
     id: "promo-3",
     title: "Gratis Cold-Chain Delivery",
-    subtitle: "Untuk pengiriman Jabodetabek minimum 20 kg",
+    subtitle: "Untuk pembelian minimum 20 kg",
     cta: "Cek syarat",
     href: "/produk",
   },

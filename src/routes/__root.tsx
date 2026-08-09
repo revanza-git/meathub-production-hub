@@ -82,7 +82,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MEATHUB Meat Hub — Marketplace daging premium B2B Jabodetabek" },
+      { title: "MEATHUB Meat Hub — Marketplace daging premium B2B nasional" },
       {
           name: "description",
           content:
