@@ -35,7 +35,7 @@ function OrdersPage() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Semua");
   const [q, setQ] = useState("");
   // Local (browser-only) orders are merged after hydration to avoid SSR mismatch.
-  const [all, setAll] = useState(() => listOrders());
+  const [all, setAll] = useState(SEED_ORDERS);
   useEffect(() => setAll(listOrders()), []);
   const orders = all.filter((o) => {
     if (tab !== "Semua" && o.status !== tab) return false;
