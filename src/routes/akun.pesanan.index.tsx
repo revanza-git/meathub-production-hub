@@ -34,7 +34,10 @@ const TABS: (OrderStatus | "Semua")[] = [
 function OrdersPage() {
   const [tab, setTab] = useState<(typeof TABS)[number]>("Semua");
   const [q, setQ] = useState("");
-  const orders = listOrders().filter((o) => {
+  // Local (browser-only) orders are merged after hydration to avoid SSR mismatch.
+  const [all, setAll] = useState(() => listOrders());
+  useEffect(() => setAll(listOrders()), []);
+  const orders = all.filter((o) => {
     if (tab !== "Semua" && o.status !== tab) return false;
     if (q && !o.id.toLowerCase().includes(q.toLowerCase())) return false;
     return true;
