@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { rupiah, tanggalJam } from "@/lib/market/format";
 import { getOrder, updateOrderPayment, type Order } from "@/lib/market/orders-store";
-import { autoCut } from "@/lib/market/deposit";
+
 import { PAY_CHANNELS, DEFAULT_CHANNEL_ID, channelById } from "@/lib/market/channels";
 import { createOrderPayment, getPaymentStatus, type CreatedPayment } from "@/lib/payments.functions";
 import type { PaymentStatus } from "@/lib/market/payment";
