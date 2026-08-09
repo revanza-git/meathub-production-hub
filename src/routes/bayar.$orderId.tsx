@@ -64,7 +64,7 @@ function PaymentPage() {
     setStatus(next);
     if (next === "PAID" && !settled.current) {
       settled.current = true;
-      if (order?.paymentPath === "CBD_DEPOSIT") autoCut(order.total, order.id);
+      // Dana masuk ke rekening MEATHUB (escrow) dan ditahan sampai pesanan Selesai.
       updateOrderPayment(orderId, "PAID");
       setOrder(getOrder(orderId));
       toast.success("Pembayaran diterima");
