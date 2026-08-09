@@ -39,7 +39,8 @@ export const DEFAULT_CONFIG: PlatformConfig = {
   buyerCheckHours: 3,
   autoConfirmDays: 14,
   refundWorkingHours: 24,
-  depositMinTopUp: 100000,
+  payoutHoldDays: 3,
+  payoutMinWithdrawal: 500000,
   freeDeliveryKg: 20,
 };
 
