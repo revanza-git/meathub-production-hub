@@ -255,7 +255,7 @@ function OrderDetail() {
                     {v.notes ? ` · ${v.notes}` : ""}
                   </p>
                 ) : v.status === "KADALUARSA" ? (
-                  <p className="mt-1 text-destructive">Lewat batas {config.warehouseVerificationHours} jam — PO dibatalkan otomatis.</p>
+                  <p className="mt-1 text-destructive">Lewat batas {config.vendorConfirmationHours} jam — PO dibatalkan otomatis.</p>
                 ) : (
                   <p className="mt-1 text-ink-soft">
                     Menunggu verifikasi fisik. Batas waktu {tanggalJam(v.deadlineAt)}.
