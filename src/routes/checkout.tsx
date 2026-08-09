@@ -151,8 +151,8 @@ function CheckoutPage() {
       deliveryOption: v.option.name,
       deliveryFee: v.deliveryFee,
       note: notes[v.group.vendorId],
-      status: "Menunggu Verifikasi Gudang",
-      timeline: makeTimeline("Menunggu Verifikasi Gudang", createdAt),
+      status: "Menunggu Konfirmasi Vendor",
+      timeline: makeTimeline("Menunggu Konfirmasi Vendor", createdAt),
       verification: newVerification(createdAt),
       payoutStatus: "Menunggu Konfirmasi Terima",
       fundedBy: "MEATHUB",
@@ -173,12 +173,12 @@ function CheckoutPage() {
       paymentPath,
       paymentMethod: PAYMENT_PATH_LABEL[paymentPath],
       paymentStatus: "PENDING",
-      status: "Menunggu Verifikasi Gudang",
+      status: "Menunggu Konfirmasi Vendor",
       receipt: newReceipt(),
     };
     saveOrder(order);
     clear();
-    toast.success(`PO ${orderId} terkirim. Gudang vendor wajib verifikasi dalam ${config.warehouseVerificationHours} jam.`);
+    toast.success(`PO ${orderId} terkirim. Vendor wajib konfirmasi stok & gramasi dalam ${config.vendorConfirmationHours} jam.`);
     nav({ to: "/akun/pesanan/$id", params: { id: orderId } });
   }
 
@@ -187,7 +187,7 @@ function CheckoutPage() {
       <div className="mx-auto max-w-7xl px-4 py-6">
         <h1 className="mb-1 font-display text-2xl font-bold text-ink">Kirim Purchase Order</h1>
         <p className="mb-4 text-sm text-muted-foreground">
-          Dana baru keluar setelah gudang vendor memverifikasi fisik barang dan Anda menyetujui hasilnya.
+          Dana baru keluar setelah vendor mengonfirmasi stok dan gramasi fisik, lalu Anda menyetujui hasilnya.
         </p>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
@@ -306,7 +306,7 @@ function CheckoutPage() {
                 {submitting ? "Mengirim PO…" : "Kirim Purchase Order"}
               </Button>
               <p className="mt-2 text-[11px] text-muted-foreground">
-                Gudang vendor wajib verifikasi fisik dalam {config.warehouseVerificationHours} jam. Lewat batas → PO batal otomatis.
+                Vendor wajib konfirmasi fisik dalam {config.vendorConfirmationHours} jam. Lewat batas → PO batal otomatis.
               </p>
             </div>
           </aside>

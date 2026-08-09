@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { Users, Store, ShoppingBag, Wallet, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { MarketLayout } from "@/components/market/market-layout";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PRODUCTS, VENDORS } from "@/lib/market/data";
-import { listOrders } from "@/lib/market/orders-store";
+import { listOrders, adminForceCancel, adminExtendSla, STATUS_TONE, FLOW } from "@/lib/market/orders-store";
 import { rupiah, tanggal, tanggalJam } from "@/lib/market/format";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -53,6 +53,7 @@ function AdminConsole() {
             <TabsTrigger value="vendor">Vendor</TabsTrigger>
             <TabsTrigger value="transaksi">Transaksi</TabsTrigger>
             <TabsTrigger value="katalog">Katalog</TabsTrigger>
+            <TabsTrigger value="intervensi">Intervensi</TabsTrigger>
             <TabsTrigger value="sengketa">Sengketa ({sengketa.length})</TabsTrigger>
             <TabsTrigger value="penarikan">Penarikan</TabsTrigger>
             <TabsTrigger value="konfigurasi">Konfigurasi</TabsTrigger>
@@ -164,6 +165,10 @@ function AdminConsole() {
             )}
           </TabsContent>
 
+          <TabsContent value="intervensi">
+            <InterventionPanel />
+          </TabsContent>
+
           <TabsContent value="penarikan">
             <WithdrawalQueue />
           </TabsContent>
@@ -185,6 +190,78 @@ function Kpi({ icon: Icon, label, value }: { icon: typeof Users; label: string; 
       </dt>
       <dd className="mt-1 font-display text-xl font-bold text-ink">{value}</dd>
     </div>
+  );
+}
+
+/** Panel intervensi admin: batal paksa & perpanjang SLA, semuanya tercatat beralasan. */
+function InterventionPanel() {
+  const router = useRouter();
+  const [reason, setReason] = useState<Record<string, string>>({});
+  const active = listOrders().filter((o) => FLOW.includes(o.status) && o.status !== "Selesai");
+
+  if (active.length === 0) {
+    return <p className="rounded-xl border border-border bg-card p-5 text-sm text-muted-foreground">Tidak ada pesanan berjalan.</p>;
+  }
+
+  return (
+    <ul className="space-y-3">
+      {active.map((o) => (
+        <li key={o.id} className="rounded-xl border border-border bg-card p-4">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <div className="min-w-0">
+              <div className="font-semibold text-ink">{o.id}</div>
+              <div className="text-xs text-muted-foreground">
+                {tanggal(o.createdAt)} · {rupiah(o.total)} · {o.subOrders.length} sub-PO
+              </div>
+            </div>
+            <Badge variant="outline" className={STATUS_TONE[o.status] ?? ""}>{o.status}</Badge>
+          </div>
+          <Input
+            className="mt-3"
+            placeholder="Alasan intervensi (wajib)"
+            value={reason[o.id] ?? ""}
+            onChange={(e) => setReason((p) => ({ ...p, [o.id]: e.target.value }))}
+            aria-label={`Alasan intervensi pesanan ${o.id}`}
+          />
+          <div className="mt-2 flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                const r = (reason[o.id] ?? "").trim();
+                if (!r) return toast.error("Isi alasan intervensi.");
+                adminExtendSla(o.id, 2, r);
+                toast.success("SLA konfirmasi vendor diperpanjang 2 jam.");
+                router.invalidate();
+              }}
+            >
+              Perpanjang SLA +2 jam
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-destructive"
+              onClick={() => {
+                const r = (reason[o.id] ?? "").trim();
+                if (!r) return toast.error("Isi alasan intervensi.");
+                adminForceCancel(o.id, r);
+                toast.success("Pesanan dibatalkan paksa.");
+                router.invalidate();
+              }}
+            >
+              Batalkan paksa
+            </Button>
+          </div>
+          {o.adminLog?.length ? (
+            <ul className="mt-2 space-y-1 text-[11px] text-muted-foreground">
+              {o.adminLog.map((l) => (
+                <li key={l.at}>{tanggalJam(l.at)} · {l.action} — {l.reason}</li>
+              ))}
+            </ul>
+          ) : null}
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -244,7 +321,8 @@ function WithdrawalQueue() {
 const CONFIG_FIELDS: { key: keyof PlatformConfig; label: string; hint: string }[] = [
   { key: "appFeePerKg", label: "App fee per kg (Rp)", hint: "Berlaku untuk seluruh grade non-A5." },
   { key: "appFeePerKgA5", label: "App fee per kg A5 (Rp)", hint: "Otomatis dipakai bila grade produk A5/MB5+." },
-  { key: "warehouseVerificationHours", label: "SLA verifikasi gudang (jam)", hint: "Lewat batas → PO batal otomatis." },
+  { key: "vendorConfirmationHours", label: "SLA konfirmasi vendor (jam)", hint: "Lewat batas → PO batal otomatis." },
+  { key: "paymentExpiryHours", label: "Masa berlaku pembayaran (jam)", hint: "VA/QRIS kedaluwarsa setelah batas ini." },
   { key: "buyerCheckHours", label: "SLA cek fisik pembeli (jam)", hint: "Lewat batas → dianggap sesuai." },
   { key: "autoConfirmDays", label: "Auto-confirm tanpa respons (hari)", hint: "Default 14 hari, dana vendor cair." },
   { key: "refundWorkingHours", label: "SLA refund (jam kerja)", hint: "Setelah retur disetujui." },

@@ -24,9 +24,11 @@ export const Route = createFileRoute("/akun/pesanan/")({
 
 const TABS: (OrderStatus | "Semua")[] = [
   "Semua",
+  "Menunggu Konfirmasi Vendor",
+  "Menunggu Persetujuan Pembeli",
   "Menunggu Pembayaran",
-  "Sedang Disiapkan",
-  "Dalam Pengiriman",
+  "Diproses & Dikirim",
+  "Cek Terima Pembeli",
   "Selesai",
   "Dibatalkan",
 ];

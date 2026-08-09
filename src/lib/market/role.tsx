@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-export type Role = "guest" | "buyer" | "vendor" | "warehouse" | "admin";
+export type Role = "guest" | "buyer" | "vendor" | "admin";
 
 const KEY = "meathub.demo.role";
 
@@ -36,7 +36,6 @@ export const ROLE_LABEL: Record<Role, string> = {
   guest: "Tamu (belum login)",
   buyer: "Pembeli",
   vendor: "Vendor",
-  warehouse: "Gudang MEATHUB",
   admin: "Admin MEATHUB",
 };
 
@@ -45,7 +44,6 @@ export const ROLE_HOME: Record<Role, string> = {
   guest: "/",
   buyer: "/akun",
   vendor: "/mitra",
-  warehouse: "/mitra/gudang",
   admin: "/kelola",
 };
 
@@ -66,21 +64,16 @@ export const ROLE_NAV: Record<Role, RoleNavItem[]> = {
     { to: "/keranjang", label: "Keranjang", desc: "Lanjut checkout" },
   ],
   vendor: [
-    { to: "/mitra", label: "Ringkasan", desc: "Omzet & pesanan" },
-    { to: "/mitra", label: "Produk", desc: "Kelola katalog toko" },
+    { to: "/mitra", label: "Ringkasan", desc: "Omzet & antrean PO" },
+    { to: "/mitra", label: "Konfirmasi PO", desc: "Stok, gramasi, expired" },
+    { to: "/mitra", label: "Pengiriman", desc: "Kirim dari cold storage" },
     { to: "/mitra", label: "Pencairan", desc: "Ajukan settlement" },
     { to: "/produk", label: "Katalog publik", desc: "Lihat sisi pembeli" },
-  ],
-  warehouse: [
-    { to: "/mitra/gudang", label: "Antrian verifikasi", desc: "SLA penerimaan barang" },
-    { to: "/akun/pesanan", label: "Pesanan berjalan", desc: "Pantau pengiriman" },
-    { to: "/produk", label: "Katalog", desc: "Referensi produk" },
   ],
   admin: [
     { to: "/kelola", label: "Ringkasan platform", desc: "GMV, fee, SLA" },
     { to: "/kelola", label: "Vendor & KYB", desc: "Approve mitra" },
     { to: "/kelola", label: "Pesanan & refund", desc: "Intervensi manual" },
     { to: "/kelola", label: "Konfigurasi", desc: "SLA & app fee" },
-    { to: "/mitra/gudang", label: "Gudang", desc: "Pantau verifikasi" },
   ],
 };

@@ -23,9 +23,9 @@ export const Route = createFileRoute("/akun/pesanan/$id")({
   head: () => ({
     meta: [
       { title: "Detail Pesanan — MEATHUB" },
-      { name: "description", content: "Verifikasi gudang, persetujuan pembeli, pembayaran, dan cek fisik pesanan MEATHUB." },
+      { name: "description", content: "Konfirmasi vendor, persetujuan pembeli, pembayaran, dan cek fisik pesanan MEATHUB." },
       { property: "og:title", content: "Detail Pesanan — MEATHUB" },
-      { property: "og:description", content: "Status PO, verifikasi gudang, dan cek fisik penerimaan." },
+      { property: "og:description", content: "Status PO, konfirmasi vendor, dan cek fisik penerimaan." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -84,7 +84,7 @@ function OrderDetail() {
         {order.status === "Menunggu Persetujuan Pembeli" && (
           <section className="mt-4 rounded-xl border border-accent/50 bg-accent/10 p-4">
             <h2 className="mb-1 flex items-center gap-2 font-semibold text-ink">
-              <ClipboardCheck className="h-4 w-4 text-maroon" aria-hidden="true" /> Tinjau hasil verifikasi gudang
+              <ClipboardCheck className="h-4 w-4 text-maroon" aria-hidden="true" /> Tinjau hasil konfirmasi vendor
             </h2>
             <p className="mb-3 text-xs text-ink-soft">
               Setujui untuk melanjutkan ke pembayaran, minta ganti barang, atau batalkan PO tanpa biaya.
@@ -94,7 +94,7 @@ function OrderDetail() {
                 size="sm"
                 onClick={() => {
                   approveVerification(order.id);
-                  toast.success("Verifikasi disetujui. Lanjutkan ke pembayaran.");
+                  toast.success("Konfirmasi vendor disetujui. Lanjutkan ke pembayaran.");
                   refresh();
                 }}
               >
@@ -109,7 +109,7 @@ function OrderDetail() {
                     return;
                   }
                   requestSwap(order.id, swapReason.trim());
-                  toast.success("Permintaan ganti barang dikirim ke gudang vendor.");
+                  toast.success("Permintaan ganti barang dikirim ke vendor.");
                   refresh();
                 }}
               >
@@ -138,7 +138,7 @@ function OrderDetail() {
           </section>
         )}
 
-        {order.status === "Menunggu Cek Fisik Pembeli" && (
+        {order.status === "Cek Terima Pembeli" && (
           <section className="mt-4 rounded-xl border border-accent/50 bg-accent/10 p-4">
             <h2 className="mb-1 flex items-center gap-2 font-semibold text-ink">
               <Video className="h-4 w-4 text-maroon" aria-hidden="true" /> Cek fisik & video 360°
@@ -247,7 +247,7 @@ function OrderDetail() {
               </ul>
 
               <div className="mt-3 rounded-lg border border-border bg-muted/40 p-3 text-xs">
-                <div className="font-semibold text-ink">Verifikasi gudang vendor</div>
+                <div className="font-semibold text-ink">Konfirmasi vendor</div>
                 {v.status === "TERVERIFIKASI" ? (
                   <p className="mt-1 text-ink-soft">
                     Terverifikasi {v.verifiedAt ? tanggalJam(v.verifiedAt) : "—"} · gramasi {v.actualWeightKg ?? "—"} kg ·
@@ -255,14 +255,25 @@ function OrderDetail() {
                     {v.notes ? ` · ${v.notes}` : ""}
                   </p>
                 ) : v.status === "KADALUARSA" ? (
-                  <p className="mt-1 text-destructive">Lewat batas {config.warehouseVerificationHours} jam — PO dibatalkan otomatis.</p>
+                  <p className="mt-1 text-destructive">Lewat batas {config.vendorConfirmationHours} jam — PO dibatalkan otomatis.</p>
                 ) : (
                   <p className="mt-1 text-ink-soft">
-                    Menunggu verifikasi fisik. Batas waktu {tanggalJam(v.deadlineAt)}.
+                    Menunggu konfirmasi vendor. Batas waktu {tanggalJam(v.deadlineAt)}.
                     {v.notes ? ` ${v.notes}` : ""}
                   </p>
                 )}
               </div>
+
+              {so.shipment?.dispatchedAt ? (
+                <div className="mt-2 rounded-lg border border-border bg-muted/40 p-3 text-xs">
+                  <div className="font-semibold text-ink">Pengiriman vendor</div>
+                  <p className="mt-1 text-ink-soft">
+                    {so.shipment.courier ?? "—"} · resi {so.shipment.trackingNo || "—"} · berangkat{" "}
+                    {tanggalJam(so.shipment.dispatchedAt)}
+                    {so.shipment.deliveredAt ? ` · sampai ${tanggalJam(so.shipment.deliveredAt)}` : ""}
+                  </p>
+                </div>
+              ) : null}
 
               <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">

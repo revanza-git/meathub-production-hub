@@ -126,9 +126,6 @@ export function MarketHeader() {
                     <Link to="/mitra" className="rounded-md px-2 py-2 hover:bg-muted">
                       Dasbor vendor (seller)
                     </Link>
-                    <Link to="/mitra/gudang" className="rounded-md px-2 py-2 hover:bg-muted">
-                      Dasbor gudang
-                    </Link>
                     <Link to="/mitra/daftar" className="rounded-md px-2 py-2 hover:bg-muted">
                       Daftar jadi vendor
                     </Link>
