@@ -389,7 +389,7 @@ function PayoutPanel() {
     <div className="space-y-4">
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Kpi icon={Wallet} label="Ditahan (pesanan berjalan)" value={rupiah(bal.held)} />
-        <Kpi icon={Clock} label="Masa tahan T+{0}".replace("{0}", String(config.payoutHoldDays)) as unknown as string extends never ? never : string} value={rupiah(bal.pendingRelease)} />
+        <Kpi icon={Clock} label={`Masa tahan T+${config.payoutHoldDays}`} value={rupiah(bal.pendingRelease)} />
         <Kpi icon={Wallet} label="Bisa dicairkan" value={rupiah(bal.claimable)} />
         <Kpi icon={CheckCircle2} label="Sudah dibayarkan" value={rupiah(bal.paid)} />
       </dl>
