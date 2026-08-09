@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useCallback, useEffect, useState } from "react";
 import { TrendingUp, Package, Wallet, Star, Plus, Pencil, Clock, Truck, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { MarketLayout } from "@/components/market/market-layout";
@@ -41,13 +41,15 @@ type ConfirmForm = { weight: string; slaughter: string; expiry: string; photos: 
 type ShipForm = { courier: string; trackingNo: string };
 
 function VendorDashboard() {
-  const router = useRouter();
   const config = getConfig();
   const [products] = useState(() => PRODUCTS.filter((p) => p.vendorId === VENDOR.id));
   const [confirmForm, setConfirmForm] = useState<Record<string, ConfirmForm>>({});
   const [shipForm, setShipForm] = useState<Record<string, ShipForm>>({});
 
-  const rows = listVendorSubOrders(VENDOR.id);
+  // Orders live in localStorage; re-read after every mutation (SSR starts from seed data).
+  const [rows, setRows] = useState(() => listVendorSubOrders(VENDOR.id));
+  const refresh = useCallback(() => setRows(listVendorSubOrders(VENDOR.id)), []);
+  useEffect(() => { refresh(); }, [refresh]);
   const omzet = rows.reduce((s, x) => s + x.so.subtotal, 0);
   const appFee = rows.reduce((s, x) => s + x.so.appFee, 0);
 
@@ -143,7 +145,7 @@ function VendorDashboard() {
                               notes: f.notes,
                             });
                             toast.success("Konfirmasi terkirim. Menunggu persetujuan pembeli.");
-                            router.invalidate();
+                            refresh();
                           }}
                         >
                           Kirim konfirmasi
@@ -155,7 +157,7 @@ function VendorDashboard() {
                           onClick={() => {
                             cancelOrder(order.id);
                             toast.success("PO ditandai batal (stok tidak tersedia).");
-                            router.invalidate();
+                            refresh();
                           }}
                         >
                           Stok tidak tersedia — batalkan
@@ -191,7 +193,7 @@ function VendorDashboard() {
                           if (!f.courier.trim()) return toast.error("Isi armada atau kurir pengirim.");
                           markDispatched(order.id, so.id, { courier: f.courier.trim(), trackingNo: f.trackingNo.trim() });
                           toast.success("Sub-PO ditandai dikirim.");
-                          router.invalidate();
+                          refresh();
                         }}
                       >
                         Tandai dikirim
@@ -222,7 +224,7 @@ function VendorDashboard() {
                       onClick={() => {
                         markDelivered(order.id, so.id);
                         toast.success("Barang ditandai sampai. Pembeli masuk masa cek terima.");
-                        router.invalidate();
+                        refresh();
                       }}
                     >
                       Tandai barang sampai
