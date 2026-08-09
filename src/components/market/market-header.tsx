@@ -16,14 +16,11 @@ import { CATEGORIES } from "@/lib/market/data";
 import { useCart } from "@/lib/market/cart";
 import { useDemoRole, ROLE_LABEL, type Role } from "@/lib/market/role";
 
-const KOTA = ["Jakarta", "Bogor", "Depok", "Tangerang", "Bekasi"];
-
 export function MarketHeader() {
   const { count, wishlist } = useCart();
   const { role, setRole } = useDemoRole();
   const nav = useNavigate();
   const [q, setQ] = useState("");
-  const [kota, setKota] = useState("Jakarta");
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
