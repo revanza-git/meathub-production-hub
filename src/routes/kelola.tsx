@@ -7,7 +7,12 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PRODUCTS, VENDORS } from "@/lib/market/data";
 import { listOrders } from "@/lib/market/orders-store";
-import { rupiah, tanggal } from "@/lib/market/format";
+import { rupiah, tanggal, tanggalJam } from "@/lib/market/format";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { getConfig, saveConfig, type PlatformConfig } from "@/lib/market/pricing";
+import { listWithdrawals, decideWithdrawal, WITHDRAWAL_TONE } from "@/lib/market/deposit";
 
 export const Route = createFileRoute("/kelola")({
   head: () => ({
@@ -47,6 +52,8 @@ function AdminConsole() {
             <TabsTrigger value="transaksi">Transaksi</TabsTrigger>
             <TabsTrigger value="katalog">Katalog</TabsTrigger>
             <TabsTrigger value="sengketa">Sengketa ({sengketa.length})</TabsTrigger>
+            <TabsTrigger value="penarikan">Penarikan</TabsTrigger>
+            <TabsTrigger value="konfigurasi">Konfigurasi</TabsTrigger>
           </TabsList>
 
           <TabsContent value="vendor">
@@ -153,6 +160,14 @@ function AdminConsole() {
                 ))}
               </ul>
             )}
+          </TabsContent>
+
+          <TabsContent value="penarikan">
+            <WithdrawalQueue />
+          </TabsContent>
+
+          <TabsContent value="konfigurasi">
+            <ConfigEditor />
           </TabsContent>
         </Tabs>
       </div>
