@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PRODUCTS, VENDORS } from "@/lib/market/data";
-import { listOrders, commissionOf } from "@/lib/market/orders-store";
+import { listOrders } from "@/lib/market/orders-store";
 import { rupiah, tanggal } from "@/lib/market/format";
 
 export const Route = createFileRoute("/mitra/")({
