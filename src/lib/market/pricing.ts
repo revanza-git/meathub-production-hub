@@ -13,8 +13,10 @@ export type PlatformConfig = {
   appFeePerKg: number;
   /** App fee per kg for A5-grade products (IDR). */
   appFeePerKgA5: number;
-  /** Vendor warehouse must finish physical verification within this many hours. */
-  warehouseVerificationHours: number;
+  /** Vendor must confirm stock + actual weight within this many hours. */
+  vendorConfirmationHours: number;
+  /** Payment link / VA expires after this many hours. */
+  paymentExpiryHours: number;
   /** Buyer must check goods + upload 360° video within this many hours of receipt. */
   buyerCheckHours: number;
   /** No buyer confirmation after this many days → auto-confirm, vendor is paid. */
@@ -30,7 +32,8 @@ export type PlatformConfig = {
 export const DEFAULT_CONFIG: PlatformConfig = {
   appFeePerKg: 10000,
   appFeePerKgA5: 50000,
-  warehouseVerificationHours: 2,
+  vendorConfirmationHours: 2,
+  paymentExpiryHours: 24,
   buyerCheckHours: 3,
   autoConfirmDays: 14,
   refundWorkingHours: 24,
@@ -40,11 +43,21 @@ export const DEFAULT_CONFIG: PlatformConfig = {
 
 const CONFIG_KEY = "meathub.demo.config";
 
+/** Legacy key `warehouseVerificationHours` is still read so saved demo config keeps working. */
+type StoredConfig = Partial<PlatformConfig> & { warehouseVerificationHours?: number };
+
 export function getConfig(): PlatformConfig {
   if (typeof window === "undefined") return DEFAULT_CONFIG;
   try {
     const raw = localStorage.getItem(CONFIG_KEY);
-    return raw ? { ...DEFAULT_CONFIG, ...(JSON.parse(raw) as Partial<PlatformConfig>) } : DEFAULT_CONFIG;
+    if (!raw) return DEFAULT_CONFIG;
+    const stored = JSON.parse(raw) as StoredConfig;
+    const { warehouseVerificationHours, ...rest } = stored;
+    return {
+      ...DEFAULT_CONFIG,
+      ...(warehouseVerificationHours ? { vendorConfirmationHours: warehouseVerificationHours } : {}),
+      ...rest,
+    };
   } catch {
     return DEFAULT_CONFIG;
   }
