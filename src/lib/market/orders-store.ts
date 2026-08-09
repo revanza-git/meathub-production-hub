@@ -29,12 +29,11 @@ export const ORDER_STATUSES = [
 
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
-export type PaymentPath = "CBD_VA" | "CBD_DEPOSIT" | "TOP_PAYLATER";
+export type PaymentPath = "CBD_VA" | "CBD_DEPOSIT";
 
 export const PAYMENT_PATH_LABEL: Record<PaymentPath, string> = {
-  CBD_VA: "CBD — Virtual Account",
+  CBD_VA: "CBD — Virtual Account (iPaymu)",
   CBD_DEPOSIT: "CBD — Deposit auto-cut",
-  TOP_PAYLATER: "TOP — Paylater B2B (simulasi)",
 };
 
 export type SubOrderItem = {
@@ -83,7 +82,7 @@ export type SubOrder = {
   timeline: { label: string; at: string; done: boolean }[];
   verification: WarehouseVerification;
   payoutStatus: "Menunggu Konfirmasi Terima" | "Dijadwalkan" | "Dibayarkan";
-  fundedBy: "MEATHUB" | "PAYLATER";
+  fundedBy: "MEATHUB";
 };
 
 export type Order = {
@@ -199,7 +198,7 @@ function seedOrder(
         : newVerification(createdAt),
       payoutStatus:
         status === "Selesai" ? "Dibayarkan" : status === "Dalam Pengiriman" ? "Dijadwalkan" : "Menunggu Konfirmasi Terima",
-      fundedBy: paymentPath === "TOP_PAYLATER" ? "PAYLATER" : "MEATHUB",
+      fundedBy: "MEATHUB",
     };
   });
 
@@ -246,7 +245,7 @@ export const SEED_ORDERS: Order[] = [
   seedOrder(1, "Selesai", "PAID", ["p0", "p6"], 21),
   seedOrder(2, "Selesai", "PAID", ["p10"], 18, "CBD_DEPOSIT"),
   seedOrder(3, "Menunggu Cek Fisik Pembeli", "PAID", ["p3", "p8"], 12),
-  seedOrder(4, "Dalam Pengiriman", "PAID", ["p1"], 6, "TOP_PAYLATER"),
+  seedOrder(4, "Dalam Pengiriman", "PAID", ["p1"], 6, "CBD_VA"),
   seedOrder(5, "Sedang Disiapkan", "PAID", ["p15", "p17"], 4),
   seedOrder(6, "Sudah Dibayar", "PAID", ["p11"], 3, "CBD_DEPOSIT"),
   seedOrder(7, "Menunggu Persetujuan Pembeli", "PENDING", ["p23", "p29"], 1),

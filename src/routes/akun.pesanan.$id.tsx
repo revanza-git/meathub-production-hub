@@ -270,8 +270,7 @@ function OrderDetail() {
                   {so.deliveryFee === 0 ? "Gratis" : rupiah(so.deliveryFee)}
                 </span>
                 <span>
-                  Pencairan vendor: {so.payoutStatus} ·{" "}
-                  {so.fundedBy === "PAYLATER" ? "didanai mitra paylater" : "didanai MEATHUB"}
+                  Pencairan vendor: {so.payoutStatus} · didanai MEATHUB
                 </span>
               </div>
               {so.note ? <p className="mt-1 text-xs text-muted-foreground">Catatan: {so.note}</p> : null}
@@ -315,7 +314,7 @@ function OrderDetail() {
               Unduh invoice
             </Button>
             {order.status === "Menunggu Pembayaran" && (
-              <Link to="/bayar/$orderId" params={{ orderId: order.id }} search={{ metode: order.paymentPath === "CBD_DEPOSIT" ? "deposit" : "va" }}>
+              <Link to="/bayar/$orderId" params={{ orderId: order.id }} search={{ metode: "va-bca" }}>
                 <Button size="sm">Bayar sekarang</Button>
               </Link>
             )}

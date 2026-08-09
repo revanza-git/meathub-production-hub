@@ -36,6 +36,7 @@ import { Route as AuthenticatedBuyerOrdersRouteImport } from './routes/_authenti
 import { Route as AuthenticatedBuyerCartRouteImport } from './routes/_authenticated/buyer/cart'
 import { Route as AuthenticatedBuyerAiRouteImport } from './routes/_authenticated/buyer/ai'
 import { Route as AuthenticatedBuyerAddressesRouteImport } from './routes/_authenticated/buyer/addresses'
+import { Route as ApiPublicIpaymuCallbackRouteImport } from './routes/api/public/ipaymu/callback'
 import { Route as AuthenticatedPartnerVendorReliabilityRouteImport } from './routes/_authenticated/partner/vendor/reliability'
 import { Route as AuthenticatedPartnerVendorPayoutsRouteImport } from './routes/_authenticated/partner/vendor/payouts'
 import { Route as AuthenticatedPartnerVendorOrdersRouteImport } from './routes/_authenticated/partner/vendor/orders'
@@ -193,6 +194,11 @@ const AuthenticatedBuyerAddressesRoute =
     path: '/buyer/addresses',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicIpaymuCallbackRoute = ApiPublicIpaymuCallbackRouteImport.update({
+  id: '/api/public/ipaymu/callback',
+  path: '/api/public/ipaymu/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedPartnerVendorReliabilityRoute =
   AuthenticatedPartnerVendorReliabilityRouteImport.update({
     id: '/partner/vendor/reliability',
@@ -347,6 +353,7 @@ export interface FileRoutesByFullPath {
   '/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
   '/partner/vendor/payouts': typeof AuthenticatedPartnerVendorPayoutsRoute
   '/partner/vendor/reliability': typeof AuthenticatedPartnerVendorReliabilityRoute
+  '/api/public/ipaymu/callback': typeof ApiPublicIpaymuCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -393,6 +400,7 @@ export interface FileRoutesByTo {
   '/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
   '/partner/vendor/payouts': typeof AuthenticatedPartnerVendorPayoutsRoute
   '/partner/vendor/reliability': typeof AuthenticatedPartnerVendorReliabilityRoute
+  '/api/public/ipaymu/callback': typeof ApiPublicIpaymuCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -441,6 +449,7 @@ export interface FileRoutesById {
   '/_authenticated/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
   '/_authenticated/partner/vendor/payouts': typeof AuthenticatedPartnerVendorPayoutsRoute
   '/_authenticated/partner/vendor/reliability': typeof AuthenticatedPartnerVendorReliabilityRoute
+  '/api/public/ipaymu/callback': typeof ApiPublicIpaymuCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -489,6 +498,7 @@ export interface FileRouteTypes {
     | '/partner/vendor/orders'
     | '/partner/vendor/payouts'
     | '/partner/vendor/reliability'
+    | '/api/public/ipaymu/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -535,6 +545,7 @@ export interface FileRouteTypes {
     | '/partner/vendor/orders'
     | '/partner/vendor/payouts'
     | '/partner/vendor/reliability'
+    | '/api/public/ipaymu/callback'
   id:
     | '__root__'
     | '/'
@@ -582,6 +593,7 @@ export interface FileRouteTypes {
     | '/_authenticated/partner/vendor/orders'
     | '/_authenticated/partner/vendor/payouts'
     | '/_authenticated/partner/vendor/reliability'
+    | '/api/public/ipaymu/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -603,6 +615,7 @@ export interface RootRouteChildren {
   ProdukIndexRoute: typeof ProdukIndexRoute
   AkunPesananIdRoute: typeof AkunPesananIdRoute
   AkunPesananIndexRoute: typeof AkunPesananIndexRoute
+  ApiPublicIpaymuCallbackRoute: typeof ApiPublicIpaymuCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -795,6 +808,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/buyer/addresses'
       preLoaderRoute: typeof AuthenticatedBuyerAddressesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/ipaymu/callback': {
+      id: '/api/public/ipaymu/callback'
+      path: '/api/public/ipaymu/callback'
+      fullPath: '/api/public/ipaymu/callback'
+      preLoaderRoute: typeof ApiPublicIpaymuCallbackRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/partner/vendor/reliability': {
       id: '/_authenticated/partner/vendor/reliability'
@@ -1027,17 +1047,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProdukIndexRoute: ProdukIndexRoute,
   AkunPesananIdRoute: AkunPesananIdRoute,
   AkunPesananIndexRoute: AkunPesananIndexRoute,
+  ApiPublicIpaymuCallbackRoute: ApiPublicIpaymuCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
