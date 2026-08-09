@@ -335,7 +335,8 @@ const CONFIG_FIELDS: { key: keyof PlatformConfig; label: string; hint: string }[
   { key: "buyerCheckHours", label: "SLA cek fisik pembeli (jam)", hint: "Lewat batas → dianggap sesuai." },
   { key: "autoConfirmDays", label: "Auto-confirm tanpa respons (hari)", hint: "Default 14 hari, dana vendor cair." },
   { key: "refundWorkingHours", label: "SLA refund (jam kerja)", hint: "Setelah retur disetujui." },
-  { key: "depositMinTopUp", label: "Minimum top-up deposit (Rp)", hint: "Penarikan saldo tanpa batas minimum." },
+  { key: "payoutHoldDays", label: "Masa tahan dana vendor (hari)", hint: "Dihitung sejak pesanan Selesai." },
+  { key: "payoutMinWithdrawal", label: "Minimum penarikan vendor (Rp)", hint: "Penarikan wajib disetujui admin." },
   { key: "freeDeliveryKg", label: "Gratis ongkir mulai (kg)", hint: "Per pesanan vendor." },
 ];
 
