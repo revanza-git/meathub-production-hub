@@ -59,11 +59,9 @@ function CheckoutPage() {
     address: "Jl. Kemang Raya No. 21, Jakarta Selatan 12730",
   });
   const [delivery, setDelivery] = useState<Record<string, string>>({});
-  const [paymentPath, setPaymentPath] = useState<PaymentPath>("CBD_VA");
+  const paymentPath: PaymentPath = "CBD_VA";
   const [submitting, setSubmitting] = useState(false);
-  const [saldo, setSaldo] = useState(0);
 
-  useEffect(() => setSaldo(depositBalance()), []);
 
   const deliveryFor = (vendorId: string) =>
     SHIPPING_CHOICES.find((d) => d.id === (delivery[vendorId] ?? "regular")) ?? SHIPPING_CHOICES[0];
