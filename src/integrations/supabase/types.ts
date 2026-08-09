@@ -1413,6 +1413,134 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          payload: Json
+          payment_intent_id: string | null
+          provider: string
+          reference: string | null
+          status: string | null
+          verified: boolean
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          payload: Json
+          payment_intent_id?: string | null
+          provider?: string
+          reference?: string | null
+          status?: string | null
+          verified?: boolean
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          payload?: Json
+          payment_intent_id?: string | null
+          provider?: string
+          reference?: string | null
+          status?: string | null
+          verified?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_events_payment_intent_id_fkey"
+            columns: ["payment_intent_id"]
+            isOneToOne: false
+            referencedRelation: "payment_intents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_intents: {
+        Row: {
+          amount: number
+          buyer_org_id: string | null
+          buyer_user_id: string | null
+          channel: string
+          channel_code: string | null
+          created_at: string
+          expires_at: string | null
+          fee: number
+          id: string
+          order_ref: string
+          paid_at: string | null
+          payment_name: string | null
+          payment_no: string | null
+          provider: string
+          qr_string: string | null
+          reference: string | null
+          request_payload: Json | null
+          response_payload: Json | null
+          status: Database["public"]["Enums"]["payment_intent_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          buyer_org_id?: string | null
+          buyer_user_id?: string | null
+          channel: string
+          channel_code?: string | null
+          created_at?: string
+          expires_at?: string | null
+          fee?: number
+          id?: string
+          order_ref: string
+          paid_at?: string | null
+          payment_name?: string | null
+          payment_no?: string | null
+          provider?: string
+          qr_string?: string | null
+          reference?: string | null
+          request_payload?: Json | null
+          response_payload?: Json | null
+          status?: Database["public"]["Enums"]["payment_intent_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          buyer_org_id?: string | null
+          buyer_user_id?: string | null
+          channel?: string
+          channel_code?: string | null
+          created_at?: string
+          expires_at?: string | null
+          fee?: number
+          id?: string
+          order_ref?: string
+          paid_at?: string | null
+          payment_name?: string | null
+          payment_no?: string | null
+          provider?: string
+          qr_string?: string | null
+          reference?: string | null
+          request_payload?: Json | null
+          response_payload?: Json | null
+          status?: Database["public"]["Enums"]["payment_intent_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_intents_buyer_org_id_fkey"
+            columns: ["buyer_org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_intents_buyer_org_id_fkey"
+            columns: ["buyer_org_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_reliability"
+            referencedColumns: ["vendor_id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
@@ -2486,6 +2614,13 @@ export type Database = {
         | "MINOR_DAMAGE"
         | "MAJOR_DAMAGE"
         | "TEMPERATURE_BREACH"
+      payment_intent_status:
+        | "PENDING"
+        | "PROCESSING"
+        | "PAID"
+        | "FAILED"
+        | "EXPIRED"
+        | "CANCELLED"
       payment_method: "BANK_TRANSFER" | "VA" | "CASH" | "OTHER"
       product_tier:
         | "COMMODITY_PREMIUM"
@@ -2716,6 +2851,14 @@ export const Constants = {
         "MINOR_DAMAGE",
         "MAJOR_DAMAGE",
         "TEMPERATURE_BREACH",
+      ],
+      payment_intent_status: [
+        "PENDING",
+        "PROCESSING",
+        "PAID",
+        "FAILED",
+        "EXPIRED",
+        "CANCELLED",
       ],
       payment_method: ["BANK_TRANSFER", "VA", "CASH", "OTHER"],
       product_tier: [
