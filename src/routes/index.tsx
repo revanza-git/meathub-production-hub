@@ -69,7 +69,7 @@ function HomePage() {
                 { icon: BadgeCheck, label: "Vendor terverifikasi" },
                 { icon: Snowflake, label: "Rantai dingin terjaga" },
                 { icon: Truck, label: "Cold-chain nasional" },
-                { icon: ShieldCheck, label: "Vendor terverifikasi" },
+                { icon: ShieldCheck, label: "Pembayaran aman QRIS/VA" },
               ].map((f) => (
                 <li key={f.label} className="flex items-start gap-2 text-xs text-white/80">
                   <f.icon className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
