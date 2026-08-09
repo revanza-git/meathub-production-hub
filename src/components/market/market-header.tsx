@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { Search, ShoppingCart, Heart, MapPin, Menu, User, LayoutGrid, Home, Package } from "lucide-react";
+import { Search, ShoppingCart, Heart, MapPin, Menu, User, LayoutGrid, Home, Package, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { CATEGORIES } from "@/lib/market/data";
 import { useCart } from "@/lib/market/cart";
-import { useDemoRole, ROLE_LABEL, type Role } from "@/lib/market/role";
+import { useDemoRole, ROLE_LABEL, ROLE_HOME, type Role } from "@/lib/market/role";
 
 export function MarketHeader() {
   const { count, wishlist } = useCart();
@@ -87,6 +87,15 @@ export function MarketHeader() {
                 )}
               </Button>
             </Link>
+
+            {role !== "guest" ? (
+              <Link to={ROLE_HOME[role] as never} className="hidden sm:block">
+                <Button variant="ghost" size="sm" className="gap-1.5">
+                  <LayoutDashboard className="h-4 w-4" aria-hidden="true" />
+                  Dasbor
+                </Button>
+              </Link>
+            ) : null}
 
             <div className="hidden md:block">
               <RoleSwitcher role={role} setRole={setRole} />
@@ -170,12 +179,20 @@ export function MarketHeader() {
 }
 
 function RoleSwitcher({ role, setRole }: { role: Role; setRole: (r: Role) => void }) {
+  const nav = useNavigate();
   return (
     <div className="flex items-center gap-2 rounded-lg border border-dashed border-accent bg-accent/10 px-2 py-1">
       <Badge variant="outline" className="border-accent bg-card text-[10px] uppercase">
         Demo
       </Badge>
-      <Select value={role} onValueChange={(v) => setRole(v as Role)}>
+      <Select
+        value={role}
+        onValueChange={(v) => {
+          const r = v as Role;
+          setRole(r);
+          nav({ to: ROLE_HOME[r] as never });
+        }}
+      >
         <SelectTrigger className="h-7 w-[150px] border-none bg-transparent text-xs shadow-none" aria-label="Ganti peran demo">
           <SelectValue />
         </SelectTrigger>
