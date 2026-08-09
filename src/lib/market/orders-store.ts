@@ -4,7 +4,7 @@ import { getConfig, lineAppFee, tierForKg, type TransactionTier } from "./pricin
 
 /**
  * Order lifecycle per BRD v1.2 §6.1:
- * PO → verifikasi gudang (2 jam) → persetujuan buyer → pilih pengiriman →
+ * PO → verifikasi gudang (SLA konfigurasi admin) → persetujuan buyer → pilih pengiriman →
  * bayar (CBD/TOP) → kirim → cek fisik buyer (3 jam) → selesai / retur.
  */
 export const ORDER_STATUSES = [
@@ -187,7 +187,7 @@ function seedOrder(
       verification: verified
         ? {
             status: "TERVERIFIKASI",
-            deadlineAt: hoursFrom(createdAt, 2),
+            deadlineAt: hoursFrom(createdAt, getConfig().warehouseVerificationHours),
             verifiedAt: hoursFrom(createdAt, 1),
             actualWeightKg: Math.round(kg * 100) / 100,
             slaughterDate: "2026-07-18",
@@ -234,8 +234,8 @@ function seedOrder(
         : status === "Menunggu Cek Fisik Pembeli"
           ? {
               status: "BELUM",
-              deadlineAt: hoursFrom(new Date().toISOString(), 3),
-              autoConfirmAt: daysFrom(new Date().toISOString(), 14),
+              deadlineAt: hoursFrom(new Date().toISOString(), getConfig().buyerCheckHours),
+              autoConfirmAt: daysFrom(new Date().toISOString(), getConfig().autoConfirmDays),
             }
           : newReceipt(),
   };

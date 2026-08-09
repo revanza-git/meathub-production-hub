@@ -15,7 +15,7 @@ export const Route = createFileRoute("/mitra/daftar")({
       {
         name: "description",
         content:
-          "Jual daging sapi grosir ke ribuan pembeli HORECA Jabodetabek. Daftar vendor MEATHUB gratis, komisi 5%, pencairan T+3.",
+          "Jual daging sapi grosir ke ribuan pembeli HORECA seluruh Indonesia. Daftar vendor MEATHUB gratis, komisi 5%, pencairan T+3.",
       },
       { property: "og:title", content: "Daftar Jadi Vendor Daging — MEATHUB" },
       {
@@ -56,7 +56,7 @@ function VendorRegister() {
       <div className="mx-auto max-w-3xl px-4 py-8">
         <h1 className="font-display text-3xl font-bold text-ink">Jadi vendor MEATHUB</h1>
         <p className="mt-2 text-sm text-ink-soft">
-          Jangkau ribuan restoran, hotel, dan katering di Jabodetabek. Komisi transparan 5%, pencairan
+          Jangkau ribuan restoran, hotel, dan katering di seluruh Indonesia. Komisi transparan 5%, pencairan
           T+3 hari kerja, dan dukungan cold-chain dari Hub MEATHUB.
         </p>
 
@@ -112,7 +112,7 @@ function VendorRegister() {
               <F id="atas" label="Atas nama" placeholder="PT Nusantara Protein" />
               <p className="text-xs text-muted-foreground sm:col-span-2">
                 Dengan mengirim pendaftaran, Anda menyetujui ketentuan vendor MEATHUB termasuk komisi
-                platform 5% dan kebijakan klaim kualitas 2 jam.
+                platform 5%.
               </p>
             </div>
           )}

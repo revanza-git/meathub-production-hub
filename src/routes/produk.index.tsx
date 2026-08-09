@@ -52,7 +52,7 @@ export const Route = createFileRoute("/produk/")({
       { property: "og:title", content: "Katalog Daging Sapi Grosir B2B — MEATHUB" },
       {
         property: "og:description",
-        content: "Katalog daging sapi B2B dari vendor terverifikasi, harga grosir, cold-chain Jabodetabek.",
+        content: "Katalog daging sapi B2B dari vendor terverifikasi, harga grosir, cold-chain nasional.",
       },
     ],
   }),

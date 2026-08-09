@@ -26,7 +26,7 @@ export const Route = createFileRoute("/auth")({
       {
         name: "description",
         content:
-          "Masuk atau daftar akun bisnis MEATHUB Meat Hub untuk pemesanan daging premium di Jabodetabek.",
+          "Masuk atau daftar akun bisnis MEATHUB Meat Hub untuk pemesanan daging premium di seluruh Indonesia.",
       },
       { name: "robots", content: "noindex" },
     ],
@@ -79,7 +79,7 @@ function AuthPage() {
             <span className="font-display text-xl font-bold text-ink">MEATHUB</span>
           </Link>
           <p className="mt-2 text-xs uppercase tracking-widest text-ink-soft">
-            Meat Hub • Jabodetabek
+            Meat Hub • Nasional
           </p>
         </div>
 

@@ -11,17 +11,17 @@ import { productById } from "@/lib/market/data";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MEATHUB — Marketplace Daging Sapi Grosir B2B Jabodetabek" },
+      { title: "MEATHUB — Marketplace Daging Sapi Grosir B2B Nasional" },
       {
         name: "description",
         content:
-          "Belanja daging sapi lokal & impor dari vendor terverifikasi. Harga grosir HORECA, cold-chain Jabodetabek, pembayaran QRIS/VA, dan pelacakan pesanan multi-vendor.",
+          "Belanja daging sapi lokal & impor dari vendor terverifikasi. Harga grosir HORECA, cold-chain nasional, pembayaran QRIS/VA, dan pelacakan pesanan multi-vendor.",
       },
       { property: "og:title", content: "MEATHUB — Marketplace Daging Sapi Grosir B2B" },
       {
         property: "og:description",
         content:
-          "Marketplace daging sapi B2B: vendor terverifikasi, harga grosir, cold-chain Jabodetabek, pelacakan pesanan real-time.",
+          "Marketplace daging sapi B2B: vendor terverifikasi, harga grosir, cold-chain nasional, pelacakan pesanan real-time.",
       },
     ],
   }),
@@ -42,7 +42,7 @@ function HomePage() {
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,460px)] lg:items-center">
           <div className="min-w-0">
             <Badge variant="outline" className="border-accent/50 bg-accent/10 text-accent">
-              Marketplace B2B · Jabodetabek
+              Marketplace B2B · Nasional
             </Badge>
             <h1 className="mt-3 font-display text-3xl font-bold leading-tight sm:text-5xl">
               Daging sapi grosir, langsung dari vendor terverifikasi
@@ -68,8 +68,8 @@ function HomePage() {
               {[
                 { icon: BadgeCheck, label: "Vendor terverifikasi" },
                 { icon: Snowflake, label: "Rantai dingin terjaga" },
-                { icon: Truck, label: "Same day Jabodetabek" },
-                { icon: ShieldCheck, label: "Garansi klaim 2 jam" },
+                { icon: Truck, label: "Cold-chain nasional" },
+                { icon: ShieldCheck, label: "Vendor terverifikasi" },
               ].map((f) => (
                 <li key={f.label} className="flex items-start gap-2 text-xs text-white/80">
                   <f.icon className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
@@ -227,7 +227,7 @@ function HomePage() {
             </h2>
             <p className="mt-2 max-w-2xl text-sm text-white/80">
               Gratis biaya pendaftaran, komisi transparan 5%, pencairan dana T+3 hari kerja, dan akses ke
-              ribuan pembeli HORECA aktif di Jabodetabek.
+              ribuan pembeli HORECA aktif di seluruh Indonesia.
             </p>
           </div>
           <Link to="/mitra/daftar" className="shrink-0">

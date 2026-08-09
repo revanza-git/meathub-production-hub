@@ -15,7 +15,7 @@ export function MarketFooter() {
           </div>
           <p className="text-xs leading-relaxed">
             Marketplace daging sapi B2B untuk restoran, hotel, katering, dan pelaku usaha kuliner di
-            Jabodetabek. Vendor terverifikasi, rantai dingin terjaga.
+            seluruh Indonesia. Vendor terverifikasi, rantai dingin terjaga.
           </p>
         </div>
         <div>

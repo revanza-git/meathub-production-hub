@@ -34,7 +34,7 @@ export function MarketHeader() {
     <header className="sticky top-0 z-40">
       <div className="bg-maroon-dark text-center text-[11px] text-white/90 sm:text-xs">
         <div className="mx-auto max-w-7xl px-4 py-1.5">
-          Gratis ongkir untuk minimum pembelian 20 kg di Jabodetabek
+          Gratis ongkir untuk minimum pembelian 20 kg
         </div>
       </div>
 
