@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Users, Store, ShoppingBag, Wallet, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { MarketLayout } from "@/components/market/market-layout";
+import { RoleNav } from "@/components/market/role-nav";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -36,6 +37,7 @@ function AdminConsole() {
   return (
     <MarketLayout>
       <div className="mx-auto max-w-6xl px-4 py-6">
+        <RoleNav current="admin" />
         <h1 className="font-display text-2xl font-bold text-ink">Konsol admin marketplace</h1>
         <p className="text-sm text-muted-foreground">Ringkasan operasional MEATHUB (data demo).</p>
 

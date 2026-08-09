@@ -3,6 +3,7 @@ import { useState } from "react";
 import { TrendingUp, Package, Wallet, Star, Plus, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { MarketLayout } from "@/components/market/market-layout";
+import { RoleNav } from "@/components/market/role-nav";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -36,6 +37,7 @@ function VendorDashboard() {
   return (
     <MarketLayout>
       <div className="mx-auto max-w-6xl px-4 py-6">
+        <RoleNav current="vendor" />
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex sm:justify-between">
           <div className="min-w-0">
             <h1 className="truncate font-display text-2xl font-bold text-ink">Dasbor vendor</h1>
