@@ -287,22 +287,9 @@ function VendorDashboard() {
           </TabsContent>
 
           <TabsContent value="payout">
-            <div className="rounded-xl border border-border bg-card p-5">
-              <dl className="grid gap-3 sm:grid-cols-3">
-                <Kpi icon={Package} label="Omzet vendor" value={rupiah(omzet)} />
-                <Kpi icon={Wallet} label="App fee dibayar pembeli" value={rupiah(appFee)} />
-                <Kpi icon={Wallet} label="Dana diterima vendor" value={rupiah(omzet)} />
-              </dl>
-              <p className="mt-4 text-sm text-muted-foreground">
-                Harga vendor dibayar penuh — app fee MEATHUB ditanggung pembeli di luar harga vendor. Pencairan
-                dapat diajukan setelah pembeli menekan Done atau setelah auto-confirm, lalu disetujui admin. Status
-                mitra saat ini: <strong className="text-ink">{VENDOR.settlementStatus}</strong>.
-              </p>
-              <Button className="mt-4" onClick={() => toast.success("Permintaan pencairan dikirim, menunggu persetujuan admin (demo)")}>
-                Ajukan pencairan
-              </Button>
-            </div>
+            <PayoutPanel />
           </TabsContent>
+
         </Tabs>
       </div>
     </MarketLayout>
