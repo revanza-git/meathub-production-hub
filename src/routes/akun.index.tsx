@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Package, Heart, MapPin, Receipt, User, LogOut } from "lucide-react";
 import { MarketLayout } from "@/components/market/market-layout";
+import { RoleNav } from "@/components/market/role-nav";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useDemoRole, ROLE_LABEL } from "@/lib/market/role";
@@ -31,6 +32,7 @@ function AccountPage() {
   return (
     <MarketLayout>
       <div className="mx-auto max-w-5xl px-4 py-6">
+        <RoleNav current="buyer" />
         <div className="rounded-xl border border-border bg-card p-5">
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:justify-between">
             <div className="flex min-w-0 items-center gap-3">

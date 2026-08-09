@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Warehouse, Clock, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { MarketLayout } from "@/components/market/market-layout";
+import { RoleNav } from "@/components/market/role-nav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,6 +50,7 @@ function WarehouseDashboard() {
   return (
     <MarketLayout>
       <div className="mx-auto max-w-5xl px-4 py-6">
+        <RoleNav current="warehouse" />
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
             <h1 className="flex items-center gap-2 font-display text-2xl font-bold text-ink">
