@@ -23,24 +23,53 @@ export function MarketFooter() {
             Bantuan Pembeli
           </h2>
           <ul className="space-y-1.5 text-xs">
-            <li><Link to="/produk" className="hover:text-white">Cara belanja</Link></li>
-            <li><Link to="/akun/pesanan" className="hover:text-white">Lacak pesanan</Link></li>
-            <li><Link to="/keranjang" className="hover:text-white">Keranjang saya</Link></li>
-            <li><Link to="/akun/deposit" className="hover:text-white">Deposit & saldo</Link></li>
-            <li><span className="text-white/60">Pengajuan komplain</span></li>
+            <li>
+              <Link to="/produk" className="hover:text-white">
+                Cara belanja
+              </Link>
+            </li>
+            <li>
+              <Link to="/akun/pesanan" className="hover:text-white">
+                Lacak pesanan
+              </Link>
+            </li>
+            <li>
+              <Link to="/keranjang" className="hover:text-white">
+                Keranjang saya
+              </Link>
+            </li>
+            <li>
+              <span className="text-white/60">Pengajuan komplain</span>
+            </li>
           </ul>
         </div>
         <div>
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">Vendor</h2>
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">
+            Vendor
+          </h2>
           <ul className="space-y-1.5 text-xs">
-            <li><Link to="/mitra/daftar" className="hover:text-white">Daftar jadi vendor</Link></li>
-            <li><Link to="/mitra" className="hover:text-white">Dasbor vendor</Link></li>
-            <li><span className="text-white/60">Ketentuan penjual</span></li>
-            <li><span className="text-white/60">Panduan settlement</span></li>
+            <li>
+              <Link to="/mitra/daftar" className="hover:text-white">
+                Daftar jadi vendor
+              </Link>
+            </li>
+            <li>
+              <Link to="/mitra" className="hover:text-white">
+                Dasbor vendor
+              </Link>
+            </li>
+            <li>
+              <span className="text-white/60">Ketentuan penjual</span>
+            </li>
+            <li>
+              <span className="text-white/60">Panduan settlement</span>
+            </li>
           </ul>
         </div>
         <div>
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">Kontak</h2>
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-accent">
+            Kontak
+          </h2>
           <ul className="space-y-1.5 text-xs">
             <li>Hub MEATHUB, Jakarta Utara</li>
             <li>halo@meathub.id</li>

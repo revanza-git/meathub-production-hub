@@ -1,6 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { TrendingUp, Package, Wallet, Star, Plus, Pencil, Clock, Truck, CheckCircle2 } from "lucide-react";
+import {
+  TrendingUp,
+  Package,
+  Wallet,
+  Star,
+  Plus,
+  Pencil,
+  Clock,
+  Truck,
+  CheckCircle2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { MarketLayout } from "@/components/market/market-layout";
 import { RoleNav } from "@/components/market/role-nav";
@@ -21,14 +31,32 @@ import {
 } from "@/lib/market/orders-store";
 import { rupiah, tanggal, tanggalJam } from "@/lib/market/format";
 import { getConfig } from "@/lib/market/pricing";
+import {
+  vendorBalance,
+  listEscrow,
+  listWithdrawals,
+  requestWithdrawal,
+  ESCROW_LABEL,
+  WITHDRAWAL_TONE,
+  type VendorBalance,
+  type EscrowRow,
+  type WithdrawalRequest,
+} from "@/lib/market/escrow";
 
 export const Route = createFileRoute("/mitra/")({
   head: () => ({
     meta: [
       { title: "Dasbor Vendor — MEATHUB" },
-      { name: "description", content: "Konfirmasi PO, kirim dari cold storage sendiri, dan ajukan pencairan sebagai vendor MEATHUB." },
+      {
+        name: "description",
+        content:
+          "Konfirmasi PO, kirim dari cold storage sendiri, dan ajukan pencairan sebagai vendor MEATHUB.",
+      },
       { property: "og:title", content: "Dasbor Vendor — MEATHUB" },
-      { property: "og:description", content: "Konfirmasi PO, pengiriman, dan pencairan dana vendor." },
+      {
+        property: "og:description",
+        content: "Konfirmasi PO, pengiriman, dan pencairan dana vendor.",
+      },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -37,7 +65,13 @@ export const Route = createFileRoute("/mitra/")({
 
 const VENDOR = VENDORS[0];
 
-type ConfirmForm = { weight: string; slaughter: string; expiry: string; photos: string; notes: string };
+type ConfirmForm = {
+  weight: string;
+  slaughter: string;
+  expiry: string;
+  photos: string;
+  notes: string;
+};
 type ShipForm = { courier: string; trackingNo: string };
 
 function VendorDashboard() {
@@ -49,9 +83,10 @@ function VendorDashboard() {
   // Orders live in localStorage; re-read after every mutation (SSR starts from seed data).
   const [rows, setRows] = useState(() => listVendorSubOrders(VENDOR.id));
   const refresh = useCallback(() => setRows(listVendorSubOrders(VENDOR.id)), []);
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
   const omzet = rows.reduce((s, x) => s + x.so.subtotal, 0);
-  const appFee = rows.reduce((s, x) => s + x.so.appFee, 0);
 
   const perluKonfirmasi = rows.filter((r) => r.so.status === "Menunggu Konfirmasi Vendor");
   const perluDikirim = rows.filter(
@@ -81,7 +116,10 @@ function VendorDashboard() {
               {VENDOR.name} · SLA konfirmasi {config.vendorConfirmationHours} jam per PO
             </p>
           </div>
-          <Button className="shrink-0 gap-2" onClick={() => toast.info("Form tambah produk tersedia pada versi berikutnya (demo).")}>
+          <Button
+            className="shrink-0 gap-2"
+            onClick={() => toast.info("Form tambah produk tersedia pada versi berikutnya (demo).")}
+          >
             <Plus className="h-4 w-4" aria-hidden="true" /> Tambah produk
           </Button>
         </div>
@@ -95,9 +133,13 @@ function VendorDashboard() {
 
         <Tabs defaultValue="konfirmasi" className="mt-6">
           <TabsList className="flex-wrap">
-            <TabsTrigger value="konfirmasi">Perlu konfirmasi ({perluKonfirmasi.length})</TabsTrigger>
+            <TabsTrigger value="konfirmasi">
+              Perlu konfirmasi ({perluKonfirmasi.length})
+            </TabsTrigger>
             <TabsTrigger value="kirim">Perlu dikirim ({perluDikirim.length})</TabsTrigger>
-            <TabsTrigger value="terima">Menunggu terima ({dalamPerjalanan.length + menungguTerima.length})</TabsTrigger>
+            <TabsTrigger value="terima">
+              Menunggu terima ({dalamPerjalanan.length + menungguTerima.length})
+            </TabsTrigger>
             <TabsTrigger value="produk">Produk ({products.length})</TabsTrigger>
             <TabsTrigger value="payout">Pencairan</TabsTrigger>
           </TabsList>
@@ -111,16 +153,44 @@ function VendorDashboard() {
                   const f = cf(so.id);
                   return (
                     <section key={so.id} className="rounded-xl border border-border bg-card p-4">
-                      <Head order={order.id} sub={so.id} company={order.buyer.company} at={order.createdAt} />
+                      <Head
+                        order={order.id}
+                        sub={so.id}
+                        company={order.buyer.company}
+                        at={order.createdAt}
+                      />
                       <Badge variant="outline" className="mt-2 gap-1">
-                        <Clock className="h-3 w-3" aria-hidden="true" /> Batas {tanggalJam(so.verification.deadlineAt)}
+                        <Clock className="h-3 w-3" aria-hidden="true" /> Batas{" "}
+                        {tanggalJam(so.verification.deadlineAt)}
                       </Badge>
                       <Items so={so} />
                       <div className="mt-3 grid gap-3 sm:grid-cols-4">
-                        <Field id={`w-${so.id}`} label="Gramasi aktual (kg)" value={f.weight} onChange={(v) => setCf(so.id, { weight: v })} />
-                        <Field id={`s-${so.id}`} label="Tanggal potong" type="date" value={f.slaughter} onChange={(v) => setCf(so.id, { slaughter: v })} />
-                        <Field id={`e-${so.id}`} label="Expired" type="date" value={f.expiry} onChange={(v) => setCf(so.id, { expiry: v })} />
-                        <Field id={`p-${so.id}`} label="Jumlah foto" value={f.photos} onChange={(v) => setCf(so.id, { photos: v })} />
+                        <Field
+                          id={`w-${so.id}`}
+                          label="Gramasi aktual (kg)"
+                          value={f.weight}
+                          onChange={(v) => setCf(so.id, { weight: v })}
+                        />
+                        <Field
+                          id={`s-${so.id}`}
+                          label="Tanggal potong"
+                          type="date"
+                          value={f.slaughter}
+                          onChange={(v) => setCf(so.id, { slaughter: v })}
+                        />
+                        <Field
+                          id={`e-${so.id}`}
+                          label="Expired"
+                          type="date"
+                          value={f.expiry}
+                          onChange={(v) => setCf(so.id, { expiry: v })}
+                        />
+                        <Field
+                          id={`p-${so.id}`}
+                          label="Jumlah foto"
+                          value={f.photos}
+                          onChange={(v) => setCf(so.id, { photos: v })}
+                        />
                       </div>
                       <Textarea
                         className="mt-2"
@@ -135,8 +205,10 @@ function VendorDashboard() {
                           size="sm"
                           onClick={() => {
                             const kg = Number(f.weight);
-                            if (!Number.isFinite(kg) || kg <= 0) return toast.error("Isi gramasi aktual.");
-                            if (!f.slaughter || !f.expiry) return toast.error("Isi tanggal potong dan tanggal expired.");
+                            if (!Number.isFinite(kg) || kg <= 0)
+                              return toast.error("Isi gramasi aktual.");
+                            if (!f.slaughter || !f.expiry)
+                              return toast.error("Isi tanggal potong dan tanggal expired.");
                             submitVendorConfirmation(order.id, so.id, {
                               actualWeightKg: kg,
                               slaughterDate: f.slaughter,
@@ -179,19 +251,40 @@ function VendorDashboard() {
                   const f = sf(so.id);
                   return (
                     <section key={so.id} className="rounded-xl border border-border bg-card p-4">
-                      <Head order={order.id} sub={so.id} company={order.buyer.company} at={order.createdAt} />
-                      <p className="mt-1 text-xs text-muted-foreground">Kirim ke: {order.buyer.address}</p>
+                      <Head
+                        order={order.id}
+                        sub={so.id}
+                        company={order.buyer.company}
+                        at={order.createdAt}
+                      />
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Kirim ke: {order.buyer.address}
+                      </p>
                       <Items so={so} />
                       <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                        <Field id={`c-${so.id}`} label="Armada / kurir" value={f.courier} onChange={(v) => setSf(so.id, { courier: v })} />
-                        <Field id={`t-${so.id}`} label="Nomor resi / surat jalan" value={f.trackingNo} onChange={(v) => setSf(so.id, { trackingNo: v })} />
+                        <Field
+                          id={`c-${so.id}`}
+                          label="Armada / kurir"
+                          value={f.courier}
+                          onChange={(v) => setSf(so.id, { courier: v })}
+                        />
+                        <Field
+                          id={`t-${so.id}`}
+                          label="Nomor resi / surat jalan"
+                          value={f.trackingNo}
+                          onChange={(v) => setSf(so.id, { trackingNo: v })}
+                        />
                       </div>
                       <Button
                         className="mt-3"
                         size="sm"
                         onClick={() => {
-                          if (!f.courier.trim()) return toast.error("Isi armada atau kurir pengirim.");
-                          markDispatched(order.id, so.id, { courier: f.courier.trim(), trackingNo: f.trackingNo.trim() });
+                          if (!f.courier.trim())
+                            return toast.error("Isi armada atau kurir pengirim.");
+                          markDispatched(order.id, so.id, {
+                            courier: f.courier.trim(),
+                            trackingNo: f.trackingNo.trim(),
+                          });
                           toast.success("Sub-PO ditandai dikirim.");
                           refresh();
                         }}
@@ -212,7 +305,12 @@ function VendorDashboard() {
               <div className="space-y-3">
                 {dalamPerjalanan.map(({ order, so }) => (
                   <div key={so.id} className="rounded-xl border border-border bg-card p-4">
-                    <Head order={order.id} sub={so.id} company={order.buyer.company} at={order.createdAt} />
+                    <Head
+                      order={order.id}
+                      sub={so.id}
+                      company={order.buyer.company}
+                      at={order.createdAt}
+                    />
                     <p className="mt-1 text-xs text-muted-foreground">
                       {so.shipment?.courier} · resi {so.shipment?.trackingNo || "—"} · berangkat{" "}
                       {so.shipment?.dispatchedAt ? tanggalJam(so.shipment.dispatchedAt) : "—"}
@@ -232,17 +330,25 @@ function VendorDashboard() {
                   </div>
                 ))}
                 {menungguTerima.map(({ order, so }) => (
-                  <div key={so.id} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card p-4 text-sm">
+                  <div
+                    key={so.id}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-card p-4 text-sm"
+                  >
                     <span className="flex min-w-0 items-center gap-2">
                       <CheckCircle2 className="h-4 w-4 shrink-0 text-success" aria-hidden="true" />
                       <span className="min-w-0">
-                        <span className="block text-ink">PO {order.id} · {so.id}</span>
+                        <span className="block text-ink">
+                          PO {order.id} · {so.id}
+                        </span>
                         <span className="block text-xs text-muted-foreground">
-                          Menunggu konfirmasi terima pembeli (auto-confirm {config.autoConfirmDays} hari)
+                          Menunggu konfirmasi terima pembeli (auto-confirm {config.autoConfirmDays}{" "}
+                          hari)
                         </span>
                       </span>
                     </span>
-                    <Badge variant="outline" className={STATUS_TONE[so.status] ?? ""}>{so.status}</Badge>
+                    <Badge variant="outline" className={STATUS_TONE[so.status] ?? ""}>
+                      {so.status}
+                    </Badge>
                   </div>
                 ))}
               </div>
@@ -254,28 +360,51 @@ function VendorDashboard() {
               <table className="w-full min-w-[640px] text-sm">
                 <thead className="bg-muted/60 text-left text-xs uppercase tracking-widest text-muted-foreground">
                   <tr>
-                    <th scope="col" className="p-3">Produk</th>
-                    <th scope="col" className="p-3">Harga</th>
-                    <th scope="col" className="p-3">Stok</th>
-                    <th scope="col" className="p-3">Terjual</th>
-                    <th scope="col" className="p-3">Aksi</th>
+                    <th scope="col" className="p-3">
+                      Produk
+                    </th>
+                    <th scope="col" className="p-3">
+                      Harga
+                    </th>
+                    <th scope="col" className="p-3">
+                      Stok
+                    </th>
+                    <th scope="col" className="p-3">
+                      Terjual
+                    </th>
+                    <th scope="col" className="p-3">
+                      Aksi
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {products.map((p) => (
                     <tr key={p.id}>
                       <td className="p-3">
-                        <Link to="/produk/$id" params={{ id: p.id }} className="font-medium text-ink hover:text-maroon">
+                        <Link
+                          to="/produk/$id"
+                          params={{ id: p.id }}
+                          className="font-medium text-ink hover:text-maroon"
+                        >
                           {p.name}
                         </Link>
                       </td>
                       <td className="p-3">{rupiah(p.price)}</td>
                       <td className="p-3">
-                        <span className={p.stock > 0 ? "text-success" : "text-destructive"}>{p.stock}</span>
+                        <span className={p.stock > 0 ? "text-success" : "text-destructive"}>
+                          {p.stock}
+                        </span>
                       </td>
                       <td className="p-3 text-muted-foreground">{p.sold}</td>
                       <td className="p-3">
-                        <Button size="sm" variant="ghost" className="gap-1.5" onClick={() => toast.info("Editor produk tersedia pada versi berikutnya (demo).")}>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="gap-1.5"
+                          onClick={() =>
+                            toast.info("Editor produk tersedia pada versi berikutnya (demo).")
+                          }
+                        >
                           <Pencil className="h-3.5 w-3.5" aria-hidden="true" /> Ubah
                         </Button>
                       </td>
@@ -287,21 +416,7 @@ function VendorDashboard() {
           </TabsContent>
 
           <TabsContent value="payout">
-            <div className="rounded-xl border border-border bg-card p-5">
-              <dl className="grid gap-3 sm:grid-cols-3">
-                <Kpi icon={Package} label="Omzet vendor" value={rupiah(omzet)} />
-                <Kpi icon={Wallet} label="App fee dibayar pembeli" value={rupiah(appFee)} />
-                <Kpi icon={Wallet} label="Dana diterima vendor" value={rupiah(omzet)} />
-              </dl>
-              <p className="mt-4 text-sm text-muted-foreground">
-                Harga vendor dibayar penuh — app fee MEATHUB ditanggung pembeli di luar harga vendor. Pencairan
-                dapat diajukan setelah pembeli menekan Done atau setelah auto-confirm, lalu disetujui admin. Status
-                mitra saat ini: <strong className="text-ink">{VENDOR.settlementStatus}</strong>.
-              </p>
-              <Button className="mt-4" onClick={() => toast.success("Permintaan pencairan dikirim, menunggu persetujuan admin (demo)")}>
-                Ajukan pencairan
-              </Button>
-            </div>
+            <PayoutPanel />
           </TabsContent>
         </Tabs>
       </div>
@@ -309,16 +424,43 @@ function VendorDashboard() {
   );
 }
 
-function Head({ order, sub, company, at }: { order: string; sub: string; company: string; at: string }) {
+function Head({
+  order,
+  sub,
+  company,
+  at,
+}: {
+  order: string;
+  sub: string;
+  company: string;
+  at: string;
+}) {
   return (
     <div className="min-w-0">
-      <div className="font-semibold text-ink">PO {order} · {sub}</div>
-      <div className="text-xs text-muted-foreground">{company} · {tanggal(at)}</div>
+      <div className="font-semibold text-ink">
+        PO {order} · {sub}
+      </div>
+      <div className="text-xs text-muted-foreground">
+        {company} · {tanggal(at)}
+      </div>
     </div>
   );
 }
 
-function Items({ so }: { so: { items: { productId: string; name: string; variantLabel: string; qty: number; unitPrice: number; weightKg: number }[] } }) {
+function Items({
+  so,
+}: {
+  so: {
+    items: {
+      productId: string;
+      name: string;
+      variantLabel: string;
+      qty: number;
+      unitPrice: number;
+      weightKg: number;
+    }[];
+  };
+}) {
   return (
     <ul className="mt-3 divide-y divide-border text-sm">
       {so.items.map((it) => (
@@ -334,7 +476,11 @@ function Items({ so }: { so: { items: { productId: string; name: string; variant
 }
 
 function Empty({ text }: { text: string }) {
-  return <p className="rounded-xl border border-dashed border-border bg-card p-6 text-sm text-muted-foreground">{text}</p>;
+  return (
+    <p className="rounded-xl border border-dashed border-border bg-card p-6 text-sm text-muted-foreground">
+      {text}
+    </p>
+  );
 }
 
 function Field({
@@ -352,7 +498,10 @@ function Field({
 }) {
   return (
     <div>
-      <Label htmlFor={id} className="mb-1 block text-xs uppercase tracking-widest text-muted-foreground">
+      <Label
+        htmlFor={id}
+        className="mb-1 block text-xs uppercase tracking-widest text-muted-foreground"
+      >
         {label}
       </Label>
       <Input id={id} type={type} value={value} onChange={(e) => onChange(e.target.value)} />
@@ -360,7 +509,15 @@ function Field({
   );
 }
 
-function Kpi({ icon: Icon, label, value }: { icon?: typeof Package; label: string; value: string }) {
+function Kpi({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon?: typeof Package;
+  label: string;
+  value: string;
+}) {
   return (
     <div className="rounded-xl border border-border bg-card p-4">
       <dt className="flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-muted-foreground">
@@ -368,6 +525,136 @@ function Kpi({ icon: Icon, label, value }: { icon?: typeof Package; label: strin
         {label}
       </dt>
       <dd className="mt-1 font-display text-xl font-bold text-ink">{value}</dd>
+    </div>
+  );
+}
+
+/** Dana vendor di MEATHUB: ditahan → bisa dicairkan → penarikan (disetujui admin). */
+function PayoutPanel() {
+  const config = getConfig();
+  const [bal, setBal] = useState<VendorBalance>({
+    held: 0,
+    pendingRelease: 0,
+    claimable: 0,
+    processing: 0,
+    paid: 0,
+  });
+  const [rows, setRows] = useState<EscrowRow[]>([]);
+  const [wd, setWd] = useState<WithdrawalRequest[]>([]);
+  const [amount, setAmount] = useState("");
+  const [bank, setBank] = useState("BCA 1234567890 a.n. PT Vendor");
+
+  const refresh = useCallback(() => {
+    setBal(vendorBalance(VENDOR.id));
+    setRows(listEscrow(VENDOR.id));
+    setWd(listWithdrawals(VENDOR.id));
+  }, []);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  return (
+    <div className="space-y-4">
+      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Kpi icon={Wallet} label="Ditahan (pesanan berjalan)" value={rupiah(bal.held)} />
+        <Kpi
+          icon={Clock}
+          label={`Masa tahan T+${config.payoutHoldDays}`}
+          value={rupiah(bal.pendingRelease)}
+        />
+        <Kpi icon={Wallet} label="Bisa dicairkan" value={rupiah(bal.claimable)} />
+        <Kpi icon={CheckCircle2} label="Sudah dibayarkan" value={rupiah(bal.paid)} />
+      </dl>
+
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h2 className="font-semibold text-ink">Ajukan pencairan</h2>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Dana pembeli ditahan MEATHUB sampai pesanan Selesai, lalu cair setelah masa tahan{" "}
+          {config.payoutHoldDays} hari. Minimum penarikan {rupiah(config.payoutMinWithdrawal)} dan
+          setiap penarikan disetujui admin.
+        </p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <Field
+            id="wd-amount"
+            label="Nominal penarikan (Rp)"
+            value={amount}
+            onChange={setAmount}
+          />
+          <Field id="wd-bank" label="Rekening tujuan" value={bank} onChange={setBank} />
+        </div>
+        <Button
+          className="mt-3"
+          size="sm"
+          disabled={bal.claimable <= 0}
+          onClick={() => {
+            const res = requestWithdrawal(VENDOR.id, Number(amount.replace(/[^0-9]/g, "")), bank);
+            if (!res.ok) return toast.error(res.error);
+            toast.success("Permintaan pencairan dikirim, menunggu persetujuan admin.");
+            setAmount("");
+            refresh();
+          }}
+        >
+          Ajukan pencairan
+        </Button>
+        {bal.processing > 0 && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            {rupiah(bal.processing)} sedang menunggu persetujuan admin.
+          </p>
+        )}
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h2 className="font-semibold text-ink">Rincian dana per sub-PO</h2>
+        {rows.length === 0 ? (
+          <p className="mt-2 text-sm text-muted-foreground">
+            Belum ada dana masuk dari pesanan terbayar.
+          </p>
+        ) : (
+          <ul className="mt-2 divide-y divide-border text-sm">
+            {rows.map((r) => (
+              <li
+                key={r.subOrderId}
+                className="flex flex-wrap items-center justify-between gap-2 py-2"
+              >
+                <span className="min-w-0">
+                  <span className="block text-ink">
+                    PO {r.orderId} · {r.subOrderId}
+                  </span>
+                  <span className="block text-xs text-muted-foreground">
+                    {r.buyerCompany}
+                    {r.releaseAt ? ` · cair ${tanggal(r.releaseAt)}` : ""}
+                  </span>
+                </span>
+                <span className="flex shrink-0 items-center gap-2">
+                  <Badge variant="outline">{ESCROW_LABEL[r.state]}</Badge>
+                  <span className="font-medium text-ink">{rupiah(r.amount)}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {wd.length > 0 && (
+        <div className="rounded-xl border border-border bg-card p-5">
+          <h2 className="font-semibold text-ink">Riwayat penarikan</h2>
+          <ul className="mt-2 divide-y divide-border text-sm">
+            {wd.map((w) => (
+              <li key={w.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                <span className="min-w-0">
+                  <span className="block text-ink">{rupiah(w.amount)}</span>
+                  <span className="block text-xs text-muted-foreground">
+                    {w.bankAccount} · {tanggalJam(w.requestedAt)}
+                  </span>
+                </span>
+                <Badge variant="outline" className={WITHDRAWAL_TONE[w.status]}>
+                  {w.status.replaceAll("_", " ").toLowerCase()}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

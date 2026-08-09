@@ -23,8 +23,10 @@ export type PlatformConfig = {
   autoConfirmDays: number;
   /** Refund SLA after a valid return is approved (working hours). */
   refundWorkingHours: number;
-  /** Minimum deposit top-up (IDR). */
-  depositMinTopUp: number;
+  /** Masa tahan dana vendor setelah pesanan Selesai (hari). */
+  payoutHoldDays: number;
+  /** Minimum nominal penarikan dana vendor (IDR). */
+  payoutMinWithdrawal: number;
   /** Free delivery per vendor order at/above this weight (kg). */
   freeDeliveryKg: number;
 };
@@ -37,7 +39,8 @@ export const DEFAULT_CONFIG: PlatformConfig = {
   buyerCheckHours: 3,
   autoConfirmDays: 14,
   refundWorkingHours: 24,
-  depositMinTopUp: 100000,
+  payoutHoldDays: 3,
+  payoutMinWithdrawal: 500000,
   freeDeliveryKg: 20,
 };
 

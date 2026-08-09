@@ -59,7 +59,6 @@ export const ROLE_NAV: Record<Role, RoleNavItem[]> = {
   buyer: [
     { to: "/akun", label: "Ringkasan", desc: "KPI belanja" },
     { to: "/akun/pesanan", label: "Pesanan", desc: "Status & konfirmasi terima" },
-    { to: "/akun/deposit", label: "Deposit", desc: "Saldo & top up" },
     { to: "/akun/wishlist", label: "Wishlist", desc: "Produk disimpan" },
     { to: "/keranjang", label: "Keranjang", desc: "Lanjut checkout" },
   ],
@@ -67,7 +66,7 @@ export const ROLE_NAV: Record<Role, RoleNavItem[]> = {
     { to: "/mitra", label: "Ringkasan", desc: "Omzet & antrean PO" },
     { to: "/mitra", label: "Konfirmasi PO", desc: "Stok, gramasi, expired" },
     { to: "/mitra", label: "Pengiriman", desc: "Kirim dari cold storage" },
-    { to: "/mitra", label: "Pencairan", desc: "Ajukan settlement" },
+    { to: "/mitra", label: "Pencairan", desc: "Dana vendor & penarikan" },
     { to: "/produk", label: "Katalog publik", desc: "Lihat sisi pembeli" },
   ],
   admin: [
