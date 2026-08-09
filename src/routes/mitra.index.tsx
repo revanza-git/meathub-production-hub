@@ -49,7 +49,7 @@ function VendorDashboard() {
         <dl className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
           <Kpi icon={TrendingUp} label="Omzet 30 hari" value={rupiah(omzet)} />
           <Kpi icon={Package} label="Pesanan masuk" value={String(subOrders.length)} />
-          <Kpi icon={Wallet} label="Estimasi cair" value={rupiah(omzet - komisi)} />
+          <Kpi icon={Wallet} label="Estimasi cair" value={rupiah(omzet)} />
           <Kpi icon={Star} label="Rating toko" value={VENDOR.rating.toFixed(1)} />
         </dl>
 
