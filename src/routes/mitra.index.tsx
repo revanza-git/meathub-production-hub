@@ -21,6 +21,17 @@ import {
 } from "@/lib/market/orders-store";
 import { rupiah, tanggal, tanggalJam } from "@/lib/market/format";
 import { getConfig } from "@/lib/market/pricing";
+import {
+  vendorBalance,
+  listEscrow,
+  listWithdrawals,
+  requestWithdrawal,
+  ESCROW_LABEL,
+  WITHDRAWAL_TONE,
+  type VendorBalance,
+  type EscrowRow,
+  type WithdrawalRequest,
+} from "@/lib/market/escrow";
 
 export const Route = createFileRoute("/mitra/")({
   head: () => ({
@@ -51,7 +62,6 @@ function VendorDashboard() {
   const refresh = useCallback(() => setRows(listVendorSubOrders(VENDOR.id)), []);
   useEffect(() => { refresh(); }, [refresh]);
   const omzet = rows.reduce((s, x) => s + x.so.subtotal, 0);
-  const appFee = rows.reduce((s, x) => s + x.so.appFee, 0);
 
   const perluKonfirmasi = rows.filter((r) => r.so.status === "Menunggu Konfirmasi Vendor");
   const perluDikirim = rows.filter(
@@ -355,6 +365,112 @@ function Kpi({ icon: Icon, label, value }: { icon?: typeof Package; label: strin
         {label}
       </dt>
       <dd className="mt-1 font-display text-xl font-bold text-ink">{value}</dd>
+    </div>
+  );
+}
+
+/** Dana vendor di MEATHUB: ditahan → bisa dicairkan → penarikan (disetujui admin). */
+function PayoutPanel() {
+  const config = getConfig();
+  const [bal, setBal] = useState<VendorBalance>({ held: 0, pendingRelease: 0, claimable: 0, processing: 0, paid: 0 });
+  const [rows, setRows] = useState<EscrowRow[]>([]);
+  const [wd, setWd] = useState<WithdrawalRequest[]>([]);
+  const [amount, setAmount] = useState("");
+  const [bank, setBank] = useState("BCA 1234567890 a.n. PT Vendor");
+
+  const refresh = useCallback(() => {
+    setBal(vendorBalance(VENDOR.id));
+    setRows(listEscrow(VENDOR.id));
+    setWd(listWithdrawals(VENDOR.id));
+  }, []);
+  useEffect(() => { refresh(); }, [refresh]);
+
+  return (
+    <div className="space-y-4">
+      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <Kpi icon={Wallet} label="Ditahan (pesanan berjalan)" value={rupiah(bal.held)} />
+        <Kpi icon={Clock} label="Masa tahan T+{0}".replace("{0}", String(config.payoutHoldDays)) as unknown as string extends never ? never : string} value={rupiah(bal.pendingRelease)} />
+        <Kpi icon={Wallet} label="Bisa dicairkan" value={rupiah(bal.claimable)} />
+        <Kpi icon={CheckCircle2} label="Sudah dibayarkan" value={rupiah(bal.paid)} />
+      </dl>
+
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h2 className="font-semibold text-ink">Ajukan pencairan</h2>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Dana pembeli ditahan MEATHUB sampai pesanan Selesai, lalu cair setelah masa tahan{" "}
+          {config.payoutHoldDays} hari. Minimum penarikan {rupiah(config.payoutMinWithdrawal)} dan setiap
+          penarikan disetujui admin.
+        </p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <Field id="wd-amount" label="Nominal penarikan (Rp)" value={amount} onChange={setAmount} />
+          <Field id="wd-bank" label="Rekening tujuan" value={bank} onChange={setBank} />
+        </div>
+        <Button
+          className="mt-3"
+          size="sm"
+          disabled={bal.claimable <= 0}
+          onClick={() => {
+            const res = requestWithdrawal(VENDOR.id, Number(amount.replace(/[^0-9]/g, "")), bank);
+            if (!res.ok) return toast.error(res.error);
+            toast.success("Permintaan pencairan dikirim, menunggu persetujuan admin.");
+            setAmount("");
+            refresh();
+          }}
+        >
+          Ajukan pencairan
+        </Button>
+        {bal.processing > 0 && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            {rupiah(bal.processing)} sedang menunggu persetujuan admin.
+          </p>
+        )}
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-5">
+        <h2 className="font-semibold text-ink">Rincian dana per sub-PO</h2>
+        {rows.length === 0 ? (
+          <p className="mt-2 text-sm text-muted-foreground">Belum ada dana masuk dari pesanan terbayar.</p>
+        ) : (
+          <ul className="mt-2 divide-y divide-border text-sm">
+            {rows.map((r) => (
+              <li key={r.subOrderId} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                <span className="min-w-0">
+                  <span className="block text-ink">PO {r.orderId} · {r.subOrderId}</span>
+                  <span className="block text-xs text-muted-foreground">
+                    {r.buyerCompany}
+                    {r.releaseAt ? ` · cair ${tanggal(r.releaseAt)}` : ""}
+                  </span>
+                </span>
+                <span className="flex shrink-0 items-center gap-2">
+                  <Badge variant="outline">{ESCROW_LABEL[r.state]}</Badge>
+                  <span className="font-medium text-ink">{rupiah(r.amount)}</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {wd.length > 0 && (
+        <div className="rounded-xl border border-border bg-card p-5">
+          <h2 className="font-semibold text-ink">Riwayat penarikan</h2>
+          <ul className="mt-2 divide-y divide-border text-sm">
+            {wd.map((w) => (
+              <li key={w.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                <span className="min-w-0">
+                  <span className="block text-ink">{rupiah(w.amount)}</span>
+                  <span className="block text-xs text-muted-foreground">
+                    {w.bankAccount} · {tanggalJam(w.requestedAt)}
+                  </span>
+                </span>
+                <Badge variant="outline" className={WITHDRAWAL_TONE[w.status]}>
+                  {w.status.replaceAll("_", " ").toLowerCase()}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
