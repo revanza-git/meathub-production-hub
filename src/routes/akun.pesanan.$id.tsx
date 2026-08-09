@@ -270,8 +270,7 @@ function OrderDetail() {
                   {so.deliveryFee === 0 ? "Gratis" : rupiah(so.deliveryFee)}
                 </span>
                 <span>
-                  Pencairan vendor: {so.payoutStatus} ·{" "}
-                  {so.fundedBy === "PAYLATER" ? "didanai mitra paylater" : "didanai MEATHUB"}
+                  Pencairan vendor: {so.payoutStatus} · didanai MEATHUB
                 </span>
               </div>
               {so.note ? <p className="mt-1 text-xs text-muted-foreground">Catatan: {so.note}</p> : null}
