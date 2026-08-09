@@ -314,7 +314,7 @@ function OrderDetail() {
               Unduh invoice
             </Button>
             {order.status === "Menunggu Pembayaran" && (
-              <Link to="/bayar/$orderId" params={{ orderId: order.id }} search={{ metode: order.paymentPath === "CBD_DEPOSIT" ? "deposit" : "va" }}>
+              <Link to="/bayar/$orderId" params={{ orderId: order.id }} search={{ metode: "va-bca" }}>
                 <Button size="sm">Bayar sekarang</Button>
               </Link>
             )}
