@@ -5,7 +5,7 @@ import { MarketLayout } from "@/components/market/market-layout";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { listOrders, ORDER_STATUSES, STATUS_TONE, type OrderStatus } from "@/lib/market/orders-store";
+import { listOrders, SEED_ORDERS, ORDER_STATUSES, STATUS_TONE, type Order, type OrderStatus } from "@/lib/market/orders-store";
 import { vendorById } from "@/lib/market/data";
 import { rupiah, tanggal } from "@/lib/market/format";
 
