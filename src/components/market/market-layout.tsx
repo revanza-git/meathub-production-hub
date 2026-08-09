@@ -35,7 +35,6 @@ export function MarketFooter() {
           <ul className="space-y-1.5 text-xs">
             <li><Link to="/mitra/daftar" className="hover:text-white">Daftar jadi vendor</Link></li>
             <li><Link to="/mitra" className="hover:text-white">Dasbor vendor</Link></li>
-            <li><Link to="/mitra/gudang" className="hover:text-white">Dasbor gudang</Link></li>
             <li><span className="text-white/60">Ketentuan penjual</span></li>
             <li><span className="text-white/60">Panduan settlement</span></li>
           </ul>
