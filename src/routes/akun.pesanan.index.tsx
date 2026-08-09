@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import { MarketLayout } from "@/components/market/market-layout";
 import { Input } from "@/components/ui/input";
