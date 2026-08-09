@@ -1,70 +1,57 @@
-# Integrasi Pembayaran iPaymu (Direct API) & Penghapusan Elefin
+# Konsolidasi Alur PO → Bayar → Vendor Kirim → Selesai
 
-Tujuan: MEATHUB bisa menerima pembayaran nyata per-order lewat iPaymu Direct API (sandbox dulu), dan jalur paylater Elefin dihapus total dari produk.
+Satu tulang punggung pesanan yang dibaca semua peran, tanpa konsep gudang MEATHUB.
 
-## 1. Kredensial (aman)
+## 1. Hapus konsep gudang MEATHUB
 
-VA dan API Key sandbox yang kamu kirim disimpan sebagai secret backend, bukan di kode:
-- `IPAYMU_VA`
-- `IPAYMU_API_KEY`
-- `IPAYMU_MODE` = `sandbox` (nanti diganti `production`)
+- Hapus peran `warehouse` ("Gudang MEATHUB") dan halaman `/mitra/gudang`.
+- Pindahkan seluruh tugas verifikasi fisik ke dasbor vendor (`/mitra`): vendor mengonfirmasi stok, gramasi aktual, tanggal potong/kedaluwarsa, dan foto.
+- Ganti istilah "Verifikasi Gudang" → "Konfirmasi Vendor" di seluruh UI (checkout, detail pesanan, admin).
+- Hapus langkah inbound hub; pengiriman berangkat dari cold storage vendor.
 
-Saya set nilainya lewat penyimpanan secret; tidak akan pernah muncul di bundle browser atau repo.
-
-## 2. Hapus Elefin / TOP paylater
-
-- Hapus `src/lib/market/paylater.ts`.
-- Checkout: hapus opsi "TOP / Paylater", sisakan hanya bayar-per-order (dan deposit wallet sebagai alternatif jika saldo cukup).
-- `orders-store.ts`: buang `PaymentPath` `TOP_PAYLATER` dan `fundedBy: "PAYLATER"`.
-- Halaman detail pesanan: hapus blok jatuh tempo/tenor paylater.
-- Order lama bertipe TOP di localStorage ditangani dengan fallback label supaya tidak error.
-
-## 3. Alur pembayaran per-order (Direct API)
+## 2. Satu state machine (7 status)
 
 ```text
-Checkout  ->  server fn createPayment
-                 |  POST /payment/direct (signature HMAC-SHA256)
-                 v
-          simpan payment_intents (order_id, channel, va/qr, expired, status PENDING)
-                 |
-      Halaman /bayar/:orderId  (VA number / QRIS image dari iPaymu, countdown)
-                 |
-   iPaymu  ->  POST /api/public/ipaymu/callback  -> verifikasi -> status PAID
-                 v
-        order status -> PAID, notifikasi, auto-lanjut ke vendor
+1 PO Dibuat              buyer checkout, dipecah jadi sub-PO per vendor
+2 Menunggu Konfirmasi    vendor konfirmasi stok+berat, SLA jam (admin) -> lewat = batal otomatis
+3 Menunggu Persetujuan   buyer setujui revisi berat/harga
+4 Menunggu Pembayaran    iPaymu VA/QRIS atau potong deposit, expiry (admin)
+5 Diproses & Dikirim     vendor packing, isi armada/resi
+6 Cek Terima Pembeli     buyer konfirmasi (SLA jam), auto-confirm setelah N hari
+7 Selesai                dana vendor jadi claimable -> settlement -> approve admin
 ```
 
-Kanal yang diaktifkan: VA (BCA, BNI, BRI, Mandiri, Permata), QRIS, e-wallet (OVO, DANA, ShopeePay, LinkAja). Kartu menyusul.
+Status lama dipetakan ke 7 status ini; status batal/retur/sengketa tetap sebagai cabang.
 
-## 4. Yang dibangun
+## 3. Satu sumber data pesanan
 
-**Backend**
-- `src/lib/ipaymu.server.ts` — client iPaymu: signature (SHA256 body -> HMAC-SHA256 dengan API key), base URL sandbox/production, `directPayment()`, `checkTransaction()`.
-- `src/lib/payments.functions.ts` — server fn terautentikasi: `createOrderPayment` (buat intent + simpan), `getPaymentStatus` (polling fallback).
-- `src/routes/api/public/ipaymu/callback.ts` — server route publik untuk notify URL iPaymu; verifikasi transaksi ke iPaymu sebelum menandai PAID (tidak percaya payload mentah), idempoten.
+- `orders-store.ts` jadi store tunggal: semua peran membaca daftar yang sama, hanya difilter.
+  - Buyer: PO miliknya (seluruh sub-PO).
+  - Vendor: hanya sub-PO miliknya, plus aksi konfirmasi/kirim.
+  - Admin: semua PO + panel intervensi.
+- Tetap demo/localStorage untuk mockup ini (data seed + lokal digabung setelah hydrate), sehingga tidak ada perubahan backend di pass ini.
 
-**Database (migrasi)**
-- Tabel `payment_intents`: `order_id`, `provider`, `channel`, `amount`, `reference` (trx id iPaymu), `payment_no` (VA/QR string), `status`, `expires_at`, payload mentah, timestamps. RLS: buyer baca miliknya, admin/finance baca semua, tulis hanya lewat service role.
-- Tabel `payment_events` untuk audit callback.
-- Update `orders`/`invoices` saat PAID (via service role di callback).
+## 4. Layar yang disentuh
 
-**Frontend**
-- `/checkout`: pilih kanal pembayaran (VA per bank / QRIS / e-wallet), lalu submit -> panggil `createOrderPayment` -> redirect ke `/bayar/:orderId`.
-- `/bayar/:orderId`: tampilkan nomor VA asli + tombol salin, atau gambar QRIS, countdown kedaluwarsa, polling status tiap ~5 detik, state PAID/EXPIRED/FAILED. Tombol simulasi dihapus (sandbox iPaymu bisa dibayar dari dashboard tester).
-- Halaman pesanan & admin finance menampilkan referensi transaksi iPaymu.
+| Layar | Perubahan |
+| --- | --- |
+| `/checkout` | Copy PO + SLA konfirmasi vendor, tanpa istilah gudang |
+| `/bayar/$orderId` | Tetap iPaymu; tambah countdown expiry dari config admin |
+| `/akun/pesanan/$id` | Timeline 7 status, kartu aksi buyer (setujui / bayar / cek terima) |
+| `/mitra` | Antrean "Perlu Konfirmasi", "Perlu Dikirim", "Menunggu Terima" + aksi |
+| `/kelola` | Rename label SLA gudang → SLA konfirmasi vendor; tambah payment expiry + panel intervensi (batal paksa, perpanjang SLA) dengan catatan alasan |
+| Header/RoleNav | Hapus peran gudang, arahkan nav ke dasbor peran yang tersisa |
 
-## 5. Urutan pengerjaan
+## 5. Konfigurasi admin sebagai satu-satunya sumber SLA/biaya
 
-1. Simpan secret + hapus Elefin dari seluruh UI/tipe.
-2. Migrasi `payment_intents` + `payment_events`.
-3. Client iPaymu + server fn + route callback.
-4. Rombak halaman checkout & bayar ke data nyata.
-5. Uji end-to-end di sandbox (VA & QRIS), cek log callback.
-6. Checklist go-live: ganti secret ke live, set notify URL produksi, uji satu transaksi kecil nyata.
+`vendorConfirmationHours` (rename), `paymentExpiryHours` (baru), `buyerCheckHours`, `autoConfirmDays`, app fee per tier, `freeDeliveryKg`, minimum deposit/penarikan.
 
-## 6. Catatan
+## Catatan teknis
 
-- Notify URL untuk didaftarkan di dashboard iPaymu: `https://meathub-production-hub.lovable.app/api/public/ipaymu/callback` (preview: domain `-dev`).
-- Sumber kebenaran status pembayaran hanya callback/verifikasi server — frontend tidak pernah menetapkan PAID.
-- Settlement ke vendor tetap manual lewat modul `settlements` yang sudah ada; disbursement otomatis iPaymu di fase berikutnya.
-- Deposit wallet tetap ada sebagai metode alternatif; top-up wallet nanti memakai jalur iPaymu yang sama.
+- Rename kunci config disertai fallback baca nilai lama agar data localStorage lama tidak rusak.
+- Semua transisi status lewat helper di `orders-store.ts` (bukan mutasi ad-hoc di komponen), plus jejak `timeline` per sub-PO.
+- Hapus rute `mitra.gudang.tsx` dan referensinya di `role.tsx` / `role-nav.tsx`.
+
+## Di luar cakupan
+
+Migrasi pesanan ke database, notifikasi realtime, dan retur/sengketa versi penuh.
