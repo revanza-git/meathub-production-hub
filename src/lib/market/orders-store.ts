@@ -3,20 +3,20 @@ import type { PaymentStatus } from "./payment";
 import { getConfig, lineAppFee, tierForKg, type TransactionTier } from "./pricing";
 
 /**
- * Order lifecycle per BRD v1.2 §6.1:
- * PO → verifikasi gudang (SLA konfigurasi admin) → persetujuan buyer → pilih pengiriman →
- * bayar (CBD/TOP) → kirim → cek fisik buyer (3 jam) → selesai / retur.
+ * Alur pesanan tunggal MEATHUB (konsolidasi BRD v1.2):
+ * PO Dibuat → Menunggu Konfirmasi Vendor (SLA admin) → Menunggu Persetujuan Pembeli →
+ * Menunggu Pembayaran → Diproses & Dikirim → Cek Terima Pembeli → Selesai.
+ *
+ * MEATHUB tidak punya gudang: stok ada di cold storage masing-masing vendor,
+ * jadi konfirmasi fisik dan pengiriman dilakukan vendor sendiri.
  */
 export const ORDER_STATUSES = [
-  "Menunggu Verifikasi Gudang",
+  "PO Dibuat",
+  "Menunggu Konfirmasi Vendor",
   "Menunggu Persetujuan Pembeli",
   "Menunggu Pembayaran",
-  "Pembayaran Diproses",
-  "Sudah Dibayar",
-  "Sedang Disiapkan",
-  "Siap Dikirim",
-  "Dalam Pengiriman",
-  "Menunggu Cek Fisik Pembeli",
+  "Diproses & Dikirim",
+  "Cek Terima Pembeli",
   "Selesai",
   "Dibatalkan Otomatis",
   "Dibatalkan",
@@ -46,8 +46,8 @@ export type SubOrderItem = {
   appFee: number;
 };
 
-/** Hasil verifikasi fisik oleh tim gudang vendor. */
-export type WarehouseVerification = {
+/** Hasil konfirmasi fisik oleh vendor (stok, gramasi, tanggal potong/expired, foto). */
+export type VendorConfirmation = {
   status: "MENUNGGU" | "TERVERIFIKASI" | "KADALUARSA";
   deadlineAt: string;
   verifiedAt?: string;
@@ -56,6 +56,14 @@ export type WarehouseVerification = {
   expiryDate?: string;
   photoCount?: number;
   notes?: string;
+};
+
+/** Data pengiriman yang diisi vendor. */
+export type Shipment = {
+  courier?: string;
+  trackingNo?: string;
+  dispatchedAt?: string;
+  deliveredAt?: string;
 };
 
 /** Cek fisik + video 360° oleh buyer setelah barang diterima. */
@@ -80,7 +88,9 @@ export type SubOrder = {
   note?: string;
   status: OrderStatus;
   timeline: { label: string; at: string; done: boolean }[];
-  verification: WarehouseVerification;
+  /** Konfirmasi fisik oleh vendor (dulu "verifikasi gudang"). */
+  verification: VendorConfirmation;
+  shipment?: Shipment;
   payoutStatus: "Menunggu Konfirmasi Terima" | "Dijadwalkan" | "Dibayarkan";
   fundedBy: "MEATHUB";
 };
@@ -100,8 +110,11 @@ export type Order = {
   paymentPath: PaymentPath;
   paymentMethod: string;
   paymentStatus: PaymentStatus;
+  paymentExpiresAt?: string;
   status: OrderStatus;
   receipt: ReceiptCheck;
+  /** Catatan intervensi admin (batal paksa, perpanjang SLA, dsb). */
+  adminLog?: { at: string; action: string; reason: string }[];
 };
 
 const KEY = "meathub.demo.orders";
@@ -113,23 +126,22 @@ export function daysFrom(iso: string, days: number) {
   return new Date(new Date(iso).getTime() + days * 86400000).toISOString();
 }
 
-export function newVerification(createdAt: string): WarehouseVerification {
-  return { status: "MENUNGGU", deadlineAt: hoursFrom(createdAt, getConfig().warehouseVerificationHours) };
+export function newVerification(createdAt: string): VendorConfirmation {
+  return { status: "MENUNGGU", deadlineAt: hoursFrom(createdAt, getConfig().vendorConfirmationHours) };
 }
 
 export function newReceipt(): ReceiptCheck {
   return { status: "BELUM" };
 }
 
-const FLOW: OrderStatus[] = [
-  "Menunggu Verifikasi Gudang",
+/** Tujuh status kanonik yang membentuk tulang punggung pesanan. */
+export const FLOW: OrderStatus[] = [
+  "PO Dibuat",
+  "Menunggu Konfirmasi Vendor",
   "Menunggu Persetujuan Pembeli",
   "Menunggu Pembayaran",
-  "Sudah Dibayar",
-  "Sedang Disiapkan",
-  "Siap Dikirim",
-  "Dalam Pengiriman",
-  "Menunggu Cek Fisik Pembeli",
+  "Diproses & Dikirim",
+  "Cek Terima Pembeli",
   "Selesai",
 ];
 
@@ -173,21 +185,22 @@ function seedOrder(
     const subtotal = items.reduce((s, it) => s + it.unitPrice * it.qty, 0);
     const appFee = items.reduce((s, it) => s + it.appFee, 0);
     const kg = items.reduce((s, it) => s + it.weightKg, 0);
-    const verified = FLOW.indexOf(status) > 0;
+    const verified = FLOW.indexOf(status) > 1;
+    const shipped = FLOW.indexOf(status) >= FLOW.indexOf("Diproses & Dikirim");
     return {
       id: `MH-${1000 + n}-${i + 1}`,
       vendorId,
       items,
       subtotal,
       appFee,
-      deliveryOption: "MEATHUB Cold-Chain Regular",
+      deliveryOption: "Cold-chain vendor (reguler)",
       deliveryFee: kg >= getConfig().freeDeliveryKg ? 0 : 45000,
       status,
       timeline: timelineFor(status, createdAt),
       verification: verified
         ? {
             status: "TERVERIFIKASI",
-            deadlineAt: hoursFrom(createdAt, getConfig().warehouseVerificationHours),
+            deadlineAt: hoursFrom(createdAt, getConfig().vendorConfirmationHours),
             verifiedAt: hoursFrom(createdAt, 1),
             actualWeightKg: Math.round(kg * 100) / 100,
             slaughterDate: "2026-07-18",
@@ -196,8 +209,11 @@ function seedOrder(
             notes: "Gramasi sesuai, kemasan vacuum utuh, suhu −18°C.",
           }
         : newVerification(createdAt),
+      shipment: shipped
+        ? { courier: "Armada vendor", trackingNo: `TRK-${1000 + n}${i + 1}`, dispatchedAt: hoursFrom(createdAt, 12) }
+        : undefined,
       payoutStatus:
-        status === "Selesai" ? "Dibayarkan" : status === "Dalam Pengiriman" ? "Dijadwalkan" : "Menunggu Konfirmasi Terima",
+        status === "Selesai" ? "Dibayarkan" : status === "Cek Terima Pembeli" ? "Dijadwalkan" : "Menunggu Konfirmasi Terima",
       fundedBy: "MEATHUB",
     };
   });
@@ -231,7 +247,7 @@ function seedOrder(
     receipt:
       status === "Selesai"
         ? { status: "DIKONFIRMASI", confirmedAt: createdAt, videoName: "cek-360.mp4", condition: "Sesuai" }
-        : status === "Menunggu Cek Fisik Pembeli"
+        : status === "Cek Terima Pembeli"
           ? {
               status: "BELUM",
               deadlineAt: hoursFrom(new Date().toISOString(), getConfig().buyerCheckHours),
@@ -244,12 +260,12 @@ function seedOrder(
 export const SEED_ORDERS: Order[] = [
   seedOrder(1, "Selesai", "PAID", ["p0", "p6"], 21),
   seedOrder(2, "Selesai", "PAID", ["p10"], 18, "CBD_DEPOSIT"),
-  seedOrder(3, "Menunggu Cek Fisik Pembeli", "PAID", ["p3", "p8"], 12),
-  seedOrder(4, "Dalam Pengiriman", "PAID", ["p1"], 6, "CBD_VA"),
-  seedOrder(5, "Sedang Disiapkan", "PAID", ["p15", "p17"], 4),
-  seedOrder(6, "Sudah Dibayar", "PAID", ["p11"], 3, "CBD_DEPOSIT"),
+  seedOrder(3, "Cek Terima Pembeli", "PAID", ["p3", "p8"], 12),
+  seedOrder(4, "Diproses & Dikirim", "PAID", ["p1"], 6, "CBD_VA"),
+  seedOrder(5, "Diproses & Dikirim", "PAID", ["p15", "p17"], 4),
+  seedOrder(6, "Menunggu Pembayaran", "PENDING", ["p11"], 3, "CBD_DEPOSIT"),
   seedOrder(7, "Menunggu Persetujuan Pembeli", "PENDING", ["p23", "p29"], 1),
-  seedOrder(8, "Menunggu Verifikasi Gudang", "PENDING", ["p5"], 0),
+  seedOrder(8, "Menunggu Konfirmasi Vendor", "PENDING", ["p5"], 0),
   seedOrder(9, "Dibatalkan Otomatis", "EXPIRED", ["p13"], 9),
   seedOrder(10, "Dalam Sengketa", "PAID", ["p19"], 14),
 ];
@@ -266,6 +282,13 @@ function readLocal(): Order[] {
 export function listOrders(): Order[] {
   if (typeof window === "undefined") return SEED_ORDERS;
   return [...readLocal(), ...SEED_ORDERS];
+}
+
+/** Sub-PO milik satu vendor saja — dipakai dasbor vendor. */
+export function listVendorSubOrders(vendorId: string) {
+  return listOrders().flatMap((order) =>
+    order.subOrders.filter((so) => so.vendorId === vendorId).map((so) => ({ order, so })),
+  );
 }
 
 export function getOrder(id: string): Order | undefined {
@@ -295,11 +318,17 @@ function withStatus(o: Order, status: OrderStatus): Order {
   };
 }
 
-/** Gudang vendor menyelesaikan verifikasi fisik. */
-export function submitVerification(
+function logAdmin(o: Order, action: string, reason: string): Order {
+  return { ...o, adminLog: [{ at: new Date().toISOString(), action, reason }, ...(o.adminLog ?? [])] };
+}
+
+/* --------------------------------------------------------------- vendor */
+
+/** Vendor menyelesaikan konfirmasi fisik (stok, gramasi, tanggal, foto). */
+export function submitVendorConfirmation(
   orderId: string,
   subOrderId: string,
-  data: Omit<WarehouseVerification, "status" | "deadlineAt">,
+  data: Omit<VendorConfirmation, "status" | "deadlineAt">,
 ) {
   return mutateOrder(orderId, (o) => {
     const subOrders = o.subOrders.map((so) =>
@@ -325,24 +354,78 @@ export function submitVerification(
   });
 }
 
-/** Buyer menyetujui hasil verifikasi → lanjut ke pembayaran. */
+/** Vendor menandai sub-PO sudah berangkat dari cold storage-nya. */
+export function markDispatched(orderId: string, subOrderId: string, shipment: { courier: string; trackingNo?: string }) {
+  return mutateOrder(orderId, (o) => ({
+    ...o,
+    subOrders: o.subOrders.map((so) =>
+      so.id === subOrderId
+        ? {
+            ...so,
+            status: "Diproses & Dikirim" as OrderStatus,
+            timeline: timelineFor("Diproses & Dikirim", o.createdAt),
+            shipment: { ...so.shipment, ...shipment, dispatchedAt: new Date().toISOString() },
+          }
+        : so,
+    ),
+    status: "Diproses & Dikirim",
+  }));
+}
+
+/** Vendor menandai barang sampai → buyer masuk masa cek terima. */
+export function markDelivered(orderId: string, subOrderId: string) {
+  return mutateOrder(orderId, (o) => {
+    const now = new Date().toISOString();
+    const subOrders = o.subOrders.map((so) =>
+      so.id === subOrderId
+        ? {
+            ...so,
+            status: "Cek Terima Pembeli" as OrderStatus,
+            timeline: timelineFor("Cek Terima Pembeli", o.createdAt),
+            shipment: { ...so.shipment, deliveredAt: now },
+          }
+        : so,
+    );
+    const allDelivered = subOrders.every((so) => so.shipment?.deliveredAt);
+    return {
+      ...o,
+      subOrders,
+      status: allDelivered ? "Cek Terima Pembeli" : o.status,
+      receipt: allDelivered
+        ? {
+            ...o.receipt,
+            status: "BELUM",
+            deadlineAt: hoursFrom(now, getConfig().buyerCheckHours),
+            autoConfirmAt: daysFrom(now, getConfig().autoConfirmDays),
+          }
+        : o.receipt,
+    };
+  });
+}
+
+/* ---------------------------------------------------------------- buyer */
+
+/** Buyer menyetujui hasil konfirmasi vendor → lanjut ke pembayaran. */
 export function approveVerification(orderId: string) {
-  return mutateOrder(orderId, (o) => withStatus(o, "Menunggu Pembayaran"));
+  return mutateOrder(orderId, (o) => ({
+    ...withStatus(o, "Menunggu Pembayaran"),
+    paymentExpiresAt: hoursFrom(new Date().toISOString(), getConfig().paymentExpiryHours),
+  }));
 }
 
 export function cancelOrder(orderId: string, auto = false) {
   return mutateOrder(orderId, (o) => withStatus(o, auto ? "Dibatalkan Otomatis" : "Dibatalkan"));
 }
 
-/** Buyer minta ganti barang → kembali ke antrean gudang dengan deadline baru. */
+/** Buyer minta ganti barang → kembali ke antrean vendor dengan deadline baru. */
 export function requestSwap(orderId: string, reason: string) {
   return mutateOrder(orderId, (o) => {
     const now = new Date().toISOString();
     return {
-      ...withStatus(o, "Menunggu Verifikasi Gudang"),
+      ...withStatus(o, "Menunggu Konfirmasi Vendor"),
       subOrders: o.subOrders.map((so) => ({
         ...so,
-        status: "Menunggu Verifikasi Gudang" as OrderStatus,
+        status: "Menunggu Konfirmasi Vendor" as OrderStatus,
         verification: { ...newVerification(now), notes: `Permintaan ganti barang: ${reason}` },
       })),
     };
@@ -363,14 +446,38 @@ export function confirmReceipt(orderId: string, data: { videoName?: string; cond
   }));
 }
 
+/* ---------------------------------------------------------------- admin */
+
+/** Intervensi admin: batalkan paksa dengan alasan tercatat. */
+export function adminForceCancel(orderId: string, reason: string) {
+  return mutateOrder(orderId, (o) => logAdmin(withStatus(o, "Dibatalkan"), "Batal paksa", reason));
+}
+
+/** Intervensi admin: perpanjang SLA konfirmasi vendor. */
+export function adminExtendSla(orderId: string, hours: number, reason: string) {
+  return mutateOrder(orderId, (o) =>
+    logAdmin(
+      {
+        ...o,
+        subOrders: o.subOrders.map((so) => ({
+          ...so,
+          verification: { ...so.verification, deadlineAt: hoursFrom(so.verification.deadlineAt, hours) },
+        })),
+      },
+      `Perpanjang SLA +${hours} jam`,
+      reason,
+    ),
+  );
+}
+
 export function updateOrderPayment(id: string, paymentStatus: PaymentStatus) {
   return mutateOrder(id, (o) => {
     const status: OrderStatus =
       paymentStatus === "PAID"
-        ? "Sudah Dibayar"
-        : paymentStatus === "PROCESSING"
-          ? "Pembayaran Diproses"
-          : paymentStatus === "EXPIRED" || paymentStatus === "FAILED"
+        ? "Diproses & Dikirim"
+        : paymentStatus === "EXPIRED"
+          ? "Dibatalkan Otomatis"
+          : paymentStatus === "FAILED"
             ? "Dibatalkan"
             : o.status;
     return { ...withStatus(o, status), paymentStatus };
@@ -379,12 +486,12 @@ export function updateOrderPayment(id: string, paymentStatus: PaymentStatus) {
 
 export const STATUS_TONE: Record<string, string> = {
   Selesai: "bg-success/10 text-success border-success/30",
-  "Sudah Dibayar": "bg-success/10 text-success border-success/30",
-  "Menunggu Verifikasi Gudang": "bg-accent/20 text-ink border-accent/40",
+  "Diproses & Dikirim": "bg-success/10 text-success border-success/30",
+  "PO Dibuat": "bg-accent/20 text-ink border-accent/40",
+  "Menunggu Konfirmasi Vendor": "bg-accent/20 text-ink border-accent/40",
   "Menunggu Persetujuan Pembeli": "bg-accent/20 text-ink border-accent/40",
   "Menunggu Pembayaran": "bg-accent/20 text-ink border-accent/40",
-  "Menunggu Cek Fisik Pembeli": "bg-accent/20 text-ink border-accent/40",
-  "Pembayaran Diproses": "bg-accent/20 text-ink border-accent/40",
+  "Cek Terima Pembeli": "bg-accent/20 text-ink border-accent/40",
   Dibatalkan: "bg-destructive/10 text-destructive border-destructive/30",
   "Dibatalkan Otomatis": "bg-destructive/10 text-destructive border-destructive/30",
   "Dalam Sengketa": "bg-destructive/10 text-destructive border-destructive/30",
