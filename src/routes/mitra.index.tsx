@@ -133,12 +133,13 @@ function VendorDashboard() {
           <TabsContent value="payout">
             <div className="rounded-xl border border-border bg-card p-5">
               <dl className="grid gap-3 sm:grid-cols-3">
-                <Kpi label="Omzet kotor" value={rupiah(omzet)} />
-                <Kpi label="Komisi platform 5%" value={`− ${rupiah(komisi)}`} />
-                <Kpi label="Dana bersih" value={rupiah(omzet - komisi)} />
+                <Kpi label="Omzet vendor" value={rupiah(omzet)} />
+                <Kpi label="App fee dibayar pembeli" value={rupiah(appFee)} />
+                <Kpi label="Dana diterima vendor" value={rupiah(omzet)} />
               </dl>
               <p className="mt-4 text-sm text-muted-foreground">
-                Pencairan dijadwalkan T+3 hari kerja setelah pesanan berstatus Terkirim. Status mitra saat
+                Harga vendor dibayar penuh — app fee MEATHUB ditanggung pembeli di luar harga vendor. Pencairan
+                dijadwalkan setelah pembeli menekan Done atau otomatis lewat batas konfirmasi. Status mitra saat
                 ini: <strong className="text-ink">{VENDOR.settlementStatus}</strong>.
               </p>
               <Button className="mt-4" onClick={() => toast.success("Permintaan pencairan dikirim (demo)")}>
