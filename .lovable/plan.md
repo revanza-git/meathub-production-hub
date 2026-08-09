@@ -71,11 +71,18 @@ Add: professional/meatshop declaration, min 3 PIC contacts (name, role, WhatsApp
 - Media (verification photos, 360° videos) goes to Storage buckets with signed URLs.
 - Elefin, VA provider and WhatsApp remain adapter interfaces with fakes so the mockup stays clickable end to end.
 
-## 5. Decisions needed
+## 5. Decisions — resolved
 
-1. Does the Rp10.000/kg app fee replace PPN entirely in displayed price, or is PPN still added on top?
-2. Is A5 classification a product attribute set by admin, or derived from grade data?
-3. On CBD/VA, when exactly does the vendor get paid — on buyer receipt confirmation, or a fixed T+n?
-4. Deposit top-up: minimum amount, refundable balance, and who approves withdrawals?
-5. Elefin integration for this build: fake adapter only, or do you have API/sandbox credentials?
-6. Should existing wagyu/tier data be remapped to the four transaction tiers, or do both concepts coexist?
+1. **Fee vs PPN**: the per-kg app fee **replaces PPN entirely** in the displayed price. Remove the 11% PPN line from cart, checkout, quote and invoice; landed price = vendor price + app fee/kg × kg + delivery. No separate tax line shown.
+2. **A5 classification**: derived from existing **grade data** (grade code `A5` / grade system wagyu rank 5) — no manual admin flag. Fee tier resolves automatically: A5 grade → Rp50.000/kg, everything else → Rp10.000/kg.
+3. **Vendor payout on CBD**: paid on **buyer receipt confirmation**, plus an admin-configurable fallback duration. Default auto-confirm fallback: **14 days** with no buyer confirmation → order auto-completes and vendor is paid. Both the 3h active-check SLA and the 14-day fallback live in `config_versions` and are editable by admin.
+4. **Deposit wallet**: minimum top-up **Rp100.000**, no cap on balance, balance is refundable, and **admin approves every withdrawal** (request → admin review → paid, all recorded in the append-only ledger).
+5. **Elefin TOP**: **fake adapter only** for this build. Eligibility, limit and disbursement are simulated behind `PaylaterProvider`, gated by a feature flag, with copy stating it is a simulation. Real API swaps in later without UI changes.
+6. **Tiers**: existing product tiers are **remapped to the four transaction tiers** (Ritel / Loaf / Karton / Tonase), computed automatically from checkout quantity, with no minimum order. Old `product_tier` values are retired from buyer-facing display.
+
+## 6. Impact of these answers on the phases
+
+- Phase A additionally: drop PPN from all totals and invoice templates, add grade→fee-class resolver, replace the current `purchase_type` (LOAF/CARTON/RETAIL) with the four transaction tiers including Tonase.
+- Phase C additionally: `deposits` + `deposit_entries` + `withdrawal_requests` (admin approval), Rp100.000 minimum top-up validation, Elefin fake adapter behind flag.
+- Phase D additionally: settlement trigger moves from T+3 to receipt-confirmation, with a config-driven 14-day auto-confirm job.
+
