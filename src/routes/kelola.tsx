@@ -62,7 +62,7 @@ function AdminConsole() {
             <TabsTrigger value="katalog">Katalog</TabsTrigger>
             <TabsTrigger value="intervensi">Intervensi</TabsTrigger>
             <TabsTrigger value="sengketa">Sengketa ({sengketa.length})</TabsTrigger>
-            <TabsTrigger value="penarikan">Penarikan</TabsTrigger>
+            <TabsTrigger value="penarikan">Dana & pencairan</TabsTrigger>
             <TabsTrigger value="konfigurasi">Konfigurasi</TabsTrigger>
           </TabsList>
 

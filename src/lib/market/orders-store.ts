@@ -29,11 +29,10 @@ export const ORDER_STATUSES = [
 
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
-export type PaymentPath = "CBD_VA" | "CBD_DEPOSIT";
+export type PaymentPath = "CBD_VA";
 
 export const PAYMENT_PATH_LABEL: Record<PaymentPath, string> = {
   CBD_VA: "CBD — Virtual Account (iPaymu)",
-  CBD_DEPOSIT: "CBD — Deposit auto-cut",
 };
 
 export type SubOrderItem = {

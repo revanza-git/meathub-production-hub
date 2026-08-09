@@ -120,9 +120,6 @@ export function MarketHeader() {
                     <Link to="/akun" className="rounded-md px-2 py-2 hover:bg-muted">
                       Dasbor pembeli
                     </Link>
-                    <Link to="/akun/deposit" className="rounded-md px-2 py-2 hover:bg-muted">
-                      Deposit & saldo
-                    </Link>
                     <Link to="/mitra" className="rounded-md px-2 py-2 hover:bg-muted">
                       Dasbor vendor (seller)
                     </Link>

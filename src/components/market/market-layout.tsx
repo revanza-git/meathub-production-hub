@@ -26,7 +26,6 @@ export function MarketFooter() {
             <li><Link to="/produk" className="hover:text-white">Cara belanja</Link></li>
             <li><Link to="/akun/pesanan" className="hover:text-white">Lacak pesanan</Link></li>
             <li><Link to="/keranjang" className="hover:text-white">Keranjang saya</Link></li>
-            <li><Link to="/akun/deposit" className="hover:text-white">Deposit & saldo</Link></li>
             <li><span className="text-white/60">Pengajuan komplain</span></li>
           </ul>
         </div>
