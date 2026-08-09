@@ -185,3 +185,104 @@ function Kpi({ icon: Icon, label, value }: { icon: typeof Users; label: string; 
     </div>
   );
 }
+
+function WithdrawalQueue() {
+  const [, setTick] = useState(0);
+  const items = listWithdrawals();
+  if (items.length === 0) {
+    return <p className="p-4 text-sm text-muted-foreground">Belum ada permintaan penarikan saldo.</p>;
+  }
+  return (
+    <ul className="divide-y divide-border rounded-xl border border-border bg-card">
+      {items.map((w) => (
+        <li key={w.id} className="flex flex-wrap items-center justify-between gap-3 p-4 text-sm">
+          <span className="min-w-0">
+            <span className="block font-medium text-ink">{rupiah(w.amount)}</span>
+            <span className="block text-xs text-muted-foreground">
+              {w.bankAccount} · diajukan {tanggalJam(w.requestedAt)}
+            </span>
+          </span>
+          <span className="flex shrink-0 items-center gap-2">
+            <Badge variant="outline" className={WITHDRAWAL_TONE[w.status]}>
+              {w.status.replaceAll("_", " ").toLowerCase()}
+            </Badge>
+            {w.status === "MENUNGGU_PERSETUJUAN" && (
+              <>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    decideWithdrawal(w.id, true);
+                    toast.success("Penarikan disetujui.");
+                    setTick((t) => t + 1);
+                  }}
+                >
+                  Setujui
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="text-destructive"
+                  onClick={() => {
+                    decideWithdrawal(w.id, false, "Ditolak admin");
+                    toast.success("Penarikan ditolak, saldo dikembalikan.");
+                    setTick((t) => t + 1);
+                  }}
+                >
+                  Tolak
+                </Button>
+              </>
+            )}
+          </span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+const CONFIG_FIELDS: { key: keyof PlatformConfig; label: string; hint: string }[] = [
+  { key: "appFeePerKg", label: "App fee per kg (Rp)", hint: "Berlaku untuk seluruh grade non-A5." },
+  { key: "appFeePerKgA5", label: "App fee per kg A5 (Rp)", hint: "Otomatis dipakai bila grade produk A5/MB5+." },
+  { key: "warehouseVerificationHours", label: "SLA verifikasi gudang (jam)", hint: "Lewat batas → PO batal otomatis." },
+  { key: "buyerCheckHours", label: "SLA cek fisik pembeli (jam)", hint: "Lewat batas → dianggap sesuai." },
+  { key: "autoConfirmDays", label: "Auto-confirm tanpa respons (hari)", hint: "Default 14 hari, dana vendor cair." },
+  { key: "refundWorkingHours", label: "SLA refund (jam kerja)", hint: "Setelah retur disetujui." },
+  { key: "depositMinTopUp", label: "Minimum top-up deposit (Rp)", hint: "Penarikan saldo tanpa batas minimum." },
+  { key: "freeDeliveryKg", label: "Gratis ongkir mulai (kg)", hint: "Per pesanan vendor." },
+];
+
+function ConfigEditor() {
+  const [draft, setDraft] = useState<PlatformConfig>(() => getConfig());
+  return (
+    <div className="rounded-xl border border-border bg-card p-5">
+      <h2 className="font-semibold text-ink">Konfigurasi platform</h2>
+      <p className="mb-4 text-xs text-muted-foreground">
+        Semua parameter komersial dan SLA dapat diubah admin tanpa rilis ulang.
+      </p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {CONFIG_FIELDS.map((f) => (
+          <div key={f.key}>
+            <Label htmlFor={`cfg-${f.key}`} className="mb-1 block text-xs uppercase tracking-widest text-muted-foreground">
+              {f.label}
+            </Label>
+            <Input
+              id={`cfg-${f.key}`}
+              inputMode="numeric"
+              value={String(draft[f.key])}
+              onChange={(e) => setDraft({ ...draft, [f.key]: Number(e.target.value) || 0 })}
+            />
+            <p className="mt-1 text-[11px] text-muted-foreground">{f.hint}</p>
+          </div>
+        ))}
+      </div>
+      <Button
+        className="mt-4"
+        onClick={() => {
+          saveConfig(draft);
+          toast.success("Konfigurasi platform disimpan.");
+        }}
+      >
+        Simpan konfigurasi
+      </Button>
+    </div>
+  );
+}
