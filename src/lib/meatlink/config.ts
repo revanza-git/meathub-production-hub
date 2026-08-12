@@ -4,9 +4,9 @@
  */
 
 /** International format, digits only — used to build wa.me links. */
-export const WHATSAPP_NUMBER = "628119001188";
+export const WHATSAPP_NUMBER = "628978872745";
 
-export const CONTACT_EMAIL = "hello@meatlink.id";
+export const CONTACT_EMAIL = "cs@meatlink.id";
 
 export function waLink(message: string) {
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message.slice(0, 1200))}`;
