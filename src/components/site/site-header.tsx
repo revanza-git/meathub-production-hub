@@ -61,7 +61,7 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
             <Link
               key={item.to}
               to={item.to}
-              className={`eyebrow transition-colors ${
+              className={`eyebrow whitespace-nowrap transition-colors ${
                 dark ? "text-bone/75 hover:text-bone" : "text-ash hover:text-ink"
               }`}
               activeProps={{ className: dark ? "text-bone" : "text-ink" }}
@@ -74,7 +74,7 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
         <div className="hidden items-center gap-3 lg:flex">
           <Link
             to="/supply"
-            className={`eyebrow border px-5 py-3 transition-colors ${
+            className={`eyebrow whitespace-nowrap border px-5 py-3 transition-colors ${
               dark
                 ? "border-white/25 text-bone hover:bg-white/10"
                 : "border-ink/25 text-ink hover:bg-ink/5"
@@ -84,7 +84,7 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
           </Link>
           <Link
             to="/request-quote"
-            className="eyebrow bg-crimson px-5 py-3 text-bone transition-colors hover:bg-crimson-deep"
+            className="eyebrow whitespace-nowrap bg-crimson px-5 py-3 text-bone transition-colors hover:bg-crimson-deep"
           >
             Request a Quote
           </Link>
