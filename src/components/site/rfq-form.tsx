@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Plus, Trash2 } from "lucide-react";
 import { Field, SelectInput, SubmitButton, TextArea, TextInput } from "./form-kit";
 import { CATEGORIES, waLink } from "@/lib/meatlink/config";
-import { rfqSchema, rfqWhatsappMessage, submitRfq, type RfqInput } from "@/lib/meatlink/leads";
+import {
+  emptyRfqItem,
+  rfqSchema,
+  rfqWhatsappMessage,
+  submitRfq,
+  type RfqInput,
+  type RfqItem,
+} from "@/lib/meatlink/leads";
 
 const EMPTY: RfqInput = {
   company_name: "",
@@ -11,12 +18,7 @@ const EMPTY: RfqInput = {
   whatsapp: "",
   email: "",
   delivery_location: "",
-  category: "",
-  product_cut: "",
-  origin_preference: "",
-  brand_preference: "",
-  grade: "",
-  volume: "",
+  items: [emptyRfqItem()],
   purchase_frequency: "",
   current_supplier: "",
   current_price: "",
@@ -36,12 +38,30 @@ export function RfqForm() {
     setValues((v) => ({ ...v, [key]: value }));
   }
 
+  function setItem<K extends keyof RfqItem>(index: number, key: K, value: RfqItem[K]) {
+    setValues((v) => ({
+      ...v,
+      items: v.items.map((item, i) => (i === index ? { ...item, [key]: value } : item)),
+    }));
+  }
+
+  function addItem() {
+    setValues((v) => ({ ...v, items: [...v.items, emptyRfqItem()] }));
+  }
+
+  function removeItem(index: number) {
+    setValues((v) => ({
+      ...v,
+      items: v.items.length > 1 ? v.items.filter((_, i) => i !== index) : v.items,
+    }));
+  }
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     const parsed = rfqSchema.safeParse(values);
     if (!parsed.success) {
       const next: Record<string, string> = {};
-      for (const issue of parsed.error.issues) next[String(issue.path[0])] = issue.message;
+      for (const issue of parsed.error.issues) next[issue.path.join(".")] = issue.message;
       setErrors(next);
       toast.error("Please complete the required fields.");
       return;
@@ -130,50 +150,125 @@ export function RfqForm() {
         </Field>
       </fieldset>
 
+      <div className="mt-10">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="eyebrow text-crimson">What you need</p>
+            <p className="mt-2 text-xs text-ash">
+              Add every cut you are sourcing — one line per product. No need to send several
+              requests.
+            </p>
+          </div>
+          <span className="text-xs text-ash">
+            {values.items.length} item{values.items.length > 1 ? "s" : ""}
+          </span>
+        </div>
+
+        {errors["items"] ? (
+          <p className="mt-3 text-xs text-crimson">{errors["items"]}</p>
+        ) : null}
+
+        <div className="mt-5 space-y-5">
+          {values.items.map((item, index) => (
+            <fieldset key={index} className="border border-line p-5">
+              <div className="mb-5 flex items-center justify-between">
+                <legend className="eyebrow text-ash">Item {index + 1}</legend>
+                {values.items.length > 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => removeItem(index)}
+                    className="inline-flex items-center gap-1.5 text-xs text-ash transition-colors hover:text-crimson"
+                    aria-label={`Remove item ${index + 1}`}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                    Remove
+                  </button>
+                ) : null}
+              </div>
+
+              <div className="grid gap-5 sm:grid-cols-2">
+                <Field label="Category" error={errors[`items.${index}.category`]}>
+                  <SelectInput
+                    value={item.category ?? ""}
+                    onChange={(e) => setItem(index, "category", e.target.value)}
+                  >
+                    <option value="">Select a category</option>
+                    {CATEGORIES.map((c) => (
+                      <option key={c.slug} value={c.name}>
+                        {c.name}
+                      </option>
+                    ))}
+                    <option value="Other">Other</option>
+                  </SelectInput>
+                </Field>
+                <Field
+                  label="Product / cut"
+                  required
+                  error={errors[`items.${index}.product_cut`]}
+                >
+                  <TextInput
+                    value={item.product_cut}
+                    onChange={(e) => setItem(index, "product_cut", e.target.value)}
+                    placeholder="e.g. Wagyu ribeye"
+                  />
+                </Field>
+                <Field label="Origin preference" error={errors[`items.${index}.origin_preference`]}>
+                  <TextInput
+                    value={item.origin_preference ?? ""}
+                    onChange={(e) => setItem(index, "origin_preference", e.target.value)}
+                    placeholder="e.g. Australia, USA, NZ"
+                  />
+                </Field>
+                <Field label="Brand preference" error={errors[`items.${index}.brand_preference`]}>
+                  <TextInput
+                    value={item.brand_preference ?? ""}
+                    onChange={(e) => setItem(index, "brand_preference", e.target.value)}
+                    placeholder="Optional"
+                  />
+                </Field>
+                <Field
+                  label="Grade / marbling"
+                  error={errors[`items.${index}.grade`]}
+                  hint="e.g. MB6-7, Prime, Choice"
+                >
+                  <TextInput
+                    value={item.grade ?? ""}
+                    onChange={(e) => setItem(index, "grade", e.target.value)}
+                  />
+                </Field>
+                <Field label="Volume required" required error={errors[`items.${index}.volume`]}>
+                  <TextInput
+                    value={item.volume}
+                    onChange={(e) => setItem(index, "volume", e.target.value)}
+                    placeholder="e.g. 100 kg per month"
+                  />
+                </Field>
+                <div className="sm:col-span-2">
+                  <Field label="Item notes" error={errors[`items.${index}.notes`]}>
+                    <TextInput
+                      value={item.notes ?? ""}
+                      onChange={(e) => setItem(index, "notes", e.target.value)}
+                      placeholder="Packaging, portion size, trim spec…"
+                    />
+                  </Field>
+                </div>
+              </div>
+            </fieldset>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={addItem}
+          className="eyebrow mt-5 inline-flex items-center gap-2 border border-line px-5 py-3 text-ink transition-colors hover:border-crimson hover:text-crimson"
+        >
+          <Plus className="h-4 w-4" aria-hidden="true" />
+          Add another item
+        </button>
+      </div>
+
       <fieldset className="mt-10 grid gap-5 sm:grid-cols-2">
-        <legend className="eyebrow mb-5 text-crimson">What you need</legend>
-        <Field label="Category" error={errors["category"]}>
-          <SelectInput value={values.category ?? ""} onChange={(e) => set("category", e.target.value)}>
-            <option value="">Select a category</option>
-            {CATEGORIES.map((c) => (
-              <option key={c.slug} value={c.name}>
-                {c.name}
-              </option>
-            ))}
-            <option value="Other">Other</option>
-          </SelectInput>
-        </Field>
-        <Field label="Product / cut" required error={errors["product_cut"]}>
-          <TextInput
-            value={values.product_cut}
-            onChange={(e) => set("product_cut", e.target.value)}
-            placeholder="e.g. Wagyu ribeye"
-          />
-        </Field>
-        <Field label="Origin preference" error={errors["origin_preference"]}>
-          <TextInput
-            value={values.origin_preference ?? ""}
-            onChange={(e) => set("origin_preference", e.target.value)}
-            placeholder="e.g. Australia, USA, NZ"
-          />
-        </Field>
-        <Field label="Brand preference" error={errors["brand_preference"]}>
-          <TextInput
-            value={values.brand_preference ?? ""}
-            onChange={(e) => set("brand_preference", e.target.value)}
-            placeholder="Optional"
-          />
-        </Field>
-        <Field label="Grade / marbling" error={errors["grade"]} hint="e.g. MB6-7, Prime, Choice">
-          <TextInput value={values.grade ?? ""} onChange={(e) => set("grade", e.target.value)} />
-        </Field>
-        <Field label="Volume required" required error={errors["volume"]}>
-          <TextInput
-            value={values.volume}
-            onChange={(e) => set("volume", e.target.value)}
-            placeholder="e.g. 100 kg per month"
-          />
-        </Field>
+        <legend className="eyebrow mb-5 text-crimson">Order details</legend>
         <Field label="Purchase frequency" error={errors["purchase_frequency"]}>
           <SelectInput
             value={values.purchase_frequency ?? ""}
@@ -222,7 +317,7 @@ export function RfqForm() {
             <TextArea
               value={values.notes ?? ""}
               onChange={(e) => set("notes", e.target.value)}
-              placeholder="Packaging, certification, halal requirements, cold chain notes…"
+              placeholder="Certification, halal requirements, cold chain notes…"
             />
           </Field>
         </div>
