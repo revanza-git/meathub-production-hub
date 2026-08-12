@@ -1867,6 +1867,7 @@ export type Database = {
           email: string | null
           grade: string | null
           id: string
+          items: Json
           notes: string | null
           origin_preference: string | null
           payment_terms: string | null
@@ -1891,6 +1892,7 @@ export type Database = {
           email?: string | null
           grade?: string | null
           id?: string
+          items?: Json
           notes?: string | null
           origin_preference?: string | null
           payment_terms?: string | null
@@ -1915,6 +1917,7 @@ export type Database = {
           email?: string | null
           grade?: string | null
           id?: string
+          items?: Json
           notes?: string | null
           origin_preference?: string | null
           payment_terms?: string | null
