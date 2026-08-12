@@ -14,24 +14,20 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { registerServiceWorker } from "@/lib/pwa-register";
-import { CartProvider } from "@/lib/market/cart";
-import { DemoRoleProvider } from "@/lib/market/role";
+
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-noir px-4 text-bone">
       <div className="max-w-md text-center">
-        <h1 className="font-display text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Halaman tidak ditemukan</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Halaman yang Anda cari tidak ada atau telah dipindahkan.
+        <h1 className="font-display text-7xl">404</h1>
+        <h2 className="mt-4 font-display text-xl">Page not found</h2>
+        <p className="mt-2 text-sm text-bone/60">
+          The page you are looking for doesn't exist or has been moved.
         </p>
         <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Ke beranda
+          <Link to="/" className="eyebrow inline-flex bg-crimson px-5 py-3 text-bone">
+            Back to home
           </Link>
         </div>
       </div>
@@ -50,10 +46,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          Halaman gagal dimuat
+          This page didn't load
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Terjadi kesalahan di sisi kami. Coba refresh atau kembali ke beranda.
+          Something went wrong on our end. Try again or head back home.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -63,13 +59,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Coba lagi
+            Try again
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Ke beranda
+            Go home
           </a>
         </div>
       </div>
@@ -82,16 +78,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MEATHUB Meat Hub — Marketplace daging premium B2B nasional" },
+      { title: "Meatlink.id — B2B meat sourcing network" },
       {
-          name: "description",
-          content:
-            "Marketplace daging premium B2B: importir tangan pertama, quote final berdasarkan berat aktual, pembayaran cash, Hub MEATHUB, pengiriman terlacak.",
-        },
-      { name: "author", content: "MEATHUB" },
-      { name: "theme-color", content: "#5a1a1a" },
+        name: "description",
+        content:
+          "Meatlink.id connects Indonesian restaurants, hotels and retailers with trusted meat importers and suppliers. Send one RFQ, get matched quotes.",
+      },
+      { name: "author", content: "Meatlink.id" },
+      { name: "theme-color", content: "#0D0D0D" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-title", content: "MEATHUB" },
+      { name: "apple-mobile-web-app-title", content: "Meatlink.id" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -100,7 +96,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo+Expanded:wght@600;700;800&family=Archivo:wght@400;500;600;700&family=Hind:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700;800&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap",
       },
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/manifest.webmanifest" },
@@ -116,7 +112,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="id" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth">
       <head>
         <HeadContent />
       </head>
@@ -149,11 +145,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <DemoRoleProvider>
-        <CartProvider>
-          <Outlet />
-        </CartProvider>
-      </DemoRoleProvider>
+      <Outlet />
       <Toaster richColors position="top-center" />
     </QueryClientProvider>
   );

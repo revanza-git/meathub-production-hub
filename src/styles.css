@@ -5,34 +5,31 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * MEATHUB Meat Hub — Design System
+ * MEATLINK.ID — Design System
+ * Better Meat · Better Connections
  *
- * Palette taken from the interactive prototype:
- *   ink       #1C1F26  — near-black, primary text and topbars
- *   ink-soft  #5B6470  — secondary text
- *   maroon    #8B2E2E  — primary brand (buttons, badges)
- *   gold      #C9A961  — accent (premium tier, highlights)
- *   gold-soft #F3ECDA  — accent tint (backgrounds)
- *   bg        #FAFAF8  — page background
- *   line      #E8E6DF  — hairline borders
- *   success   #3A6B4C  — approved / delivered
+ *   noir      #0D0D0D — near-black, hero + footer surfaces
+ *   ink       #141414 — primary text
+ *   bone      #F7F4F0 — warm off-white page background
+ *   sand      #EDE8E2 — alternate light band
+ *   crimson   #A3212C — brand accent (CTA, eyebrows, rules)
+ *   ash       #6B6560 — secondary text
+ *   line      #DCD6CE — hairline borders
  *
- * Typography: Archivo (body) + Archivo Expanded (display).
+ * Typography: Playfair Display (editorial serif headlines)
+ *             Archivo (uppercase tracked labels + body)
  * Loaded via <link> in __root.tsx head.
  */
 
 @theme inline {
   --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Archivo Expanded", "Archivo", sans-serif;
-  --font-headline: "Archivo Black", "Archivo Expanded", "Archivo", sans-serif;
-  --font-serif: "Playfair Display", "Georgia", serif;
-  --font-body-alt: "Hind", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+  --radius-2xl: calc(var(--radius) + 10px);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -55,159 +52,100 @@
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
 
+  --color-noir: var(--noir);
+  --color-noir-soft: var(--noir-soft);
   --color-ink: var(--ink);
-  --color-ink-soft: var(--ink-soft);
-  --color-maroon: var(--maroon);
-  --color-maroon-dark: var(--maroon-dark);
-  --color-gold: var(--gold);
-  --color-gold-soft: var(--gold-soft);
-  --color-success: var(--success);
+  --color-bone: var(--bone);
+  --color-sand: var(--sand);
+  --color-crimson: var(--crimson);
+  --color-crimson-deep: var(--crimson-deep);
+  --color-ash: var(--ash);
   --color-line: var(--line);
 
-  --color-noir: var(--noir);
-  --color-noir-surface: var(--noir-surface);
-  --color-gold-bright: var(--gold-bright);
-  --color-gold-cream: var(--gold-cream);
-  --color-ivory: var(--ivory);
-  --color-ivory-warm: var(--ivory-warm);
-  --color-charcoal: var(--charcoal);
-  --color-cream: var(--cream);
-  --color-burgundy: var(--burgundy);
-  --color-burgundy-deep: var(--burgundy-deep);
-  --color-offwhite: var(--offwhite);
-  --color-gold-muted: var(--gold-muted);
-
-  /* Warm Sand + Espresso landing palette */
-  --color-warm-white: var(--warm-white);
-  --color-sand: var(--sand);
-  --color-sand-dark: var(--sand-dark);
-  --color-tan: var(--tan);
-  --color-tan-deep: var(--tan-deep);
-  --color-espresso: var(--espresso);
-  --color-espresso-dark: var(--espresso-dark);
-  --color-espresso-light: var(--espresso-light);
-
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+  --color-chart-1: var(--crimson);
+  --color-chart-2: var(--ash);
+  --color-chart-3: var(--noir);
+  --color-chart-4: var(--sand);
+  --color-chart-5: var(--ink);
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0.25rem;
 
-  /* Raw brand tokens (oklch equivalents of the prototype hex palette) */
-  --ink: oklch(0.24 0.02 260);
-  --ink-soft: oklch(0.51 0.02 255);
-  --maroon: oklch(0.42 0.12 25);
-  --maroon-dark: oklch(0.34 0.11 25);
-  --gold: oklch(0.75 0.09 82);
-  --gold-soft: oklch(0.94 0.03 85);
-  --success: oklch(0.5 0.09 155);
-  --line: oklch(0.92 0.005 90);
+  --noir: oklch(0.17 0.002 60);
+  --noir-soft: oklch(0.24 0.004 60);
+  --ink: oklch(0.2 0.003 60);
+  --bone: oklch(0.97 0.006 80);
+  --sand: oklch(0.93 0.008 80);
+  --crimson: oklch(0.46 0.16 25);
+  --crimson-deep: oklch(0.38 0.14 25);
+  --ash: oklch(0.55 0.008 70);
+  --line: oklch(0.88 0.008 80);
 
-  /* Noir & Gold editorial landing tokens */
-  --noir: oklch(0.16 0.006 60);
-  --noir-surface: oklch(0.22 0.01 60);
-  --gold-bright: oklch(0.72 0.12 82);
-  --gold-cream: oklch(0.9 0.07 85);
-  --gold-muted: oklch(0.68 0.08 82);
-
-  /* Warm neutrals + accent for editorial contrast sections */
-  --ivory: oklch(0.96 0.015 85);
-  --ivory-warm: oklch(0.93 0.025 82);
-  --charcoal: oklch(0.26 0.008 60);
-  --cream: oklch(0.9 0.035 82);
-  --burgundy: oklch(0.34 0.09 22);
-  --burgundy-deep: oklch(0.26 0.08 22);
-  --offwhite: oklch(0.95 0.008 85);
-
-  /* Warm Sand + Espresso landing palette */
-  --warm-white: oklch(0.97 0.01 85);
-  --sand: oklch(0.93 0.02 82);
-  --sand-dark: oklch(0.88 0.025 82);
-  --tan: oklch(0.78 0.05 82);
-  --tan-deep: oklch(0.68 0.06 82);
-  --espresso: oklch(0.52 0.07 65);
-  --espresso-dark: oklch(0.4 0.06 65);
-  --espresso-light: oklch(0.62 0.06 65);
-
-  /* Semantic tokens (light theme) */
-  --background: oklch(0.985 0.003 90);
+  --background: var(--bone);
   --foreground: var(--ink);
   --card: oklch(1 0 0);
   --card-foreground: var(--ink);
   --popover: oklch(1 0 0);
   --popover-foreground: var(--ink);
-  --primary: var(--maroon);
-  --primary-foreground: oklch(0.985 0.003 90);
-  --secondary: var(--gold-soft);
+  --primary: var(--crimson);
+  --primary-foreground: oklch(0.98 0.005 80);
+  --secondary: var(--sand);
   --secondary-foreground: var(--ink);
-  --muted: oklch(0.96 0.005 90);
-  --muted-foreground: var(--ink-soft);
-  --accent: var(--gold);
-  --accent-foreground: var(--ink);
-  --destructive: oklch(0.58 0.22 27);
+  --muted: var(--sand);
+  --muted-foreground: var(--ash);
+  --accent: var(--crimson);
+  --accent-foreground: oklch(0.98 0.005 80);
+  --destructive: oklch(0.55 0.2 27);
   --destructive-foreground: oklch(0.99 0 0);
   --border: var(--line);
   --input: var(--line);
-  --ring: var(--maroon);
-
-  --chart-1: var(--maroon);
-  --chart-2: var(--gold);
-  --chart-3: var(--success);
-  --chart-4: var(--ink-soft);
-  --chart-5: var(--ink);
-
-  --sidebar: var(--ink);
-  --sidebar-foreground: oklch(0.985 0.003 90);
-  --sidebar-primary: var(--maroon);
-  --sidebar-primary-foreground: oklch(0.985 0.003 90);
-  --sidebar-accent: oklch(0.32 0.02 260);
-  --sidebar-accent-foreground: oklch(0.985 0.003 90);
-  --sidebar-border: oklch(0.32 0.02 260);
-  --sidebar-ring: var(--gold);
+  --ring: var(--crimson);
 }
 
 .dark {
-  --background: var(--ink);
-  --foreground: oklch(0.985 0.003 90);
-  --card: oklch(0.28 0.02 260);
-  --card-foreground: oklch(0.985 0.003 90);
-  --popover: oklch(0.28 0.02 260);
-  --popover-foreground: oklch(0.985 0.003 90);
-  --primary: var(--maroon);
-  --primary-foreground: oklch(0.985 0.003 90);
-  --secondary: oklch(0.32 0.02 260);
-  --secondary-foreground: oklch(0.985 0.003 90);
-  --muted: oklch(0.32 0.02 260);
-  --muted-foreground: oklch(0.72 0.02 255);
-  --accent: var(--gold);
-  --accent-foreground: var(--ink);
-  --destructive: oklch(0.65 0.2 27);
-  --destructive-foreground: oklch(0.985 0.003 90);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: var(--gold);
+  --background: var(--noir);
+  --foreground: oklch(0.97 0.006 80);
+  --card: var(--noir-soft);
+  --card-foreground: oklch(0.97 0.006 80);
+  --popover: var(--noir-soft);
+  --popover-foreground: oklch(0.97 0.006 80);
+  --secondary: var(--noir-soft);
+  --secondary-foreground: oklch(0.97 0.006 80);
+  --muted: var(--noir-soft);
+  --muted-foreground: oklch(0.72 0.006 70);
+  --border: oklch(1 0 0 / 14%);
+  --input: oklch(1 0 0 / 18%);
+}
+
+/* Small uppercase tracked label used across the brand site. */
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+@utility rule-crimson {
+  &::after {
+    content: "";
+    display: block;
+    width: 2.5rem;
+    height: 2px;
+    margin-top: 1rem;
+    background: var(--crimson);
+  }
 }
 
 @utility fade-in-up {
-  animation: fade-in-up 0.6s ease-out forwards;
+  animation: fade-in-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
@@ -227,8 +165,11 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3 {
     font-family: var(--font-display);
-    letter-spacing: 0.01em;
+    font-weight: 400;
+    letter-spacing: -0.01em;
   }
 }

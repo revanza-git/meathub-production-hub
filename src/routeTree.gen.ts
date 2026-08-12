@@ -9,73 +9,48 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as KeranjangRouteImport } from './routes/keranjang'
-import { Route as KelolaRouteImport } from './routes/kelola'
-import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as SupplyRouteImport } from './routes/supply'
+import { Route as SuppliersRouteImport } from './routes/suppliers'
+import { Route as RequestQuoteRouteImport } from './routes/request-quote'
+import { Route as InsightsRouteImport } from './routes/insights'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as BuyersRouteImport } from './routes/buyers'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProdukIndexRouteImport } from './routes/produk.index'
-import { Route as MitraIndexRouteImport } from './routes/mitra.index'
-import { Route as AkunIndexRouteImport } from './routes/akun.index'
-import { Route as TokoSlugRouteImport } from './routes/toko.$slug'
-import { Route as ProdukIdRouteImport } from './routes/produk.$id'
-import { Route as MitraDaftarRouteImport } from './routes/mitra.daftar'
-import { Route as BayarOrderIdRouteImport } from './routes/bayar.$orderId'
-import { Route as AkunWishlistRouteImport } from './routes/akun.wishlist'
-import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AkunPesananIndexRouteImport } from './routes/akun.pesanan.index'
-import { Route as AuthenticatedPartnerIndexRouteImport } from './routes/_authenticated/partner/index'
-import { Route as AuthenticatedBuyerIndexRouteImport } from './routes/_authenticated/buyer/index'
-import { Route as AkunPesananIdRouteImport } from './routes/akun.pesanan.$id'
-import { Route as AuthenticatedBuyerSearchRouteImport } from './routes/_authenticated/buyer/search'
-import { Route as AuthenticatedBuyerOrdersRouteImport } from './routes/_authenticated/buyer/orders'
-import { Route as AuthenticatedBuyerCartRouteImport } from './routes/_authenticated/buyer/cart'
-import { Route as AuthenticatedBuyerAiRouteImport } from './routes/_authenticated/buyer/ai'
-import { Route as AuthenticatedBuyerAddressesRouteImport } from './routes/_authenticated/buyer/addresses'
-import { Route as ApiPublicIpaymuCallbackRouteImport } from './routes/api/public/ipaymu/callback'
-import { Route as AuthenticatedPartnerVendorReliabilityRouteImport } from './routes/_authenticated/partner/vendor/reliability'
-import { Route as AuthenticatedPartnerVendorPayoutsRouteImport } from './routes/_authenticated/partner/vendor/payouts'
-import { Route as AuthenticatedPartnerVendorOrdersRouteImport } from './routes/_authenticated/partner/vendor/orders'
-import { Route as AuthenticatedPartnerVendorOffersRouteImport } from './routes/_authenticated/partner/vendor/offers'
-import { Route as AuthenticatedPartnerVendorFulfillmentsRouteImport } from './routes/_authenticated/partner/vendor/fulfillments'
-import { Route as AuthenticatedPartnerQcReturnsRouteImport } from './routes/_authenticated/partner/qc/returns'
-import { Route as AuthenticatedPartnerHubInboundRouteImport } from './routes/_authenticated/partner/hub/inbound'
-import { Route as AuthenticatedPartnerFinanceSettlementsRouteImport } from './routes/_authenticated/partner/finance/settlements'
-import { Route as AuthenticatedPartnerFinanceReturnsRouteImport } from './routes/_authenticated/partner/finance/returns'
-import { Route as AuthenticatedPartnerFinanceInvoicesRouteImport } from './routes/_authenticated/partner/finance/invoices'
-import { Route as AuthenticatedPartnerCourierDeliveriesRouteImport } from './routes/_authenticated/partner/courier/deliveries'
-import { Route as AuthenticatedPartnerAdminSpWarningsRouteImport } from './routes/_authenticated/partner/admin/sp-warnings'
-import { Route as AuthenticatedPartnerAdminOrgsRouteImport } from './routes/_authenticated/partner/admin/orgs'
-import { Route as AuthenticatedPartnerAdminFlagsRouteImport } from './routes/_authenticated/partner/admin/flags'
-import { Route as AuthenticatedPartnerAdminCatalogRouteImport } from './routes/_authenticated/partner/admin/catalog'
-import { Route as AuthenticatedPartnerAdminAuditRouteImport } from './routes/_authenticated/partner/admin/audit'
-import { Route as AuthenticatedBuyerProductsIdRouteImport } from './routes/_authenticated/buyer/products.$id'
-import { Route as AuthenticatedBuyerOrdersIdRouteImport } from './routes/_authenticated/buyer/orders.$id'
 
-const KeranjangRoute = KeranjangRouteImport.update({
-  id: '/keranjang',
-  path: '/keranjang',
+const SupplyRoute = SupplyRouteImport.update({
+  id: '/supply',
+  path: '/supply',
   getParentRoute: () => rootRouteImport,
 } as any)
-const KelolaRoute = KelolaRouteImport.update({
-  id: '/kelola',
-  path: '/kelola',
+const SuppliersRoute = SuppliersRouteImport.update({
+  id: '/suppliers',
+  path: '/suppliers',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
+const RequestQuoteRoute = RequestQuoteRouteImport.update({
+  id: '/request-quote',
+  path: '/request-quote',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const InsightsRoute = InsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuyersRoute = BuyersRouteImport.update({
+  id: '/buyers',
+  path: '/buyers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -83,550 +58,131 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProdukIndexRoute = ProdukIndexRouteImport.update({
-  id: '/produk/',
-  path: '/produk/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MitraIndexRoute = MitraIndexRouteImport.update({
-  id: '/mitra/',
-  path: '/mitra/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AkunIndexRoute = AkunIndexRouteImport.update({
-  id: '/akun/',
-  path: '/akun/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TokoSlugRoute = TokoSlugRouteImport.update({
-  id: '/toko/$slug',
-  path: '/toko/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProdukIdRoute = ProdukIdRouteImport.update({
-  id: '/produk/$id',
-  path: '/produk/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MitraDaftarRoute = MitraDaftarRouteImport.update({
-  id: '/mitra/daftar',
-  path: '/mitra/daftar',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BayarOrderIdRoute = BayarOrderIdRouteImport.update({
-  id: '/bayar/$orderId',
-  path: '/bayar/$orderId',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AkunWishlistRoute = AkunWishlistRouteImport.update({
-  id: '/akun/wishlist',
-  path: '/akun/wishlist',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AkunPesananIndexRoute = AkunPesananIndexRouteImport.update({
-  id: '/akun/pesanan/',
-  path: '/akun/pesanan/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedPartnerIndexRoute =
-  AuthenticatedPartnerIndexRouteImport.update({
-    id: '/partner/',
-    path: '/partner/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedBuyerIndexRoute = AuthenticatedBuyerIndexRouteImport.update({
-  id: '/buyer/',
-  path: '/buyer/',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AkunPesananIdRoute = AkunPesananIdRouteImport.update({
-  id: '/akun/pesanan/$id',
-  path: '/akun/pesanan/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedBuyerSearchRoute =
-  AuthenticatedBuyerSearchRouteImport.update({
-    id: '/buyer/search',
-    path: '/buyer/search',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedBuyerOrdersRoute =
-  AuthenticatedBuyerOrdersRouteImport.update({
-    id: '/buyer/orders',
-    path: '/buyer/orders',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedBuyerCartRoute = AuthenticatedBuyerCartRouteImport.update({
-  id: '/buyer/cart',
-  path: '/buyer/cart',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedBuyerAiRoute = AuthenticatedBuyerAiRouteImport.update({
-  id: '/buyer/ai',
-  path: '/buyer/ai',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedBuyerAddressesRoute =
-  AuthenticatedBuyerAddressesRouteImport.update({
-    id: '/buyer/addresses',
-    path: '/buyer/addresses',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const ApiPublicIpaymuCallbackRoute = ApiPublicIpaymuCallbackRouteImport.update({
-  id: '/api/public/ipaymu/callback',
-  path: '/api/public/ipaymu/callback',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedPartnerVendorReliabilityRoute =
-  AuthenticatedPartnerVendorReliabilityRouteImport.update({
-    id: '/partner/vendor/reliability',
-    path: '/partner/vendor/reliability',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPartnerVendorPayoutsRoute =
-  AuthenticatedPartnerVendorPayoutsRouteImport.update({
-    id: '/partner/vendor/payouts',
-    path: '/partner/vendor/payouts',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPartnerVendorOrdersRoute =
-  AuthenticatedPartnerVendorOrdersRouteImport.update({
-    id: '/partner/vendor/orders',
-    path: '/partner/vendor/orders',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPartnerVendorOffersRoute =
-  AuthenticatedPartnerVendorOffersRouteImport.update({
-    id: '/partner/vendor/offers',
-    path: '/partner/vendor/offers',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPartnerVendorFulfillmentsRoute =
-  AuthenticatedPartnerVendorFulfillmentsRouteImport.update({
-    id: '/partner/vendor/fulfillments',
-    path: '/partner/vendor/fulfillments',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPartnerQcReturnsRoute =
-  AuthenticatedPartnerQcReturnsRouteImport.update({
-    id: '/partner/qc/returns',
-    path: '/partner/qc/returns',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPartnerHubInboundRoute =
-  AuthenticatedPartnerHubInboundRouteImport.update({
-    id: '/partner/hub/inbound',
-    path: '/partner/hub/inbound',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPartnerFinanceSettlementsRoute =
-  AuthenticatedPartnerFinanceSettlementsRouteImport.update({
-    id: '/partner/finance/settlements',
-    path: '/partner/finance/settlements',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPartnerFinanceReturnsRoute =
-  AuthenticatedPartnerFinanceReturnsRouteImport.update({
-    id: '/partner/finance/returns',
-    path: '/partner/finance/returns',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPartnerFinanceInvoicesRoute =
-  AuthenticatedPartnerFinanceInvoicesRouteImport.update({
-    id: '/partner/finance/invoices',
-    path: '/partner/finance/invoices',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPartnerCourierDeliveriesRoute =
-  AuthenticatedPartnerCourierDeliveriesRouteImport.update({
-    id: '/partner/courier/deliveries',
-    path: '/partner/courier/deliveries',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPartnerAdminSpWarningsRoute =
-  AuthenticatedPartnerAdminSpWarningsRouteImport.update({
-    id: '/partner/admin/sp-warnings',
-    path: '/partner/admin/sp-warnings',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPartnerAdminOrgsRoute =
-  AuthenticatedPartnerAdminOrgsRouteImport.update({
-    id: '/partner/admin/orgs',
-    path: '/partner/admin/orgs',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPartnerAdminFlagsRoute =
-  AuthenticatedPartnerAdminFlagsRouteImport.update({
-    id: '/partner/admin/flags',
-    path: '/partner/admin/flags',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPartnerAdminCatalogRoute =
-  AuthenticatedPartnerAdminCatalogRouteImport.update({
-    id: '/partner/admin/catalog',
-    path: '/partner/admin/catalog',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedPartnerAdminAuditRoute =
-  AuthenticatedPartnerAdminAuditRouteImport.update({
-    id: '/partner/admin/audit',
-    path: '/partner/admin/audit',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedBuyerProductsIdRoute =
-  AuthenticatedBuyerProductsIdRouteImport.update({
-    id: '/buyer/products/$id',
-    path: '/buyer/products/$id',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedBuyerOrdersIdRoute =
-  AuthenticatedBuyerOrdersIdRouteImport.update({
-    id: '/$id',
-    path: '/$id',
-    getParentRoute: () => AuthenticatedBuyerOrdersRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
-  '/checkout': typeof CheckoutRoute
-  '/kelola': typeof KelolaRoute
-  '/keranjang': typeof KeranjangRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
-  '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/akun/wishlist': typeof AkunWishlistRoute
-  '/bayar/$orderId': typeof BayarOrderIdRoute
-  '/mitra/daftar': typeof MitraDaftarRoute
-  '/produk/$id': typeof ProdukIdRoute
-  '/toko/$slug': typeof TokoSlugRoute
-  '/akun/': typeof AkunIndexRoute
-  '/mitra/': typeof MitraIndexRoute
-  '/produk/': typeof ProdukIndexRoute
-  '/buyer/addresses': typeof AuthenticatedBuyerAddressesRoute
-  '/buyer/ai': typeof AuthenticatedBuyerAiRoute
-  '/buyer/cart': typeof AuthenticatedBuyerCartRoute
-  '/buyer/orders': typeof AuthenticatedBuyerOrdersRouteWithChildren
-  '/buyer/search': typeof AuthenticatedBuyerSearchRoute
-  '/akun/pesanan/$id': typeof AkunPesananIdRoute
-  '/buyer/': typeof AuthenticatedBuyerIndexRoute
-  '/partner/': typeof AuthenticatedPartnerIndexRoute
-  '/akun/pesanan/': typeof AkunPesananIndexRoute
-  '/buyer/orders/$id': typeof AuthenticatedBuyerOrdersIdRoute
-  '/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
-  '/partner/admin/audit': typeof AuthenticatedPartnerAdminAuditRoute
-  '/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
-  '/partner/admin/flags': typeof AuthenticatedPartnerAdminFlagsRoute
-  '/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
-  '/partner/admin/sp-warnings': typeof AuthenticatedPartnerAdminSpWarningsRoute
-  '/partner/courier/deliveries': typeof AuthenticatedPartnerCourierDeliveriesRoute
-  '/partner/finance/invoices': typeof AuthenticatedPartnerFinanceInvoicesRoute
-  '/partner/finance/returns': typeof AuthenticatedPartnerFinanceReturnsRoute
-  '/partner/finance/settlements': typeof AuthenticatedPartnerFinanceSettlementsRoute
-  '/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
-  '/partner/qc/returns': typeof AuthenticatedPartnerQcReturnsRoute
-  '/partner/vendor/fulfillments': typeof AuthenticatedPartnerVendorFulfillmentsRoute
-  '/partner/vendor/offers': typeof AuthenticatedPartnerVendorOffersRoute
-  '/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
-  '/partner/vendor/payouts': typeof AuthenticatedPartnerVendorPayoutsRoute
-  '/partner/vendor/reliability': typeof AuthenticatedPartnerVendorReliabilityRoute
-  '/api/public/ipaymu/callback': typeof ApiPublicIpaymuCallbackRoute
+  '/about': typeof AboutRoute
+  '/buyers': typeof BuyersRoute
+  '/contact': typeof ContactRoute
+  '/insights': typeof InsightsRoute
+  '/request-quote': typeof RequestQuoteRoute
+  '/suppliers': typeof SuppliersRoute
+  '/supply': typeof SupplyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
-  '/checkout': typeof CheckoutRoute
-  '/kelola': typeof KelolaRoute
-  '/keranjang': typeof KeranjangRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
-  '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/akun/wishlist': typeof AkunWishlistRoute
-  '/bayar/$orderId': typeof BayarOrderIdRoute
-  '/mitra/daftar': typeof MitraDaftarRoute
-  '/produk/$id': typeof ProdukIdRoute
-  '/toko/$slug': typeof TokoSlugRoute
-  '/akun': typeof AkunIndexRoute
-  '/mitra': typeof MitraIndexRoute
-  '/produk': typeof ProdukIndexRoute
-  '/buyer/addresses': typeof AuthenticatedBuyerAddressesRoute
-  '/buyer/ai': typeof AuthenticatedBuyerAiRoute
-  '/buyer/cart': typeof AuthenticatedBuyerCartRoute
-  '/buyer/orders': typeof AuthenticatedBuyerOrdersRouteWithChildren
-  '/buyer/search': typeof AuthenticatedBuyerSearchRoute
-  '/akun/pesanan/$id': typeof AkunPesananIdRoute
-  '/buyer': typeof AuthenticatedBuyerIndexRoute
-  '/partner': typeof AuthenticatedPartnerIndexRoute
-  '/akun/pesanan': typeof AkunPesananIndexRoute
-  '/buyer/orders/$id': typeof AuthenticatedBuyerOrdersIdRoute
-  '/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
-  '/partner/admin/audit': typeof AuthenticatedPartnerAdminAuditRoute
-  '/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
-  '/partner/admin/flags': typeof AuthenticatedPartnerAdminFlagsRoute
-  '/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
-  '/partner/admin/sp-warnings': typeof AuthenticatedPartnerAdminSpWarningsRoute
-  '/partner/courier/deliveries': typeof AuthenticatedPartnerCourierDeliveriesRoute
-  '/partner/finance/invoices': typeof AuthenticatedPartnerFinanceInvoicesRoute
-  '/partner/finance/returns': typeof AuthenticatedPartnerFinanceReturnsRoute
-  '/partner/finance/settlements': typeof AuthenticatedPartnerFinanceSettlementsRoute
-  '/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
-  '/partner/qc/returns': typeof AuthenticatedPartnerQcReturnsRoute
-  '/partner/vendor/fulfillments': typeof AuthenticatedPartnerVendorFulfillmentsRoute
-  '/partner/vendor/offers': typeof AuthenticatedPartnerVendorOffersRoute
-  '/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
-  '/partner/vendor/payouts': typeof AuthenticatedPartnerVendorPayoutsRoute
-  '/partner/vendor/reliability': typeof AuthenticatedPartnerVendorReliabilityRoute
-  '/api/public/ipaymu/callback': typeof ApiPublicIpaymuCallbackRoute
+  '/about': typeof AboutRoute
+  '/buyers': typeof BuyersRoute
+  '/contact': typeof ContactRoute
+  '/insights': typeof InsightsRoute
+  '/request-quote': typeof RequestQuoteRoute
+  '/suppliers': typeof SuppliersRoute
+  '/supply': typeof SupplyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/auth': typeof AuthRoute
-  '/checkout': typeof CheckoutRoute
-  '/kelola': typeof KelolaRoute
-  '/keranjang': typeof KeranjangRoute
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
-  '/akun/wishlist': typeof AkunWishlistRoute
-  '/bayar/$orderId': typeof BayarOrderIdRoute
-  '/mitra/daftar': typeof MitraDaftarRoute
-  '/produk/$id': typeof ProdukIdRoute
-  '/toko/$slug': typeof TokoSlugRoute
-  '/akun/': typeof AkunIndexRoute
-  '/mitra/': typeof MitraIndexRoute
-  '/produk/': typeof ProdukIndexRoute
-  '/_authenticated/buyer/addresses': typeof AuthenticatedBuyerAddressesRoute
-  '/_authenticated/buyer/ai': typeof AuthenticatedBuyerAiRoute
-  '/_authenticated/buyer/cart': typeof AuthenticatedBuyerCartRoute
-  '/_authenticated/buyer/orders': typeof AuthenticatedBuyerOrdersRouteWithChildren
-  '/_authenticated/buyer/search': typeof AuthenticatedBuyerSearchRoute
-  '/akun/pesanan/$id': typeof AkunPesananIdRoute
-  '/_authenticated/buyer/': typeof AuthenticatedBuyerIndexRoute
-  '/_authenticated/partner/': typeof AuthenticatedPartnerIndexRoute
-  '/akun/pesanan/': typeof AkunPesananIndexRoute
-  '/_authenticated/buyer/orders/$id': typeof AuthenticatedBuyerOrdersIdRoute
-  '/_authenticated/buyer/products/$id': typeof AuthenticatedBuyerProductsIdRoute
-  '/_authenticated/partner/admin/audit': typeof AuthenticatedPartnerAdminAuditRoute
-  '/_authenticated/partner/admin/catalog': typeof AuthenticatedPartnerAdminCatalogRoute
-  '/_authenticated/partner/admin/flags': typeof AuthenticatedPartnerAdminFlagsRoute
-  '/_authenticated/partner/admin/orgs': typeof AuthenticatedPartnerAdminOrgsRoute
-  '/_authenticated/partner/admin/sp-warnings': typeof AuthenticatedPartnerAdminSpWarningsRoute
-  '/_authenticated/partner/courier/deliveries': typeof AuthenticatedPartnerCourierDeliveriesRoute
-  '/_authenticated/partner/finance/invoices': typeof AuthenticatedPartnerFinanceInvoicesRoute
-  '/_authenticated/partner/finance/returns': typeof AuthenticatedPartnerFinanceReturnsRoute
-  '/_authenticated/partner/finance/settlements': typeof AuthenticatedPartnerFinanceSettlementsRoute
-  '/_authenticated/partner/hub/inbound': typeof AuthenticatedPartnerHubInboundRoute
-  '/_authenticated/partner/qc/returns': typeof AuthenticatedPartnerQcReturnsRoute
-  '/_authenticated/partner/vendor/fulfillments': typeof AuthenticatedPartnerVendorFulfillmentsRoute
-  '/_authenticated/partner/vendor/offers': typeof AuthenticatedPartnerVendorOffersRoute
-  '/_authenticated/partner/vendor/orders': typeof AuthenticatedPartnerVendorOrdersRoute
-  '/_authenticated/partner/vendor/payouts': typeof AuthenticatedPartnerVendorPayoutsRoute
-  '/_authenticated/partner/vendor/reliability': typeof AuthenticatedPartnerVendorReliabilityRoute
-  '/api/public/ipaymu/callback': typeof ApiPublicIpaymuCallbackRoute
+  '/about': typeof AboutRoute
+  '/buyers': typeof BuyersRoute
+  '/contact': typeof ContactRoute
+  '/insights': typeof InsightsRoute
+  '/request-quote': typeof RequestQuoteRoute
+  '/suppliers': typeof SuppliersRoute
+  '/supply': typeof SupplyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/auth'
-    | '/checkout'
-    | '/kelola'
-    | '/keranjang'
-    | '/dashboard'
-    | '/onboarding'
-    | '/akun/wishlist'
-    | '/bayar/$orderId'
-    | '/mitra/daftar'
-    | '/produk/$id'
-    | '/toko/$slug'
-    | '/akun/'
-    | '/mitra/'
-    | '/produk/'
-    | '/buyer/addresses'
-    | '/buyer/ai'
-    | '/buyer/cart'
-    | '/buyer/orders'
-    | '/buyer/search'
-    | '/akun/pesanan/$id'
-    | '/buyer/'
-    | '/partner/'
-    | '/akun/pesanan/'
-    | '/buyer/orders/$id'
-    | '/buyer/products/$id'
-    | '/partner/admin/audit'
-    | '/partner/admin/catalog'
-    | '/partner/admin/flags'
-    | '/partner/admin/orgs'
-    | '/partner/admin/sp-warnings'
-    | '/partner/courier/deliveries'
-    | '/partner/finance/invoices'
-    | '/partner/finance/returns'
-    | '/partner/finance/settlements'
-    | '/partner/hub/inbound'
-    | '/partner/qc/returns'
-    | '/partner/vendor/fulfillments'
-    | '/partner/vendor/offers'
-    | '/partner/vendor/orders'
-    | '/partner/vendor/payouts'
-    | '/partner/vendor/reliability'
-    | '/api/public/ipaymu/callback'
+    | '/about'
+    | '/buyers'
+    | '/contact'
+    | '/insights'
+    | '/request-quote'
+    | '/suppliers'
+    | '/supply'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/auth'
-    | '/checkout'
-    | '/kelola'
-    | '/keranjang'
-    | '/dashboard'
-    | '/onboarding'
-    | '/akun/wishlist'
-    | '/bayar/$orderId'
-    | '/mitra/daftar'
-    | '/produk/$id'
-    | '/toko/$slug'
-    | '/akun'
-    | '/mitra'
-    | '/produk'
-    | '/buyer/addresses'
-    | '/buyer/ai'
-    | '/buyer/cart'
-    | '/buyer/orders'
-    | '/buyer/search'
-    | '/akun/pesanan/$id'
-    | '/buyer'
-    | '/partner'
-    | '/akun/pesanan'
-    | '/buyer/orders/$id'
-    | '/buyer/products/$id'
-    | '/partner/admin/audit'
-    | '/partner/admin/catalog'
-    | '/partner/admin/flags'
-    | '/partner/admin/orgs'
-    | '/partner/admin/sp-warnings'
-    | '/partner/courier/deliveries'
-    | '/partner/finance/invoices'
-    | '/partner/finance/returns'
-    | '/partner/finance/settlements'
-    | '/partner/hub/inbound'
-    | '/partner/qc/returns'
-    | '/partner/vendor/fulfillments'
-    | '/partner/vendor/offers'
-    | '/partner/vendor/orders'
-    | '/partner/vendor/payouts'
-    | '/partner/vendor/reliability'
-    | '/api/public/ipaymu/callback'
+    | '/about'
+    | '/buyers'
+    | '/contact'
+    | '/insights'
+    | '/request-quote'
+    | '/suppliers'
+    | '/supply'
   id:
     | '__root__'
     | '/'
-    | '/_authenticated'
-    | '/auth'
-    | '/checkout'
-    | '/kelola'
-    | '/keranjang'
-    | '/_authenticated/dashboard'
-    | '/_authenticated/onboarding'
-    | '/akun/wishlist'
-    | '/bayar/$orderId'
-    | '/mitra/daftar'
-    | '/produk/$id'
-    | '/toko/$slug'
-    | '/akun/'
-    | '/mitra/'
-    | '/produk/'
-    | '/_authenticated/buyer/addresses'
-    | '/_authenticated/buyer/ai'
-    | '/_authenticated/buyer/cart'
-    | '/_authenticated/buyer/orders'
-    | '/_authenticated/buyer/search'
-    | '/akun/pesanan/$id'
-    | '/_authenticated/buyer/'
-    | '/_authenticated/partner/'
-    | '/akun/pesanan/'
-    | '/_authenticated/buyer/orders/$id'
-    | '/_authenticated/buyer/products/$id'
-    | '/_authenticated/partner/admin/audit'
-    | '/_authenticated/partner/admin/catalog'
-    | '/_authenticated/partner/admin/flags'
-    | '/_authenticated/partner/admin/orgs'
-    | '/_authenticated/partner/admin/sp-warnings'
-    | '/_authenticated/partner/courier/deliveries'
-    | '/_authenticated/partner/finance/invoices'
-    | '/_authenticated/partner/finance/returns'
-    | '/_authenticated/partner/finance/settlements'
-    | '/_authenticated/partner/hub/inbound'
-    | '/_authenticated/partner/qc/returns'
-    | '/_authenticated/partner/vendor/fulfillments'
-    | '/_authenticated/partner/vendor/offers'
-    | '/_authenticated/partner/vendor/orders'
-    | '/_authenticated/partner/vendor/payouts'
-    | '/_authenticated/partner/vendor/reliability'
-    | '/api/public/ipaymu/callback'
+    | '/about'
+    | '/buyers'
+    | '/contact'
+    | '/insights'
+    | '/request-quote'
+    | '/suppliers'
+    | '/supply'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AuthRoute: typeof AuthRoute
-  CheckoutRoute: typeof CheckoutRoute
-  KelolaRoute: typeof KelolaRoute
-  KeranjangRoute: typeof KeranjangRoute
-  AkunWishlistRoute: typeof AkunWishlistRoute
-  BayarOrderIdRoute: typeof BayarOrderIdRoute
-  MitraDaftarRoute: typeof MitraDaftarRoute
-  ProdukIdRoute: typeof ProdukIdRoute
-  TokoSlugRoute: typeof TokoSlugRoute
-  AkunIndexRoute: typeof AkunIndexRoute
-  MitraIndexRoute: typeof MitraIndexRoute
-  ProdukIndexRoute: typeof ProdukIndexRoute
-  AkunPesananIdRoute: typeof AkunPesananIdRoute
-  AkunPesananIndexRoute: typeof AkunPesananIndexRoute
-  ApiPublicIpaymuCallbackRoute: typeof ApiPublicIpaymuCallbackRoute
+  AboutRoute: typeof AboutRoute
+  BuyersRoute: typeof BuyersRoute
+  ContactRoute: typeof ContactRoute
+  InsightsRoute: typeof InsightsRoute
+  RequestQuoteRoute: typeof RequestQuoteRoute
+  SuppliersRoute: typeof SuppliersRoute
+  SupplyRoute: typeof SupplyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/keranjang': {
-      id: '/keranjang'
-      path: '/keranjang'
-      fullPath: '/keranjang'
-      preLoaderRoute: typeof KeranjangRouteImport
+    '/supply': {
+      id: '/supply'
+      path: '/supply'
+      fullPath: '/supply'
+      preLoaderRoute: typeof SupplyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/kelola': {
-      id: '/kelola'
-      path: '/kelola'
-      fullPath: '/kelola'
-      preLoaderRoute: typeof KelolaRouteImport
+    '/suppliers': {
+      id: '/suppliers'
+      path: '/suppliers'
+      fullPath: '/suppliers'
+      preLoaderRoute: typeof SuppliersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
+    '/request-quote': {
+      id: '/request-quote'
+      path: '/request-quote'
+      fullPath: '/request-quote'
+      preLoaderRoute: typeof RequestQuoteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/insights': {
+      id: '/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof InsightsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/buyers': {
+      id: '/buyers'
+      path: '/buyers'
+      fullPath: '/buyers'
+      preLoaderRoute: typeof BuyersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -636,387 +192,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/produk/': {
-      id: '/produk/'
-      path: '/produk'
-      fullPath: '/produk/'
-      preLoaderRoute: typeof ProdukIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mitra/': {
-      id: '/mitra/'
-      path: '/mitra'
-      fullPath: '/mitra/'
-      preLoaderRoute: typeof MitraIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/akun/': {
-      id: '/akun/'
-      path: '/akun'
-      fullPath: '/akun/'
-      preLoaderRoute: typeof AkunIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/toko/$slug': {
-      id: '/toko/$slug'
-      path: '/toko/$slug'
-      fullPath: '/toko/$slug'
-      preLoaderRoute: typeof TokoSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/produk/$id': {
-      id: '/produk/$id'
-      path: '/produk/$id'
-      fullPath: '/produk/$id'
-      preLoaderRoute: typeof ProdukIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mitra/daftar': {
-      id: '/mitra/daftar'
-      path: '/mitra/daftar'
-      fullPath: '/mitra/daftar'
-      preLoaderRoute: typeof MitraDaftarRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/bayar/$orderId': {
-      id: '/bayar/$orderId'
-      path: '/bayar/$orderId'
-      fullPath: '/bayar/$orderId'
-      preLoaderRoute: typeof BayarOrderIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/akun/wishlist': {
-      id: '/akun/wishlist'
-      path: '/akun/wishlist'
-      fullPath: '/akun/wishlist'
-      preLoaderRoute: typeof AkunWishlistRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/onboarding': {
-      id: '/_authenticated/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/akun/pesanan/': {
-      id: '/akun/pesanan/'
-      path: '/akun/pesanan'
-      fullPath: '/akun/pesanan/'
-      preLoaderRoute: typeof AkunPesananIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/partner/': {
-      id: '/_authenticated/partner/'
-      path: '/partner'
-      fullPath: '/partner/'
-      preLoaderRoute: typeof AuthenticatedPartnerIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/buyer/': {
-      id: '/_authenticated/buyer/'
-      path: '/buyer'
-      fullPath: '/buyer/'
-      preLoaderRoute: typeof AuthenticatedBuyerIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/akun/pesanan/$id': {
-      id: '/akun/pesanan/$id'
-      path: '/akun/pesanan/$id'
-      fullPath: '/akun/pesanan/$id'
-      preLoaderRoute: typeof AkunPesananIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/buyer/search': {
-      id: '/_authenticated/buyer/search'
-      path: '/buyer/search'
-      fullPath: '/buyer/search'
-      preLoaderRoute: typeof AuthenticatedBuyerSearchRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/buyer/orders': {
-      id: '/_authenticated/buyer/orders'
-      path: '/buyer/orders'
-      fullPath: '/buyer/orders'
-      preLoaderRoute: typeof AuthenticatedBuyerOrdersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/buyer/cart': {
-      id: '/_authenticated/buyer/cart'
-      path: '/buyer/cart'
-      fullPath: '/buyer/cart'
-      preLoaderRoute: typeof AuthenticatedBuyerCartRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/buyer/ai': {
-      id: '/_authenticated/buyer/ai'
-      path: '/buyer/ai'
-      fullPath: '/buyer/ai'
-      preLoaderRoute: typeof AuthenticatedBuyerAiRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/buyer/addresses': {
-      id: '/_authenticated/buyer/addresses'
-      path: '/buyer/addresses'
-      fullPath: '/buyer/addresses'
-      preLoaderRoute: typeof AuthenticatedBuyerAddressesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/api/public/ipaymu/callback': {
-      id: '/api/public/ipaymu/callback'
-      path: '/api/public/ipaymu/callback'
-      fullPath: '/api/public/ipaymu/callback'
-      preLoaderRoute: typeof ApiPublicIpaymuCallbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/partner/vendor/reliability': {
-      id: '/_authenticated/partner/vendor/reliability'
-      path: '/partner/vendor/reliability'
-      fullPath: '/partner/vendor/reliability'
-      preLoaderRoute: typeof AuthenticatedPartnerVendorReliabilityRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/partner/vendor/payouts': {
-      id: '/_authenticated/partner/vendor/payouts'
-      path: '/partner/vendor/payouts'
-      fullPath: '/partner/vendor/payouts'
-      preLoaderRoute: typeof AuthenticatedPartnerVendorPayoutsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/partner/vendor/orders': {
-      id: '/_authenticated/partner/vendor/orders'
-      path: '/partner/vendor/orders'
-      fullPath: '/partner/vendor/orders'
-      preLoaderRoute: typeof AuthenticatedPartnerVendorOrdersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/partner/vendor/offers': {
-      id: '/_authenticated/partner/vendor/offers'
-      path: '/partner/vendor/offers'
-      fullPath: '/partner/vendor/offers'
-      preLoaderRoute: typeof AuthenticatedPartnerVendorOffersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/partner/vendor/fulfillments': {
-      id: '/_authenticated/partner/vendor/fulfillments'
-      path: '/partner/vendor/fulfillments'
-      fullPath: '/partner/vendor/fulfillments'
-      preLoaderRoute: typeof AuthenticatedPartnerVendorFulfillmentsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/partner/qc/returns': {
-      id: '/_authenticated/partner/qc/returns'
-      path: '/partner/qc/returns'
-      fullPath: '/partner/qc/returns'
-      preLoaderRoute: typeof AuthenticatedPartnerQcReturnsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/partner/hub/inbound': {
-      id: '/_authenticated/partner/hub/inbound'
-      path: '/partner/hub/inbound'
-      fullPath: '/partner/hub/inbound'
-      preLoaderRoute: typeof AuthenticatedPartnerHubInboundRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/partner/finance/settlements': {
-      id: '/_authenticated/partner/finance/settlements'
-      path: '/partner/finance/settlements'
-      fullPath: '/partner/finance/settlements'
-      preLoaderRoute: typeof AuthenticatedPartnerFinanceSettlementsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/partner/finance/returns': {
-      id: '/_authenticated/partner/finance/returns'
-      path: '/partner/finance/returns'
-      fullPath: '/partner/finance/returns'
-      preLoaderRoute: typeof AuthenticatedPartnerFinanceReturnsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/partner/finance/invoices': {
-      id: '/_authenticated/partner/finance/invoices'
-      path: '/partner/finance/invoices'
-      fullPath: '/partner/finance/invoices'
-      preLoaderRoute: typeof AuthenticatedPartnerFinanceInvoicesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/partner/courier/deliveries': {
-      id: '/_authenticated/partner/courier/deliveries'
-      path: '/partner/courier/deliveries'
-      fullPath: '/partner/courier/deliveries'
-      preLoaderRoute: typeof AuthenticatedPartnerCourierDeliveriesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/partner/admin/sp-warnings': {
-      id: '/_authenticated/partner/admin/sp-warnings'
-      path: '/partner/admin/sp-warnings'
-      fullPath: '/partner/admin/sp-warnings'
-      preLoaderRoute: typeof AuthenticatedPartnerAdminSpWarningsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/partner/admin/orgs': {
-      id: '/_authenticated/partner/admin/orgs'
-      path: '/partner/admin/orgs'
-      fullPath: '/partner/admin/orgs'
-      preLoaderRoute: typeof AuthenticatedPartnerAdminOrgsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/partner/admin/flags': {
-      id: '/_authenticated/partner/admin/flags'
-      path: '/partner/admin/flags'
-      fullPath: '/partner/admin/flags'
-      preLoaderRoute: typeof AuthenticatedPartnerAdminFlagsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/partner/admin/catalog': {
-      id: '/_authenticated/partner/admin/catalog'
-      path: '/partner/admin/catalog'
-      fullPath: '/partner/admin/catalog'
-      preLoaderRoute: typeof AuthenticatedPartnerAdminCatalogRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/partner/admin/audit': {
-      id: '/_authenticated/partner/admin/audit'
-      path: '/partner/admin/audit'
-      fullPath: '/partner/admin/audit'
-      preLoaderRoute: typeof AuthenticatedPartnerAdminAuditRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/buyer/products/$id': {
-      id: '/_authenticated/buyer/products/$id'
-      path: '/buyer/products/$id'
-      fullPath: '/buyer/products/$id'
-      preLoaderRoute: typeof AuthenticatedBuyerProductsIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/buyer/orders/$id': {
-      id: '/_authenticated/buyer/orders/$id'
-      path: '/$id'
-      fullPath: '/buyer/orders/$id'
-      preLoaderRoute: typeof AuthenticatedBuyerOrdersIdRouteImport
-      parentRoute: typeof AuthenticatedBuyerOrdersRoute
-    }
   }
 }
-
-interface AuthenticatedBuyerOrdersRouteChildren {
-  AuthenticatedBuyerOrdersIdRoute: typeof AuthenticatedBuyerOrdersIdRoute
-}
-
-const AuthenticatedBuyerOrdersRouteChildren: AuthenticatedBuyerOrdersRouteChildren =
-  {
-    AuthenticatedBuyerOrdersIdRoute: AuthenticatedBuyerOrdersIdRoute,
-  }
-
-const AuthenticatedBuyerOrdersRouteWithChildren =
-  AuthenticatedBuyerOrdersRoute._addFileChildren(
-    AuthenticatedBuyerOrdersRouteChildren,
-  )
-
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
-  AuthenticatedBuyerAddressesRoute: typeof AuthenticatedBuyerAddressesRoute
-  AuthenticatedBuyerAiRoute: typeof AuthenticatedBuyerAiRoute
-  AuthenticatedBuyerCartRoute: typeof AuthenticatedBuyerCartRoute
-  AuthenticatedBuyerOrdersRoute: typeof AuthenticatedBuyerOrdersRouteWithChildren
-  AuthenticatedBuyerSearchRoute: typeof AuthenticatedBuyerSearchRoute
-  AuthenticatedBuyerIndexRoute: typeof AuthenticatedBuyerIndexRoute
-  AuthenticatedPartnerIndexRoute: typeof AuthenticatedPartnerIndexRoute
-  AuthenticatedBuyerProductsIdRoute: typeof AuthenticatedBuyerProductsIdRoute
-  AuthenticatedPartnerAdminAuditRoute: typeof AuthenticatedPartnerAdminAuditRoute
-  AuthenticatedPartnerAdminCatalogRoute: typeof AuthenticatedPartnerAdminCatalogRoute
-  AuthenticatedPartnerAdminFlagsRoute: typeof AuthenticatedPartnerAdminFlagsRoute
-  AuthenticatedPartnerAdminOrgsRoute: typeof AuthenticatedPartnerAdminOrgsRoute
-  AuthenticatedPartnerAdminSpWarningsRoute: typeof AuthenticatedPartnerAdminSpWarningsRoute
-  AuthenticatedPartnerCourierDeliveriesRoute: typeof AuthenticatedPartnerCourierDeliveriesRoute
-  AuthenticatedPartnerFinanceInvoicesRoute: typeof AuthenticatedPartnerFinanceInvoicesRoute
-  AuthenticatedPartnerFinanceReturnsRoute: typeof AuthenticatedPartnerFinanceReturnsRoute
-  AuthenticatedPartnerFinanceSettlementsRoute: typeof AuthenticatedPartnerFinanceSettlementsRoute
-  AuthenticatedPartnerHubInboundRoute: typeof AuthenticatedPartnerHubInboundRoute
-  AuthenticatedPartnerQcReturnsRoute: typeof AuthenticatedPartnerQcReturnsRoute
-  AuthenticatedPartnerVendorFulfillmentsRoute: typeof AuthenticatedPartnerVendorFulfillmentsRoute
-  AuthenticatedPartnerVendorOffersRoute: typeof AuthenticatedPartnerVendorOffersRoute
-  AuthenticatedPartnerVendorOrdersRoute: typeof AuthenticatedPartnerVendorOrdersRoute
-  AuthenticatedPartnerVendorPayoutsRoute: typeof AuthenticatedPartnerVendorPayoutsRoute
-  AuthenticatedPartnerVendorReliabilityRoute: typeof AuthenticatedPartnerVendorReliabilityRoute
-}
-
-const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
-  AuthenticatedBuyerAddressesRoute: AuthenticatedBuyerAddressesRoute,
-  AuthenticatedBuyerAiRoute: AuthenticatedBuyerAiRoute,
-  AuthenticatedBuyerCartRoute: AuthenticatedBuyerCartRoute,
-  AuthenticatedBuyerOrdersRoute: AuthenticatedBuyerOrdersRouteWithChildren,
-  AuthenticatedBuyerSearchRoute: AuthenticatedBuyerSearchRoute,
-  AuthenticatedBuyerIndexRoute: AuthenticatedBuyerIndexRoute,
-  AuthenticatedPartnerIndexRoute: AuthenticatedPartnerIndexRoute,
-  AuthenticatedBuyerProductsIdRoute: AuthenticatedBuyerProductsIdRoute,
-  AuthenticatedPartnerAdminAuditRoute: AuthenticatedPartnerAdminAuditRoute,
-  AuthenticatedPartnerAdminCatalogRoute: AuthenticatedPartnerAdminCatalogRoute,
-  AuthenticatedPartnerAdminFlagsRoute: AuthenticatedPartnerAdminFlagsRoute,
-  AuthenticatedPartnerAdminOrgsRoute: AuthenticatedPartnerAdminOrgsRoute,
-  AuthenticatedPartnerAdminSpWarningsRoute:
-    AuthenticatedPartnerAdminSpWarningsRoute,
-  AuthenticatedPartnerCourierDeliveriesRoute:
-    AuthenticatedPartnerCourierDeliveriesRoute,
-  AuthenticatedPartnerFinanceInvoicesRoute:
-    AuthenticatedPartnerFinanceInvoicesRoute,
-  AuthenticatedPartnerFinanceReturnsRoute:
-    AuthenticatedPartnerFinanceReturnsRoute,
-  AuthenticatedPartnerFinanceSettlementsRoute:
-    AuthenticatedPartnerFinanceSettlementsRoute,
-  AuthenticatedPartnerHubInboundRoute: AuthenticatedPartnerHubInboundRoute,
-  AuthenticatedPartnerQcReturnsRoute: AuthenticatedPartnerQcReturnsRoute,
-  AuthenticatedPartnerVendorFulfillmentsRoute:
-    AuthenticatedPartnerVendorFulfillmentsRoute,
-  AuthenticatedPartnerVendorOffersRoute: AuthenticatedPartnerVendorOffersRoute,
-  AuthenticatedPartnerVendorOrdersRoute: AuthenticatedPartnerVendorOrdersRoute,
-  AuthenticatedPartnerVendorPayoutsRoute:
-    AuthenticatedPartnerVendorPayoutsRoute,
-  AuthenticatedPartnerVendorReliabilityRoute:
-    AuthenticatedPartnerVendorReliabilityRoute,
-}
-
-const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AuthRoute: AuthRoute,
-  CheckoutRoute: CheckoutRoute,
-  KelolaRoute: KelolaRoute,
-  KeranjangRoute: KeranjangRoute,
-  AkunWishlistRoute: AkunWishlistRoute,
-  BayarOrderIdRoute: BayarOrderIdRoute,
-  MitraDaftarRoute: MitraDaftarRoute,
-  ProdukIdRoute: ProdukIdRoute,
-  TokoSlugRoute: TokoSlugRoute,
-  AkunIndexRoute: AkunIndexRoute,
-  MitraIndexRoute: MitraIndexRoute,
-  ProdukIndexRoute: ProdukIndexRoute,
-  AkunPesananIdRoute: AkunPesananIdRoute,
-  AkunPesananIndexRoute: AkunPesananIndexRoute,
-  ApiPublicIpaymuCallbackRoute: ApiPublicIpaymuCallbackRoute,
+  AboutRoute: AboutRoute,
+  BuyersRoute: BuyersRoute,
+  ContactRoute: ContactRoute,
+  InsightsRoute: InsightsRoute,
+  RequestQuoteRoute: RequestQuoteRoute,
+  SuppliersRoute: SuppliersRoute,
+  SupplyRoute: SupplyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

@@ -1854,6 +1854,81 @@ export type Database = {
           },
         ]
       }
+      quote_requests: {
+        Row: {
+          brand_preference: string | null
+          category: string | null
+          company_name: string
+          contact_name: string
+          created_at: string
+          current_price: string | null
+          current_supplier: string | null
+          delivery_location: string
+          email: string | null
+          grade: string | null
+          id: string
+          notes: string | null
+          origin_preference: string | null
+          payment_terms: string | null
+          product_cut: string
+          purchase_frequency: string | null
+          required_delivery_date: string
+          status: string
+          target_price: string | null
+          updated_at: string
+          volume: string
+          whatsapp: string
+        }
+        Insert: {
+          brand_preference?: string | null
+          category?: string | null
+          company_name: string
+          contact_name: string
+          created_at?: string
+          current_price?: string | null
+          current_supplier?: string | null
+          delivery_location: string
+          email?: string | null
+          grade?: string | null
+          id?: string
+          notes?: string | null
+          origin_preference?: string | null
+          payment_terms?: string | null
+          product_cut: string
+          purchase_frequency?: string | null
+          required_delivery_date: string
+          status?: string
+          target_price?: string | null
+          updated_at?: string
+          volume: string
+          whatsapp: string
+        }
+        Update: {
+          brand_preference?: string | null
+          category?: string | null
+          company_name?: string
+          contact_name?: string
+          created_at?: string
+          current_price?: string | null
+          current_supplier?: string | null
+          delivery_location?: string
+          email?: string | null
+          grade?: string | null
+          id?: string
+          notes?: string | null
+          origin_preference?: string | null
+          payment_terms?: string | null
+          product_cut?: string
+          purchase_frequency?: string | null
+          required_delivery_date?: string
+          status?: string
+          target_price?: string | null
+          updated_at?: string
+          volume?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       refunds: {
         Row: {
           amount: number
@@ -2260,6 +2335,60 @@ export type Database = {
           is_active?: boolean
           name?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      supplier_applications: {
+        Row: {
+          brands_represented: string | null
+          company_name: string
+          contact_name: string
+          created_at: string
+          delivery_coverage: string | null
+          email: string | null
+          id: string
+          moq: string | null
+          notes: string | null
+          origins: string | null
+          payment_terms: string | null
+          product_categories: string | null
+          status: string
+          updated_at: string
+          whatsapp: string
+        }
+        Insert: {
+          brands_represented?: string | null
+          company_name: string
+          contact_name: string
+          created_at?: string
+          delivery_coverage?: string | null
+          email?: string | null
+          id?: string
+          moq?: string | null
+          notes?: string | null
+          origins?: string | null
+          payment_terms?: string | null
+          product_categories?: string | null
+          status?: string
+          updated_at?: string
+          whatsapp: string
+        }
+        Update: {
+          brands_represented?: string | null
+          company_name?: string
+          contact_name?: string
+          created_at?: string
+          delivery_coverage?: string | null
+          email?: string | null
+          id?: string
+          moq?: string | null
+          notes?: string | null
+          origins?: string | null
+          payment_terms?: string | null
+          product_categories?: string | null
+          status?: string
+          updated_at?: string
+          whatsapp?: string
         }
         Relationships: []
       }
