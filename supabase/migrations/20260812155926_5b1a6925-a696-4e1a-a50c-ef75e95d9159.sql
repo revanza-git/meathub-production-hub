@@ -1,0 +1,1 @@
+ALTER TABLE public.quote_requests ADD COLUMN IF NOT EXISTS items jsonb NOT NULL DEFAULT '[]'::jsonb;
