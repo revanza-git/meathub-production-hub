@@ -111,8 +111,10 @@ export function rfqWhatsappMessage(v: RfqInput) {
     "Hi Meatlink, I just submitted an RFQ.",
     `Company: ${v.company_name}`,
     `Contact: ${v.contact_name}`,
-    `Product: ${v.product_cut}${v.grade ? ` (${v.grade})` : ""}`,
-    `Volume: ${v.volume}`,
+    `Items (${v.items.length}):`,
+    ...v.items.map(
+      (i, idx) => `${idx + 1}. ${i.product_cut}${i.grade ? ` (${i.grade})` : ""} — ${i.volume}`,
+    ),
     `Delivery to: ${v.delivery_location}`,
     `Needed by: ${v.required_delivery_date}`,
   ].join("\n");
