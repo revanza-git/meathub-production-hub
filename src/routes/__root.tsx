@@ -18,19 +18,16 @@ import { registerServiceWorker } from "@/lib/pwa-register";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-noir px-4 text-bone">
       <div className="max-w-md text-center">
-        <h1 className="font-display text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Halaman tidak ditemukan</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Halaman yang Anda cari tidak ada atau telah dipindahkan.
+        <h1 className="font-display text-7xl">404</h1>
+        <h2 className="mt-4 font-display text-xl">Page not found</h2>
+        <p className="mt-2 text-sm text-bone/60">
+          The page you are looking for doesn't exist or has been moved.
         </p>
         <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Ke beranda
+          <Link to="/" className="eyebrow inline-flex bg-crimson px-5 py-3 text-bone">
+            Back to home
           </Link>
         </div>
       </div>
@@ -49,10 +46,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          Halaman gagal dimuat
+          This page didn't load
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Terjadi kesalahan di sisi kami. Coba refresh atau kembali ke beranda.
+          Something went wrong on our end. Try again or head back home.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -62,13 +59,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Coba lagi
+            Try again
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Ke beranda
+            Go home
           </a>
         </div>
       </div>
@@ -148,11 +145,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <DemoRoleProvider>
-        <CartProvider>
-          <Outlet />
-        </CartProvider>
-      </DemoRoleProvider>
+      <Outlet />
       <Toaster richColors position="top-center" />
     </QueryClientProvider>
   );
