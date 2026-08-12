@@ -69,7 +69,35 @@ export const supplierSchema = z.object({
 export type SupplierInput = z.infer<typeof supplierSchema>;
 
 export async function submitRfq(input: RfqInput) {
-  const { error } = await supabase.from("quote_requests").insert(input);
+  const { items, ...rest } = input;
+  const first = items[0]!;
+  const extraItems = items.slice(1);
+  const itemSummary = extraItems.length
+    ? extraItems
+        .map(
+          (i, idx) =>
+            `Item ${idx + 2}: ${i.product_cut} — ${i.volume}` +
+            [i.grade && `grade ${i.grade}`, i.origin_preference && `origin ${i.origin_preference}`, i.brand_preference && `brand ${i.brand_preference}`, i.notes]
+              .filter(Boolean)
+              .map((s) => ` | ${s}`)
+              .join(""),
+        )
+        .join("\n")
+    : "";
+
+  const payload = {
+    ...rest,
+    items,
+    category: first.category ?? "",
+    product_cut: first.product_cut,
+    origin_preference: first.origin_preference ?? "",
+    brand_preference: first.brand_preference ?? "",
+    grade: first.grade ?? "",
+    volume: first.volume,
+    notes: [rest.notes, first.notes, itemSummary].filter(Boolean).join("\n").slice(0, 4000),
+  };
+
+  const { error } = await supabase.from("quote_requests").insert(payload);
   if (error) throw new Error(error.message);
 }
 
