@@ -78,16 +78,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MEATHUB Meat Hub — Marketplace daging premium B2B nasional" },
+      { title: "Meatlink.id — B2B meat sourcing network" },
       {
-          name: "description",
-          content:
-            "Marketplace daging premium B2B: importir tangan pertama, quote final berdasarkan berat aktual, pembayaran cash, Hub MEATHUB, pengiriman terlacak.",
-        },
-      { name: "author", content: "MEATHUB" },
-      { name: "theme-color", content: "#5a1a1a" },
+        name: "description",
+        content:
+          "Meatlink.id connects Indonesian restaurants, hotels and retailers with trusted meat importers and suppliers. Send one RFQ, get matched quotes.",
+      },
+      { name: "author", content: "Meatlink.id" },
+      { name: "theme-color", content: "#0D0D0D" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-title", content: "MEATHUB" },
+      { name: "apple-mobile-web-app-title", content: "Meatlink.id" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -96,7 +96,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo+Expanded:wght@600;700;800&family=Archivo:wght@400;500;600;700&family=Hind:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700;800&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap",
       },
       { rel: "stylesheet", href: appCss },
       { rel: "manifest", href: "/manifest.webmanifest" },
@@ -112,7 +112,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="id" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth">
       <head>
         <HeadContent />
       </head>

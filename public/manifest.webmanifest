@@ -1,14 +1,14 @@
 {
-  "name": "MEATHUB Meat Hub",
-  "short_name": "MEATHUB",
-  "description": "Marketplace daging premium B2B Jabodetabek",
+  "name": "Meatlink.id",
+  "short_name": "Meatlink",
+  "description": "B2B meat sourcing network connecting Indonesian buyers with trusted suppliers",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#0b0b0b",
-  "theme_color": "#5a1a1a",
+  "background_color": "#0D0D0D",
+  "theme_color": "#0D0D0D",
   "orientation": "portrait-primary",
   "icons": [
-    { "src": "/favicon.png", "sizes": "512x512 192x192 180x180 152x152 144x144 120x120 96x96 72x72 64x64 32x32 24x24 16x16", "type": "image/png" }
+    { "src": "/favicon.png", "sizes": "64x64 32x32 24x24 16x16", "type": "image/png" }
   ]
 }
