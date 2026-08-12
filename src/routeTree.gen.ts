@@ -12,7 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SupplyRouteImport } from './routes/supply'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as RequestQuoteRouteImport } from './routes/request-quote'
+import { Route as InsightsRouteImport } from './routes/insights'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BuyersRouteImport } from './routes/buyers'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SupplyRoute = SupplyRouteImport.update({
@@ -30,9 +33,24 @@ const RequestQuoteRoute = RequestQuoteRouteImport.update({
   path: '/request-quote',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InsightsRoute = InsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BuyersRoute = BuyersRouteImport.update({
   id: '/buyers',
   path: '/buyers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -43,14 +61,20 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/buyers': typeof BuyersRoute
+  '/contact': typeof ContactRoute
+  '/insights': typeof InsightsRoute
   '/request-quote': typeof RequestQuoteRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/buyers': typeof BuyersRoute
+  '/contact': typeof ContactRoute
+  '/insights': typeof InsightsRoute
   '/request-quote': typeof RequestQuoteRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
@@ -58,22 +82,53 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/buyers': typeof BuyersRoute
+  '/contact': typeof ContactRoute
+  '/insights': typeof InsightsRoute
   '/request-quote': typeof RequestQuoteRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/buyers' | '/request-quote' | '/suppliers' | '/supply'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/buyers'
+    | '/contact'
+    | '/insights'
+    | '/request-quote'
+    | '/suppliers'
+    | '/supply'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/buyers' | '/request-quote' | '/suppliers' | '/supply'
-  id: '__root__' | '/' | '/buyers' | '/request-quote' | '/suppliers' | '/supply'
+  to:
+    | '/'
+    | '/about'
+    | '/buyers'
+    | '/contact'
+    | '/insights'
+    | '/request-quote'
+    | '/suppliers'
+    | '/supply'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/buyers'
+    | '/contact'
+    | '/insights'
+    | '/request-quote'
+    | '/suppliers'
+    | '/supply'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   BuyersRoute: typeof BuyersRoute
+  ContactRoute: typeof ContactRoute
+  InsightsRoute: typeof InsightsRoute
   RequestQuoteRoute: typeof RequestQuoteRoute
   SuppliersRoute: typeof SuppliersRoute
   SupplyRoute: typeof SupplyRoute
@@ -102,11 +157,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RequestQuoteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/insights': {
+      id: '/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof InsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/buyers': {
       id: '/buyers'
       path: '/buyers'
       fullPath: '/buyers'
       preLoaderRoute: typeof BuyersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -121,7 +197,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   BuyersRoute: BuyersRoute,
+  ContactRoute: ContactRoute,
+  InsightsRoute: InsightsRoute,
   RequestQuoteRoute: RequestQuoteRoute,
   SuppliersRoute: SuppliersRoute,
   SupplyRoute: SupplyRoute,
