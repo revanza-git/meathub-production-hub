@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import logo from "@/assets/meatlink-logo.jpg.asset.json";
+import mark from "@/assets/meatlink-mark.png.asset.json";
 
 const NAV = [
   { to: "/buyers", label: "For Buyers" },
@@ -15,19 +15,16 @@ export function Wordmark({ tone = "light" }: { tone?: "light" | "dark" }) {
   return (
     <Link to="/" className="flex items-center gap-3" aria-label="Meatlink.id home">
       <img
-        src={logo.url}
-        alt="Meatlink.id"
-        width={48}
-        height={48}
-        className={`h-9 w-9 object-cover object-center mix-blend-multiply ${
-          tone === "dark" ? "invert" : ""
-        }`}
-        style={{ objectPosition: "50% 32%", transform: "scale(2.6)" }}
+        src={mark.url}
+        alt=""
+        width={199}
+        height={160}
+        className={`h-10 w-auto ${tone === "dark" ? "invert" : ""}`}
       />
       <span className="sr-only">Meatlink.id</span>
       <span aria-hidden="true" className="leading-none">
         <span
-          className={`block text-lg font-semibold tracking-[0.22em] ${
+          className={`block text-base font-semibold tracking-[0.22em] ${
             tone === "dark" ? "text-bone" : "text-ink"
           }`}
         >
@@ -35,8 +32,8 @@ export function Wordmark({ tone = "light" }: { tone?: "light" | "dark" }) {
           <span className="align-super text-[0.5rem] tracking-normal">.ID</span>
         </span>
         <span
-          className={`mt-1 block text-[0.5rem] tracking-[0.2em] ${
-            tone === "dark" ? "text-bone/60" : "text-ash"
+          className={`mt-1.5 block text-[0.5rem] tracking-[0.18em] ${
+            tone === "dark" ? "text-bone/55" : "text-ash"
           }`}
         >
           BETTER MEAT | BETTER CONNECTIONS
