@@ -9,18 +9,38 @@ const required = (label: string, max = 160) =>
     .min(1, { message: `${label} is required` })
     .max(max, { message: `${label} must be under ${max} characters` });
 
-export const rfqSchema = z.object({
-  company_name: required("Company name"),
-  contact_name: required("Contact name"),
-  whatsapp: required("WhatsApp number", 32),
-  email: text(255).email({ message: "Enter a valid email" }).optional().or(z.literal("")),
-  delivery_location: required("Delivery location"),
+export const rfqItemSchema = z.object({
   category: text(60).optional().or(z.literal("")),
   product_cut: required("Product / cut"),
   origin_preference: text(120).optional().or(z.literal("")),
   brand_preference: text(120).optional().or(z.literal("")),
   grade: text(120).optional().or(z.literal("")),
   volume: required("Volume", 120),
+  notes: text(300).optional().or(z.literal("")),
+});
+
+export type RfqItem = z.infer<typeof rfqItemSchema>;
+
+export const emptyRfqItem = (): RfqItem => ({
+  category: "",
+  product_cut: "",
+  origin_preference: "",
+  brand_preference: "",
+  grade: "",
+  volume: "",
+  notes: "",
+});
+
+export const rfqSchema = z.object({
+  company_name: required("Company name"),
+  contact_name: required("Contact name"),
+  whatsapp: required("WhatsApp number", 32),
+  email: text(255).email({ message: "Enter a valid email" }).optional().or(z.literal("")),
+  delivery_location: required("Delivery location"),
+  items: z
+    .array(rfqItemSchema)
+    .min(1, { message: "Add at least one item" })
+    .max(30, { message: "Maximum 30 items per request" }),
   purchase_frequency: text(120).optional().or(z.literal("")),
   current_supplier: text(160).optional().or(z.literal("")),
   current_price: text(80).optional().or(z.literal("")),
