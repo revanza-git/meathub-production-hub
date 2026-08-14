@@ -90,7 +90,9 @@ export type Database = {
           brand: string
           condition: string | null
           created_at: string
+          featured_rank: number | null
           id: string
+          image_url: string | null
           is_active: boolean
           name: string
           notes: string | null
@@ -105,7 +107,9 @@ export type Database = {
           brand?: string
           condition?: string | null
           created_at?: string
+          featured_rank?: number | null
           id?: string
+          image_url?: string | null
           is_active?: boolean
           name: string
           notes?: string | null
@@ -120,7 +124,9 @@ export type Database = {
           brand?: string
           condition?: string | null
           created_at?: string
+          featured_rank?: number | null
           id?: string
+          image_url?: string | null
           is_active?: boolean
           name?: string
           notes?: string | null

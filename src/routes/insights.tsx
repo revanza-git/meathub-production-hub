@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, SiteLayout } from "@/components/site/site-layout";
-import { RECENTLY_SOURCED } from "@/lib/meatlink/config";
+import { resolveFeatureImage, useFeaturedInventory } from "@/lib/meatlink/featured";
+import { formatIdr } from "@/lib/meatlink/inventory";
 
 export const Route = createFileRoute("/insights")({
   head: () => ({
@@ -37,6 +38,7 @@ const NOTES = [
 ];
 
 function InsightsPage() {
+  const { data: featured = [] } = useFeaturedInventory(5);
   return (
     <SiteLayout>
       <PageHero
@@ -58,19 +60,44 @@ function InsightsPage() {
           </div>
 
           <p className="eyebrow mt-20 text-crimson">Recently sourced</p>
-          <div className="mt-10 divide-y divide-line border border-line bg-card">
-            {RECENTLY_SOURCED.map((item) => (
-              <div
-                key={item.product}
-                className="grid gap-2 p-6 sm:grid-cols-4 sm:items-center sm:gap-6"
-              >
-                <span className="font-display text-lg">{item.product}</span>
-                <span className="text-xs text-ash">{item.location}</span>
-                <span className="text-xs text-ash">{item.volume}</span>
-                <span className="eyebrow text-crimson sm:text-right">{item.status}</span>
-              </div>
+          <div className="mt-10 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
+            {featured.map((item) => (
+              <article key={item.id} className="bg-card">
+                <img
+                  src={resolveFeatureImage(item.image_url)}
+                  alt={item.name}
+                  loading="lazy"
+                  width={1200}
+                  height={900}
+                  className="h-48 w-full object-cover"
+                />
+                <div className="p-6">
+                  <p className="eyebrow text-crimson">{item.origin}</p>
+                  <h3 className="mt-3 font-display text-xl leading-snug">{item.name}</h3>
+                  <dl className="mt-5 space-y-2 text-xs text-ash">
+                    <div className="flex justify-between border-b border-line pb-2">
+                      <dt>Brand</dt>
+                      <dd className="text-ink">{item.brand || "Meatlink select"}</dd>
+                    </div>
+                    <div className="flex justify-between border-b border-line pb-2">
+                      <dt>Average weight</dt>
+                      <dd className="text-ink">{item.avg_weight_text ?? "On request"}</dd>
+                    </div>
+                    <div className="flex justify-between pt-1">
+                      <dt>Indicative price</dt>
+                      <dd className="text-crimson">{formatIdr(item.sale_price_idr)} / kg</dd>
+                    </div>
+                  </dl>
+                </div>
+              </article>
             ))}
+            {featured.length === 0 ? (
+              <p className="bg-card p-6 text-sm text-ash">
+                No featured stock published yet — check back shortly.
+              </p>
+            ) : null}
           </div>
+
 
           <div className="mt-14">
             <Link
