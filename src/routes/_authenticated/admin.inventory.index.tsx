@@ -444,8 +444,8 @@ function InventoryBody() {
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-ash">
           <p>
             Showing {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)} of {total} items
-            {formatQty(0) ? "" : null}
           </p>
+
           <div className="flex items-center gap-3">
             <button
               type="button"
