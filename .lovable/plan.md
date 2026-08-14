@@ -10,7 +10,7 @@ Situs sekarang murni publik (RFQ + supplier form, tanpa login). BRD ini menambah
 | Order | Form RFQ anonim | Buyer submit order (produk teks bebas, qty kg, sistem pembayaran) |
 | Status | `quote_requests.status` manual | Pending → Confirmed / On Hold / Rejected → Delivered |
 | Katalog | Tidak ada | Vendor kelola produk (4 kategori) + qty stok |
-| Stok | — | Sinkron dari Google Sheet (link CSV publik), tarik berkala + tombol sync manual |
+| Stok | — | Disimpan di database Postgres, diubah vendor lewat UI (opsional impor CSV) |
 | Admin | Tidak ada | Tabel order terpusat, filter, ubah status, matching vendor |
 | Buyer lihat stok | — | Agregat qty per produk, **tanpa nama vendor** |
 
