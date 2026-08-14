@@ -20,6 +20,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedAppOrdersIndexRouteImport } from './routes/_authenticated/app.orders.index'
+import { Route as AuthenticatedAppOrdersNewRouteImport } from './routes/_authenticated/app.orders.new'
 
 const SupplyRoute = SupplyRouteImport.update({
   id: '/supply',
@@ -76,6 +77,12 @@ const AuthenticatedAppOrdersIndexRoute =
     path: '/app/orders/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAppOrdersNewRoute =
+  AuthenticatedAppOrdersNewRouteImport.update({
+    id: '/app/orders/new',
+    path: '/app/orders/new',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/request-quote': typeof RequestQuoteRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
   '/app/orders/': typeof AuthenticatedAppOrdersIndexRoute
 }
 export interface FileRoutesByTo {
@@ -99,6 +107,7 @@ export interface FileRoutesByTo {
   '/request-quote': typeof RequestQuoteRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
   '/app/orders': typeof AuthenticatedAppOrdersIndexRoute
 }
 export interface FileRoutesById {
@@ -113,6 +122,7 @@ export interface FileRoutesById {
   '/request-quote': typeof RequestQuoteRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/_authenticated/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
   '/_authenticated/app/orders/': typeof AuthenticatedAppOrdersIndexRoute
 }
 export interface FileRouteTypes {
@@ -127,6 +137,7 @@ export interface FileRouteTypes {
     | '/request-quote'
     | '/suppliers'
     | '/supply'
+    | '/app/orders/new'
     | '/app/orders/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -139,6 +150,7 @@ export interface FileRouteTypes {
     | '/request-quote'
     | '/suppliers'
     | '/supply'
+    | '/app/orders/new'
     | '/app/orders'
   id:
     | '__root__'
@@ -152,6 +164,7 @@ export interface FileRouteTypes {
     | '/request-quote'
     | '/suppliers'
     | '/supply'
+    | '/_authenticated/app/orders/new'
     | '/_authenticated/app/orders/'
   fileRoutesById: FileRoutesById
 }
@@ -247,14 +260,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppOrdersIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/orders/new': {
+      id: '/_authenticated/app/orders/new'
+      path: '/app/orders/new'
+      fullPath: '/app/orders/new'
+      preLoaderRoute: typeof AuthenticatedAppOrdersNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAppOrdersNewRoute: typeof AuthenticatedAppOrdersNewRoute
   AuthenticatedAppOrdersIndexRoute: typeof AuthenticatedAppOrdersIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAppOrdersNewRoute: AuthenticatedAppOrdersNewRoute,
   AuthenticatedAppOrdersIndexRoute: AuthenticatedAppOrdersIndexRoute,
 }
 
