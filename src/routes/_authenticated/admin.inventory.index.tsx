@@ -14,6 +14,8 @@ import {
   ORIGINS,
   PAGE_SIZES,
   formatIdr,
+  publicPrice,
+  defaultMarkup,
   weightToKg,
   type InventoryItem,
 } from "@/lib/meatlink/inventory";
@@ -369,6 +371,14 @@ function InventoryBody() {
                 onChange={(e) => setForm({ ...form, sale_price_idr: e.target.value })}
               />
             </Field>
+            <Field label="Markup (IDR / kg)">
+              <TextInput
+                inputMode="numeric"
+                placeholder={String(defaultMarkup(form.name, form.brand))}
+                value={form.markup_idr}
+                onChange={(e) => setForm({ ...form, markup_idr: e.target.value })}
+              />
+            </Field>
             <Field label="Quantity on hand (kg)">
               <TextInput
                 inputMode="decimal"
@@ -395,7 +405,7 @@ function InventoryBody() {
         <Panel className="p-10 text-center text-sm text-ash">No inventory matches these filters.</Panel>
       ) : (
         <Panel className="overflow-x-auto">
-          <table className="w-full min-w-[980px] text-left text-sm">
+          <table className="w-full min-w-[1180px] text-left text-sm">
             <thead className="border-b border-line text-xs uppercase tracking-[0.16em] text-ash">
               <tr>
                 <th className="px-4 py-3">Product</th>
