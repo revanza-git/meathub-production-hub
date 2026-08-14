@@ -3006,6 +3006,7 @@ export type Database = {
       }
       ml_market_snapshot: { Args: { _days?: number }; Returns: Json }
       ml_next_order_no: { Args: never; Returns: string }
+      ml_normalise_region: { Args: { _raw: string }; Returns: string }
       ml_public_featured: {
         Args: { _limit?: number }
         Returns: {
