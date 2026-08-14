@@ -439,7 +439,38 @@ function InventoryBody() {
           </table>
         </Panel>
       )}
+
+      {total > 0 ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-ash">
+          <p>
+            Showing {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)} of {total} items
+            {formatQty(0) ? "" : null}
+          </p>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="eyebrow border border-line px-4 py-2 text-ink disabled:opacity-40"
+            >
+              Previous
+            </button>
+            <span>
+              Page {page} / {pageCount}
+            </span>
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+              disabled={page >= pageCount}
+              className="eyebrow border border-line px-4 py-2 text-ink disabled:opacity-40"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
+
   );
 }
 
