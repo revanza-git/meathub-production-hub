@@ -66,6 +66,7 @@ function InventoryBody() {
   const [search, setSearch] = useState("");
   const [origin, setOrigin] = useState("");
   const [condition, setCondition] = useState("");
+  const [featuredFilter, setFeaturedFilter] = useState<"all" | "featured" | "not-featured">("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [showForm, setShowForm] = useState(false);
@@ -79,7 +80,7 @@ function InventoryBody() {
 
   useEffect(() => {
     setPage(1);
-  }, [search, origin, condition, pageSize]);
+  }, [search, origin, condition, featuredFilter, pageSize]);
 
   const { data: threshold = DEFAULT_LOW_STOCK_KG } = useQuery({
     queryKey: ["admin-settings", LOW_STOCK_KEY],
@@ -104,12 +105,14 @@ function InventoryBody() {
   });
 
   const { data: result, isLoading } = useQuery({
-    queryKey: ["admin-inventory", { search, origin, condition, page, pageSize }],
+    queryKey: ["admin-inventory", { search, origin, condition, featuredFilter, page, pageSize }],
     placeholderData: keepPreviousData,
     queryFn: async () => {
       let q = supabase.from("admin_inventory").select("*", { count: "exact" });
       if (origin) q = q.eq("origin", origin);
       if (condition) q = q.eq("condition", condition);
+      if (featuredFilter === "featured") q = q.not("featured_rank", "is", null);
+      if (featuredFilter === "not-featured") q = q.is("featured_rank", null);
       if (search) {
         const term = search.replace(/[%,]/g, " ");
         q = q.or(`name.ilike.%${term}%,brand.ilike.%${term}%`);
@@ -280,6 +283,16 @@ function InventoryBody() {
               {CONDITION_LABEL[c]}
             </option>
           ))}
+        </select>
+        <select
+          value={featuredFilter}
+          onChange={(e) => setFeaturedFilter(e.target.value as typeof featuredFilter)}
+          aria-label="Filter by featured status"
+          className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
+        >
+          <option value="all">All items</option>
+          <option value="featured">Featured only</option>
+          <option value="not-featured">Not featured</option>
         </select>
         <select
           value={pageSize}
