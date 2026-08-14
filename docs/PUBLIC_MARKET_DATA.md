@@ -39,3 +39,19 @@ Registration and documentation:
 
 If one upstream API is unavailable or unconfigured, the tool returns that source with
 `status: "error"` while preserving successful data from the other source.
+
+## FAOSTAT CDN 403 handling
+
+FAOSTAT sits behind a CDN/WAF that blocks anonymous server-to-server calls (headerless edge
+requests) with an HTML "Request blocked" page, even when the bearer token is valid. The tool
+therefore:
+
+- sends a non-secret `User-Agent` and `Accept: application/json` on every FAOSTAT call;
+- mints a fresh short-lived token immediately before each retrieval (never cached or persisted);
+- refreshes the token once and retries once on a JSON `401`;
+- retries only transient failures (`429/502/503/504` and the HTML CDN `403`) with at most two
+  attempts, exponential backoff plus jitter, honouring `Retry-After`;
+- splits retrieval into per-country batches with concurrency 2, then merges and deduplicates;
+- records sanitized diagnostics only (provider, status, content type, duration, attempt, request id);
+- returns a short sanitized provider error (e.g. `code: "UPSTREAM_BLOCKED"`), never the HTML page,
+  while `Promise.allSettled` keeps USDA results available.

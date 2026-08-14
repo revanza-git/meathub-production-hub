@@ -1,5 +1,12 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
+import {
+  UpstreamError,
+  currentSecretValues,
+  requestJson,
+  toSanitisedError,
+  type ProviderDiag,
+} from "./public-market-http";
 
 type RuntimeGlobals = typeof globalThis & {
   Deno?: { env?: { get?: (name: string) => string | undefined } };
@@ -13,6 +20,10 @@ const USDA_BASE_URL = "https://api.fas.usda.gov/api/psd";
 const FAOSTAT_BEEF_ITEM_CODE = "867";
 const FAOSTAT_PRODUCTION_FILTER_CODE = "2510";
 const USDA_BEEF_COMMODITY_CODE = "0111000";
+
+// FAOSTAT's CDN blocks server-side requests that arrive without a browser-like
+// identity, so every call sends an explicit, non-secret User-Agent.
+const USER_AGENT = "Meatlink-MCP/1.0 (+https://www.meatlink.id; market-data)";
 
 const COUNTRIES = {
   Indonesia: { faostatAreaCode: "101", usdaCountryCode: "ID" },
@@ -36,25 +47,10 @@ const USDA_UNITS: Record<number, string> = {
   7: "1,000 metric tonnes carcass-weight equivalent",
 };
 
-function runtimeEnv(name: string): string | undefined {
+export function runtimeEnv(name: string): string | undefined {
   const runtime = globalThis as RuntimeGlobals;
   const value = runtime.Deno?.env?.get?.(name) ?? runtime.process?.env?.[name];
   return value?.trim() || undefined;
-}
-
-async function fetchJson(url: string, init?: RequestInit): Promise<unknown> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 20_000);
-  try {
-    const response = await fetch(url, { ...init, signal: controller.signal });
-    if (!response.ok) {
-      const details = (await response.text()).slice(0, 500);
-      throw new Error(`HTTP ${response.status}${details ? `: ${details}` : ""}`);
-    }
-    return await response.json();
-  } finally {
-    clearTimeout(timeout);
-  }
 }
 
 function asRecord(value: unknown): JsonRecord | undefined {
@@ -74,51 +70,51 @@ function firstField(record: JsonRecord, names: string[]): unknown {
   return null;
 }
 
-async function faostatToken(): Promise<string> {
-  const configuredToken = runtimeEnv("FAOSTAT_API_TOKEN");
+export type Deps = {
+  env?: (name: string) => string | undefined;
+  fetchImpl?: typeof fetch;
+  sleep?: (ms: number) => Promise<void>;
+  random?: () => number;
+};
+
+/** Always mints a fresh short-lived token; tokens are never cached or persisted. */
+async function faostatToken(deps: Required<Pick<Deps, "env">> & Deps, diagnostics: ProviderDiag[]) {
+  const configuredToken = deps.env("FAOSTAT_API_TOKEN");
   if (configuredToken) return configuredToken;
 
-  const username = runtimeEnv("FAOSTAT_USERNAME");
-  const password = runtimeEnv("FAOSTAT_PASSWORD");
+  const username = deps.env("FAOSTAT_USERNAME");
+  const password = deps.env("FAOSTAT_PASSWORD");
   if (!username || !password) {
-    throw new Error(
-      "FAOSTAT is not configured. Set FAOSTAT_USERNAME and FAOSTAT_PASSWORD, or a temporary FAOSTAT_API_TOKEN.",
-    );
+    throw new UpstreamError("NOT_CONFIGURED", "FAOSTAT is not configured on the server.");
   }
 
-  const payload = await fetchJson(`${FAOSTAT_BASE_URL}/auth/login`, {
-    method: "POST",
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ username, password }),
+  const payload = await requestJson(`${FAOSTAT_BASE_URL}/auth/login`, {
+    provider: "FAOSTAT auth",
+    init: {
+      method: "POST",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+        "user-agent": USER_AGENT,
+      },
+      body: new URLSearchParams({ username, password }),
+    },
+    maxRetries: 1,
+    diagnostics,
+    secrets: currentSecretValues(deps.env),
+    fetchImpl: deps.fetchImpl,
+    sleep: deps.sleep,
+    random: deps.random,
   });
+
   const token = asRecord(asRecord(payload)?.AuthenticationResult)?.AccessToken;
   if (typeof token !== "string" || !token) {
-    throw new Error("FAOSTAT authentication succeeded but returned no access token.");
+    throw new UpstreamError("UPSTREAM_AUTH", "FAOSTAT authentication returned no access token.");
   }
   return token;
 }
 
-async function getFaostatData(countries: CountryName[], years: number[]) {
-  const token = await faostatToken();
-  const params = new URLSearchParams({
-    area: countries.map((country) => COUNTRIES[country].faostatAreaCode).join(","),
-    element: FAOSTAT_PRODUCTION_FILTER_CODE,
-    item: FAOSTAT_BEEF_ITEM_CODE,
-    year: years.join(","),
-    show_codes: "true",
-    show_unit: "true",
-    show_flags: "true",
-    null_values: "false",
-    limit: "-1",
-    output_type: "objects",
-  });
-  const payload = asRecord(
-    await fetchJson(`${FAOSTAT_BASE_URL}/en/data/QCL?${params}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    }),
-  );
-
-  return asRecords(payload?.data).map((row) => ({
+function normaliseFaostatRows(payload: unknown) {
+  return asRecords(asRecord(payload)?.data).map((row) => ({
     country: firstField(row, ["Area", "area"]),
     year: firstField(row, ["Year", "year"]),
     item: firstField(row, ["Item", "item"]),
@@ -129,17 +125,104 @@ async function getFaostatData(countries: CountryName[], years: number[]) {
   }));
 }
 
-async function getUsdaData(countries: CountryName[], marketYear: number) {
-  const apiKey = runtimeEnv("USDA_FAS_API_KEY");
-  if (!apiKey) {
-    throw new Error("USDA FAS is not configured. Set the USDA_FAS_API_KEY server secret.");
+export async function getFaostatData(
+  countries: CountryName[],
+  years: number[],
+  deps: Deps = {},
+  diagnostics: ProviderDiag[] = [],
+) {
+  const env = deps.env ?? runtimeEnv;
+  let token = await faostatToken({ ...deps, env }, diagnostics);
+  const secrets = currentSecretValues(env);
+
+  const buildInit = (bearer: string): RequestInit => ({
+    headers: {
+      Authorization: `Bearer ${bearer}`,
+      Accept: "application/json",
+      "user-agent": USER_AGENT,
+    },
+  });
+
+  // Small per-country batches: large combined queries are the ones FAOSTAT's
+  // CDN throttles. Concurrency is capped at 2.
+  const batches = countries.map((country) => ({ country, years }));
+  const rows: ReturnType<typeof normaliseFaostatRows> = [];
+  const concurrency = 2;
+
+  for (let index = 0; index < batches.length; index += concurrency) {
+    const slice = batches.slice(index, index + concurrency);
+    const results = await Promise.all(
+      slice.map(async ({ country, years: batchYears }) => {
+        const params = new URLSearchParams({
+          area: COUNTRIES[country].faostatAreaCode,
+          element: FAOSTAT_PRODUCTION_FILTER_CODE,
+          item: FAOSTAT_BEEF_ITEM_CODE,
+          year: batchYears.join(","),
+          show_codes: "true",
+          show_unit: "true",
+          show_flags: "true",
+          null_values: "false",
+          limit: "-1",
+          output_type: "objects",
+        });
+        return requestJson(`${FAOSTAT_BASE_URL}/en/data/QCL?${params.toString()}`, {
+          provider: "FAOSTAT",
+          init: buildInit(token),
+          maxRetries: 2,
+          diagnostics,
+          secrets,
+          fetchImpl: deps.fetchImpl,
+          sleep: deps.sleep,
+          random: deps.random,
+          onAuthRefresh: async () => {
+            token = await faostatToken({ ...deps, env }, diagnostics);
+            return buildInit(token);
+          },
+        });
+      }),
+    );
+    for (const payload of results) rows.push(...normaliseFaostatRows(payload));
   }
+
+  // Deduplicate merged batches.
+  const seen = new Set<string>();
+  return rows.filter((row) => {
+    const key = `${String(row.country)}|${String(row.year)}|${String(row.element)}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+export async function getUsdaData(
+  countries: CountryName[],
+  marketYear: number,
+  deps: Deps = {},
+  diagnostics: ProviderDiag[] = [],
+) {
+  const env = deps.env ?? runtimeEnv;
+  const apiKey = env("USDA_FAS_API_KEY");
+  if (!apiKey) {
+    throw new UpstreamError("NOT_CONFIGURED", "USDA FAS is not configured on the server.");
+  }
+  const secrets = currentSecretValues(env);
 
   const responses = await Promise.all(
     countries.map(async (country) => {
       const countryCode = COUNTRIES[country].usdaCountryCode;
       const url = `${USDA_BASE_URL}/commodity/${USDA_BEEF_COMMODITY_CODE}/country/${countryCode}/year/${marketYear}`;
-      const payload = await fetchJson(url, { headers: { "X-Api-Key": apiKey } });
+      const payload = await requestJson(url, {
+        provider: "USDA",
+        init: {
+          headers: { "X-Api-Key": apiKey, Accept: "application/json", "user-agent": USER_AGENT },
+        },
+        maxRetries: 2,
+        diagnostics,
+        secrets,
+        fetchImpl: deps.fetchImpl,
+        sleep: deps.sleep,
+        random: deps.random,
+      });
       return asRecords(payload)
         .filter((row) => typeof row.attributeId === "number" && USDA_ATTRIBUTES[row.attributeId])
         .map((row) => ({
@@ -155,6 +238,66 @@ async function getUsdaData(countries: CountryName[], marketYear: number) {
     }),
   );
   return responses.flat();
+}
+
+export async function buildPublicBeefMarketData(
+  args: { countries?: CountryName[]; market_year?: number; history_years?: number },
+  deps: Deps = {},
+) {
+  const env = deps.env ?? runtimeEnv;
+  const secrets = currentSecretValues(env);
+  const selectedCountries = (args.countries ?? [
+    "Indonesia",
+    "Australia",
+    "United States",
+    "Canada",
+    "Japan",
+    "New Zealand",
+  ]) as CountryName[];
+  const currentYear = new Date().getUTCFullYear();
+  const usdaMarketYear = args.market_year ?? currentYear - 1;
+  const historyLength = args.history_years ?? 8;
+  const faostatYears = Array.from(
+    { length: historyLength },
+    (_, index) => currentYear - historyLength - 1 + index,
+  );
+
+  const diagnostics: ProviderDiag[] = [];
+  const [faostat, usda] = await Promise.allSettled([
+    getFaostatData(selectedCountries, faostatYears, { ...deps, env }, diagnostics),
+    getUsdaData(selectedCountries, usdaMarketYear, { ...deps, env }, diagnostics),
+  ]);
+
+  const faostatError =
+    faostat.status === "rejected" ? toSanitisedError(faostat.reason, secrets) : null;
+  const usdaError = usda.status === "rejected" ? toSanitisedError(usda.reason, secrets) : null;
+
+  return {
+    generated_at: new Date().toISOString(),
+    disclosure: "Public external statistics only. No Meatlink internal data is included.",
+    faostat: {
+      status: faostat.status === "fulfilled" ? "ok" : "error",
+      source: "FAOSTAT",
+      dataset: "QCL — Production: Crops and livestock products",
+      item: "Meat of cattle with the bone; fresh or chilled (item 867)",
+      element: "Production quantity (filter code 2510)",
+      source_url: "https://www.fao.org/faostat/en/#data/QCL",
+      records: faostat.status === "fulfilled" ? faostat.value : [],
+      ...(faostatError ?? {}),
+      error: faostatError ? faostatError.message : null,
+    },
+    usda: {
+      status: usda.status === "fulfilled" ? "ok" : "error",
+      source: "USDA Foreign Agricultural Service PSD",
+      commodity: "Beef and Veal (0111000)",
+      market_year: usdaMarketYear,
+      source_url: "https://apps.fas.usda.gov/opendatawebV2/",
+      records: usda.status === "fulfilled" ? usda.value : [],
+      ...(usdaError ?? {}),
+      error: usdaError ? usdaError.message : null,
+    },
+    diagnostics: diagnostics.map((entry) => ({ ...entry })),
+  };
 }
 
 export default defineTool({
@@ -192,50 +335,11 @@ export default defineTool({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
 
-    const selectedCountries = (countries ?? [
-      "Indonesia",
-      "Australia",
-      "United States",
-      "Canada",
-      "Japan",
-      "New Zealand",
-    ]) as CountryName[];
-    const currentYear = new Date().getUTCFullYear();
-    const usdaMarketYear = market_year ?? currentYear - 1;
-    const historyLength = history_years ?? 8;
-    const faostatYears = Array.from(
-      { length: historyLength },
-      (_, index) => currentYear - historyLength - 1 + index,
-    );
-
-    const [faostat, usda] = await Promise.allSettled([
-      getFaostatData(selectedCountries, faostatYears),
-      getUsdaData(selectedCountries, usdaMarketYear),
-    ]);
-
-    const result = {
-      generated_at: new Date().toISOString(),
-      disclosure: "Public external statistics only. No Meatlink internal data is included.",
-      faostat: {
-        status: faostat.status === "fulfilled" ? "ok" : "error",
-        source: "FAOSTAT",
-        dataset: "QCL — Production: Crops and livestock products",
-        item: "Meat of cattle with the bone; fresh or chilled (item 867)",
-        element: "Production quantity (filter code 2510)",
-        source_url: "https://www.fao.org/faostat/en/#data/QCL",
-        records: faostat.status === "fulfilled" ? faostat.value : [],
-        error: faostat.status === "rejected" ? String(faostat.reason) : null,
-      },
-      usda: {
-        status: usda.status === "fulfilled" ? "ok" : "error",
-        source: "USDA Foreign Agricultural Service PSD",
-        commodity: "Beef and Veal (0111000)",
-        market_year: usdaMarketYear,
-        source_url: "https://apps.fas.usda.gov/opendatawebV2/",
-        records: usda.status === "fulfilled" ? usda.value : [],
-        error: usda.status === "rejected" ? String(usda.reason) : null,
-      },
-    };
+    const result = await buildPublicBeefMarketData({
+      countries: countries as CountryName[] | undefined,
+      market_year,
+      history_years,
+    });
 
     return {
       content: [{ type: "text", text: JSON.stringify(result) }],
