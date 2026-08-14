@@ -247,6 +247,18 @@ function InventoryBody() {
             </option>
           ))}
         </select>
+        <select
+          value={pageSize}
+          onChange={(e) => setPageSize(Number(e.target.value))}
+          aria-label="Rows per page"
+          className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
+        >
+          {PAGE_SIZES.map((n) => (
+            <option key={n} value={n}>
+              {n} / page
+            </option>
+          ))}
+        </select>
         <button
           type="button"
           onClick={() => setShowForm((v) => !v)}
@@ -255,6 +267,7 @@ function InventoryBody() {
           {showForm ? "Close" : "Add item"}
         </button>
       </div>
+
 
       {showForm ? (
         <Panel className="p-6">
