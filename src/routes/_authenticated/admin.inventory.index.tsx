@@ -356,8 +356,9 @@ function InventoryBody() {
                 <th className="px-4 py-3">Avg wt</th>
                 <th className="px-4 py-3">Price / kg</th>
                 <th className="px-4 py-3">Qty (kg)</th>
+                <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3" />
-              </tr>
+
             </thead>
             <tbody>
               {rows.map((item) => (
