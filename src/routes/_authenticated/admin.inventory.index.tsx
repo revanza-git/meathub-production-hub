@@ -13,7 +13,6 @@ import {
   ORIGINS,
   PAGE_SIZES,
   formatIdr,
-  formatQty,
   weightToKg,
   type InventoryItem,
 } from "@/lib/meatlink/inventory";
