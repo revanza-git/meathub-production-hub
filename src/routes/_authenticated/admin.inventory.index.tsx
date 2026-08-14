@@ -417,6 +417,40 @@ function InventoryBody() {
                       <span className="eyebrow inline-block bg-ink/5 px-2 py-1 text-ash">In stock</span>
                     )}
                   </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={item.featured_rank ?? ""}
+                        aria-label={`Featured position for ${item.name}`}
+                        onChange={(e) =>
+                          void setFeatured(item, e.target.value ? Number(e.target.value) : null)
+                        }
+                        className="border border-line bg-bone px-2 py-1 text-xs text-ink outline-none focus:border-crimson"
+                      >
+                        <option value="">Not featured</option>
+                        {FEATURED_RANKS.map((r) => (
+                          <option key={r} value={r}>
+                            Top {r}
+                          </option>
+                        ))}
+                      </select>
+                      {item.featured_rank ? (
+                        <select
+                          value={item.image_url ?? FEATURE_IMAGES[0].key}
+                          aria-label={`Photo for ${item.name}`}
+                          onChange={(e) => void patch(item.id, { image_url: e.target.value })}
+                          className="border border-line bg-bone px-2 py-1 text-xs text-ink outline-none focus:border-crimson"
+                        >
+                          {FEATURE_IMAGES.map((img) => (
+                            <option key={img.key} value={img.key}>
+                              {img.label}
+                            </option>
+                          ))}
+                        </select>
+                      ) : null}
+                    </div>
+                  </td>
+
                   <td className="whitespace-nowrap px-4 py-3 text-right">
 
                     <button
