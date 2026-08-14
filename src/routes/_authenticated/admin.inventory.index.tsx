@@ -207,10 +207,11 @@ function InventoryBody() {
   return (
     <div className="grid gap-6">
       <div className="grid gap-4 sm:grid-cols-3">
-        <Stat label="SKUs" value={String(totals.skus)} />
-        <Stat label="Stock on hand" value={formatQty(totals.kg)} />
-        <Stat label="Stock value" value={formatIdr(totals.value)} />
+        <Stat label="SKUs (filtered)" value={String(total)} />
+        <Stat label={`Needs restock (≤ ${threshold} kg)`} value={String(lowCount)} />
+        <Stat label="Page stock value" value={formatIdr(pageValue)} />
       </div>
+
 
       <div className="flex flex-wrap items-center gap-3">
         <input
