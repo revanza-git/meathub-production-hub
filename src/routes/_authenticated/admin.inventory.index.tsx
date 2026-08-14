@@ -136,6 +136,20 @@ function InventoryBody() {
     },
   });
 
+  const { data: totalValue = 0 } = useQuery({
+    queryKey: ["admin-inventory-total-value"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("admin_inventory")
+        .select("qty_on_hand_kg, sale_price_idr");
+      if (error) throw error;
+      return (data ?? []).reduce(
+        (sum, r) => sum + Number(r.qty_on_hand_kg) * Number(r.sale_price_idr),
+        0,
+      );
+    },
+  });
+
   const rows = result?.rows ?? [];
   const total = result?.count ?? 0;
   const pageCount = Math.max(1, Math.ceil(total / pageSize));
