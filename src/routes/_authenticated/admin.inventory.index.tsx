@@ -358,6 +358,8 @@ function InventoryBody() {
                 <th className="px-4 py-3">Qty (kg)</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3" />
+              </tr>
+
 
             </thead>
             <tbody>
