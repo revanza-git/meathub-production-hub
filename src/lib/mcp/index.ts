@@ -12,8 +12,8 @@ import updateMarketInsight from "./tools/update-market-insight";
 const projectRef = import.meta.env['VITE_SUPABASE_PROJECT_ID'] ?? "project-ref-unset";
 
 export default defineMcp({
-  name: "sbmeat-meat-hub-mvp",
-  title: "SBMEAT Meat Hub MVP",
+  name: "meatlink",
+  title: "Meatlink.id",
   version: "0.1.0",
   instructions:
     "Tools for Meatlink.id (SBMEAT Meat Hub). Use `list_available_stock` to see aggregated meat stock, `list_my_orders` to review the signed-in user's orders, and `create_order` to place a new order (quantity in kg, payment terms CBD/TOP7/TOP14/TOP30). For Indonesian beef market analysis: `get_market_snapshot` returns aggregated inventory, demand and order data (no PII), `list_market_insights` shows existing sourcing notes, and `create_market_insight` / `update_market_insight` write draft notes that a Meatlink admin reviews and publishes.",
