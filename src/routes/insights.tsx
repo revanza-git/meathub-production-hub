@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PageHero, SiteLayout } from "@/components/site/site-layout";
 import { resolveFeatureImage, useFeaturedInventory } from "@/lib/meatlink/featured";
 import { formatIdr } from "@/lib/meatlink/inventory";
@@ -39,6 +41,16 @@ const NOTES = [
 
 function InsightsPage() {
   const { data: featured = [] } = useFeaturedInventory(5);
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  function scrollByCards(direction: 1 | -1) {
+    const track = trackRef.current;
+    if (!track) return;
+    const card = track.firstElementChild as HTMLElement | null;
+    const step = card ? card.offsetWidth + 24 : track.clientWidth;
+    track.scrollBy({ left: step * direction, behavior: "smooth" });
+  }
+
   return (
     <SiteLayout>
       <PageHero
@@ -66,7 +78,7 @@ function InsightsPage() {
                 <button
                   type="button"
                   aria-label="Previous items"
-                  onClick={() => scrollBy(-1)}
+                  onClick={() => scrollByCards(-1)}
                   className="bg-card p-3 text-ink transition-colors hover:bg-noir hover:text-bone"
                 >
                   <ChevronLeft className="h-4 w-4" aria-hidden="true" />
@@ -74,7 +86,7 @@ function InsightsPage() {
                 <button
                   type="button"
                   aria-label="Next items"
-                  onClick={() => scrollBy(1)}
+                  onClick={() => scrollByCards(1)}
                   className="bg-card p-3 text-ink transition-colors hover:bg-noir hover:text-bone"
                 >
                   <ChevronRight className="h-4 w-4" aria-hidden="true" />
