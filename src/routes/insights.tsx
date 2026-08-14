@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PageHero, SiteLayout } from "@/components/site/site-layout";
 import { resolveFeatureImage, useFeaturedInventory } from "@/lib/meatlink/featured";
 import { formatIdr, publicPrice } from "@/lib/meatlink/inventory";
+import { FALLBACK_NOTES, usePublishedInsights } from "@/lib/meatlink/insights";
 
 export const Route = createFileRoute("/insights")({
   head: () => ({
@@ -24,23 +25,10 @@ export const Route = createFileRoute("/insights")({
   component: InsightsPage,
 });
 
-const NOTES = [
-  {
-    title: "Wagyu demand keeps moving up-grade",
-    body: "Requests for MB6+ now outnumber MB4-5 in Jakarta fine dining. Availability tightens fastest in the last two weeks of each month.",
-  },
-  {
-    title: "Lamb programmes favour fixed monthly volume",
-    body: "Buyers locking a monthly rack allocation consistently land better landed cost than ad-hoc ordering.",
-  },
-  {
-    title: "Bali sourcing rewards a second supplier",
-    body: "Freight timing makes a verified backup source the single biggest reliability upgrade for island operators.",
-  },
-];
-
 function InsightsPage() {
   const { data: featured = [] } = useFeaturedInventory(5);
+  const { data: published = [] } = usePublishedInsights(9);
+  const notes = published.length > 0 ? published : FALLBACK_NOTES;
   const trackRef = useRef<HTMLDivElement>(null);
 
   function scrollByCards(direction: 1 | -1) {
@@ -63,9 +51,13 @@ function InsightsPage() {
         <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
           <p className="eyebrow text-crimson">Sourcing notes</p>
           <div className="mt-10 grid gap-px border border-line bg-line lg:grid-cols-3">
-            {NOTES.map((n) => (
+            {notes.map((n) => (
               <article key={n.title} className="bg-card p-8">
-                <h2 className="font-display text-2xl leading-snug">{n.title}</h2>
+                <p className="eyebrow text-crimson">
+                  {n.category} · {n.region}
+                  {"period_label" in n && n.period_label ? ` · ${n.period_label}` : ""}
+                </p>
+                <h2 className="mt-3 font-display text-2xl leading-snug">{n.title}</h2>
                 <p className="mt-4 text-sm leading-relaxed text-ash">{n.body}</p>
               </article>
             ))}

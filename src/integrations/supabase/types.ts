@@ -1190,6 +1190,99 @@ export type Database = {
           },
         ]
       }
+      market_insights: {
+        Row: {
+          body: string
+          category: string
+          confidence: string
+          created_at: string
+          created_by: string | null
+          data_refs: Json
+          display_rank: number | null
+          id: string
+          period_label: string | null
+          region: string
+          source: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          category?: string
+          confidence?: string
+          created_at?: string
+          created_by?: string | null
+          data_refs?: Json
+          display_rank?: number | null
+          id?: string
+          period_label?: string | null
+          region?: string
+          source?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          category?: string
+          confidence?: string
+          created_at?: string
+          created_by?: string | null
+          data_refs?: Json
+          display_rank?: number | null
+          id?: string
+          period_label?: string | null
+          region?: string
+          source?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      market_metrics: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          metric_key: string
+          notes: string | null
+          observed_on: string
+          region: string
+          source: string
+          unit: string | null
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metric_key: string
+          notes?: string | null
+          observed_on?: string
+          region?: string
+          source?: string
+          unit?: string | null
+          updated_at?: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metric_key?: string
+          notes?: string | null
+          observed_on?: string
+          region?: string
+          source?: string
+          unit?: string | null
+          updated_at?: string
+          value?: number
+        }
+        Relationships: []
+      }
       ml_role_audit: {
         Row: {
           actor_user_id: string | null
@@ -2911,6 +3004,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      ml_market_snapshot: { Args: { _days?: number }; Returns: Json }
       ml_next_order_no: { Args: never; Returns: string }
       ml_public_stock: {
         Args: never
