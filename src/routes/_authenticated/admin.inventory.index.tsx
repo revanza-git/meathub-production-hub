@@ -66,6 +66,7 @@ function InventoryBody() {
   const [search, setSearch] = useState("");
   const [origin, setOrigin] = useState("");
   const [condition, setCondition] = useState("");
+  const [featuredFilter, setFeaturedFilter] = useState<"all" | "featured" | "not-featured">("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [showForm, setShowForm] = useState(false);
@@ -79,7 +80,7 @@ function InventoryBody() {
 
   useEffect(() => {
     setPage(1);
-  }, [search, origin, condition, pageSize]);
+  }, [search, origin, condition, featuredFilter, pageSize]);
 
   const { data: threshold = DEFAULT_LOW_STOCK_KG } = useQuery({
     queryKey: ["admin-settings", LOW_STOCK_KEY],
