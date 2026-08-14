@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, SiteLayout } from "@/components/site/site-layout";
-import { RECENTLY_SOURCED } from "@/lib/meatlink/config";
+import { resolveFeatureImage, useFeaturedInventory } from "@/lib/meatlink/featured";
+import { formatIdr } from "@/lib/meatlink/inventory";
 
 export const Route = createFileRoute("/insights")({
   head: () => ({
@@ -37,6 +38,7 @@ const NOTES = [
 ];
 
 function InsightsPage() {
+  const { data: featured = [] } = useFeaturedInventory(5);
   return (
     <SiteLayout>
       <PageHero
