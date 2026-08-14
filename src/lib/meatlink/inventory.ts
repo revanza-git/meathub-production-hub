@@ -122,21 +122,30 @@ export function normaliseRow(
     errors.push(`Row ${rowNumber}: invalid quantity`);
     return null;
   }
+  const brand = get("brand");
+  const markupRaw = get("markup_idr").replace(/[^\d.-]/g, "");
+  const markup = markupRaw === "" ? defaultMarkup(name, brand) : Number(markupRaw);
+  if (!Number.isFinite(markup) || markup < 0) {
+    errors.push(`Row ${rowNumber}: invalid markup`);
+    return null;
+  }
   const weightText = get("avg_weight") || null;
 
   return {
     row: rowNumber,
     item: {
       origin,
-      brand: get("brand"),
+      brand,
       name,
       condition,
       avg_weight_text: weightText,
       avg_weight_kg: weightToKg(weightText),
       sale_price_idr: price,
+      markup_idr: markup,
       qty_on_hand_kg: qty,
     },
   };
+
 }
 
 /** Parses simple CSV text (no quoted commas) into records keyed by header. */
