@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { Field, SelectInput, TextInput } from "@/components/site/form-kit";
@@ -8,12 +8,15 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   CONDITIONS,
   CONDITION_LABEL,
+  DEFAULT_LOW_STOCK_KG,
+  LOW_STOCK_KEY,
   ORIGINS,
+  PAGE_SIZES,
   formatIdr,
-  formatQty,
   weightToKg,
   type InventoryItem,
 } from "@/lib/meatlink/inventory";
+
 
 export const Route = createFileRoute("/_authenticated/admin/inventory/")({
   component: AdminInventoryPage,
@@ -59,52 +62,99 @@ const EMPTY_FORM = {
 function InventoryBody() {
   const qc = useQueryClient();
   const [query, setQuery] = useState("");
+  const [search, setSearch] = useState("");
   const [origin, setOrigin] = useState("");
   const [condition, setCondition] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number>(10);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [pending, setPending] = useState(false);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["admin-inventory"],
+  useEffect(() => {
+    const t = setTimeout(() => setSearch(query.trim()), 300);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, origin, condition, pageSize]);
+
+  const { data: threshold = DEFAULT_LOW_STOCK_KG } = useQuery({
+    queryKey: ["admin-settings", LOW_STOCK_KEY],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("admin_inventory")
-        .select("*")
-        .order("origin")
-        .order("name");
+        .from("admin_settings")
+        .select("value")
+        .eq("key", LOW_STOCK_KEY)
+        .maybeSingle();
       if (error) throw error;
-      return data as InventoryItem[];
+      return Number(data?.value ?? DEFAULT_LOW_STOCK_KG);
     },
   });
 
-  const rows = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return (data ?? []).filter(
-      (item) =>
-        (!origin || item.origin === origin) &&
-        (!condition || (item.condition ?? "") === condition) &&
-        (!q || `${item.name} ${item.brand}`.toLowerCase().includes(q)),
-    );
-  }, [data, query, origin, condition]);
+  const { data: origins } = useQuery({
+    queryKey: ["admin-inventory-origins"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("admin_inventory").select("origin");
+      if (error) throw error;
+      return (data ?? []).map((d) => d.origin as string);
+    },
+  });
 
-  const totals = useMemo(() => {
-    const kg = rows.reduce((sum, r) => sum + Number(r.qty_on_hand_kg), 0);
-    const value = rows.reduce(
-      (sum, r) => sum + Number(r.qty_on_hand_kg) * Number(r.sale_price_idr),
-      0,
-    );
-    return { skus: rows.length, kg, value };
-  }, [rows]);
+  const { data: result, isLoading } = useQuery({
+    queryKey: ["admin-inventory", { search, origin, condition, page, pageSize }],
+    placeholderData: keepPreviousData,
+    queryFn: async () => {
+      let q = supabase.from("admin_inventory").select("*", { count: "exact" });
+      if (origin) q = q.eq("origin", origin);
+      if (condition) q = q.eq("condition", condition);
+      if (search) {
+        const term = search.replace(/[%,]/g, " ");
+        q = q.or(`name.ilike.%${term}%,brand.ilike.%${term}%`);
+      }
+      const from = (page - 1) * pageSize;
+      const { data, error, count } = await q
+        .order("origin")
+        .order("name")
+        .range(from, from + pageSize - 1);
+      if (error) throw error;
+      return { rows: (data ?? []) as InventoryItem[], count: count ?? 0 };
+    },
+  });
+
+  const { data: lowCount = 0 } = useQuery({
+    queryKey: ["admin-inventory-low", threshold],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("admin_inventory")
+        .select("id", { count: "exact", head: true })
+        .lte("qty_on_hand_kg", threshold);
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  const rows = result?.rows ?? [];
+  const total = result?.count ?? 0;
+  const pageCount = Math.max(1, Math.ceil(total / pageSize));
+
+  const pageValue = useMemo(
+    () => rows.reduce((sum, r) => sum + Number(r.qty_on_hand_kg) * Number(r.sale_price_idr), 0),
+    [rows],
+  );
 
   const originOptions = useMemo(() => {
-    const set = new Set<string>([...ORIGINS, ...(data ?? []).map((d) => d.origin)]);
+    const set = new Set<string>([...ORIGINS, ...(origins ?? [])]);
     return [...set].sort();
-  }, [data]);
+  }, [origins]);
 
   function refresh() {
     void qc.invalidateQueries({ queryKey: ["admin-inventory"] });
+    void qc.invalidateQueries({ queryKey: ["admin-inventory-low"] });
   }
+
+
 
   async function addItem(e: React.FormEvent) {
     e.preventDefault();
@@ -156,10 +206,11 @@ function InventoryBody() {
   return (
     <div className="grid gap-6">
       <div className="grid gap-4 sm:grid-cols-3">
-        <Stat label="SKUs" value={String(totals.skus)} />
-        <Stat label="Stock on hand" value={formatQty(totals.kg)} />
-        <Stat label="Stock value" value={formatIdr(totals.value)} />
+        <Stat label="SKUs (filtered)" value={String(total)} />
+        <Stat label={`Needs restock (≤ ${threshold} kg)`} value={String(lowCount)} />
+        <Stat label="Page stock value" value={formatIdr(pageValue)} />
       </div>
+
 
       <div className="flex flex-wrap items-center gap-3">
         <input
@@ -195,6 +246,18 @@ function InventoryBody() {
             </option>
           ))}
         </select>
+        <select
+          value={pageSize}
+          onChange={(e) => setPageSize(Number(e.target.value))}
+          aria-label="Rows per page"
+          className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
+        >
+          {PAGE_SIZES.map((n) => (
+            <option key={n} value={n}>
+              {n} / page
+            </option>
+          ))}
+        </select>
         <button
           type="button"
           onClick={() => setShowForm((v) => !v)}
@@ -203,6 +266,7 @@ function InventoryBody() {
           {showForm ? "Close" : "Add item"}
         </button>
       </div>
+
 
       {showForm ? (
         <Panel className="p-6">
@@ -291,8 +355,11 @@ function InventoryBody() {
                 <th className="px-4 py-3">Avg wt</th>
                 <th className="px-4 py-3">Price / kg</th>
                 <th className="px-4 py-3">Qty (kg)</th>
+                <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3" />
               </tr>
+
+
             </thead>
             <tbody>
               {rows.map((item) => (
@@ -339,7 +406,17 @@ function InventoryBody() {
                       className="w-28 border border-line bg-bone px-2 py-1 text-sm text-ink outline-none focus:border-crimson"
                     />
                   </td>
+                  <td className="px-4 py-3">
+                    {Number(item.qty_on_hand_kg) <= threshold ? (
+                      <span className="eyebrow inline-block bg-crimson/10 px-2 py-1 text-crimson">
+                        Restock
+                      </span>
+                    ) : (
+                      <span className="eyebrow inline-block bg-ink/5 px-2 py-1 text-ash">In stock</span>
+                    )}
+                  </td>
                   <td className="whitespace-nowrap px-4 py-3 text-right">
+
                     <button
                       type="button"
                       onClick={() => void patch(item.id, { is_active: !item.is_active })}
@@ -361,7 +438,38 @@ function InventoryBody() {
           </table>
         </Panel>
       )}
+
+      {total > 0 ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-ash">
+          <p>
+            Showing {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)} of {total} items
+          </p>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="eyebrow border border-line px-4 py-2 text-ink disabled:opacity-40"
+            >
+              Previous
+            </button>
+            <span>
+              Page {page} / {pageCount}
+            </span>
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+              disabled={page >= pageCount}
+              className="eyebrow border border-line px-4 py-2 text-ink disabled:opacity-40"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
+
   );
 }
 
