@@ -37,6 +37,25 @@ export function formatQty(value: number | string) {
   return `${new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(n)} kg`;
 }
 
+/** Default markup applied per kg: A5 grade carries a higher margin. */
+export const MARKUP_A5 = 150000;
+export const MARKUP_STANDARD = 60000;
+
+export function defaultMarkup(name: string, brand = "") {
+  return /\bA5\b|A5/i.test(`${name} ${brand}`) ? MARKUP_A5 : MARKUP_STANDARD;
+}
+
+/** Public-facing price = base sale price + markup (0 stays "on request"). */
+export function publicPrice(
+  base: number | string,
+  markup: number | string | null | undefined,
+): number {
+  const b = Number(base);
+  if (!Number.isFinite(b) || b <= 0) return 0;
+  const m = Number(markup ?? 0);
+  return b + (Number.isFinite(m) ? m : 0);
+}
+
 /** Turns "8KG" / "250GR" / "4KG UP" into kilograms, or null when unparseable. */
 export function weightToKg(text: string | null | undefined): number | null {
   if (!text) return null;
