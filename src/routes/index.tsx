@@ -244,41 +244,8 @@ function HomePage() {
       </section>
 
       {/* Market insights */}
-      <section className="bg-bone">
-        <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="eyebrow text-crimson">Market insights</p>
-              <h2 className="mt-5 font-display text-3xl sm:text-4xl">Recently sourced</h2>
-            </div>
-            <Link to="/insights" className="eyebrow text-ink hover:text-crimson">
-              View all insights
-            </Link>
-          </div>
-          <div className="mt-12 grid gap-px border border-line bg-line lg:grid-cols-3">
-            {RECENTLY_SOURCED.map((item) => (
-              <article key={item.product} className="bg-card p-8">
-                <p className="eyebrow text-crimson">{item.segment}</p>
-                <h3 className="mt-4 font-display text-2xl leading-snug">{item.product}</h3>
-                <dl className="mt-6 space-y-2 text-xs text-ash">
-                  <div className="flex justify-between border-b border-line pb-2">
-                    <dt>Location</dt>
-                    <dd className="text-ink">{item.location}</dd>
-                  </div>
-                  <div className="flex justify-between border-b border-line pb-2">
-                    <dt>Volume</dt>
-                    <dd className="text-ink">{item.volume}</dd>
-                  </div>
-                  <div className="flex justify-between pt-1">
-                    <dt>Status</dt>
-                    <dd className="text-crimson">{item.status}</dd>
-                  </div>
-                </dl>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+      <FeaturedStock />
+
 
       {/* Trust */}
       <section className="bg-sand">
