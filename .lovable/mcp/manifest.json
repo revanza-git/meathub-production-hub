@@ -1,0 +1,136 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.2",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://xnqolyggsxxdwjpvzvct.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "sbmeat-meat-hub-mvp",
+      "version": "0.1.0",
+      "title": "SBMEAT Meat Hub MVP"
+    },
+    "tools": [
+      {
+        "name": "list_available_stock",
+        "title": "List available stock",
+        "description": "List aggregated meat stock available on Meatlink (product name, category, total kg). Vendor identities are not exposed.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "search": {
+              "description": "Optional text filter on the product name.",
+              "type": "string"
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_my_orders",
+        "title": "List my orders",
+        "description": "List the signed-in user's Meatlink orders with status, quantity, payment term and notes. Newest first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "status": {
+              "description": "Optional status filter.",
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "CONFIRMED",
+                "ON_HOLD",
+                "REJECTED",
+                "DELIVERED"
+              ]
+            },
+            "limit": {
+              "description": "Maximum rows to return; defaults to 20.",
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_order",
+        "title": "Create order",
+        "description": "Create a new Meatlink order for the signed-in user. Quantity is in kilograms; payment term is CBD, TOP7, TOP14 or TOP30.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "buyer_name": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Company or contact name placing the order."
+            },
+            "product_text": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Free-text product description."
+            },
+            "qty_kg": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "Quantity in kilograms."
+            },
+            "payment_term": {
+              "type": "string",
+              "enum": [
+                "CBD",
+                "TOP7",
+                "TOP14",
+                "TOP30"
+              ],
+              "description": "Payment term."
+            },
+            "delivery_location": {
+              "description": "Delivery city or address.",
+              "type": "string"
+            },
+            "needed_by": {
+              "description": "Required date, ISO format YYYY-MM-DD.",
+              "type": "string"
+            },
+            "buyer_notes": {
+              "description": "Extra notes for the Meatlink team.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "buyer_name",
+            "product_text",
+            "qty_kg",
+            "payment_term"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

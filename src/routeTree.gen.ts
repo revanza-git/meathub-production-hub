@@ -28,6 +28,7 @@ import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminStockRouteImport } from './routes/_authenticated/admin.stock'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as AuthenticatedAdminRfqRouteImport } from './routes/_authenticated/admin.rfq'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAppOrdersIndexRouteImport } from './routes/_authenticated/app.orders.index'
 import { Route as AuthenticatedAdminOrdersIndexRouteImport } from './routes/_authenticated/admin.orders.index'
 import { Route as AuthenticatedAdminInventoryIndexRouteImport } from './routes/_authenticated/admin.inventory.index'
@@ -133,6 +134,11 @@ const AuthenticatedAdminRfqRoute = AuthenticatedAdminRfqRouteImport.update({
   path: '/admin/rfq',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAppOrdersIndexRoute =
   AuthenticatedAppOrdersIndexRouteImport.update({
     id: '/app/orders/',
@@ -187,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/rfq': typeof AuthenticatedAdminRfqRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/stock': typeof AuthenticatedAdminStockRoute
@@ -214,6 +221,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/admin/rfq': typeof AuthenticatedAdminRfqRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/stock': typeof AuthenticatedAdminStockRoute
@@ -243,6 +251,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/_authenticated/admin/rfq': typeof AuthenticatedAdminRfqRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/stock': typeof AuthenticatedAdminStockRoute
@@ -272,6 +281,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/suppliers'
     | '/supply'
+    | '/.lovable/oauth/consent'
     | '/admin/rfq'
     | '/admin/settings'
     | '/admin/stock'
@@ -299,6 +309,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/suppliers'
     | '/supply'
+    | '/.lovable/oauth/consent'
     | '/admin/rfq'
     | '/admin/settings'
     | '/admin/stock'
@@ -327,6 +338,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/suppliers'
     | '/supply'
+    | '/.lovable/oauth/consent'
     | '/_authenticated/admin/rfq'
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/stock'
@@ -356,6 +368,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SuppliersRoute: typeof SuppliersRoute
   SupplyRoute: typeof SupplyRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -493,6 +506,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRfqRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/app/orders/': {
       id: '/_authenticated/app/orders/'
       path: '/app/orders'
@@ -597,6 +617,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SuppliersRoute: SuppliersRoute,
   SupplyRoute: SupplyRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
