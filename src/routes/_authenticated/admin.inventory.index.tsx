@@ -136,6 +136,20 @@ function InventoryBody() {
     },
   });
 
+  const { data: totalValue = 0 } = useQuery({
+    queryKey: ["admin-inventory-total-value"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("admin_inventory")
+        .select("qty_on_hand_kg, sale_price_idr");
+      if (error) throw error;
+      return (data ?? []).reduce(
+        (sum, r) => sum + Number(r.qty_on_hand_kg) * Number(r.sale_price_idr),
+        0,
+      );
+    },
+  });
+
   const rows = result?.rows ?? [];
   const total = result?.count ?? 0;
   const pageCount = Math.max(1, Math.ceil(total / pageSize));
@@ -153,6 +167,7 @@ function InventoryBody() {
   function refresh() {
     void qc.invalidateQueries({ queryKey: ["admin-inventory"] });
     void qc.invalidateQueries({ queryKey: ["admin-inventory-low"] });
+    void qc.invalidateQueries({ queryKey: ["admin-inventory-total-value"] });
     void qc.invalidateQueries({ queryKey: ["featured-inventory"] });
   }
 
@@ -224,10 +239,11 @@ function InventoryBody() {
 
   return (
     <div className="grid gap-6">
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="SKUs (filtered)" value={String(total)} />
         <Stat label={`Needs restock (≤ ${threshold} kg)`} value={String(lowCount)} />
         <Stat label="Page stock value" value={formatIdr(pageValue)} />
+        <Stat label="Total stock value" value={formatIdr(totalValue)} />
       </div>
 
 
