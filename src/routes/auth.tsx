@@ -6,7 +6,14 @@ import { Field, SelectInput, TextInput } from "@/components/site/form-kit";
 import { supabase } from "@/integrations/supabase/client";
 import { homeForRole, useAuth } from "@/hooks/use-auth";
 
+function safeNext(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  if (!value.startsWith("/") || value.startsWith("//")) return undefined;
+  return value;
+}
+
 export const Route = createFileRoute("/auth")({
+  validateSearch: (s: Record<string, unknown>): { next?: string } => ({ next: safeNext(s.next) }),
   head: () => ({
     meta: [
       { title: "Sign In — Meatlink.id order management" },
@@ -34,10 +41,16 @@ function AuthPage() {
   const [pending, setPending] = useState(false);
   const navigate = useNavigate();
   const auth = useAuth();
+  const { next } = Route.useSearch();
 
   useEffect(() => {
-    if (!auth.loading && auth.user) void navigate({ to: homeForRole(auth.role) });
-  }, [auth.loading, auth.user, auth.role, navigate]);
+    if (auth.loading || !auth.user) return;
+    if (next) {
+      window.location.href = next;
+      return;
+    }
+    void navigate({ to: homeForRole(auth.role) });
+  }, [auth.loading, auth.user, auth.role, navigate, next]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -48,7 +61,7 @@ function AuthPage() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth`,
+            emailRedirectTo: `${window.location.origin}${next ?? "/auth"}`,
             data: { display_name: name, ml_role: role },
           },
         });
