@@ -3006,6 +3006,20 @@ export type Database = {
       }
       ml_market_snapshot: { Args: { _days?: number }; Returns: Json }
       ml_next_order_no: { Args: never; Returns: string }
+      ml_public_featured: {
+        Args: { _limit?: number }
+        Returns: {
+          avg_weight_text: string
+          brand: string
+          condition: string
+          featured_rank: number
+          id: string
+          image_url: string
+          name: string
+          origin: string
+          public_price_idr: number
+        }[]
+      }
       ml_public_stock: {
         Args: never
         Returns: {
