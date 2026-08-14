@@ -22,6 +22,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedVendorImportRouteImport } from './routes/_authenticated/vendor.import'
 import { Route as AuthenticatedVendorCatalogRouteImport } from './routes/_authenticated/vendor.catalog'
 import { Route as AuthenticatedAppStockRouteImport } from './routes/_authenticated/app.stock'
+import { Route as AuthenticatedAppRfqRouteImport } from './routes/_authenticated/app.rfq'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedAdminStockRouteImport } from './routes/_authenticated/admin.stock'
 import { Route as AuthenticatedAdminRfqRouteImport } from './routes/_authenticated/admin.rfq'
@@ -97,6 +98,11 @@ const AuthenticatedAppStockRoute = AuthenticatedAppStockRouteImport.update({
   path: '/app/stock',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAppRfqRoute = AuthenticatedAppRfqRouteImport.update({
+  id: '/app/rfq',
+  path: '/app/rfq',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/admin/users',
   path: '/admin/users',
@@ -156,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/admin/rfq': typeof AuthenticatedAdminRfqRoute
   '/admin/stock': typeof AuthenticatedAdminStockRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/app/rfq': typeof AuthenticatedAppRfqRoute
   '/app/stock': typeof AuthenticatedAppStockRoute
   '/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
   '/vendor/import': typeof AuthenticatedVendorImportRoute
@@ -178,6 +185,7 @@ export interface FileRoutesByTo {
   '/admin/rfq': typeof AuthenticatedAdminRfqRoute
   '/admin/stock': typeof AuthenticatedAdminStockRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/app/rfq': typeof AuthenticatedAppRfqRoute
   '/app/stock': typeof AuthenticatedAppStockRoute
   '/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
   '/vendor/import': typeof AuthenticatedVendorImportRoute
@@ -202,6 +210,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/rfq': typeof AuthenticatedAdminRfqRoute
   '/_authenticated/admin/stock': typeof AuthenticatedAdminStockRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/app/rfq': typeof AuthenticatedAppRfqRoute
   '/_authenticated/app/stock': typeof AuthenticatedAppStockRoute
   '/_authenticated/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
   '/_authenticated/vendor/import': typeof AuthenticatedVendorImportRoute
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/admin/rfq'
     | '/admin/stock'
     | '/admin/users'
+    | '/app/rfq'
     | '/app/stock'
     | '/vendor/catalog'
     | '/vendor/import'
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
     | '/admin/rfq'
     | '/admin/stock'
     | '/admin/users'
+    | '/app/rfq'
     | '/app/stock'
     | '/vendor/catalog'
     | '/vendor/import'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/rfq'
     | '/_authenticated/admin/stock'
     | '/_authenticated/admin/users'
+    | '/_authenticated/app/rfq'
     | '/_authenticated/app/stock'
     | '/_authenticated/vendor/catalog'
     | '/_authenticated/vendor/import'
@@ -387,6 +399,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppStockRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/rfq': {
+      id: '/_authenticated/app/rfq'
+      path: '/app/rfq'
+      fullPath: '/app/rfq'
+      preLoaderRoute: typeof AuthenticatedAppRfqRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/users': {
       id: '/_authenticated/admin/users'
       path: '/admin/users'
@@ -450,6 +469,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRfqRoute: typeof AuthenticatedAdminRfqRoute
   AuthenticatedAdminStockRoute: typeof AuthenticatedAdminStockRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAppRfqRoute: typeof AuthenticatedAppRfqRoute
   AuthenticatedAppStockRoute: typeof AuthenticatedAppStockRoute
   AuthenticatedVendorCatalogRoute: typeof AuthenticatedVendorCatalogRoute
   AuthenticatedVendorImportRoute: typeof AuthenticatedVendorImportRoute
@@ -464,6 +484,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRfqRoute: AuthenticatedAdminRfqRoute,
   AuthenticatedAdminStockRoute: AuthenticatedAdminStockRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+  AuthenticatedAppRfqRoute: AuthenticatedAppRfqRoute,
   AuthenticatedAppStockRoute: AuthenticatedAppStockRoute,
   AuthenticatedVendorCatalogRoute: AuthenticatedVendorCatalogRoute,
   AuthenticatedVendorImportRoute: AuthenticatedVendorImportRoute,

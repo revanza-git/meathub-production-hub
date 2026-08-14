@@ -11,6 +11,7 @@ const NAV: Record<MlRole, NavItem[]> = {
   buyer: [
     { to: "/app/orders", label: "My Orders" },
     { to: "/app/orders/new", label: "New Order" },
+    { to: "/app/rfq", label: "My RFQs" },
     { to: "/app/stock", label: "Available Stock" },
   ],
   vendor: [
