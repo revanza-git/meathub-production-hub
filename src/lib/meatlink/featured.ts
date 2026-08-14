@@ -27,36 +27,23 @@ export function resolveFeatureImage(value: string | null | undefined): string {
 
 export type FeaturedItem = Pick<
   InventoryItem,
-  | "id"
-  | "name"
-  | "origin"
-  | "brand"
-  | "condition"
-  | "avg_weight_text"
-  | "sale_price_idr"
-  | "markup_idr"
-  | "qty_on_hand_kg"
-  | "featured_rank"
-  | "image_url"
->;
+  "id" | "name" | "origin" | "brand" | "condition" | "avg_weight_text" | "featured_rank" | "image_url"
+> & {
+  /** Final public price per kg (base cost + markup), computed server-side. */
+  public_price_idr: number;
+};
 
-/** Public read of the admin-curated featured inventory, ordered 1 → 5. */
+/** Public read of the admin-curated featured inventory, ordered 1 → 5.
+ *  Uses a safe RPC so internal cost and stock figures never leave the server. */
 export function useFeaturedInventory(limit = 5) {
   return useQuery({
     queryKey: ["featured-inventory", limit],
     staleTime: 60_000,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("admin_inventory")
-        .select(
-          "id,name,origin,brand,condition,avg_weight_text,sale_price_idr,markup_idr,qty_on_hand_kg,featured_rank,image_url",
-        )
-        .not("featured_rank", "is", null)
-        .eq("is_active", true)
-        .order("featured_rank")
-        .limit(limit);
+      const { data, error } = await supabase.rpc("ml_public_featured", { _limit: limit });
       if (error) throw error;
-      return (data ?? []) as FeaturedItem[];
+      return (data ?? []) as unknown as FeaturedItem[];
     },
   });
 }
+
