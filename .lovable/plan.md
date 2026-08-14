@@ -25,9 +25,9 @@ buyer               /app/orders               My Orders + tombol order baru
                     /app/orders/new           form order
                     /app/orders/$id           detail + timeline status
                     /app/stock                stok tersedia (produk, kategori, qty total)
-vendor              /vendor                   ringkasan katalog & sync terakhir
-                    /vendor/catalog           CRUD produk + qty
-                    /vendor/sync              hubungkan Google Sheet, uji tarik, riwayat sync
+vendor              /vendor                   ringkasan katalog & stok
+                    /vendor/catalog           CRUD produk + ubah qty stok
+                    /vendor/import            impor CSV massal (opsional) + riwayat perubahan stok
 admin               /admin/orders             tabel semua order + filter + ubah status
                     /admin/orders/$id         detail, matching vendor, keputusan CBD/TOP
                     /admin/stock              seluruh stok + nama vendor
