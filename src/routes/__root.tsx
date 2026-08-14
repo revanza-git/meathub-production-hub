@@ -103,6 +103,41 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "apple-touch-icon", href: "/favicon.png" },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Meatlink.id",
+          url: "https://meatlink.id",
+          inLanguage: "id-ID",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Meatlink.id",
+          url: "https://meatlink.id",
+          logo: "https://meatlink.id/favicon.png",
+          description:
+            "B2B meat sourcing network connecting Indonesian restaurants, hotels and retailers with verified meat importers and suppliers.",
+          areaServed: { "@type": "Country", name: "Indonesia" },
+          contactPoint: [
+            {
+              "@type": "ContactPoint",
+              contactType: "sales",
+              email: "cs@meatlink.id",
+              telephone: "+62-897-8872-745",
+              areaServed: "ID",
+              availableLanguage: ["id", "en"],
+            },
+          ],
+        }),
+      },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,

@@ -11,7 +11,7 @@ import suppliersImg from "@/assets/for-suppliers.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Meatlink.id — The meat you need. The connections you don't have." },
+      { title: "Meatlink.id — B2B Meat Sourcing Network in Indonesia" },
       {
         name: "description",
         content:
