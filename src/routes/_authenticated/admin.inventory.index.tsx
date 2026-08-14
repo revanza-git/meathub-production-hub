@@ -407,7 +407,17 @@ function InventoryBody() {
                       className="w-28 border border-line bg-bone px-2 py-1 text-sm text-ink outline-none focus:border-crimson"
                     />
                   </td>
+                  <td className="px-4 py-3">
+                    {Number(item.qty_on_hand_kg) <= threshold ? (
+                      <span className="eyebrow inline-block bg-crimson/10 px-2 py-1 text-crimson">
+                        Restock
+                      </span>
+                    ) : (
+                      <span className="eyebrow inline-block bg-ink/5 px-2 py-1 text-ash">In stock</span>
+                    )}
+                  </td>
                   <td className="whitespace-nowrap px-4 py-3 text-right">
+
                     <button
                       type="button"
                       onClick={() => void patch(item.id, { is_active: !item.is_active })}
