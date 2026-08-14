@@ -51,9 +51,9 @@ Aturan akses:
 - Vendor: hanya baris miliknya.
 - Admin: akses penuh semua tabel.
 
-## 4. Sinkronisasi Google Sheet
+## 4. Stok di Postgres
 
-Vendor menempel link Google Sheet yang dipublikasikan (format CSV). Server function menarik CSV, memetakan kolom `product_name, category, qty_kg`, lalu upsert ke `vendor_products` dan menulis `last_synced_at`. Sync jalan saat vendor menekan tombol dan otomatis lewat endpoint terjadwal (`/api/public/sync-stock`, dilindungi secret). Template sheet standar disediakan agar antar vendor konsisten — ini menjawab pertanyaan terbuka BRD #1.
+Stok tinggal di database, bukan di Google Sheet. Vendor mengubah qty langsung di `/vendor/catalog`; setiap perubahan tercatat di `vendor_stock_movements` sehingga ada jejak audit. Untuk vendor yang punya banyak SKU disediakan impor CSV massal di `/vendor/import` (kolom `product_name, category, qty_kg`) yang melakukan upsert ke tabel yang sama — sekali jalan, bukan koneksi hidup ke Sheet. Admin dan buyer selalu membaca angka dari Postgres, jadi tidak ada ketergantungan pada layanan luar. Integrasi Sheet otomatis bisa ditambahkan di fase berikutnya tanpa mengubah skema.
 
 ## 5. Urutan pengerjaan
 
