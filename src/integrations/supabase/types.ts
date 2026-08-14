@@ -1109,6 +1109,36 @@ export type Database = {
           },
         ]
       }
+      ml_role_audit: {
+        Row: {
+          actor_user_id: string | null
+          created_at: string
+          from_role: Database["public"]["Enums"]["ml_role"] | null
+          id: string
+          reason: string | null
+          target_user_id: string
+          to_role: Database["public"]["Enums"]["ml_role"]
+        }
+        Insert: {
+          actor_user_id?: string | null
+          created_at?: string
+          from_role?: Database["public"]["Enums"]["ml_role"] | null
+          id?: string
+          reason?: string | null
+          target_user_id: string
+          to_role: Database["public"]["Enums"]["ml_role"]
+        }
+        Update: {
+          actor_user_id?: string | null
+          created_at?: string
+          from_role?: Database["public"]["Enums"]["ml_role"] | null
+          id?: string
+          reason?: string | null
+          target_user_id?: string
+          to_role?: Database["public"]["Enums"]["ml_role"]
+        }
+        Relationships: []
+      }
       ml_user_roles: {
         Row: {
           created_at: string
@@ -2808,6 +2838,14 @@ export type Database = {
         Returns: boolean
       }
       ml_next_order_no: { Args: never; Returns: string }
+      ml_set_user_role: {
+        Args: {
+          _reason?: string
+          _role: Database["public"]["Enums"]["ml_role"]
+          _user_id: string
+        }
+        Returns: undefined
+      }
       next_invoice_no: { Args: never; Returns: string }
       next_order_no: { Args: never; Returns: string }
       next_queue_no: { Args: { _date: string }; Returns: string }
