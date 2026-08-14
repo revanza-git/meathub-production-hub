@@ -23,12 +23,12 @@ function StockPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["public-stock"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("ml_public_stock")
-        .select("product_name, category, qty_kg, last_updated_at")
-        .order("product_name");
+      const { data, error } = await supabase.rpc("ml_public_stock");
       if (error) throw error;
-      return data as StockRow[];
+      return ((data ?? []) as unknown as StockRow[])
+        .slice()
+        .sort((a, b) => (a.product_name ?? "").localeCompare(b.product_name ?? ""));
+
     },
   });
 
