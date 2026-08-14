@@ -57,6 +57,7 @@ const EMPTY_FORM = {
   condition: "FRZ",
   avg_weight_text: "",
   sale_price_idr: "",
+  markup_idr: "",
   qty_on_hand_kg: "",
 };
 
@@ -191,6 +192,7 @@ function InventoryBody() {
       avg_weight_text: form.avg_weight_text.trim() || null,
       avg_weight_kg: weightToKg(form.avg_weight_text),
       sale_price_idr: Number(form.sale_price_idr || 0),
+      markup_idr: form.markup_idr === "" ? defaultMarkup(form.name, form.brand) : Number(form.markup_idr),
       qty_on_hand_kg: Number(form.qty_on_hand_kg || 0),
     });
     setPending(false);
@@ -402,6 +404,8 @@ function InventoryBody() {
                 <th className="px-4 py-3">Cond.</th>
                 <th className="px-4 py-3">Avg wt</th>
                 <th className="px-4 py-3">Price / kg</th>
+                <th className="px-4 py-3">Markup / kg</th>
+                <th className="px-4 py-3">Public price</th>
                 <th className="px-4 py-3">Qty (kg)</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Homepage</th>
@@ -439,6 +443,25 @@ function InventoryBody() {
                       }}
                       className="w-32 border border-line bg-bone px-2 py-1 text-sm text-ink outline-none focus:border-crimson"
                     />
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="number"
+                      min={0}
+                      step="1000"
+                      defaultValue={Number(item.markup_idr ?? 0)}
+                      aria-label={`Markup for ${item.name}`}
+                      onBlur={(e) => {
+                        const v = Number(e.target.value);
+                        if (Number.isFinite(v) && v !== Number(item.markup_idr ?? 0)) {
+                          void patch(item.id, { markup_idr: v });
+                        }
+                      }}
+                      className="w-28 border border-line bg-bone px-2 py-1 text-sm text-ink outline-none focus:border-crimson"
+                    />
+                  </td>
+                  <td className="px-4 py-3 text-xs text-crimson">
+                    {formatIdr(publicPrice(item.sale_price_idr, item.markup_idr))}
                   </td>
                   <td className="px-4 py-3">
                     <input
