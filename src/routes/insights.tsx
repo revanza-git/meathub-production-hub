@@ -30,9 +30,10 @@ function InsightsPage() {
   const { data: published = [] } = usePublishedInsights(9);
   const notes = published.length > 0 ? published : FALLBACK_NOTES;
   const trackRef = useRef<HTMLDivElement>(null);
+  const notesTrackRef = useRef<HTMLDivElement>(null);
 
-  function scrollByCards(direction: 1 | -1) {
-    const track = trackRef.current;
+  function scrollByCards(ref: React.RefObject<HTMLDivElement | null>, direction: 1 | -1) {
+    const track = ref.current;
     if (!track) return;
     const card = track.firstElementChild as HTMLElement | null;
     const step = card ? card.offsetWidth + 24 : track.clientWidth;
@@ -49,10 +50,39 @@ function InsightsPage() {
 
       <section className="bg-bone">
         <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
-          <p className="eyebrow text-crimson">Sourcing notes</p>
-          <div className="mt-10 grid gap-px border border-line bg-line lg:grid-cols-3">
+          <div className="flex items-end justify-between gap-4">
+            <p className="eyebrow text-crimson">Sourcing notes</p>
+            {notes.length > 1 ? (
+              <div className="flex gap-px bg-line">
+                <button
+                  type="button"
+                  aria-label="Previous notes"
+                  onClick={() => scrollByCards(notesTrackRef, -1)}
+                  className="bg-card p-3 text-ink transition-colors hover:bg-noir hover:text-bone"
+                >
+                  <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Next notes"
+                  onClick={() => scrollByCards(notesTrackRef, 1)}
+                  className="bg-card p-3 text-ink transition-colors hover:bg-noir hover:text-bone"
+                >
+                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
+            ) : null}
+          </div>
+
+          <div
+            ref={notesTrackRef}
+            className="mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
             {notes.map((n) => (
-              <article key={n.title} className="bg-card p-8">
+              <article
+                key={n.title}
+                className="w-[85%] shrink-0 snap-start border border-line bg-card p-8 sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]"
+              >
                 <p className="eyebrow text-crimson">
                   {n.category} · {n.region}
                   {"period_label" in n && n.period_label ? ` · ${n.period_label}` : ""}
