@@ -130,6 +130,198 @@
           ]
         },
         "outputSchema": null
+      },
+      {
+        "name": "get_market_snapshot",
+        "title": "Get market snapshot",
+        "description": "Aggregated Indonesian beef market data from Meatlink: house inventory by origin (kg, average base and public price, low-stock count), vendor stock by category, quote-request demand by category and region, order activity by status and payment term, plus tracked market metrics. Aggregate only — no company names, contacts or vendor identities.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "days": {
+              "description": "Look-back window in days for demand and order activity. Defaults to 90.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 730
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_market_insights",
+        "title": "List market insights",
+        "description": "List existing Meatlink market insight notes (sourcing notes) so you can avoid duplicates and follow up on earlier periods. Newest first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "status": {
+              "description": "Optional status filter.",
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "archived"
+              ]
+            },
+            "region": {
+              "description": "Optional region filter, e.g. Jakarta.",
+              "type": "string"
+            },
+            "limit": {
+              "description": "Maximum rows; defaults to 20.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_market_insight",
+        "title": "Create market insight",
+        "description": "Write a new Meatlink sourcing note about the Indonesian beef market. Always saved as a draft — a Meatlink admin reviews and publishes it. Cite the aggregates you relied on in data_refs.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "description": "Short headline for the note."
+            },
+            "body": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The analysis, 2-5 sentences, concrete and practical."
+            },
+            "category": {
+              "description": "Note category. Defaults to demand.",
+              "type": "string",
+              "enum": [
+                "demand",
+                "pricing",
+                "supply",
+                "logistics",
+                "regulation"
+              ]
+            },
+            "region": {
+              "description": "Region the note applies to, e.g. Jakarta, Bali, Nasional.",
+              "type": "string"
+            },
+            "period_label": {
+              "description": "Human period label, e.g. 'Agustus 2026' or 'Q3 2026'.",
+              "type": "string"
+            },
+            "confidence": {
+              "description": "How strongly the underlying data supports the note.",
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "data_refs": {
+              "description": "JSON object of the numbers the note is based on.",
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {}
+            }
+          },
+          "required": [
+            "title",
+            "body"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_market_insight",
+        "title": "Update market insight draft",
+        "description": "Revise an existing Meatlink sourcing note that is still a draft. Publishing is done by a Meatlink admin, not by this tool.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Insight id to update."
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "body": {
+              "type": "string",
+              "minLength": 1
+            },
+            "category": {
+              "type": "string",
+              "enum": [
+                "demand",
+                "pricing",
+                "supply",
+                "logistics",
+                "regulation"
+              ]
+            },
+            "region": {
+              "type": "string"
+            },
+            "period_label": {
+              "type": "string"
+            },
+            "confidence": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "data_refs": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {}
+            }
+          },
+          "required": [
+            "id"
+          ]
+        },
+        "outputSchema": null
       }
     ]
   }
