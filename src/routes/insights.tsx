@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PageHero, SiteLayout } from "@/components/site/site-layout";
 import { resolveFeatureImage, useFeaturedInventory } from "@/lib/meatlink/featured";
-import { formatIdr } from "@/lib/meatlink/inventory";
+import { formatIdr, publicPrice } from "@/lib/meatlink/inventory";
 
 export const Route = createFileRoute("/insights")({
   head: () => ({
@@ -130,7 +130,7 @@ function InsightsPage() {
                       </div>
                       <div className="flex justify-between pt-1">
                         <dt>Indicative price</dt>
-                        <dd className="text-crimson">{formatIdr(item.sale_price_idr)} / kg</dd>
+                        <dd className="text-crimson">{formatIdr(publicPrice(item.sale_price_idr, item.markup_idr))} / kg</dd>
                       </div>
                     </dl>
                   </div>

@@ -94,6 +94,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean
+          markup_idr: number
           name: string
           notes: string | null
           origin: string
@@ -111,6 +112,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          markup_idr?: number
           name: string
           notes?: string | null
           origin: string
@@ -128,6 +130,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          markup_idr?: number
           name?: string
           notes?: string | null
           origin?: string
