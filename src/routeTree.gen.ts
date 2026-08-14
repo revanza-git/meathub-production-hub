@@ -15,8 +15,11 @@ import { Route as RequestQuoteRouteImport } from './routes/request-quote'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BuyersRouteImport } from './routes/buyers'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedAppOrdersIndexRouteImport } from './routes/_authenticated/app.orders.index'
 
 const SupplyRoute = SupplyRouteImport.update({
   id: '/supply',
@@ -48,9 +51,18 @@ const BuyersRoute = BuyersRouteImport.update({
   path: '/buyers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -58,74 +70,96 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAppOrdersIndexRoute =
+  AuthenticatedAppOrdersIndexRouteImport.update({
+    id: '/app/orders/',
+    path: '/app/orders/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
   '/buyers': typeof BuyersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
   '/request-quote': typeof RequestQuoteRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/app/orders/': typeof AuthenticatedAppOrdersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
   '/buyers': typeof BuyersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
   '/request-quote': typeof RequestQuoteRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/app/orders': typeof AuthenticatedAppOrdersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
   '/buyers': typeof BuyersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
   '/request-quote': typeof RequestQuoteRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/_authenticated/app/orders/': typeof AuthenticatedAppOrdersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/auth'
     | '/buyers'
     | '/contact'
     | '/insights'
     | '/request-quote'
     | '/suppliers'
     | '/supply'
+    | '/app/orders/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/auth'
     | '/buyers'
     | '/contact'
     | '/insights'
     | '/request-quote'
     | '/suppliers'
     | '/supply'
+    | '/app/orders'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/about'
+    | '/auth'
     | '/buyers'
     | '/contact'
     | '/insights'
     | '/request-quote'
     | '/suppliers'
     | '/supply'
+    | '/_authenticated/app/orders/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
+  AuthRoute: typeof AuthRoute
   BuyersRoute: typeof BuyersRoute
   ContactRoute: typeof ContactRoute
   InsightsRoute: typeof InsightsRoute
@@ -178,11 +212,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BuyersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -192,12 +240,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/app/orders/': {
+      id: '/_authenticated/app/orders/'
+      path: '/app/orders'
+      fullPath: '/app/orders/'
+      preLoaderRoute: typeof AuthenticatedAppOrdersIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAppOrdersIndexRoute: typeof AuthenticatedAppOrdersIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAppOrdersIndexRoute: AuthenticatedAppOrdersIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
+  AuthRoute: AuthRoute,
   BuyersRoute: BuyersRoute,
   ContactRoute: ContactRoute,
   InsightsRoute: InsightsRoute,
