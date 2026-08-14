@@ -42,8 +42,8 @@ Tabel baru (schema `public`, RLS aktif, GRANT eksplisit):
 - `app_users_roles` — pakai pola tabel role terpisah (`user_id`, `role`), plus fungsi `has_role`. Tabel `user_roles` dan enum `app_role` sudah ada di database; role `buyer_owner` / `vendor_admin` / `platform_admin` dipakai ulang, tidak bikin enum baru.
 - `buyer_orders` — `order_no`, `user_id`, `buyer_name`, `product_text`, `qty_kg`, `payment_term` (CBD/TOP7/TOP14/TOP30), `status`, `vendor_id` (nullable, admin only), `admin_notes`, `top_decision` (approve/cut/forward), timestamps.
 - `buyer_order_status_history` — jejak perubahan status + aktor + alasan.
-- `vendor_products` — `vendor_user_id`, `name`, `category` (Prime Cut / 2nd Cut / Offal / Bone), `qty_kg`, `unit`, `is_active`, `last_synced_at`.
-- `vendor_stock_sources` — `vendor_user_id`, `sheet_url`, `status`, `last_synced_at`, `last_error`.
+- `vendor_products` — `vendor_user_id`, `name`, `category` (Prime Cut / 2nd Cut / Offal / Bone), `qty_kg`, `is_active`, `updated_at`. **Ini sumber kebenaran stok.**
+- `vendor_stock_movements` — jejak perubahan qty (`product_id`, `delta_kg`, `qty_after`, `source` manual/import, `actor`, waktu).
 
 Aturan akses:
 - Buyer: baca/tulis order miliknya; kolom `vendor_id` disembunyikan lewat view khusus buyer.
