@@ -167,6 +167,7 @@ function InventoryBody() {
   function refresh() {
     void qc.invalidateQueries({ queryKey: ["admin-inventory"] });
     void qc.invalidateQueries({ queryKey: ["admin-inventory-low"] });
+    void qc.invalidateQueries({ queryKey: ["admin-inventory-total-value"] });
     void qc.invalidateQueries({ queryKey: ["featured-inventory"] });
   }
 
