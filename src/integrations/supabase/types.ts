@@ -2786,16 +2786,6 @@ export type Database = {
       }
     }
     Views: {
-      ml_public_stock: {
-        Row: {
-          category: Database["public"]["Enums"]["ml_product_category"] | null
-          last_updated_at: string | null
-          product_name: string | null
-          qty_kg: number | null
-          source_count: number | null
-        }
-        Relationships: []
-      }
       vendor_reliability: {
         Row: {
           active_sp5: number | null
@@ -2919,6 +2909,16 @@ export type Database = {
         Returns: boolean
       }
       ml_next_order_no: { Args: never; Returns: string }
+      ml_public_stock: {
+        Args: never
+        Returns: {
+          category: Database["public"]["Enums"]["ml_product_category"]
+          last_updated_at: string
+          product_name: string
+          qty_kg: number
+          source_count: number
+        }[]
+      }
       ml_set_user_role: {
         Args: {
           _reason?: string
