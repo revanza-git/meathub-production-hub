@@ -13,6 +13,7 @@ import { Route as SupplyRouteImport } from './routes/supply'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RequestQuoteRouteImport } from './routes/request-quote'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BuyersRouteImport } from './routes/buyers'
@@ -20,6 +21,8 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AuthenticatedVendorImportRouteImport } from './routes/_authenticated/vendor.import'
 import { Route as AuthenticatedVendorCatalogRouteImport } from './routes/_authenticated/vendor.catalog'
 import { Route as AuthenticatedAppStockRouteImport } from './routes/_authenticated/app.stock'
@@ -28,6 +31,7 @@ import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminStockRouteImport } from './routes/_authenticated/admin.stock'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as AuthenticatedAdminRfqRouteImport } from './routes/_authenticated/admin.rfq'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAppOrdersIndexRouteImport } from './routes/_authenticated/app.orders.index'
 import { Route as AuthenticatedAdminOrdersIndexRouteImport } from './routes/_authenticated/admin.orders.index'
@@ -55,6 +59,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const RequestQuoteRoute = RequestQuoteRouteImport.update({
   id: '/request-quote',
   path: '/request-quote',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InsightsRoute = InsightsRouteImport.update({
@@ -91,6 +100,18 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedVendorImportRoute =
   AuthenticatedVendorImportRouteImport.update({
     id: '/vendor/import',
@@ -134,6 +155,12 @@ const AuthenticatedAdminRfqRoute = AuthenticatedAdminRfqRouteImport.update({
   path: '/admin/rfq',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
   id: '/.lovable/oauth/consent',
   path: '/.lovable/oauth/consent',
@@ -189,11 +216,15 @@ export interface FileRoutesByFullPath {
   '/buyers': typeof BuyersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
+  '/mcp': typeof McpRoute
   '/request-quote': typeof RequestQuoteRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/rfq': typeof AuthenticatedAdminRfqRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/stock': typeof AuthenticatedAdminStockRoute
@@ -217,11 +248,15 @@ export interface FileRoutesByTo {
   '/buyers': typeof BuyersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
+  '/mcp': typeof McpRoute
   '/request-quote': typeof RequestQuoteRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/rfq': typeof AuthenticatedAdminRfqRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/stock': typeof AuthenticatedAdminStockRoute
@@ -247,11 +282,15 @@ export interface FileRoutesById {
   '/buyers': typeof BuyersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
+  '/mcp': typeof McpRoute
   '/request-quote': typeof RequestQuoteRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/admin/rfq': typeof AuthenticatedAdminRfqRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/stock': typeof AuthenticatedAdminStockRoute
@@ -277,11 +316,15 @@ export interface FileRouteTypes {
     | '/buyers'
     | '/contact'
     | '/insights'
+    | '/mcp'
     | '/request-quote'
     | '/sitemap.xml'
     | '/suppliers'
     | '/supply'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/admin/rfq'
     | '/admin/settings'
     | '/admin/stock'
@@ -305,11 +348,15 @@ export interface FileRouteTypes {
     | '/buyers'
     | '/contact'
     | '/insights'
+    | '/mcp'
     | '/request-quote'
     | '/sitemap.xml'
     | '/suppliers'
     | '/supply'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/admin/rfq'
     | '/admin/settings'
     | '/admin/stock'
@@ -334,11 +381,15 @@ export interface FileRouteTypes {
     | '/buyers'
     | '/contact'
     | '/insights'
+    | '/mcp'
     | '/request-quote'
     | '/sitemap.xml'
     | '/suppliers'
     | '/supply'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/.lovable/oauth/consent'
+    | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/admin/rfq'
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/stock'
@@ -364,11 +415,15 @@ export interface RootRouteChildren {
   BuyersRoute: typeof BuyersRoute
   ContactRoute: typeof ContactRoute
   InsightsRoute: typeof InsightsRoute
+  McpRoute: typeof McpRoute
   RequestQuoteRoute: typeof RequestQuoteRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SuppliersRoute: typeof SuppliersRoute
   SupplyRoute: typeof SupplyRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -399,6 +454,13 @@ declare module '@tanstack/react-router' {
       path: '/request-quote'
       fullPath: '/request-quote'
       preLoaderRoute: typeof RequestQuoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/insights': {
@@ -448,6 +510,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/vendor/import': {
@@ -505,6 +581,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/rfq'
       preLoaderRoute: typeof AuthenticatedAdminRfqRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/.lovable/oauth/consent': {
       id: '/.lovable/oauth/consent'
@@ -613,11 +696,16 @@ const rootRouteChildren: RootRouteChildren = {
   BuyersRoute: BuyersRoute,
   ContactRoute: ContactRoute,
   InsightsRoute: InsightsRoute,
+  McpRoute: McpRoute,
   RequestQuoteRoute: RequestQuoteRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SuppliersRoute: SuppliersRoute,
   SupplyRoute: SupplyRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
