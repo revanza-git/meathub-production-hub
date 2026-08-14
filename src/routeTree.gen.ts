@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SupplyRouteImport } from './routes/supply'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RequestQuoteRouteImport } from './routes/request-quote'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -43,6 +44,11 @@ const SupplyRoute = SupplyRouteImport.update({
 const SuppliersRoute = SuppliersRouteImport.update({
   id: '/suppliers',
   path: '/suppliers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RequestQuoteRoute = RequestQuoteRouteImport.update({
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
   '/request-quote': typeof RequestQuoteRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
   '/admin/rfq': typeof AuthenticatedAdminRfqRoute
@@ -204,6 +211,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
   '/request-quote': typeof RequestQuoteRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
   '/admin/rfq': typeof AuthenticatedAdminRfqRoute
@@ -232,6 +240,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
   '/request-quote': typeof RequestQuoteRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
   '/_authenticated/admin/rfq': typeof AuthenticatedAdminRfqRoute
@@ -260,6 +269,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/insights'
     | '/request-quote'
+    | '/sitemap.xml'
     | '/suppliers'
     | '/supply'
     | '/admin/rfq'
@@ -286,6 +296,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/insights'
     | '/request-quote'
+    | '/sitemap.xml'
     | '/suppliers'
     | '/supply'
     | '/admin/rfq'
@@ -313,6 +324,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/insights'
     | '/request-quote'
+    | '/sitemap.xml'
     | '/suppliers'
     | '/supply'
     | '/_authenticated/admin/rfq'
@@ -341,6 +353,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   InsightsRoute: typeof InsightsRoute
   RequestQuoteRoute: typeof RequestQuoteRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SuppliersRoute: typeof SuppliersRoute
   SupplyRoute: typeof SupplyRoute
 }
@@ -359,6 +372,13 @@ declare module '@tanstack/react-router' {
       path: '/suppliers'
       fullPath: '/suppliers'
       preLoaderRoute: typeof SuppliersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/request-quote': {
@@ -574,6 +594,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   InsightsRoute: InsightsRoute,
   RequestQuoteRoute: RequestQuoteRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SuppliersRoute: SuppliersRoute,
   SupplyRoute: SupplyRoute,
 }

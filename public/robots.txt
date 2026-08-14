@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 Disallow: /auth
 Disallow: /_authenticated
+
+Sitemap: https://meatlink.id/sitemap.xml
