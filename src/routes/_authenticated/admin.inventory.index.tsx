@@ -356,6 +356,8 @@ function InventoryBody() {
                 <th className="px-4 py-3">Price / kg</th>
                 <th className="px-4 py-3">Qty (kg)</th>
                 <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Homepage</th>
+
                 <th className="px-4 py-3" />
               </tr>
 
