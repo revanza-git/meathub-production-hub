@@ -11,9 +11,9 @@
   },
   "mcp": {
     "server": {
-      "name": "sbmeat-meat-hub-mvp",
+      "name": "meatlink",
       "version": "0.1.0",
-      "title": "SBMEAT Meat Hub MVP"
+      "title": "Meatlink.id"
     },
     "tools": [
       {
