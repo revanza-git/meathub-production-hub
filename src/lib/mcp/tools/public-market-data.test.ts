@@ -18,7 +18,10 @@ const noJitter = () => 0;
 
 function res(
   body: unknown,
-  { status = 200, contentType = "application/json" }: { status?: number; contentType?: string } = {},
+  {
+    status = 200,
+    contentType = "application/json",
+  }: { status?: number; contentType?: string } = {},
 ) {
   return {
     ok: status >= 200 && status < 300,
@@ -31,9 +34,20 @@ function res(
 
 const LOGIN_OK = { AuthenticationResult: { AccessToken: "eyJfaketokenvalue0123456789" } };
 const QCL_OK = {
-  data: [{ Area: "Indonesia", Year: 2020, Item: "Cattle", Element: "Production", Value: 453418, Unit: "t", Flag: "A" }],
+  data: [
+    {
+      Area: "Indonesia",
+      Year: 2020,
+      Item: "Cattle",
+      Element: "Production",
+      Value: 453418,
+      Unit: "t",
+      Flag: "A",
+    },
+  ],
 };
-const HTML_BLOCK = "<html><body>Request blocked. We can't connect to the server for this app or website.</body></html>";
+const HTML_BLOCK =
+  "<html><body>Request blocked. We can't connect to the server for this app or website.</body></html>";
 
 describe("faostat retrieval", () => {
   it("authenticates and returns normalised rows", async () => {
@@ -47,7 +61,12 @@ describe("faostat retrieval", () => {
       return res(QCL_OK);
     }) as unknown as typeof fetch;
 
-    const rows = await getFaostatData(["Indonesia"], [2020], { env, fetchImpl, sleep: noSleep, random: noJitter });
+    const rows = await getFaostatData(["Indonesia"], [2020], {
+      env,
+      fetchImpl,
+      sleep: noSleep,
+      random: noJitter,
+    });
     expect(rows).toHaveLength(1);
     expect(rows[0]?.value).toBe(453418);
     expect(calls[1]).toContain("https://faostatservices.fao.org/api/v1/en/data/QCL?");
@@ -68,7 +87,12 @@ describe("faostat retrieval", () => {
       return dataCalls === 1 ? res({ message: "expired" }, { status: 401 }) : res(QCL_OK);
     }) as unknown as typeof fetch;
 
-    const rows = await getFaostatData(["Indonesia"], [2020], { env, fetchImpl, sleep: noSleep, random: noJitter });
+    const rows = await getFaostatData(["Indonesia"], [2020], {
+      env,
+      fetchImpl,
+      sleep: noSleep,
+      random: noJitter,
+    });
     expect(logins).toBe(2);
     expect(dataCalls).toBe(2);
     expect(rows).toHaveLength(1);
@@ -84,7 +108,12 @@ describe("faostat retrieval", () => {
         : res(QCL_OK);
     }) as unknown as typeof fetch;
 
-    const rows = await getFaostatData(["Indonesia"], [2020], { env, fetchImpl, sleep: noSleep, random: noJitter });
+    const rows = await getFaostatData(["Indonesia"], [2020], {
+      env,
+      fetchImpl,
+      sleep: noSleep,
+      random: noJitter,
+    });
     expect(dataCalls).toBe(3);
     expect(rows).toHaveLength(1);
   });
@@ -112,7 +141,11 @@ describe("faostat retrieval", () => {
           status: 429,
           headers: {
             get: (n: string) =>
-              n.toLowerCase() === "retry-after" ? "2" : n.toLowerCase() === "content-type" ? "application/json" : null,
+              n.toLowerCase() === "retry-after"
+                ? "2"
+                : n.toLowerCase() === "content-type"
+                  ? "application/json"
+                  : null,
           },
           json: async () => ({}),
           text: async () => "rate limited",
@@ -135,7 +168,12 @@ describe("faostat retrieval", () => {
   it("distinguishes an empty legitimate result from a failure", async () => {
     const fetchImpl = (async (url: string) =>
       url.includes("/auth/login") ? res(LOGIN_OK) : res({ data: [] })) as unknown as typeof fetch;
-    const rows = await getFaostatData(["Indonesia"], [2020], { env, fetchImpl, sleep: noSleep, random: noJitter });
+    const rows = await getFaostatData(["Indonesia"], [2020], {
+      env,
+      fetchImpl,
+      sleep: noSleep,
+      random: noJitter,
+    });
     expect(rows).toEqual([]);
   });
 });
@@ -165,7 +203,8 @@ describe("combined tool payload", () => {
 
   it("redacts secrets and tokens from errors and diagnostics", async () => {
     const fetchImpl = (async (url: string) => {
-      if (url.includes("/auth/login")) throw new Error("connect failed for user-secret-value with Bearer eyJabc123456789xyz");
+      if (url.includes("/auth/login"))
+        throw new Error("connect failed for user-secret-value with Bearer eyJabc123456789xyz");
       return res([]);
     }) as unknown as typeof fetch;
 

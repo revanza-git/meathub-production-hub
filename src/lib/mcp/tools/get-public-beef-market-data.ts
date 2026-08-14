@@ -85,10 +85,7 @@ async function faostatToken(deps: Required<Pick<Deps, "env">> & Deps, diagnostic
   const username = deps.env("FAOSTAT_USERNAME");
   const password = deps.env("FAOSTAT_PASSWORD");
   if (!username || !password) {
-    throw new UpstreamError(
-      "NOT_CONFIGURED",
-      "FAOSTAT is not configured on the server.",
-    );
+    throw new UpstreamError("NOT_CONFIGURED", "FAOSTAT is not configured on the server.");
   }
 
   const payload = await requestJson(`${FAOSTAT_BASE_URL}/auth/login`, {
@@ -216,7 +213,9 @@ export async function getUsdaData(
       const url = `${USDA_BASE_URL}/commodity/${USDA_BEEF_COMMODITY_CODE}/country/${countryCode}/year/${marketYear}`;
       const payload = await requestJson(url, {
         provider: "USDA",
-        init: { headers: { "X-Api-Key": apiKey, Accept: "application/json", "user-agent": USER_AGENT } },
+        init: {
+          headers: { "X-Api-Key": apiKey, Accept: "application/json", "user-agent": USER_AGENT },
+        },
         maxRetries: 2,
         diagnostics,
         secrets,
@@ -269,7 +268,8 @@ export async function buildPublicBeefMarketData(
     getUsdaData(selectedCountries, usdaMarketYear, { ...deps, env }, diagnostics),
   ]);
 
-  const faostatError = faostat.status === "rejected" ? toSanitisedError(faostat.reason, secrets) : null;
+  const faostatError =
+    faostat.status === "rejected" ? toSanitisedError(faostat.reason, secrets) : null;
   const usdaError = usda.status === "rejected" ? toSanitisedError(usda.reason, secrets) : null;
 
   return {

@@ -48,8 +48,11 @@ export function redact(input: unknown, secrets: string[] = []): string {
   }
   text = text
     .replace(/Bearer\s+[A-Za-z0-9._\-+/=]+/gi, "Bearer [redacted]")
-    .replace(/\beyJ[A-Za-z0-9._\-]{10,}/g, "[redacted-token]")
-    .replace(/((?:api[-_]?key|apikey|password|username|token)\s*[=:]\s*)("?)[^\s"&,}]+/gi, "$1$2[redacted]");
+    .replace(/\beyJ[A-Za-z0-9._-]{10,}/g, "[redacted-token]")
+    .replace(
+      /((?:api[-_]?key|apikey|password|username|token)\s*[=:]\s*)("?)[^\s"&,}]+/gi,
+      "$1$2[redacted]",
+    );
   return text.slice(0, 300);
 }
 
@@ -112,10 +115,7 @@ export async function requestJson(url: string, options: RequestOptions): Promise
 
   let init = options.init ?? {};
   let refreshed = false;
-  let lastError: UpstreamError = new UpstreamError(
-    "UPSTREAM_ERROR",
-    `${provider} request failed.`,
-  );
+  let lastError: UpstreamError = new UpstreamError("UPSTREAM_ERROR", `${provider} request failed.`);
 
   for (let attempt = 1; attempt <= maxRetries + 1; attempt += 1) {
     const controller = new AbortController();
