@@ -19,6 +19,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedAppStockRouteImport } from './routes/_authenticated/app.stock'
 import { Route as AuthenticatedAppOrdersIndexRouteImport } from './routes/_authenticated/app.orders.index'
 import { Route as AuthenticatedAppOrdersNewRouteImport } from './routes/_authenticated/app.orders.new'
 import { Route as AuthenticatedAppOrdersIdRouteImport } from './routes/_authenticated/app.orders.$id'
@@ -72,6 +73,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAppStockRoute = AuthenticatedAppStockRouteImport.update({
+  id: '/app/stock',
+  path: '/app/stock',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAppOrdersIndexRoute =
   AuthenticatedAppOrdersIndexRouteImport.update({
     id: '/app/orders/',
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/request-quote': typeof RequestQuoteRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/app/stock': typeof AuthenticatedAppStockRoute
   '/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
   '/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
   '/app/orders/': typeof AuthenticatedAppOrdersIndexRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/request-quote': typeof RequestQuoteRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/app/stock': typeof AuthenticatedAppStockRoute
   '/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
   '/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
   '/app/orders': typeof AuthenticatedAppOrdersIndexRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/request-quote': typeof RequestQuoteRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/_authenticated/app/stock': typeof AuthenticatedAppStockRoute
   '/_authenticated/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
   '/_authenticated/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
   '/_authenticated/app/orders/': typeof AuthenticatedAppOrdersIndexRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/request-quote'
     | '/suppliers'
     | '/supply'
+    | '/app/stock'
     | '/app/orders/$id'
     | '/app/orders/new'
     | '/app/orders/'
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
     | '/request-quote'
     | '/suppliers'
     | '/supply'
+    | '/app/stock'
     | '/app/orders/$id'
     | '/app/orders/new'
     | '/app/orders'
@@ -176,6 +187,7 @@ export interface FileRouteTypes {
     | '/request-quote'
     | '/suppliers'
     | '/supply'
+    | '/_authenticated/app/stock'
     | '/_authenticated/app/orders/$id'
     | '/_authenticated/app/orders/new'
     | '/_authenticated/app/orders/'
@@ -266,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/app/stock': {
+      id: '/_authenticated/app/stock'
+      path: '/app/stock'
+      fullPath: '/app/stock'
+      preLoaderRoute: typeof AuthenticatedAppStockRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/app/orders/': {
       id: '/_authenticated/app/orders/'
       path: '/app/orders'
@@ -291,12 +310,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAppStockRoute: typeof AuthenticatedAppStockRoute
   AuthenticatedAppOrdersIdRoute: typeof AuthenticatedAppOrdersIdRoute
   AuthenticatedAppOrdersNewRoute: typeof AuthenticatedAppOrdersNewRoute
   AuthenticatedAppOrdersIndexRoute: typeof AuthenticatedAppOrdersIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAppStockRoute: AuthenticatedAppStockRoute,
   AuthenticatedAppOrdersIdRoute: AuthenticatedAppOrdersIdRoute,
   AuthenticatedAppOrdersNewRoute: AuthenticatedAppOrdersNewRoute,
   AuthenticatedAppOrdersIndexRoute: AuthenticatedAppOrdersIndexRoute,
