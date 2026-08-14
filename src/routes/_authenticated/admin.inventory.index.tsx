@@ -63,52 +63,99 @@ const EMPTY_FORM = {
 function InventoryBody() {
   const qc = useQueryClient();
   const [query, setQuery] = useState("");
+  const [search, setSearch] = useState("");
   const [origin, setOrigin] = useState("");
   const [condition, setCondition] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<number>(10);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [pending, setPending] = useState(false);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["admin-inventory"],
+  useEffect(() => {
+    const t = setTimeout(() => setSearch(query.trim()), 300);
+    return () => clearTimeout(t);
+  }, [query]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, origin, condition, pageSize]);
+
+  const { data: threshold = DEFAULT_LOW_STOCK_KG } = useQuery({
+    queryKey: ["admin-settings", LOW_STOCK_KEY],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("admin_inventory")
-        .select("*")
-        .order("origin")
-        .order("name");
+        .from("admin_settings")
+        .select("value")
+        .eq("key", LOW_STOCK_KEY)
+        .maybeSingle();
       if (error) throw error;
-      return data as InventoryItem[];
+      return Number(data?.value ?? DEFAULT_LOW_STOCK_KG);
     },
   });
 
-  const rows = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return (data ?? []).filter(
-      (item) =>
-        (!origin || item.origin === origin) &&
-        (!condition || (item.condition ?? "") === condition) &&
-        (!q || `${item.name} ${item.brand}`.toLowerCase().includes(q)),
-    );
-  }, [data, query, origin, condition]);
+  const { data: origins } = useQuery({
+    queryKey: ["admin-inventory-origins"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("admin_inventory").select("origin");
+      if (error) throw error;
+      return (data ?? []).map((d) => d.origin as string);
+    },
+  });
 
-  const totals = useMemo(() => {
-    const kg = rows.reduce((sum, r) => sum + Number(r.qty_on_hand_kg), 0);
-    const value = rows.reduce(
-      (sum, r) => sum + Number(r.qty_on_hand_kg) * Number(r.sale_price_idr),
-      0,
-    );
-    return { skus: rows.length, kg, value };
-  }, [rows]);
+  const { data: result, isLoading } = useQuery({
+    queryKey: ["admin-inventory", { search, origin, condition, page, pageSize }],
+    placeholderData: keepPreviousData,
+    queryFn: async () => {
+      let q = supabase.from("admin_inventory").select("*", { count: "exact" });
+      if (origin) q = q.eq("origin", origin);
+      if (condition) q = q.eq("condition", condition);
+      if (search) {
+        const term = search.replace(/[%,]/g, " ");
+        q = q.or(`name.ilike.%${term}%,brand.ilike.%${term}%`);
+      }
+      const from = (page - 1) * pageSize;
+      const { data, error, count } = await q
+        .order("origin")
+        .order("name")
+        .range(from, from + pageSize - 1);
+      if (error) throw error;
+      return { rows: (data ?? []) as InventoryItem[], count: count ?? 0 };
+    },
+  });
+
+  const { data: lowCount = 0 } = useQuery({
+    queryKey: ["admin-inventory-low", threshold],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("admin_inventory")
+        .select("id", { count: "exact", head: true })
+        .lte("qty_on_hand_kg", threshold);
+      if (error) throw error;
+      return count ?? 0;
+    },
+  });
+
+  const rows = result?.rows ?? [];
+  const total = result?.count ?? 0;
+  const pageCount = Math.max(1, Math.ceil(total / pageSize));
+
+  const pageValue = useMemo(
+    () => rows.reduce((sum, r) => sum + Number(r.qty_on_hand_kg) * Number(r.sale_price_idr), 0),
+    [rows],
+  );
 
   const originOptions = useMemo(() => {
-    const set = new Set<string>([...ORIGINS, ...(data ?? []).map((d) => d.origin)]);
+    const set = new Set<string>([...ORIGINS, ...(origins ?? [])]);
     return [...set].sort();
-  }, [data]);
+  }, [origins]);
 
   function refresh() {
     void qc.invalidateQueries({ queryKey: ["admin-inventory"] });
+    void qc.invalidateQueries({ queryKey: ["admin-inventory-low"] });
   }
+
+
 
   async function addItem(e: React.FormEvent) {
     e.preventDefault();
