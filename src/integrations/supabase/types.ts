@@ -83,6 +83,54 @@ export type Database = {
           },
         ]
       }
+      admin_inventory: {
+        Row: {
+          avg_weight_kg: number | null
+          avg_weight_text: string | null
+          brand: string
+          condition: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          origin: string
+          qty_on_hand_kg: number
+          sale_price_idr: number
+          updated_at: string
+        }
+        Insert: {
+          avg_weight_kg?: number | null
+          avg_weight_text?: string | null
+          brand?: string
+          condition?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          origin: string
+          qty_on_hand_kg?: number
+          sale_price_idr?: number
+          updated_at?: string
+        }
+        Update: {
+          avg_weight_kg?: number | null
+          avg_weight_text?: string | null
+          brand?: string
+          condition?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          origin?: string
+          qty_on_hand_kg?: number
+          sale_price_idr?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       agreements: {
         Row: {
           accepted_at: string
