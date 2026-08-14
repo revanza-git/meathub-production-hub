@@ -60,8 +60,8 @@ Stok tinggal di database, bukan di Google Sheet. Vendor mengubah qty langsung di
 1. **Auth & role** — halaman `/auth`, gate rute, penetapan role saat register, admin bisa ubah role.
 2. **Order buyer** — tabel + form + My Orders + detail status.
 3. **Konsol admin** — tabel terpusat, filter, ubah status, edit/hapus, riwayat.
-4. **Katalog vendor** — CRUD produk manual dulu.
-5. **Sync Google Sheet** — parser CSV, tombol sync, jadwal, penanganan error.
+4. **Katalog & stok vendor** — CRUD produk + ubah qty, jejak perubahan.
+5. **Impor CSV massal** — parser, pratinjau, upsert, penanganan error.
 6. **Matching & keputusan TOP** — layar admin berdampingan order vs stok relevan, aksi Approve / Cut / Forward, penetapan vendor.
 7. **Stok untuk buyer** — view agregat tanpa vendor.
 
