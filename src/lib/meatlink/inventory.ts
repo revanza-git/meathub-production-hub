@@ -10,8 +10,10 @@ export type InventoryDraft = {
   avg_weight_text: string | null;
   avg_weight_kg: number | null;
   sale_price_idr: number;
+  markup_idr: number;
   qty_on_hand_kg: number;
 };
+
 
 export const ORIGINS = ["Australia", "Japan", "USA", "Canada", "Lokal Premium"] as const;
 export const CONDITIONS = ["FRZ", "CHL"] as const;
@@ -73,14 +75,16 @@ export const IMPORT_COLUMNS = [
   "condition",
   "avg_weight",
   "sale_price_idr",
+  "markup_idr",
   "qty_on_hand_kg",
 ] as const;
 
 export const IMPORT_SAMPLE_ROWS = [
-  ["Australia", "AACO - DARLING DOWNS", "CHK FLAP TAIL WGY MB7", "FRZ", "2KG", 1000000, 417.17],
-  ["Japan", "KIWAMI", "BOLAR BLD WGY A5", "FRZ", "5KG", 990000, 44.1],
-  ["USA", "SWIFT", "S-PLATE CHO AGS", "", "5KG", 160000, 46651.3],
+  ["Australia", "AACO - DARLING DOWNS", "CHK FLAP TAIL WGY MB7", "FRZ", "2KG", 1000000, 60000, 417.17],
+  ["Japan", "KIWAMI", "BOLAR BLD WGY A5", "FRZ", "5KG", 990000, 150000, 44.1],
+  ["USA", "SWIFT", "S-PLATE CHO AGS", "", "5KG", 160000, 60000, 46651.3],
 ];
+
 
 export type ParsedRow = { row: number; item: InventoryDraft };
 
@@ -118,21 +122,30 @@ export function normaliseRow(
     errors.push(`Row ${rowNumber}: invalid quantity`);
     return null;
   }
+  const brand = get("brand");
+  const markupRaw = get("markup_idr").replace(/[^\d.-]/g, "");
+  const markup = markupRaw === "" ? defaultMarkup(name, brand) : Number(markupRaw);
+  if (!Number.isFinite(markup) || markup < 0) {
+    errors.push(`Row ${rowNumber}: invalid markup`);
+    return null;
+  }
   const weightText = get("avg_weight") || null;
 
   return {
     row: rowNumber,
     item: {
       origin,
-      brand: get("brand"),
+      brand,
       name,
       condition,
       avg_weight_text: weightText,
       avg_weight_kg: weightToKg(weightText),
       sale_price_idr: price,
+      markup_idr: markup,
       qty_on_hand_kg: qty,
     },
   };
+
 }
 
 /** Parses simple CSV text (no quoted commas) into records keyed by header. */

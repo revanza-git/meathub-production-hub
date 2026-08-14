@@ -11,6 +11,8 @@ import {
   formatIdr,
   formatQty,
   normaliseRow,
+  publicPrice,
+
   type InventoryDraft,
 } from "@/lib/meatlink/inventory";
 
@@ -123,7 +125,9 @@ function ImportBody() {
         <p className="eyebrow text-ash">Step 1 — template</p>
         <p className="mt-3 text-sm text-ash">
           Columns: {IMPORT_COLUMNS.join(", ")}. Condition accepts FRZ or CHL. Prices are IDR per kg.
+          Leave <span className="text-ink">markup_idr</span> blank to auto-apply Rp 150.000 for A5 and Rp 60.000 for the rest.
         </p>
+
         <button
           type="button"
           onClick={downloadTemplate}
@@ -202,13 +206,15 @@ function ImportBody() {
             <p className="border-b border-line px-4 py-3 text-xs text-ash">
               Preview — {rows.length} rows, {formatQty(totalKg)} total
             </p>
-            <table className="w-full min-w-[760px] text-left text-sm">
+            <table className="w-full min-w-[900px] text-left text-sm">
               <thead className="border-b border-line text-xs uppercase tracking-[0.16em] text-ash">
                 <tr>
                   <th className="px-4 py-3">Product</th>
                   <th className="px-4 py-3">Origin</th>
                   <th className="px-4 py-3">Brand</th>
-                  <th className="px-4 py-3">Price / kg</th>
+                  <th className="px-4 py-3">Base / kg</th>
+                  <th className="px-4 py-3">Markup / kg</th>
+                  <th className="px-4 py-3">Public / kg</th>
                   <th className="px-4 py-3">Qty</th>
                 </tr>
               </thead>
@@ -219,11 +225,16 @@ function ImportBody() {
                     <td className="px-4 py-3 text-ash">{r.origin}</td>
                     <td className="px-4 py-3 text-xs text-ash">{r.brand || "—"}</td>
                     <td className="px-4 py-3 text-ash">{formatIdr(r.sale_price_idr)}</td>
+                    <td className="px-4 py-3 text-ash">{formatIdr(r.markup_idr)}</td>
+                    <td className="px-4 py-3 text-ink">
+                      {formatIdr(publicPrice(r.sale_price_idr, r.markup_idr))}
+                    </td>
                     <td className="px-4 py-3 text-ash">{formatQty(r.qty_on_hand_kg)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
+
             {rows.length > 50 ? (
               <p className="border-t border-line px-4 py-3 text-xs text-ash">
                 Showing first 50 of {rows.length} rows.
