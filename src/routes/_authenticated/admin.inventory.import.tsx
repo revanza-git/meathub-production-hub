@@ -125,7 +125,9 @@ function ImportBody() {
         <p className="eyebrow text-ash">Step 1 — template</p>
         <p className="mt-3 text-sm text-ash">
           Columns: {IMPORT_COLUMNS.join(", ")}. Condition accepts FRZ or CHL. Prices are IDR per kg.
+          Leave <span className="text-ink">markup_idr</span> blank to auto-apply Rp 150.000 for A5 and Rp 60.000 for the rest.
         </p>
+
         <button
           type="button"
           onClick={downloadTemplate}
