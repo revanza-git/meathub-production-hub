@@ -10,7 +10,7 @@ Situs sekarang murni publik (RFQ + supplier form, tanpa login). BRD ini menambah
 | Order | Form RFQ anonim | Buyer submit order (produk teks bebas, qty kg, sistem pembayaran) |
 | Status | `quote_requests.status` manual | Pending → Confirmed / On Hold / Rejected → Delivered |
 | Katalog | Tidak ada | Vendor kelola produk (4 kategori) + qty stok |
-| Stok | — | Sinkron dari Google Sheet (link CSV publik), tarik berkala + tombol sync manual |
+| Stok | — | Disimpan di database Postgres, diubah vendor lewat UI (opsional impor CSV) |
 | Admin | Tidak ada | Tabel order terpusat, filter, ubah status, matching vendor |
 | Buyer lihat stok | — | Agregat qty per produk, **tanpa nama vendor** |
 
@@ -25,9 +25,9 @@ buyer               /app/orders               My Orders + tombol order baru
                     /app/orders/new           form order
                     /app/orders/$id           detail + timeline status
                     /app/stock                stok tersedia (produk, kategori, qty total)
-vendor              /vendor                   ringkasan katalog & sync terakhir
-                    /vendor/catalog           CRUD produk + qty
-                    /vendor/sync              hubungkan Google Sheet, uji tarik, riwayat sync
+vendor              /vendor                   ringkasan katalog & stok
+                    /vendor/catalog           CRUD produk + ubah qty stok
+                    /vendor/import            impor CSV massal (opsional) + riwayat perubahan stok
 admin               /admin/orders             tabel semua order + filter + ubah status
                     /admin/orders/$id         detail, matching vendor, keputusan CBD/TOP
                     /admin/stock              seluruh stok + nama vendor
@@ -42,8 +42,8 @@ Tabel baru (schema `public`, RLS aktif, GRANT eksplisit):
 - `app_users_roles` — pakai pola tabel role terpisah (`user_id`, `role`), plus fungsi `has_role`. Tabel `user_roles` dan enum `app_role` sudah ada di database; role `buyer_owner` / `vendor_admin` / `platform_admin` dipakai ulang, tidak bikin enum baru.
 - `buyer_orders` — `order_no`, `user_id`, `buyer_name`, `product_text`, `qty_kg`, `payment_term` (CBD/TOP7/TOP14/TOP30), `status`, `vendor_id` (nullable, admin only), `admin_notes`, `top_decision` (approve/cut/forward), timestamps.
 - `buyer_order_status_history` — jejak perubahan status + aktor + alasan.
-- `vendor_products` — `vendor_user_id`, `name`, `category` (Prime Cut / 2nd Cut / Offal / Bone), `qty_kg`, `unit`, `is_active`, `last_synced_at`.
-- `vendor_stock_sources` — `vendor_user_id`, `sheet_url`, `status`, `last_synced_at`, `last_error`.
+- `vendor_products` — `vendor_user_id`, `name`, `category` (Prime Cut / 2nd Cut / Offal / Bone), `qty_kg`, `is_active`, `updated_at`. **Ini sumber kebenaran stok.**
+- `vendor_stock_movements` — jejak perubahan qty (`product_id`, `delta_kg`, `qty_after`, `source` manual/import, `actor`, waktu).
 
 Aturan akses:
 - Buyer: baca/tulis order miliknya; kolom `vendor_id` disembunyikan lewat view khusus buyer.
@@ -51,17 +51,17 @@ Aturan akses:
 - Vendor: hanya baris miliknya.
 - Admin: akses penuh semua tabel.
 
-## 4. Sinkronisasi Google Sheet
+## 4. Stok di Postgres
 
-Vendor menempel link Google Sheet yang dipublikasikan (format CSV). Server function menarik CSV, memetakan kolom `product_name, category, qty_kg`, lalu upsert ke `vendor_products` dan menulis `last_synced_at`. Sync jalan saat vendor menekan tombol dan otomatis lewat endpoint terjadwal (`/api/public/sync-stock`, dilindungi secret). Template sheet standar disediakan agar antar vendor konsisten — ini menjawab pertanyaan terbuka BRD #1.
+Stok tinggal di database, bukan di Google Sheet. Vendor mengubah qty langsung di `/vendor/catalog`; setiap perubahan tercatat di `vendor_stock_movements` sehingga ada jejak audit. Untuk vendor yang punya banyak SKU disediakan impor CSV massal di `/vendor/import` (kolom `product_name, category, qty_kg`) yang melakukan upsert ke tabel yang sama — sekali jalan, bukan koneksi hidup ke Sheet. Admin dan buyer selalu membaca angka dari Postgres, jadi tidak ada ketergantungan pada layanan luar. Integrasi Sheet otomatis bisa ditambahkan di fase berikutnya tanpa mengubah skema.
 
 ## 5. Urutan pengerjaan
 
 1. **Auth & role** — halaman `/auth`, gate rute, penetapan role saat register, admin bisa ubah role.
 2. **Order buyer** — tabel + form + My Orders + detail status.
 3. **Konsol admin** — tabel terpusat, filter, ubah status, edit/hapus, riwayat.
-4. **Katalog vendor** — CRUD produk manual dulu.
-5. **Sync Google Sheet** — parser CSV, tombol sync, jadwal, penanganan error.
+4. **Katalog & stok vendor** — CRUD produk + ubah qty, jejak perubahan.
+5. **Impor CSV massal** — parser, pratinjau, upsert, penanganan error.
 6. **Matching & keputusan TOP** — layar admin berdampingan order vs stok relevan, aksi Approve / Cut / Forward, penetapan vendor.
 7. **Stok untuk buyer** — view agregat tanpa vendor.
 
