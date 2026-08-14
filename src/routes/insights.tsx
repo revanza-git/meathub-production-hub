@@ -100,7 +100,7 @@ function InsightsPage() {
                 <button
                   type="button"
                   aria-label="Previous items"
-                  onClick={() => scrollByCards(-1)}
+                  onClick={() => scrollByCards(trackRef, -1)}
                   className="bg-card p-3 text-ink transition-colors hover:bg-noir hover:text-bone"
                 >
                   <ChevronLeft className="h-4 w-4" aria-hidden="true" />
@@ -108,7 +108,7 @@ function InsightsPage() {
                 <button
                   type="button"
                   aria-label="Next items"
-                  onClick={() => scrollByCards(1)}
+                  onClick={() => scrollByCards(trackRef, 1)}
                   className="bg-card p-3 text-ink transition-colors hover:bg-noir hover:text-bone"
                 >
                   <ChevronRight className="h-4 w-4" aria-hidden="true" />
