@@ -3,7 +3,7 @@ import { ArrowRight, ClipboardList, Handshake, Search, ShieldCheck, Truck } from
 import { SiteLayout } from "@/components/site/site-layout";
 import { CATEGORIES } from "@/lib/meatlink/config";
 import { resolveFeatureImage, useFeaturedInventory } from "@/lib/meatlink/featured";
-import { formatIdr } from "@/lib/meatlink/inventory";
+import { formatIdr, publicPrice } from "@/lib/meatlink/inventory";
 import heroImg from "@/assets/hero-wagyu.jpg";
 import buyersImg from "@/assets/for-buyers.jpg";
 import suppliersImg from "@/assets/for-suppliers.jpg";
@@ -321,7 +321,7 @@ function FeaturedStock() {
                   </div>
                   <div className="flex justify-between pt-1">
                     <dt>Indicative price</dt>
-                    <dd className="text-crimson">{formatIdr(item.sale_price_idr)} / kg</dd>
+                    <dd className="text-crimson">{formatIdr(publicPrice(item.sale_price_idr, item.markup_idr))} / kg</dd>
                   </div>
                 </dl>
               </div>

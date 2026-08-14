@@ -34,6 +34,7 @@ export type FeaturedItem = Pick<
   | "condition"
   | "avg_weight_text"
   | "sale_price_idr"
+  | "markup_idr"
   | "qty_on_hand_kg"
   | "featured_rank"
   | "image_url"
@@ -48,7 +49,7 @@ export function useFeaturedInventory(limit = 5) {
       const { data, error } = await supabase
         .from("admin_inventory")
         .select(
-          "id,name,origin,brand,condition,avg_weight_text,sale_price_idr,qty_on_hand_kg,featured_rank,image_url",
+          "id,name,origin,brand,condition,avg_weight_text,sale_price_idr,markup_idr,qty_on_hand_kg,featured_rank,image_url",
         )
         .not("featured_rank", "is", null)
         .eq("is_active", true)
