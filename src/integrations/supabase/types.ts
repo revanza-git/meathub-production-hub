@@ -283,6 +283,104 @@ export type Database = {
         }
         Relationships: []
       }
+      buyer_order_status_history: {
+        Row: {
+          actor_user_id: string | null
+          created_at: string
+          from_status: Database["public"]["Enums"]["ml_order_status"] | null
+          id: string
+          order_id: string
+          reason: string | null
+          to_status: Database["public"]["Enums"]["ml_order_status"]
+        }
+        Insert: {
+          actor_user_id?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["ml_order_status"] | null
+          id?: string
+          order_id: string
+          reason?: string | null
+          to_status: Database["public"]["Enums"]["ml_order_status"]
+        }
+        Update: {
+          actor_user_id?: string | null
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["ml_order_status"] | null
+          id?: string
+          order_id?: string
+          reason?: string | null
+          to_status?: Database["public"]["Enums"]["ml_order_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "buyer_order_status_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "buyer_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      buyer_orders: {
+        Row: {
+          admin_notes: string | null
+          buyer_name: string
+          buyer_notes: string | null
+          created_at: string
+          delivery_location: string | null
+          id: string
+          needed_by: string | null
+          order_no: string
+          payment_term: Database["public"]["Enums"]["ml_payment_term"]
+          product_text: string
+          qty_kg: number
+          status: Database["public"]["Enums"]["ml_order_status"]
+          top_decision: Database["public"]["Enums"]["ml_top_decision"] | null
+          updated_at: string
+          user_id: string
+          vendor_note: string | null
+          vendor_user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          buyer_name: string
+          buyer_notes?: string | null
+          created_at?: string
+          delivery_location?: string | null
+          id?: string
+          needed_by?: string | null
+          order_no?: string
+          payment_term: Database["public"]["Enums"]["ml_payment_term"]
+          product_text: string
+          qty_kg: number
+          status?: Database["public"]["Enums"]["ml_order_status"]
+          top_decision?: Database["public"]["Enums"]["ml_top_decision"] | null
+          updated_at?: string
+          user_id: string
+          vendor_note?: string | null
+          vendor_user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          buyer_name?: string
+          buyer_notes?: string | null
+          created_at?: string
+          delivery_location?: string | null
+          id?: string
+          needed_by?: string | null
+          order_no?: string
+          payment_term?: Database["public"]["Enums"]["ml_payment_term"]
+          product_text?: string
+          qty_kg?: number
+          status?: Database["public"]["Enums"]["ml_order_status"]
+          top_decision?: Database["public"]["Enums"]["ml_top_decision"] | null
+          updated_at?: string
+          user_id?: string
+          vendor_note?: string | null
+          vendor_user_id?: string | null
+        }
+        Relationships: []
+      }
       cart_items: {
         Row: {
           cart_id: string
@@ -1010,6 +1108,27 @@ export type Database = {
             referencedColumns: ["vendor_id"]
           },
         ]
+      }
+      ml_user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["ml_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["ml_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["ml_role"]
+          user_id?: string
+        }
+        Relationships: []
       }
       notifications: {
         Row: {
@@ -2477,8 +2596,95 @@ export type Database = {
           },
         ]
       }
+      vendor_products: {
+        Row: {
+          category: Database["public"]["Enums"]["ml_product_category"]
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          qty_kg: number
+          updated_at: string
+          vendor_user_id: string
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["ml_product_category"]
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          qty_kg?: number
+          updated_at?: string
+          vendor_user_id: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["ml_product_category"]
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          qty_kg?: number
+          updated_at?: string
+          vendor_user_id?: string
+        }
+        Relationships: []
+      }
+      vendor_stock_movements: {
+        Row: {
+          actor_user_id: string | null
+          created_at: string
+          delta_kg: number
+          id: number
+          product_id: string
+          qty_after: number
+          source: string
+          vendor_user_id: string
+        }
+        Insert: {
+          actor_user_id?: string | null
+          created_at?: string
+          delta_kg: number
+          id?: number
+          product_id: string
+          qty_after: number
+          source?: string
+          vendor_user_id: string
+        }
+        Update: {
+          actor_user_id?: string | null
+          created_at?: string
+          delta_kg?: number
+          id?: number
+          product_id?: string
+          qty_after?: number
+          source?: string
+          vendor_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vendor_stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "vendor_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
+      ml_public_stock: {
+        Row: {
+          category: Database["public"]["Enums"]["ml_product_category"] | null
+          last_updated_at: string | null
+          product_name: string | null
+          qty_kg: number | null
+          source_count: number | null
+        }
+        Relationships: []
+      }
       vendor_reliability: {
         Row: {
           active_sp5: number | null
@@ -2594,6 +2800,14 @@ export type Database = {
         Args: { _id: string; _reference: string }
         Returns: undefined
       }
+      ml_has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["ml_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      ml_next_order_no: { Args: never; Returns: string }
       next_invoice_no: { Args: never; Returns: string }
       next_order_no: { Args: never; Returns: string }
       next_queue_no: { Args: { _date: string }; Returns: string }
@@ -2722,6 +2936,16 @@ export type Database = {
         | "SIUP"
         | "OTHER"
       membership_status: "ACTIVE" | "INVITED" | "SUSPENDED" | "REMOVED"
+      ml_order_status:
+        | "PENDING"
+        | "CONFIRMED"
+        | "ON_HOLD"
+        | "REJECTED"
+        | "DELIVERED"
+      ml_payment_term: "CBD" | "TOP7" | "TOP14" | "TOP30"
+      ml_product_category: "PRIME_CUT" | "SECOND_CUT" | "OFFAL" | "BONE"
+      ml_role: "buyer" | "vendor" | "admin"
+      ml_top_decision: "APPROVE" | "CUT" | "FORWARD"
       order_line_status: "PENDING" | "CONFIRMED" | "REJECTED"
       order_status:
         | "PLACED"
@@ -2957,6 +3181,17 @@ export const Constants = {
         "OTHER",
       ],
       membership_status: ["ACTIVE", "INVITED", "SUSPENDED", "REMOVED"],
+      ml_order_status: [
+        "PENDING",
+        "CONFIRMED",
+        "ON_HOLD",
+        "REJECTED",
+        "DELIVERED",
+      ],
+      ml_payment_term: ["CBD", "TOP7", "TOP14", "TOP30"],
+      ml_product_category: ["PRIME_CUT", "SECOND_CUT", "OFFAL", "BONE"],
+      ml_role: ["buyer", "vendor", "admin"],
+      ml_top_decision: ["APPROVE", "CUT", "FORWARD"],
       order_line_status: ["PENDING", "CONFIRMED", "REJECTED"],
       order_status: [
         "PLACED",
