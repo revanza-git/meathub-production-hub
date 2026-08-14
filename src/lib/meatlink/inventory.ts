@@ -16,6 +16,11 @@ export type InventoryDraft = {
 export const ORIGINS = ["Australia", "Japan", "USA", "Canada", "Lokal Premium"] as const;
 export const CONDITIONS = ["FRZ", "CHL"] as const;
 
+export const LOW_STOCK_KEY = "inventory_low_stock_kg";
+export const DEFAULT_LOW_STOCK_KG = 10;
+export const PAGE_SIZES = [10, 50, 100] as const;
+
+
 export const CONDITION_LABEL: Record<string, string> = {
   FRZ: "Frozen",
   CHL: "Chilled",
