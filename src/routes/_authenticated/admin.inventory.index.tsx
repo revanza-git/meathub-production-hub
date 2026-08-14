@@ -285,6 +285,16 @@ function InventoryBody() {
           ))}
         </select>
         <select
+          value={featuredFilter}
+          onChange={(e) => setFeaturedFilter(e.target.value as typeof featuredFilter)}
+          aria-label="Filter by featured status"
+          className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
+        >
+          <option value="all">All items</option>
+          <option value="featured">Featured only</option>
+          <option value="not-featured">Not featured</option>
+        </select>
+        <select
           value={pageSize}
           onChange={(e) => setPageSize(Number(e.target.value))}
           aria-label="Rows per page"
