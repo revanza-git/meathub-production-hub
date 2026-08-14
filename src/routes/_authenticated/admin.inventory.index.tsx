@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { Field, SelectInput, TextInput } from "@/components/site/form-kit";
@@ -8,12 +8,16 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   CONDITIONS,
   CONDITION_LABEL,
+  DEFAULT_LOW_STOCK_KG,
+  LOW_STOCK_KEY,
   ORIGINS,
+  PAGE_SIZES,
   formatIdr,
   formatQty,
   weightToKg,
   type InventoryItem,
 } from "@/lib/meatlink/inventory";
+
 
 export const Route = createFileRoute("/_authenticated/admin/inventory/")({
   component: AdminInventoryPage,
