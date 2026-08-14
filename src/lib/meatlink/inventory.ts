@@ -10,8 +10,10 @@ export type InventoryDraft = {
   avg_weight_text: string | null;
   avg_weight_kg: number | null;
   sale_price_idr: number;
+  markup_idr: number;
   qty_on_hand_kg: number;
 };
+
 
 export const ORIGINS = ["Australia", "Japan", "USA", "Canada", "Lokal Premium"] as const;
 export const CONDITIONS = ["FRZ", "CHL"] as const;
