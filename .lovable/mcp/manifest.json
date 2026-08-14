@@ -322,6 +322,52 @@
           ]
         },
         "outputSchema": null
+      },
+      {
+        "name": "get_public_beef_market_data",
+        "title": "Get public beef market data",
+        "description": "Read public beef-market statistics from FAOSTAT and USDA FAS. Returns FAOSTAT cattle-meat production history and USDA Beef & Veal production, import, export and consumption forecasts. Contains public external data only; it never reads Meatlink inventory, buyers, vendors, orders or RFQs.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "countries": {
+              "description": "Countries to compare. Defaults to Indonesia and major Meatlink-relevant beef origins.",
+              "minItems": 1,
+              "maxItems": 6,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Indonesia",
+                  "Australia",
+                  "United States",
+                  "Canada",
+                  "Japan",
+                  "New Zealand"
+                ]
+              }
+            },
+            "market_year": {
+              "description": "USDA market year. Defaults to the previous calendar year.",
+              "type": "integer",
+              "minimum": 1961,
+              "maximum": 2100
+            },
+            "history_years": {
+              "description": "Number of calendar years requested from FAOSTAT. Defaults to 8.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 15
+            }
+          }
+        },
+        "outputSchema": null
       }
     ]
   }
