@@ -238,10 +238,11 @@ function InventoryBody() {
 
   return (
     <div className="grid gap-6">
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="SKUs (filtered)" value={String(total)} />
         <Stat label={`Needs restock (≤ ${threshold} kg)`} value={String(lowCount)} />
         <Stat label="Page stock value" value={formatIdr(pageValue)} />
+        <Stat label="Total stock value" value={formatIdr(totalValue)} />
       </div>
 
 
