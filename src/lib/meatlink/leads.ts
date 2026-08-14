@@ -85,8 +85,11 @@ export async function submitRfq(input: RfqInput) {
         .join("\n")
     : "";
 
+  const { data: auth } = await supabase.auth.getUser();
+
   const payload = {
     ...rest,
+    user_id: auth.user?.id ?? null,
     items,
     category: first.category ?? "",
     product_cut: first.product_cut,

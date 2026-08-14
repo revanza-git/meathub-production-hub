@@ -2026,6 +2026,7 @@ export type Database = {
           status: string
           target_price: string | null
           updated_at: string
+          user_id: string | null
           volume: string
           whatsapp: string
         }
@@ -2051,6 +2052,7 @@ export type Database = {
           status?: string
           target_price?: string | null
           updated_at?: string
+          user_id?: string | null
           volume: string
           whatsapp: string
         }
@@ -2076,6 +2078,7 @@ export type Database = {
           status?: string
           target_price?: string | null
           updated_at?: string
+          user_id?: string | null
           volume?: string
           whatsapp?: string
         }
