@@ -15,8 +15,20 @@ import { Route as RequestQuoteRouteImport } from './routes/request-quote'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BuyersRouteImport } from './routes/buyers'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedVendorImportRouteImport } from './routes/_authenticated/vendor.import'
+import { Route as AuthenticatedVendorCatalogRouteImport } from './routes/_authenticated/vendor.catalog'
+import { Route as AuthenticatedAppStockRouteImport } from './routes/_authenticated/app.stock'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
+import { Route as AuthenticatedAdminStockRouteImport } from './routes/_authenticated/admin.stock'
+import { Route as AuthenticatedAppOrdersIndexRouteImport } from './routes/_authenticated/app.orders.index'
+import { Route as AuthenticatedAdminOrdersIndexRouteImport } from './routes/_authenticated/admin.orders.index'
+import { Route as AuthenticatedAppOrdersNewRouteImport } from './routes/_authenticated/app.orders.new'
+import { Route as AuthenticatedAppOrdersIdRouteImport } from './routes/_authenticated/app.orders.$id'
+import { Route as AuthenticatedAdminOrdersIdRouteImport } from './routes/_authenticated/admin.orders.$id'
 
 const SupplyRoute = SupplyRouteImport.update({
   id: '/supply',
@@ -48,9 +60,18 @@ const BuyersRoute = BuyersRouteImport.update({
   path: '/buyers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -58,74 +79,201 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedVendorImportRoute =
+  AuthenticatedVendorImportRouteImport.update({
+    id: '/vendor/import',
+    path: '/vendor/import',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVendorCatalogRoute =
+  AuthenticatedVendorCatalogRouteImport.update({
+    id: '/vendor/catalog',
+    path: '/vendor/catalog',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAppStockRoute = AuthenticatedAppStockRouteImport.update({
+  id: '/app/stock',
+  path: '/app/stock',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminStockRoute = AuthenticatedAdminStockRouteImport.update({
+  id: '/admin/stock',
+  path: '/admin/stock',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAppOrdersIndexRoute =
+  AuthenticatedAppOrdersIndexRouteImport.update({
+    id: '/app/orders/',
+    path: '/app/orders/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminOrdersIndexRoute =
+  AuthenticatedAdminOrdersIndexRouteImport.update({
+    id: '/admin/orders/',
+    path: '/admin/orders/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAppOrdersNewRoute =
+  AuthenticatedAppOrdersNewRouteImport.update({
+    id: '/app/orders/new',
+    path: '/app/orders/new',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAppOrdersIdRoute =
+  AuthenticatedAppOrdersIdRouteImport.update({
+    id: '/app/orders/$id',
+    path: '/app/orders/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminOrdersIdRoute =
+  AuthenticatedAdminOrdersIdRouteImport.update({
+    id: '/admin/orders/$id',
+    path: '/admin/orders/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
   '/buyers': typeof BuyersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
   '/request-quote': typeof RequestQuoteRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/admin/stock': typeof AuthenticatedAdminStockRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/app/stock': typeof AuthenticatedAppStockRoute
+  '/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
+  '/vendor/import': typeof AuthenticatedVendorImportRoute
+  '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
+  '/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
+  '/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
+  '/admin/orders/': typeof AuthenticatedAdminOrdersIndexRoute
+  '/app/orders/': typeof AuthenticatedAppOrdersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
   '/buyers': typeof BuyersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
   '/request-quote': typeof RequestQuoteRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/admin/stock': typeof AuthenticatedAdminStockRoute
+  '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/app/stock': typeof AuthenticatedAppStockRoute
+  '/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
+  '/vendor/import': typeof AuthenticatedVendorImportRoute
+  '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
+  '/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
+  '/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
+  '/admin/orders': typeof AuthenticatedAdminOrdersIndexRoute
+  '/app/orders': typeof AuthenticatedAppOrdersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
+  '/auth': typeof AuthRoute
   '/buyers': typeof BuyersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
   '/request-quote': typeof RequestQuoteRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
+  '/_authenticated/admin/stock': typeof AuthenticatedAdminStockRoute
+  '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/app/stock': typeof AuthenticatedAppStockRoute
+  '/_authenticated/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
+  '/_authenticated/vendor/import': typeof AuthenticatedVendorImportRoute
+  '/_authenticated/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
+  '/_authenticated/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
+  '/_authenticated/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
+  '/_authenticated/admin/orders/': typeof AuthenticatedAdminOrdersIndexRoute
+  '/_authenticated/app/orders/': typeof AuthenticatedAppOrdersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/auth'
     | '/buyers'
     | '/contact'
     | '/insights'
     | '/request-quote'
     | '/suppliers'
     | '/supply'
+    | '/admin/stock'
+    | '/admin/users'
+    | '/app/stock'
+    | '/vendor/catalog'
+    | '/vendor/import'
+    | '/admin/orders/$id'
+    | '/app/orders/$id'
+    | '/app/orders/new'
+    | '/admin/orders/'
+    | '/app/orders/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/auth'
     | '/buyers'
     | '/contact'
     | '/insights'
     | '/request-quote'
     | '/suppliers'
     | '/supply'
+    | '/admin/stock'
+    | '/admin/users'
+    | '/app/stock'
+    | '/vendor/catalog'
+    | '/vendor/import'
+    | '/admin/orders/$id'
+    | '/app/orders/$id'
+    | '/app/orders/new'
+    | '/admin/orders'
+    | '/app/orders'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/about'
+    | '/auth'
     | '/buyers'
     | '/contact'
     | '/insights'
     | '/request-quote'
     | '/suppliers'
     | '/supply'
+    | '/_authenticated/admin/stock'
+    | '/_authenticated/admin/users'
+    | '/_authenticated/app/stock'
+    | '/_authenticated/vendor/catalog'
+    | '/_authenticated/vendor/import'
+    | '/_authenticated/admin/orders/$id'
+    | '/_authenticated/app/orders/$id'
+    | '/_authenticated/app/orders/new'
+    | '/_authenticated/admin/orders/'
+    | '/_authenticated/app/orders/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
+  AuthRoute: typeof AuthRoute
   BuyersRoute: typeof BuyersRoute
   ContactRoute: typeof ContactRoute
   InsightsRoute: typeof InsightsRoute
@@ -178,11 +326,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BuyersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -192,12 +354,113 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/vendor/import': {
+      id: '/_authenticated/vendor/import'
+      path: '/vendor/import'
+      fullPath: '/vendor/import'
+      preLoaderRoute: typeof AuthenticatedVendorImportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/vendor/catalog': {
+      id: '/_authenticated/vendor/catalog'
+      path: '/vendor/catalog'
+      fullPath: '/vendor/catalog'
+      preLoaderRoute: typeof AuthenticatedVendorCatalogRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/stock': {
+      id: '/_authenticated/app/stock'
+      path: '/app/stock'
+      fullPath: '/app/stock'
+      preLoaderRoute: typeof AuthenticatedAppStockRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/stock': {
+      id: '/_authenticated/admin/stock'
+      path: '/admin/stock'
+      fullPath: '/admin/stock'
+      preLoaderRoute: typeof AuthenticatedAdminStockRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/orders/': {
+      id: '/_authenticated/app/orders/'
+      path: '/app/orders'
+      fullPath: '/app/orders/'
+      preLoaderRoute: typeof AuthenticatedAppOrdersIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/orders/': {
+      id: '/_authenticated/admin/orders/'
+      path: '/admin/orders'
+      fullPath: '/admin/orders/'
+      preLoaderRoute: typeof AuthenticatedAdminOrdersIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/orders/new': {
+      id: '/_authenticated/app/orders/new'
+      path: '/app/orders/new'
+      fullPath: '/app/orders/new'
+      preLoaderRoute: typeof AuthenticatedAppOrdersNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/orders/$id': {
+      id: '/_authenticated/app/orders/$id'
+      path: '/app/orders/$id'
+      fullPath: '/app/orders/$id'
+      preLoaderRoute: typeof AuthenticatedAppOrdersIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/orders/$id': {
+      id: '/_authenticated/admin/orders/$id'
+      path: '/admin/orders/$id'
+      fullPath: '/admin/orders/$id'
+      preLoaderRoute: typeof AuthenticatedAdminOrdersIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminStockRoute: typeof AuthenticatedAdminStockRoute
+  AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAppStockRoute: typeof AuthenticatedAppStockRoute
+  AuthenticatedVendorCatalogRoute: typeof AuthenticatedVendorCatalogRoute
+  AuthenticatedVendorImportRoute: typeof AuthenticatedVendorImportRoute
+  AuthenticatedAdminOrdersIdRoute: typeof AuthenticatedAdminOrdersIdRoute
+  AuthenticatedAppOrdersIdRoute: typeof AuthenticatedAppOrdersIdRoute
+  AuthenticatedAppOrdersNewRoute: typeof AuthenticatedAppOrdersNewRoute
+  AuthenticatedAdminOrdersIndexRoute: typeof AuthenticatedAdminOrdersIndexRoute
+  AuthenticatedAppOrdersIndexRoute: typeof AuthenticatedAppOrdersIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminStockRoute: AuthenticatedAdminStockRoute,
+  AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+  AuthenticatedAppStockRoute: AuthenticatedAppStockRoute,
+  AuthenticatedVendorCatalogRoute: AuthenticatedVendorCatalogRoute,
+  AuthenticatedVendorImportRoute: AuthenticatedVendorImportRoute,
+  AuthenticatedAdminOrdersIdRoute: AuthenticatedAdminOrdersIdRoute,
+  AuthenticatedAppOrdersIdRoute: AuthenticatedAppOrdersIdRoute,
+  AuthenticatedAppOrdersNewRoute: AuthenticatedAppOrdersNewRoute,
+  AuthenticatedAdminOrdersIndexRoute: AuthenticatedAdminOrdersIndexRoute,
+  AuthenticatedAppOrdersIndexRoute: AuthenticatedAppOrdersIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
+  AuthRoute: AuthRoute,
   BuyersRoute: BuyersRoute,
   ContactRoute: ContactRoute,
   InsightsRoute: InsightsRoute,
