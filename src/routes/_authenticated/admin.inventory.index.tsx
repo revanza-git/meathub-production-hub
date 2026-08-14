@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { Field, SelectInput, TextInput } from "@/components/site/form-kit";
 import { supabase } from "@/integrations/supabase/client";
+import { FEATURED_RANKS, FEATURE_IMAGES } from "@/lib/meatlink/featured";
 import {
   CONDITIONS,
   CONDITION_LABEL,
@@ -191,6 +192,23 @@ function InventoryBody() {
       toast.success("Inventory updated.");
       refresh();
     }
+  }
+
+  async function setFeatured(item: InventoryItem, rank: number | null) {
+    if (rank !== null) {
+      const { error: clearError } = await supabase
+        .from("admin_inventory")
+        .update({ featured_rank: null })
+        .eq("featured_rank", rank);
+      if (clearError) {
+        toast.error(clearError.message);
+        return;
+      }
+    }
+    await patch(item.id, {
+      featured_rank: rank,
+      image_url: rank === null ? null : item.image_url ?? FEATURE_IMAGES[0].key,
+    });
   }
 
   async function remove(item: InventoryItem) {
