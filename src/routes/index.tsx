@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ClipboardList, Handshake, Search, ShieldCheck, Truck } from "lucide-react";
 import { SiteLayout } from "@/components/site/site-layout";
-import { CATEGORIES, RECENTLY_SOURCED } from "@/lib/meatlink/config";
+import { CATEGORIES } from "@/lib/meatlink/config";
+import { resolveFeatureImage, useFeaturedInventory } from "@/lib/meatlink/featured";
+import { formatIdr } from "@/lib/meatlink/inventory";
 import heroImg from "@/assets/hero-wagyu.jpg";
 import buyersImg from "@/assets/for-buyers.jpg";
 import suppliersImg from "@/assets/for-suppliers.jpg";
@@ -276,5 +278,57 @@ function HomePage() {
         </div>
       </section>
     </SiteLayout>
+  );
+}
+
+function FeaturedStock() {
+  const { data: items = [] } = useFeaturedInventory(3);
+  if (items.length === 0) return null;
+  return (
+    <section className="bg-bone">
+      <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="eyebrow text-crimson">Market insights</p>
+            <h2 className="mt-5 font-display text-3xl sm:text-4xl">Recently sourced</h2>
+          </div>
+          <Link to="/insights" className="eyebrow text-ink hover:text-crimson">
+            View all insights
+          </Link>
+        </div>
+        <div className="mt-12 grid gap-px border border-line bg-line lg:grid-cols-3">
+          {items.map((item) => (
+            <article key={item.id} className="bg-card">
+              <img
+                src={resolveFeatureImage(item.image_url)}
+                alt={item.name}
+                loading="lazy"
+                width={1200}
+                height={900}
+                className="h-56 w-full object-cover"
+              />
+              <div className="p-8">
+                <p className="eyebrow text-crimson">{item.origin}</p>
+                <h3 className="mt-4 font-display text-2xl leading-snug">{item.name}</h3>
+                <dl className="mt-6 space-y-2 text-xs text-ash">
+                  <div className="flex justify-between border-b border-line pb-2">
+                    <dt>Brand</dt>
+                    <dd className="text-ink">{item.brand || "Meatlink select"}</dd>
+                  </div>
+                  <div className="flex justify-between border-b border-line pb-2">
+                    <dt>Average weight</dt>
+                    <dd className="text-ink">{item.avg_weight_text ?? "On request"}</dd>
+                  </div>
+                  <div className="flex justify-between pt-1">
+                    <dt>Indicative price</dt>
+                    <dd className="text-crimson">{formatIdr(item.sale_price_idr)} / kg</dd>
+                  </div>
+                </dl>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
