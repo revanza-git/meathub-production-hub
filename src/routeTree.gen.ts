@@ -48,6 +48,7 @@ import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.
 import { Route as AuthenticatedAppOrdersIndexRouteImport } from './routes/_authenticated/app.orders.index'
 import { Route as AuthenticatedAdminOrdersIndexRouteImport } from './routes/_authenticated/admin.orders.index'
 import { Route as AuthenticatedAdminInventoryIndexRouteImport } from './routes/_authenticated/admin.inventory.index'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as AuthenticatedAppOrdersNewRouteImport } from './routes/_authenticated/app.orders.new'
 import { Route as AuthenticatedAppOrdersIdRouteImport } from './routes/_authenticated/app.orders.$id'
 import { Route as AuthenticatedAdminOrdersIdRouteImport } from './routes/_authenticated/admin.orders.$id'
@@ -261,6 +262,12 @@ const AuthenticatedAdminInventoryIndexRoute =
     path: '/admin/inventory/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AuthenticatedAppOrdersNewRoute =
   AuthenticatedAppOrdersNewRouteImport.update({
     id: '/app/orders/new',
@@ -326,6 +333,7 @@ export interface FileRoutesByFullPath {
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
   '/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/admin/inventory/': typeof AuthenticatedAdminInventoryIndexRoute
   '/admin/orders/': typeof AuthenticatedAdminOrdersIndexRoute
   '/app/orders/': typeof AuthenticatedAppOrdersIndexRoute
@@ -370,6 +378,7 @@ export interface FileRoutesByTo {
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
   '/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/admin/inventory': typeof AuthenticatedAdminInventoryIndexRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersIndexRoute
   '/app/orders': typeof AuthenticatedAppOrdersIndexRoute
@@ -416,6 +425,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/_authenticated/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
   '/_authenticated/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
+  '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/_authenticated/admin/inventory/': typeof AuthenticatedAdminInventoryIndexRoute
   '/_authenticated/admin/orders/': typeof AuthenticatedAdminOrdersIndexRoute
   '/_authenticated/app/orders/': typeof AuthenticatedAppOrdersIndexRoute
@@ -462,6 +472,7 @@ export interface FileRouteTypes {
     | '/admin/orders/$id'
     | '/app/orders/$id'
     | '/app/orders/new'
+    | '/lovable/email/transactional/preview'
     | '/admin/inventory/'
     | '/admin/orders/'
     | '/app/orders/'
@@ -506,6 +517,7 @@ export interface FileRouteTypes {
     | '/admin/orders/$id'
     | '/app/orders/$id'
     | '/app/orders/new'
+    | '/lovable/email/transactional/preview'
     | '/admin/inventory'
     | '/admin/orders'
     | '/app/orders'
@@ -551,6 +563,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/orders/$id'
     | '/_authenticated/app/orders/$id'
     | '/_authenticated/app/orders/new'
+    | '/lovable/email/transactional/preview'
     | '/_authenticated/admin/inventory/'
     | '/_authenticated/admin/orders/'
     | '/_authenticated/app/orders/'
@@ -579,6 +592,7 @@ export interface RootRouteChildren {
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicIpaymuCallbackRoute: typeof ApiPublicIpaymuCallbackRoute
+  LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -856,6 +870,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminInventoryIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/app/orders/new': {
       id: '/_authenticated/app/orders/new'
       path: '/app/orders/new'
@@ -964,6 +985,7 @@ const rootRouteChildren: RootRouteChildren = {
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicIpaymuCallbackRoute: ApiPublicIpaymuCallbackRoute,
+  LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
