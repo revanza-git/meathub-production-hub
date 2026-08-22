@@ -427,6 +427,7 @@ function InventoryBody() {
                 <th className="px-4 py-3">Origin</th>
                 <th className="px-4 py-3">Brand</th>
                 <th className="px-4 py-3">Cond.</th>
+                <th className="px-4 py-3">Category</th>
                 <th className="px-4 py-3">Avg wt</th>
                 <th className="px-4 py-3">Price / kg</th>
                 <th className="px-4 py-3">Markup / kg</th>
