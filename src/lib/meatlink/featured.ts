@@ -5,6 +5,8 @@ import lambRack from "@/assets/feature-lamb-rack.jpg";
 import tenderloin from "@/assets/feature-tenderloin.jpg";
 import striploin from "@/assets/feature-striploin.jpg";
 import shortRib from "@/assets/feature-short-rib.jpg";
+import offal from "@/assets/feature-offal.jpg";
+import bone from "@/assets/feature-bone.jpg";
 import type { InventoryItem } from "./inventory";
 
 /** Curated photography an admin can attach to a featured inventory item. */
@@ -14,6 +16,8 @@ export const FEATURE_IMAGES = [
   { key: "tenderloin", label: "Tenderloin", src: tenderloin },
   { key: "striploin", label: "Striploin", src: striploin },
   { key: "short-rib", label: "Short rib", src: shortRib },
+  { key: "offal", label: "Offal", src: offal },
+  { key: "bone", label: "Bone", src: bone },
 ] as const;
 
 export const FEATURED_RANKS = [1, 2, 3, 4, 5] as const;
@@ -24,6 +28,35 @@ export function resolveFeatureImage(value: string | null | undefined): string {
   if (/^https?:\/\//i.test(value) || value.startsWith("/")) return value;
   return FEATURE_IMAGES.find((i) => i.key === value)?.src ?? FEATURE_IMAGES[0].src;
 }
+
+/** Best-effort catalog artwork: explicit image first, then a name/category match. */
+export function resolveProductImage(
+  imageUrl: string | null | undefined,
+  name: string | null | undefined,
+  category: string | null | undefined,
+): string {
+  if (imageUrl) return resolveFeatureImage(imageUrl);
+  const n = (name ?? "").toLowerCase();
+  const byName = [
+    ["wagyu", "wagyu-ribeye"],
+    ["ribeye", "wagyu-ribeye"],
+    ["cube roll", "wagyu-ribeye"],
+    ["tenderloin", "tenderloin"],
+    ["striploin", "striploin"],
+    ["sirloin", "striploin"],
+    ["short rib", "short-rib"],
+    ["rib", "short-rib"],
+    ["lamb", "lamb-rack"],
+    ["domba", "lamb-rack"],
+  ] as const;
+  const hit = byName.find(([needle]) => n.includes(needle));
+  if (hit) return resolveFeatureImage(hit[1]);
+  if (category === "OFFAL") return resolveFeatureImage("offal");
+  if (category === "BONE") return resolveFeatureImage("bone");
+  if (category === "SECOND_CUT") return resolveFeatureImage("short-rib");
+  return resolveFeatureImage("striploin");
+}
+
 
 export type FeaturedItem = Pick<
   InventoryItem,
