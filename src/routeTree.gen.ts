@@ -26,6 +26,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProdukIndexRouteImport } from './routes/produk.index'
 import { Route as ProdukSlugRouteImport } from './routes/produk.$slug'
 import { Route as PesananOrderNoRouteImport } from './routes/pesanan.$orderNo'
+import { Route as KategoriSlugRouteImport } from './routes/kategori.$slug'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as ApiPublicIpaymuCallbackRouteImport } from './routes/api/public/ipaymu-callback'
@@ -136,6 +137,11 @@ const ProdukSlugRoute = ProdukSlugRouteImport.update({
 const PesananOrderNoRoute = PesananOrderNoRouteImport.update({
   id: '/pesanan/$orderNo',
   path: '/pesanan/$orderNo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KategoriSlugRoute = KategoriSlugRouteImport.update({
+  id: '/kategori/$slug',
+  path: '/kategori/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char91DotwellKnownChar93OauthProtectedResourceRoute =
@@ -309,6 +315,7 @@ export interface FileRoutesByFullPath {
   '/supply': typeof SupplyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/kategori/$slug': typeof KategoriSlugRoute
   '/pesanan/$orderNo': typeof PesananOrderNoRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/produk/': typeof ProdukIndexRoute
@@ -354,6 +361,7 @@ export interface FileRoutesByTo {
   '/supply': typeof SupplyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/kategori/$slug': typeof KategoriSlugRoute
   '/pesanan/$orderNo': typeof PesananOrderNoRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/produk': typeof ProdukIndexRoute
@@ -401,6 +409,7 @@ export interface FileRoutesById {
   '/supply': typeof SupplyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/kategori/$slug': typeof KategoriSlugRoute
   '/pesanan/$orderNo': typeof PesananOrderNoRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/produk/': typeof ProdukIndexRoute
@@ -448,6 +457,7 @@ export interface FileRouteTypes {
     | '/supply'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/kategori/$slug'
     | '/pesanan/$orderNo'
     | '/produk/$slug'
     | '/produk/'
@@ -493,6 +503,7 @@ export interface FileRouteTypes {
     | '/supply'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/kategori/$slug'
     | '/pesanan/$orderNo'
     | '/produk/$slug'
     | '/produk'
@@ -539,6 +550,7 @@ export interface FileRouteTypes {
     | '/supply'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/kategori/$slug'
     | '/pesanan/$orderNo'
     | '/produk/$slug'
     | '/produk/'
@@ -586,6 +598,7 @@ export interface RootRouteChildren {
   SupplyRoute: typeof SupplyRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  KategoriSlugRoute: typeof KategoriSlugRoute
   PesananOrderNoRoute: typeof PesananOrderNoRoute
   ProdukSlugRoute: typeof ProdukSlugRoute
   ProdukIndexRoute: typeof ProdukIndexRoute
@@ -714,6 +727,13 @@ declare module '@tanstack/react-router' {
       path: '/pesanan/$orderNo'
       fullPath: '/pesanan/$orderNo'
       preLoaderRoute: typeof PesananOrderNoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kategori/$slug': {
+      id: '/kategori/$slug'
+      path: '/kategori/$slug'
+      fullPath: '/kategori/$slug'
+      preLoaderRoute: typeof KategoriSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.well-known/oauth-protected-resource': {
@@ -979,6 +999,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  KategoriSlugRoute: KategoriSlugRoute,
   PesananOrderNoRoute: PesananOrderNoRoute,
   ProdukSlugRoute: ProdukSlugRoute,
   ProdukIndexRoute: ProdukIndexRoute,
