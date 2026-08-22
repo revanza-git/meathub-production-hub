@@ -79,6 +79,7 @@ export const Route = createFileRoute("/produk/")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://meatlink.id/produk" }],
   }),
   component: CatalogPage,
 });

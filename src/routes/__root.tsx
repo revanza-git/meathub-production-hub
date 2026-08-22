@@ -14,6 +14,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { registerServiceWorker } from "@/lib/pwa-register";
+import { ConsentBanner } from "@/components/site/consent-banner";
+import { trackPageView } from "@/lib/analytics";
 
 
 function NotFoundComponent() {
@@ -173,6 +175,13 @@ function RootComponent() {
     return () => sub.subscription.unsubscribe();
   }, [router, queryClient]);
 
+  // GA4 page views on every client-side navigation (consent-gated inside).
+  useEffect(() => {
+    const send = () => trackPageView(window.location.pathname + window.location.search, document.title);
+    send();
+    return router.subscribe("onResolved", send);
+  }, [router]);
+
   // Guarded PWA registration (no-op in dev/preview/iframe).
   useEffect(() => {
     void registerServiceWorker();
@@ -182,6 +191,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <Outlet />
       <Toaster richColors position="top-center" />
+      <ConsentBanner />
     </QueryClientProvider>
   );
 }

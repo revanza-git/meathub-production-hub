@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Database } from "@/integrations/supabase/types";
+import { trackEvent } from "@/lib/analytics";
 
 export type PayMethod = Database["public"]["Enums"]["ml_pay_method"];
 
@@ -90,6 +91,11 @@ export function useCart() {
     if (found) found.qty = Math.round((found.qty + line.qty) * 100) / 100;
     else next.push(line);
     write(next);
+    trackEvent("add_to_cart", {
+      currency: "IDR",
+      value: line.price * line.qty,
+      items: [{ item_id: line.slug, item_name: line.name, price: line.price, quantity: line.qty }],
+    });
   }, []);
 
   const setQty = useCallback((slug: string, qty: number) => {
