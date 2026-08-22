@@ -26,12 +26,19 @@ type TrackedOrder = {
   payment_qr_url?: string | null;
   payment_expires_at?: string | null;
   paid_at?: string | null;
+  courier_name?: string | null;
+  tracking_no?: string | null;
+  eta_date?: string | null;
+  shipped_at?: string | null;
+  delivered_at?: string | null;
+  buyer_confirmed_at?: string | null;
   items: {
     product_name: string;
     unit_price_idr: number;
     qty_kg: number;
     line_total_idr: number;
   }[];
+  timeline?: TimelineEvent[];
 };
 
 export const Route = createFileRoute("/pesanan/$orderNo")({
