@@ -48,9 +48,9 @@ export function useCatalog(filters: CatalogFilters = {}) {
     staleTime: 60_000,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("ml_public_catalog", {
-        _search: search || null,
-        _category: category,
-        _origin: origin,
+        _search: search || undefined,
+        _category: category ?? undefined,
+        _origin: origin ?? undefined,
         _limit: pageSize,
         _offset: (page - 1) * pageSize,
       });
