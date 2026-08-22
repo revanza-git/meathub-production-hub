@@ -57,6 +57,7 @@ const EMPTY_FORM = {
   brand: "",
   name: "",
   condition: "FRZ",
+  category: "PRIME_CUT",
   avg_weight_text: "",
   sale_price_idr: "",
   markup_idr: "",
