@@ -10,6 +10,7 @@ type NavItem = { to: string; label: string };
 const NAV: Record<MlRole, NavItem[]> = {
   buyer: [
     { to: "/app/pesanan", label: "Pesanan Toko" },
+    { to: "/app/alamat", label: "Alamat Kirim" },
     { to: "/app/orders", label: "My Orders" },
     { to: "/app/orders/new", label: "New Order" },
     { to: "/app/rfq", label: "My RFQs" },
