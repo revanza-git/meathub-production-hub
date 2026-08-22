@@ -237,6 +237,7 @@ function HomePage() {
                 <p className="mt-4 max-w-md text-sm leading-relaxed text-bone/65">{panel.body}</p>
                 <Link
                   to={panel.to}
+                  hash={panel.hash}
                   className="eyebrow mt-7 inline-flex items-center gap-2 text-bone hover:text-crimson"
                 >
                   {panel.cta} <ArrowRight className="h-4 w-4" aria-hidden="true" />
