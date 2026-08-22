@@ -61,6 +61,16 @@ function ProductPage() {
         ) : (
           <div className="mt-10 grid gap-12 lg:grid-cols-[1.2fr_1fr]">
             <div>
+              <div className="relative mb-8 aspect-[16/10] overflow-hidden bg-ink/5">
+                <img
+                  src={resolveProductImage(product.image_url, product.name, product.category)}
+                  alt={product.name}
+                  width={1024}
+                  height={768}
+                  className="h-full w-full object-cover"
+                />
+                <AvailabilityBadge value={product.availability} />
+              </div>
               <p className="eyebrow text-crimson">{CATEGORY_LABEL[product.category]}</p>
               <h1 className="mt-4 font-display text-4xl leading-tight text-ink lg:text-5xl">
                 {product.name}
