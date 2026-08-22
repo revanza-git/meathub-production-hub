@@ -40,6 +40,7 @@ import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminRfqRouteImport } from './routes/_authenticated/admin.rfq'
 import { Route as AuthenticatedAdminInsightsRouteImport } from './routes/_authenticated/admin.insights'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
+import { Route as AuthenticatedAdminCommerceRouteImport } from './routes/_authenticated/admin.commerce'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedAppOrdersIndexRouteImport } from './routes/_authenticated/app.orders.index'
@@ -212,6 +213,12 @@ const AuthenticatedAdminDashboardRoute =
     path: '/admin/dashboard',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminCommerceRoute =
+  AuthenticatedAdminCommerceRouteImport.update({
+    id: '/admin/commerce',
+    path: '/admin/commerce',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -286,6 +293,7 @@ export interface FileRoutesByFullPath {
   '/produk/': typeof ProdukIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/commerce': typeof AuthenticatedAdminCommerceRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/insights': typeof AuthenticatedAdminInsightsRoute
   '/admin/rfq': typeof AuthenticatedAdminRfqRoute
@@ -327,6 +335,7 @@ export interface FileRoutesByTo {
   '/produk': typeof ProdukIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/commerce': typeof AuthenticatedAdminCommerceRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/insights': typeof AuthenticatedAdminInsightsRoute
   '/admin/rfq': typeof AuthenticatedAdminRfqRoute
@@ -370,6 +379,7 @@ export interface FileRoutesById {
   '/produk/': typeof ProdukIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/_authenticated/admin/commerce': typeof AuthenticatedAdminCommerceRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/insights': typeof AuthenticatedAdminInsightsRoute
   '/_authenticated/admin/rfq': typeof AuthenticatedAdminRfqRoute
@@ -413,6 +423,7 @@ export interface FileRouteTypes {
     | '/produk/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/commerce'
     | '/admin/dashboard'
     | '/admin/insights'
     | '/admin/rfq'
@@ -454,6 +465,7 @@ export interface FileRouteTypes {
     | '/produk'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/commerce'
     | '/admin/dashboard'
     | '/admin/insights'
     | '/admin/rfq'
@@ -496,6 +508,7 @@ export interface FileRouteTypes {
     | '/produk/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/_authenticated/admin/commerce'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/insights'
     | '/_authenticated/admin/rfq'
@@ -761,6 +774,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/commerce': {
+      id: '/_authenticated/admin/commerce'
+      path: '/admin/commerce'
+      fullPath: '/admin/commerce'
+      preLoaderRoute: typeof AuthenticatedAdminCommerceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/.mcp/invoke-tool/$tool': {
       id: '/.mcp/invoke-tool/$tool'
       path: '/.mcp/invoke-tool/$tool'
@@ -828,6 +848,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminCommerceRoute: typeof AuthenticatedAdminCommerceRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedAdminInsightsRoute: typeof AuthenticatedAdminInsightsRoute
   AuthenticatedAdminRfqRoute: typeof AuthenticatedAdminRfqRoute
@@ -850,6 +871,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminCommerceRoute: AuthenticatedAdminCommerceRoute,
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
   AuthenticatedAdminInsightsRoute: AuthenticatedAdminInsightsRoute,
   AuthenticatedAdminRfqRoute: AuthenticatedAdminRfqRoute,
