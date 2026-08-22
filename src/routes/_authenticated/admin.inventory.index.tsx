@@ -19,6 +19,7 @@ import {
   weightToKg,
   type InventoryItem,
 } from "@/lib/meatlink/inventory";
+import { CATEGORIES, type ProductCategory } from "@/lib/meatlink/catalog";
 
 
 export const Route = createFileRoute("/_authenticated/admin/inventory/")({
@@ -57,6 +58,7 @@ const EMPTY_FORM = {
   brand: "",
   name: "",
   condition: "FRZ",
+  category: "PRIME_CUT",
   avg_weight_text: "",
   sale_price_idr: "",
   markup_idr: "",
@@ -191,6 +193,7 @@ function InventoryBody() {
       brand: form.brand.trim(),
       name: form.name.trim(),
       condition: form.condition || null,
+      category: form.category as ProductCategory,
       avg_weight_text: form.avg_weight_text.trim() || null,
       avg_weight_kg: weightToKg(form.avg_weight_text),
       sale_price_idr: Number(form.sale_price_idr || 0),
@@ -358,6 +361,18 @@ function InventoryBody() {
                 ))}
               </SelectInput>
             </Field>
+            <Field label="Category">
+              <SelectInput
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+              >
+                {CATEGORIES.map((c) => (
+                  <option key={c.value} value={c.value}>
+                    {c.label}
+                  </option>
+                ))}
+              </SelectInput>
+            </Field>
             <Field label="Average weight" hint="e.g. 8KG or 250GR">
               <TextInput
                 value={form.avg_weight_text}
@@ -412,6 +427,7 @@ function InventoryBody() {
                 <th className="px-4 py-3">Origin</th>
                 <th className="px-4 py-3">Brand</th>
                 <th className="px-4 py-3">Cond.</th>
+                <th className="px-4 py-3">Category</th>
                 <th className="px-4 py-3">Avg wt</th>
                 <th className="px-4 py-3">Price / kg</th>
                 <th className="px-4 py-3">Markup / kg</th>
@@ -436,6 +452,21 @@ function InventoryBody() {
                   <td className="px-4 py-3 text-xs text-ash">{item.brand || "—"}</td>
                   <td className="px-4 py-3 text-xs text-ash">
                     {item.condition ? CONDITION_LABEL[item.condition] ?? item.condition : "—"}
+                  </td>
+                  <td className="px-4 py-3">
+                    <select
+                      className="border border-line bg-transparent px-2 py-1 text-xs text-ink"
+                      value={item.category}
+                      onChange={(e) =>
+                        void patch(item.id, { category: e.target.value as ProductCategory })
+                      }
+                    >
+                      {CATEGORIES.map((c) => (
+                        <option key={c.value} value={c.value}>
+                          {c.label}
+                        </option>
+                      ))}
+                    </select>
                   </td>
                   <td className="px-4 py-3 text-xs text-ash">{item.avg_weight_text ?? "—"}</td>
                   <td className="px-4 py-3">
