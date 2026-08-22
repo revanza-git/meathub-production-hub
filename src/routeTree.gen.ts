@@ -31,6 +31,7 @@ import { Route as PesananOrderNoRouteImport } from './routes/pesanan.$orderNo'
 import { Route as KategoriSlugRouteImport } from './routes/kategori.$slug'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as ApiPublicOpsCronRouteImport } from './routes/api/public/ops-cron'
 import { Route as ApiPublicIpaymuCallbackRouteImport } from './routes/api/public/ipaymu-callback'
 import { Route as AuthenticatedVendorImportRouteImport } from './routes/_authenticated/vendor.import'
 import { Route as AuthenticatedVendorCatalogRouteImport } from './routes/_authenticated/vendor.catalog'
@@ -168,6 +169,11 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicOpsCronRoute = ApiPublicOpsCronRouteImport.update({
+  id: '/api/public/ops-cron',
+  path: '/api/public/ops-cron',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicIpaymuCallbackRoute = ApiPublicIpaymuCallbackRouteImport.update({
   id: '/api/public/ipaymu-callback',
   path: '/api/public/ipaymu-callback',
@@ -350,6 +356,7 @@ export interface FileRoutesByFullPath {
   '/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
   '/vendor/import': typeof AuthenticatedVendorImportRoute
   '/api/public/ipaymu-callback': typeof ApiPublicIpaymuCallbackRoute
+  '/api/public/ops-cron': typeof ApiPublicOpsCronRoute
   '/admin/inventory/import': typeof AuthenticatedAdminInventoryImportRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
@@ -398,6 +405,7 @@ export interface FileRoutesByTo {
   '/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
   '/vendor/import': typeof AuthenticatedVendorImportRoute
   '/api/public/ipaymu-callback': typeof ApiPublicIpaymuCallbackRoute
+  '/api/public/ops-cron': typeof ApiPublicOpsCronRoute
   '/admin/inventory/import': typeof AuthenticatedAdminInventoryImportRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
@@ -448,6 +456,7 @@ export interface FileRoutesById {
   '/_authenticated/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
   '/_authenticated/vendor/import': typeof AuthenticatedVendorImportRoute
   '/api/public/ipaymu-callback': typeof ApiPublicIpaymuCallbackRoute
+  '/api/public/ops-cron': typeof ApiPublicOpsCronRoute
   '/_authenticated/admin/inventory/import': typeof AuthenticatedAdminInventoryImportRoute
   '/_authenticated/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/_authenticated/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
@@ -498,6 +507,7 @@ export interface FileRouteTypes {
     | '/vendor/catalog'
     | '/vendor/import'
     | '/api/public/ipaymu-callback'
+    | '/api/public/ops-cron'
     | '/admin/inventory/import'
     | '/admin/orders/$id'
     | '/app/orders/$id'
@@ -546,6 +556,7 @@ export interface FileRouteTypes {
     | '/vendor/catalog'
     | '/vendor/import'
     | '/api/public/ipaymu-callback'
+    | '/api/public/ops-cron'
     | '/admin/inventory/import'
     | '/admin/orders/$id'
     | '/app/orders/$id'
@@ -595,6 +606,7 @@ export interface FileRouteTypes {
     | '/_authenticated/vendor/catalog'
     | '/_authenticated/vendor/import'
     | '/api/public/ipaymu-callback'
+    | '/api/public/ops-cron'
     | '/_authenticated/admin/inventory/import'
     | '/_authenticated/admin/orders/$id'
     | '/_authenticated/app/orders/$id'
@@ -631,6 +643,7 @@ export interface RootRouteChildren {
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicIpaymuCallbackRoute: typeof ApiPublicIpaymuCallbackRoute
+  ApiPublicOpsCronRoute: typeof ApiPublicOpsCronRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
@@ -788,6 +801,13 @@ declare module '@tanstack/react-router' {
       path: '/.mcp/list-tools'
       fullPath: '/.mcp/list-tools'
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/ops-cron': {
+      id: '/api/public/ops-cron'
+      path: '/api/public/ops-cron'
+      fullPath: '/api/public/ops-cron'
+      preLoaderRoute: typeof ApiPublicOpsCronRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/ipaymu-callback': {
@@ -1048,6 +1068,7 @@ const rootRouteChildren: RootRouteChildren = {
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicIpaymuCallbackRoute: ApiPublicIpaymuCallbackRoute,
+  ApiPublicOpsCronRoute: ApiPublicOpsCronRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
