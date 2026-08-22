@@ -9,6 +9,27 @@ The tool returns public external statistics only. It does not read or return Mea
 prices, orders, RFQs, buyers, vendors, or locations. Codex can use its output as evidence for
 `create_market_insight`; the resulting insight is always a draft until an administrator publishes it.
 
+## Current Indonesian market context without Bapanas API access
+
+Until Bapanas approves API access, the MCP uses a reviewable observation workflow for public pages
+from PIHPS Bank Indonesia, SP2KP/Kemendag, Bapanas publications, Kementan, BPS, and Bank Indonesia.
+It never calls hidden or undocumented dashboard endpoints.
+
+1. An admin or agent reads a dated public source and calls `record_public_market_observation`.
+2. The record is saved as `candidate`; the source URL must match the selected official domain.
+3. An admin checks the page and calls `review_public_market_observation` to verify or reject it.
+4. The agent calls `list_public_market_observations`, combines recent signals with FAOSTAT/USDA,
+   and passes the supporting observation IDs to `create_market_insight`.
+
+`create_market_insight` enforces a relevance gate: at least one price observation must be no more than
+7 days old, or one industry/policy/seasonal/macro signal must be no more than 30 days old. Candidate-only
+evidence cannot produce a high-confidence draft. Every draft records its audience, time horizon,
+freshness decision, observation details, dates, and public source URLs in `data_refs`.
+
+Dashboard observations are daily reported benchmarks, not real-time or Meatlink transaction prices.
+The create tool rejects text that appears to disclose Meatlink internal inventory, pricing, orders,
+RFQs, buyers, vendors, or locations.
+
 ## Required server secrets
 
 Configure these only in the Lovable/Supabase server environment. Never prefix them with `VITE_` or
@@ -31,11 +52,12 @@ Registration and documentation:
 
 ## Agent workflow
 
-1. Call `get_public_beef_market_data` for the relevant countries and market year.
-2. Call `list_market_insights` to avoid duplicate coverage.
-3. Draft a concise note using only the returned public figures.
-4. Store the cited public figures and source URLs in `data_refs`.
-5. Call `create_market_insight`; an administrator reviews and publishes the draft.
+1. Call `list_public_market_observations` for current Indonesian price and industry context.
+2. Call `get_public_beef_market_data` for the relevant countries and market year.
+3. Call `list_market_insights` to avoid duplicate coverage.
+4. Draft a concise recommendation for buyers, suppliers, or both using only public evidence.
+5. Pass the public observation IDs, audience, time horizon, and structural figures to
+   `create_market_insight`; an administrator reviews and publishes the draft.
 
 If one upstream API is unavailable or unconfigured, the tool returns that source with
 `status: "error"` while preserving successful data from the other source.
