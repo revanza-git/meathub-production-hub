@@ -194,6 +194,20 @@ function CartPage() {
       const row = (data ?? [])[0];
       if (!row) throw new Error("Pesanan gagal dibuat");
       clear();
+      if (signedIn && saveNewAddress) {
+        await saveAddress(
+          {
+            label: form.company?.trim() || form.city?.trim() || "Alamat pengiriman",
+            buyer_name: form.buyer_name,
+            company: form.company,
+            phone: form.phone,
+            email: form.email,
+            address: form.address,
+            city: form.city,
+            is_default: addresses.length === 0,
+          },
+        ).catch(() => undefined);
+      }
       toast.success(`Pesanan ${row.order_no} berhasil dibuat.`);
       void notifyOrderEventPublic({
         data: { orderNo: row.order_no, token: row.access_token, event: "placed" },
