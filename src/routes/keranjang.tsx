@@ -280,6 +280,42 @@ function CartPage() {
               </ul>
 
               <h2 className="mt-12 font-display text-2xl text-ink">Data pengiriman</h2>
+
+              {signedIn && addresses.length > 0 ? (
+                <div className="mt-6 border border-line p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <h3 className="eyebrow text-ash">Alamat tersimpan</h3>
+                    <Link to="/app/alamat" className="text-xs text-ash underline">
+                      Kelola alamat
+                    </Link>
+                  </div>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    {addresses.map((a) => (
+                      <button
+                        key={a.id}
+                        type="button"
+                        onClick={() => applyAddress(a)}
+                        aria-pressed={pickedAddress === a.id}
+                        className={`border p-4 text-left text-sm transition-colors ${
+                          pickedAddress === a.id
+                            ? "border-crimson text-ink"
+                            : "border-line text-ash hover:border-ink/40"
+                        }`}
+                      >
+                        <span className="block text-ink">{a.label}</span>
+                        <span className="mt-1 block text-xs">
+                          {a.buyer_name} · {a.phone}
+                        </span>
+                        <span className="mt-1 block text-xs">
+                          {a.address}
+                          {a.city ? `, ${a.city}` : ""}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <Input label="Nama pemesan" required value={form.buyer_name} onChange={(v) => set("buyer_name", v)} />
                 <Input label="Perusahaan" value={form.company} onChange={(v) => set("company", v)} />
