@@ -117,7 +117,7 @@ export function SupplierForm() {
           <TextInput
             value={values.product_categories ?? ""}
             onChange={(e) => set("product_categories", e.target.value)}
-            placeholder="Beef, wagyu, lamb, poultry, seafood"
+            placeholder="Beef, wagyu, lamb"
           />
         </Field>
         <Field label="Origins handled" error={errors["origins"]}>
