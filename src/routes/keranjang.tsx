@@ -60,20 +60,47 @@ function CartPage() {
     setForm((f) => ({ ...f, [k]: v }));
   }
 
-  // Signed-in buyers: prefill shipping details from their most recent order.
+  function applyAddress(a: BuyerAddress) {
+    setPickedAddress(a.id);
+    setForm((f) => ({
+      ...f,
+      buyer_name: a.buyer_name,
+      company: a.company ?? "",
+      phone: a.phone,
+      email: a.email ?? "",
+      address: a.address,
+      city: a.city ?? "",
+      notes: a.notes ?? f.notes,
+    }));
+  }
+
+  // Signed-in buyers: prefill from the saved address book, else the latest order.
   useEffect(() => {
     let active = true;
     void (async () => {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) return;
+      if (active) setSignedIn(true);
+
+      const saved = await listAddresses().catch(() => [] as BuyerAddress[]);
+      if (active) setAddresses(saved);
+
+      const { data: creditRow } = await supabase.rpc("ml_my_credit");
+      if (active && creditRow) setCredit(creditRow as unknown as CreditSummary);
+      if (!active) return;
+
+      const preferred = saved.find((a) => a.is_default) ?? saved[0];
+      if (preferred) {
+        applyAddress(preferred);
+        return;
+      }
+
       const { data } = await supabase
         .from("storefront_orders")
         .select("buyer_name, company, phone, email, address, city")
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
-      const { data: creditRow } = await supabase.rpc("ml_my_credit");
-      if (active && creditRow) setCredit(creditRow as unknown as CreditSummary);
       if (!active || !data) return;
       setForm((f) =>
         f.buyer_name || f.phone || f.address
@@ -92,7 +119,7 @@ function CartPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Re-check the code whenever the cart total moves so minimum-spend rules stay honest.
   useEffect(() => {
