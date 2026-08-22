@@ -89,7 +89,7 @@ const rupiah = (n: number) => new Intl.NumberFormat("id-ID").format(Math.round(n
 
 function CatalogPage() {
   const params = Route.useSearch();
-  const navigate = useNavigate({ from: "/produk" });
+  const navigate = useNavigate({ from: "/produk/" });
   const [searchInput, setSearchInput] = useState(params.q ?? "");
   const [showFilters, setShowFilters] = useState(false);
 
