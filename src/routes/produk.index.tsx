@@ -128,29 +128,38 @@ function CatalogPage() {
                   key={row.id}
                   to="/produk/$slug"
                   params={{ slug: row.slug }}
-                  className="group flex flex-col justify-between bg-background p-6 transition-colors hover:bg-ink/[0.03]"
+                  className="group flex flex-col bg-background transition-colors hover:bg-ink/[0.03]"
                 >
-                  <div>
-                    <p className="eyebrow text-crimson">{CATEGORY_LABEL[row.category]}</p>
-                    <h2 className="mt-3 font-display text-xl leading-snug text-ink">{row.name}</h2>
-                    <p className="mt-2 text-sm text-ash">
-                      {[row.brand, row.origin, row.condition].filter(Boolean).join(" · ")}
-                    </p>
+                  <div className="relative aspect-[4/3] overflow-hidden bg-ink/5">
+                    <img
+                      src={resolveProductImage(row.image_url, row.name, row.category)}
+                      alt={row.name}
+                      loading="lazy"
+                      width={1024}
+                      height={768}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <AvailabilityBadge value={row.availability} />
                   </div>
-                  <div className="mt-6 flex items-end justify-between gap-4">
+                  <div className="flex flex-1 flex-col justify-between p-6">
                     <div>
+                      <p className="eyebrow text-crimson">{CATEGORY_LABEL[row.category]}</p>
+                      <h2 className="mt-3 font-display text-xl leading-snug text-ink">{row.name}</h2>
+                      <p className="mt-2 text-sm text-ash">
+                        {[row.brand, row.origin, row.condition].filter(Boolean).join(" · ")}
+                      </p>
+                    </div>
+                    <div className="mt-6 flex items-end justify-between gap-4">
                       <p className="font-display text-2xl text-ink">
                         {formatIdr(row.public_price_idr)}
                         <span className="text-sm text-ash"> /kg</span>
                       </p>
-                      <p className="mt-1 text-xs text-ash">
-                        {AVAILABILITY_LABEL[row.availability as Availability] ?? row.availability}
-                      </p>
+                      <ArrowRight className="h-5 w-5 text-ash transition-transform group-hover:translate-x-1" />
                     </div>
-                    <ArrowRight className="h-5 w-5 text-ash transition-transform group-hover:translate-x-1" />
                   </div>
                 </Link>
               ))}
+
         </div>
 
         {!isLoading && rows.length === 0 && !isError ? (
