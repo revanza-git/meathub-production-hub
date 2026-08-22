@@ -19,6 +19,7 @@ import {
   weightToKg,
   type InventoryItem,
 } from "@/lib/meatlink/inventory";
+import { CATEGORIES, type ProductCategory } from "@/lib/meatlink/catalog";
 
 
 export const Route = createFileRoute("/_authenticated/admin/inventory/")({
