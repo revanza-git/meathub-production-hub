@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowRight, Search } from "lucide-react";
 import { SiteLayout, PageHero } from "@/components/site/site-layout";
+import { Recommendations } from "@/components/meatlink/recommendations";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { resolveProductImage } from "@/lib/meatlink/featured";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
@@ -196,6 +197,7 @@ function CatalogPage() {
           </nav>
         ) : null}
       </section>
+      <Recommendations />
     </SiteLayout>
   );
 }
