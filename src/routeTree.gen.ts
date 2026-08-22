@@ -38,6 +38,7 @@ import { Route as AuthenticatedVendorCatalogRouteImport } from './routes/_authen
 import { Route as AuthenticatedAppStockRouteImport } from './routes/_authenticated/app.stock'
 import { Route as AuthenticatedAppRfqRouteImport } from './routes/_authenticated/app.rfq'
 import { Route as AuthenticatedAppPesananRouteImport } from './routes/_authenticated/app.pesanan'
+import { Route as AuthenticatedAppAlamatRouteImport } from './routes/_authenticated/app.alamat'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedAdminStorefrontOrdersRouteImport } from './routes/_authenticated/admin.storefront-orders'
 import { Route as AuthenticatedAdminStockRouteImport } from './routes/_authenticated/admin.stock'
@@ -206,6 +207,11 @@ const AuthenticatedAppPesananRoute = AuthenticatedAppPesananRouteImport.update({
   path: '/app/pesanan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAppAlamatRoute = AuthenticatedAppAlamatRouteImport.update({
+  id: '/app/alamat',
+  path: '/app/alamat',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/admin/users',
   path: '/admin/users',
@@ -350,6 +356,7 @@ export interface FileRoutesByFullPath {
   '/admin/stock': typeof AuthenticatedAdminStockRoute
   '/admin/storefront-orders': typeof AuthenticatedAdminStorefrontOrdersRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/app/alamat': typeof AuthenticatedAppAlamatRoute
   '/app/pesanan': typeof AuthenticatedAppPesananRoute
   '/app/rfq': typeof AuthenticatedAppRfqRoute
   '/app/stock': typeof AuthenticatedAppStockRoute
@@ -399,6 +406,7 @@ export interface FileRoutesByTo {
   '/admin/stock': typeof AuthenticatedAdminStockRoute
   '/admin/storefront-orders': typeof AuthenticatedAdminStorefrontOrdersRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/app/alamat': typeof AuthenticatedAppAlamatRoute
   '/app/pesanan': typeof AuthenticatedAppPesananRoute
   '/app/rfq': typeof AuthenticatedAppRfqRoute
   '/app/stock': typeof AuthenticatedAppStockRoute
@@ -450,6 +458,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/stock': typeof AuthenticatedAdminStockRoute
   '/_authenticated/admin/storefront-orders': typeof AuthenticatedAdminStorefrontOrdersRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/app/alamat': typeof AuthenticatedAppAlamatRoute
   '/_authenticated/app/pesanan': typeof AuthenticatedAppPesananRoute
   '/_authenticated/app/rfq': typeof AuthenticatedAppRfqRoute
   '/_authenticated/app/stock': typeof AuthenticatedAppStockRoute
@@ -501,6 +510,7 @@ export interface FileRouteTypes {
     | '/admin/stock'
     | '/admin/storefront-orders'
     | '/admin/users'
+    | '/app/alamat'
     | '/app/pesanan'
     | '/app/rfq'
     | '/app/stock'
@@ -550,6 +560,7 @@ export interface FileRouteTypes {
     | '/admin/stock'
     | '/admin/storefront-orders'
     | '/admin/users'
+    | '/app/alamat'
     | '/app/pesanan'
     | '/app/rfq'
     | '/app/stock'
@@ -600,6 +611,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/stock'
     | '/_authenticated/admin/storefront-orders'
     | '/_authenticated/admin/users'
+    | '/_authenticated/app/alamat'
     | '/_authenticated/app/pesanan'
     | '/_authenticated/app/rfq'
     | '/_authenticated/app/stock'
@@ -852,6 +864,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppPesananRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/alamat': {
+      id: '/_authenticated/app/alamat'
+      path: '/app/alamat'
+      fullPath: '/app/alamat'
+      preLoaderRoute: typeof AuthenticatedAppAlamatRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/users': {
       id: '/_authenticated/admin/users'
       path: '/admin/users'
@@ -998,6 +1017,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminStockRoute: typeof AuthenticatedAdminStockRoute
   AuthenticatedAdminStorefrontOrdersRoute: typeof AuthenticatedAdminStorefrontOrdersRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAppAlamatRoute: typeof AuthenticatedAppAlamatRoute
   AuthenticatedAppPesananRoute: typeof AuthenticatedAppPesananRoute
   AuthenticatedAppRfqRoute: typeof AuthenticatedAppRfqRoute
   AuthenticatedAppStockRoute: typeof AuthenticatedAppStockRoute
@@ -1023,6 +1043,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminStorefrontOrdersRoute:
     AuthenticatedAdminStorefrontOrdersRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+  AuthenticatedAppAlamatRoute: AuthenticatedAppAlamatRoute,
   AuthenticatedAppPesananRoute: AuthenticatedAppPesananRoute,
   AuthenticatedAppRfqRoute: AuthenticatedAppRfqRoute,
   AuthenticatedAppStockRoute: AuthenticatedAppStockRoute,
