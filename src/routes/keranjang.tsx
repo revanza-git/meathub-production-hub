@@ -133,7 +133,7 @@ function CartPage() {
     const raw = window.prompt("Berapa limit tempo yang Anda ajukan (Rp)?", "50000000");
     const limit = Number((raw ?? "").replace(/\D/g, ""));
     if (!limit) return;
-    const { error } = await supabase.rpc("ml_request_credit", { _limit: limit, _note: null });
+    const { error } = await supabase.rpc("ml_request_credit", { _limit: limit });
     if (error) {
       toast.error(error.message);
       return;
