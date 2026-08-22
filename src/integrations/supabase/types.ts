@@ -2679,6 +2679,123 @@ export type Database = {
         }
         Relationships: []
       }
+      storefront_order_items: {
+        Row: {
+          category: Database["public"]["Enums"]["ml_product_category"] | null
+          created_at: string
+          id: string
+          inventory_id: string | null
+          line_total_idr: number
+          order_id: string
+          product_name: string
+          qty_kg: number
+          slug: string | null
+          unit_price_idr: number
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["ml_product_category"] | null
+          created_at?: string
+          id?: string
+          inventory_id?: string | null
+          line_total_idr: number
+          order_id: string
+          product_name: string
+          qty_kg: number
+          slug?: string | null
+          unit_price_idr: number
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["ml_product_category"] | null
+          created_at?: string
+          id?: string
+          inventory_id?: string | null
+          line_total_idr?: number
+          order_id?: string
+          product_name?: string
+          qty_kg?: number
+          slug?: string | null
+          unit_price_idr?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "storefront_order_items_inventory_id_fkey"
+            columns: ["inventory_id"]
+            isOneToOne: false
+            referencedRelation: "admin_inventory"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "storefront_order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "storefront_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      storefront_orders: {
+        Row: {
+          access_token: string
+          address: string
+          buyer_name: string
+          city: string | null
+          company: string | null
+          created_at: string
+          email: string | null
+          id: string
+          notes: string | null
+          order_no: string
+          payment_method: Database["public"]["Enums"]["ml_pay_method"]
+          payment_ref: string | null
+          phone: string
+          status: Database["public"]["Enums"]["ml_store_order_status"]
+          subtotal_idr: number
+          total_idr: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          access_token?: string
+          address: string
+          buyer_name: string
+          city?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          notes?: string | null
+          order_no: string
+          payment_method: Database["public"]["Enums"]["ml_pay_method"]
+          payment_ref?: string | null
+          phone: string
+          status?: Database["public"]["Enums"]["ml_store_order_status"]
+          subtotal_idr?: number
+          total_idr?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          access_token?: string
+          address?: string
+          buyer_name?: string
+          city?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          notes?: string | null
+          order_no?: string
+          payment_method?: Database["public"]["Enums"]["ml_pay_method"]
+          payment_ref?: string | null
+          phone?: string
+          status?: Database["public"]["Enums"]["ml_store_order_status"]
+          subtotal_idr?: number
+          total_idr?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       supplier_applications: {
         Row: {
           brands_represented: string | null
@@ -3018,7 +3135,21 @@ export type Database = {
       }
       ml_market_snapshot: { Args: { _days?: number }; Returns: Json }
       ml_next_order_no: { Args: never; Returns: string }
+      ml_next_store_order_no: { Args: never; Returns: string }
       ml_normalise_region: { Args: { _raw: string }; Returns: string }
+      ml_place_order: {
+        Args: {
+          _buyer: Json
+          _items: Json
+          _payment_method: Database["public"]["Enums"]["ml_pay_method"]
+        }
+        Returns: {
+          access_token: string
+          id: string
+          order_no: string
+          total_idr: number
+        }[]
+      }
       ml_public_catalog: {
         Args: {
           _category?: Database["public"]["Enums"]["ml_product_category"]
@@ -3093,6 +3224,10 @@ export type Database = {
         Returns: undefined
       }
       ml_slugify: { Args: { _text: string }; Returns: string }
+      ml_track_order: {
+        Args: { _order_no: string; _token: string }
+        Returns: Json
+      }
       next_invoice_no: { Args: never; Returns: string }
       next_order_no: { Args: never; Returns: string }
       next_queue_no: { Args: { _date: string }; Returns: string }
@@ -3227,9 +3362,18 @@ export type Database = {
         | "ON_HOLD"
         | "REJECTED"
         | "DELIVERED"
+      ml_pay_method: "BANK_TRANSFER" | "QRIS" | "WHATSAPP" | "CBD"
       ml_payment_term: "CBD" | "TOP7" | "TOP14" | "TOP30"
       ml_product_category: "PRIME_CUT" | "SECOND_CUT" | "OFFAL" | "BONE"
       ml_role: "buyer" | "vendor" | "admin"
+      ml_store_order_status:
+        | "NEW"
+        | "AWAITING_PAYMENT"
+        | "PAID"
+        | "PROCESSING"
+        | "SHIPPED"
+        | "COMPLETED"
+        | "CANCELLED"
       ml_top_decision: "APPROVE" | "CUT" | "FORWARD"
       order_line_status: "PENDING" | "CONFIRMED" | "REJECTED"
       order_status:
@@ -3473,9 +3617,19 @@ export const Constants = {
         "REJECTED",
         "DELIVERED",
       ],
+      ml_pay_method: ["BANK_TRANSFER", "QRIS", "WHATSAPP", "CBD"],
       ml_payment_term: ["CBD", "TOP7", "TOP14", "TOP30"],
       ml_product_category: ["PRIME_CUT", "SECOND_CUT", "OFFAL", "BONE"],
       ml_role: ["buyer", "vendor", "admin"],
+      ml_store_order_status: [
+        "NEW",
+        "AWAITING_PAYMENT",
+        "PAID",
+        "PROCESSING",
+        "SHIPPED",
+        "COMPLETED",
+        "CANCELLED",
+      ],
       ml_top_decision: ["APPROVE", "CUT", "FORWARD"],
       order_line_status: ["PENDING", "CONFIRMED", "REJECTED"],
       order_status: [

@@ -14,6 +14,7 @@ import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RequestQuoteRouteImport } from './routes/request-quote'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as KeranjangRouteImport } from './routes/keranjang'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BuyersRouteImport } from './routes/buyers'
@@ -23,6 +24,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProdukIndexRouteImport } from './routes/produk.index'
 import { Route as ProdukSlugRouteImport } from './routes/produk.$slug'
+import { Route as PesananOrderNoRouteImport } from './routes/pesanan.$orderNo'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AuthenticatedVendorImportRouteImport } from './routes/_authenticated/vendor.import'
@@ -30,6 +32,7 @@ import { Route as AuthenticatedVendorCatalogRouteImport } from './routes/_authen
 import { Route as AuthenticatedAppStockRouteImport } from './routes/_authenticated/app.stock'
 import { Route as AuthenticatedAppRfqRouteImport } from './routes/_authenticated/app.rfq'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
+import { Route as AuthenticatedAdminStorefrontOrdersRouteImport } from './routes/_authenticated/admin.storefront-orders'
 import { Route as AuthenticatedAdminStockRouteImport } from './routes/_authenticated/admin.stock'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as AuthenticatedAdminRfqRouteImport } from './routes/_authenticated/admin.rfq'
@@ -67,6 +70,11 @@ const RequestQuoteRoute = RequestQuoteRouteImport.update({
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KeranjangRoute = KeranjangRouteImport.update({
+  id: '/keranjang',
+  path: '/keranjang',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InsightsRoute = InsightsRouteImport.update({
@@ -113,6 +121,11 @@ const ProdukSlugRoute = ProdukSlugRouteImport.update({
   path: '/produk/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PesananOrderNoRoute = PesananOrderNoRouteImport.update({
+  id: '/pesanan/$orderNo',
+  path: '/pesanan/$orderNo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char91DotwellKnownChar93OauthProtectedResourceRoute =
   Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
     id: '/.well-known/oauth-protected-resource',
@@ -152,6 +165,12 @@ const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   path: '/admin/users',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminStorefrontOrdersRoute =
+  AuthenticatedAdminStorefrontOrdersRouteImport.update({
+    id: '/admin/storefront-orders',
+    path: '/admin/storefront-orders',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminStockRoute = AuthenticatedAdminStockRouteImport.update({
   id: '/admin/stock',
   path: '/admin/stock',
@@ -235,6 +254,7 @@ export interface FileRoutesByFullPath {
   '/buyers': typeof BuyersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
+  '/keranjang': typeof KeranjangRoute
   '/mcp': typeof McpRoute
   '/request-quote': typeof RequestQuoteRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -242,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/supply': typeof SupplyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/pesanan/$orderNo': typeof PesananOrderNoRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/produk/': typeof ProdukIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -250,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/admin/rfq': typeof AuthenticatedAdminRfqRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/stock': typeof AuthenticatedAdminStockRoute
+  '/admin/storefront-orders': typeof AuthenticatedAdminStorefrontOrdersRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/app/rfq': typeof AuthenticatedAppRfqRoute
   '/app/stock': typeof AuthenticatedAppStockRoute
@@ -270,6 +292,7 @@ export interface FileRoutesByTo {
   '/buyers': typeof BuyersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
+  '/keranjang': typeof KeranjangRoute
   '/mcp': typeof McpRoute
   '/request-quote': typeof RequestQuoteRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -277,6 +300,7 @@ export interface FileRoutesByTo {
   '/supply': typeof SupplyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/pesanan/$orderNo': typeof PesananOrderNoRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/produk': typeof ProdukIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -285,6 +309,7 @@ export interface FileRoutesByTo {
   '/admin/rfq': typeof AuthenticatedAdminRfqRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/stock': typeof AuthenticatedAdminStockRoute
+  '/admin/storefront-orders': typeof AuthenticatedAdminStorefrontOrdersRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/app/rfq': typeof AuthenticatedAppRfqRoute
   '/app/stock': typeof AuthenticatedAppStockRoute
@@ -307,6 +332,7 @@ export interface FileRoutesById {
   '/buyers': typeof BuyersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
+  '/keranjang': typeof KeranjangRoute
   '/mcp': typeof McpRoute
   '/request-quote': typeof RequestQuoteRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -314,6 +340,7 @@ export interface FileRoutesById {
   '/supply': typeof SupplyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/pesanan/$orderNo': typeof PesananOrderNoRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/produk/': typeof ProdukIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
@@ -322,6 +349,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/rfq': typeof AuthenticatedAdminRfqRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/stock': typeof AuthenticatedAdminStockRoute
+  '/_authenticated/admin/storefront-orders': typeof AuthenticatedAdminStorefrontOrdersRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/app/rfq': typeof AuthenticatedAppRfqRoute
   '/_authenticated/app/stock': typeof AuthenticatedAppStockRoute
@@ -344,6 +372,7 @@ export interface FileRouteTypes {
     | '/buyers'
     | '/contact'
     | '/insights'
+    | '/keranjang'
     | '/mcp'
     | '/request-quote'
     | '/sitemap.xml'
@@ -351,6 +380,7 @@ export interface FileRouteTypes {
     | '/supply'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/pesanan/$orderNo'
     | '/produk/$slug'
     | '/produk/'
     | '/.lovable/oauth/consent'
@@ -359,6 +389,7 @@ export interface FileRouteTypes {
     | '/admin/rfq'
     | '/admin/settings'
     | '/admin/stock'
+    | '/admin/storefront-orders'
     | '/admin/users'
     | '/app/rfq'
     | '/app/stock'
@@ -379,6 +410,7 @@ export interface FileRouteTypes {
     | '/buyers'
     | '/contact'
     | '/insights'
+    | '/keranjang'
     | '/mcp'
     | '/request-quote'
     | '/sitemap.xml'
@@ -386,6 +418,7 @@ export interface FileRouteTypes {
     | '/supply'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/pesanan/$orderNo'
     | '/produk/$slug'
     | '/produk'
     | '/.lovable/oauth/consent'
@@ -394,6 +427,7 @@ export interface FileRouteTypes {
     | '/admin/rfq'
     | '/admin/settings'
     | '/admin/stock'
+    | '/admin/storefront-orders'
     | '/admin/users'
     | '/app/rfq'
     | '/app/stock'
@@ -415,6 +449,7 @@ export interface FileRouteTypes {
     | '/buyers'
     | '/contact'
     | '/insights'
+    | '/keranjang'
     | '/mcp'
     | '/request-quote'
     | '/sitemap.xml'
@@ -422,6 +457,7 @@ export interface FileRouteTypes {
     | '/supply'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/pesanan/$orderNo'
     | '/produk/$slug'
     | '/produk/'
     | '/.lovable/oauth/consent'
@@ -430,6 +466,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/rfq'
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/stock'
+    | '/_authenticated/admin/storefront-orders'
     | '/_authenticated/admin/users'
     | '/_authenticated/app/rfq'
     | '/_authenticated/app/stock'
@@ -452,6 +489,7 @@ export interface RootRouteChildren {
   BuyersRoute: typeof BuyersRoute
   ContactRoute: typeof ContactRoute
   InsightsRoute: typeof InsightsRoute
+  KeranjangRoute: typeof KeranjangRoute
   McpRoute: typeof McpRoute
   RequestQuoteRoute: typeof RequestQuoteRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -459,6 +497,7 @@ export interface RootRouteChildren {
   SupplyRoute: typeof SupplyRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  PesananOrderNoRoute: typeof PesananOrderNoRoute
   ProdukSlugRoute: typeof ProdukSlugRoute
   ProdukIndexRoute: typeof ProdukIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
@@ -500,6 +539,13 @@ declare module '@tanstack/react-router' {
       path: '/mcp'
       fullPath: '/mcp'
       preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/keranjang': {
+      id: '/keranjang'
+      path: '/keranjang'
+      fullPath: '/keranjang'
+      preLoaderRoute: typeof KeranjangRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/insights': {
@@ -565,6 +611,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdukSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pesanan/$orderNo': {
+      id: '/pesanan/$orderNo'
+      path: '/pesanan/$orderNo'
+      fullPath: '/pesanan/$orderNo'
+      preLoaderRoute: typeof PesananOrderNoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/.well-known/oauth-protected-resource': {
       id: '/.well-known/oauth-protected-resource'
       path: '/.well-known/oauth-protected-resource'
@@ -612,6 +665,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/users'
       fullPath: '/admin/users'
       preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/storefront-orders': {
+      id: '/_authenticated/admin/storefront-orders'
+      path: '/admin/storefront-orders'
+      fullPath: '/admin/storefront-orders'
+      preLoaderRoute: typeof AuthenticatedAdminStorefrontOrdersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/stock': {
@@ -713,6 +773,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRfqRoute: typeof AuthenticatedAdminRfqRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminStockRoute: typeof AuthenticatedAdminStockRoute
+  AuthenticatedAdminStorefrontOrdersRoute: typeof AuthenticatedAdminStorefrontOrdersRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAppRfqRoute: typeof AuthenticatedAppRfqRoute
   AuthenticatedAppStockRoute: typeof AuthenticatedAppStockRoute
@@ -732,6 +793,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRfqRoute: AuthenticatedAdminRfqRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
   AuthenticatedAdminStockRoute: AuthenticatedAdminStockRoute,
+  AuthenticatedAdminStorefrontOrdersRoute:
+    AuthenticatedAdminStorefrontOrdersRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedAppRfqRoute: AuthenticatedAppRfqRoute,
   AuthenticatedAppStockRoute: AuthenticatedAppStockRoute,
@@ -758,6 +821,7 @@ const rootRouteChildren: RootRouteChildren = {
   BuyersRoute: BuyersRoute,
   ContactRoute: ContactRoute,
   InsightsRoute: InsightsRoute,
+  KeranjangRoute: KeranjangRoute,
   McpRoute: McpRoute,
   RequestQuoteRoute: RequestQuoteRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
@@ -766,6 +830,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  PesananOrderNoRoute: PesananOrderNoRoute,
   ProdukSlugRoute: ProdukSlugRoute,
   ProdukIndexRoute: ProdukIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
