@@ -9,11 +9,23 @@ export type InventoryDraft = {
   condition: string | null;
   avg_weight_text: string | null;
   avg_weight_kg: number | null;
+  category: "PRIME_CUT" | "SECOND_CUT" | "OFFAL" | "BONE";
   sale_price_idr: number;
   markup_idr: number;
   qty_on_hand_kg: number;
 };
 
+
+export const CATEGORY_VALUES = ["PRIME_CUT", "SECOND_CUT", "OFFAL", "BONE"] as const;
+
+/** Best-guess category from the product name, used when a sheet omits it. */
+export function guessCategory(name: string): InventoryDraft["category"] {
+  const n = name.toLowerCase();
+  if (/(tongue|lidah|liver|hati|tripe|babat|heart|jantung|kidney|usus|offal|oxtail|buntut)/.test(n)) return "OFFAL";
+  if (/(bone|tulang|marrow|sumsum)/.test(n)) return "BONE";
+  if (/(tenderloin|striploin|ribeye|rib eye|sirloin|cube roll|short rib|wagyu|a5|picanha|rump)/.test(n)) return "PRIME_CUT";
+  return "SECOND_CUT";
+}
 
 export const ORIGINS = ["Australia", "Japan", "USA", "Canada", "Lokal Premium"] as const;
 export const CONDITIONS = ["FRZ", "CHL"] as const;
@@ -73,6 +85,7 @@ export const IMPORT_COLUMNS = [
   "brand",
   "name",
   "condition",
+  "category",
   "avg_weight",
   "sale_price_idr",
   "markup_idr",
@@ -80,9 +93,9 @@ export const IMPORT_COLUMNS = [
 ] as const;
 
 export const IMPORT_SAMPLE_ROWS = [
-  ["Australia", "AACO - DARLING DOWNS", "CHK FLAP TAIL WGY MB7", "FRZ", "2KG", 1000000, 60000, 417.17],
-  ["Japan", "KIWAMI", "BOLAR BLD WGY A5", "FRZ", "5KG", 990000, 150000, 44.1],
-  ["USA", "SWIFT", "S-PLATE CHO AGS", "", "5KG", 160000, 60000, 46651.3],
+  ["Australia", "AACO - DARLING DOWNS", "CHK FLAP TAIL WGY MB7", "FRZ", "PRIME_CUT", "2KG", 1000000, 60000, 417.17],
+  ["Japan", "KIWAMI", "BOLAR BLD WGY A5", "FRZ", "PRIME_CUT", "5KG", 990000, 150000, 44.1],
+  ["USA", "SWIFT", "S-PLATE CHO AGS", "", "SECOND_CUT", "5KG", 160000, 60000, 46651.3],
 ];
 
 
@@ -129,6 +142,10 @@ export function normaliseRow(
     errors.push(`Row ${rowNumber}: invalid markup`);
     return null;
   }
+  const categoryRaw = get("category").toUpperCase().replace(/[\s-]+/g, "_");
+  const category = (CATEGORY_VALUES as readonly string[]).includes(categoryRaw)
+    ? (categoryRaw as InventoryDraft["category"])
+    : guessCategory(name);
   const weightText = get("avg_weight") || null;
 
   return {
@@ -138,6 +155,7 @@ export function normaliseRow(
       brand,
       name,
       condition,
+      category,
       avg_weight_text: weightText,
       avg_weight_kg: weightToKg(weightText),
       sale_price_idr: price,
