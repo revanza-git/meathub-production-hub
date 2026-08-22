@@ -88,54 +88,66 @@ export type Database = {
           avg_weight_kg: number | null
           avg_weight_text: string | null
           brand: string
+          category: Database["public"]["Enums"]["ml_product_category"]
           condition: string | null
           created_at: string
+          description: string | null
           featured_rank: number | null
           id: string
           image_url: string | null
           is_active: boolean
+          is_published: boolean
           markup_idr: number
           name: string
           notes: string | null
           origin: string
           qty_on_hand_kg: number
           sale_price_idr: number
+          slug: string | null
           updated_at: string
         }
         Insert: {
           avg_weight_kg?: number | null
           avg_weight_text?: string | null
           brand?: string
+          category?: Database["public"]["Enums"]["ml_product_category"]
           condition?: string | null
           created_at?: string
+          description?: string | null
           featured_rank?: number | null
           id?: string
           image_url?: string | null
           is_active?: boolean
+          is_published?: boolean
           markup_idr?: number
           name: string
           notes?: string | null
           origin: string
           qty_on_hand_kg?: number
           sale_price_idr?: number
+          slug?: string | null
           updated_at?: string
         }
         Update: {
           avg_weight_kg?: number | null
           avg_weight_text?: string | null
           brand?: string
+          category?: Database["public"]["Enums"]["ml_product_category"]
           condition?: string | null
           created_at?: string
+          description?: string | null
           featured_rank?: number | null
           id?: string
           image_url?: string | null
           is_active?: boolean
+          is_published?: boolean
           markup_idr?: number
           name?: string
           notes?: string | null
           origin?: string
           qty_on_hand_kg?: number
           sale_price_idr?: number
+          slug?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -3007,6 +3019,29 @@ export type Database = {
       ml_market_snapshot: { Args: { _days?: number }; Returns: Json }
       ml_next_order_no: { Args: never; Returns: string }
       ml_normalise_region: { Args: { _raw: string }; Returns: string }
+      ml_public_catalog: {
+        Args: {
+          _category?: Database["public"]["Enums"]["ml_product_category"]
+          _limit?: number
+          _offset?: number
+          _origin?: string
+          _search?: string
+        }
+        Returns: {
+          availability: string
+          avg_weight_text: string
+          brand: string
+          category: Database["public"]["Enums"]["ml_product_category"]
+          condition: string
+          id: string
+          image_url: string
+          name: string
+          origin: string
+          public_price_idr: number
+          slug: string
+          total_count: number
+        }[]
+      }
       ml_public_featured: {
         Args: { _limit?: number }
         Returns: {
@@ -3019,6 +3054,24 @@ export type Database = {
           name: string
           origin: string
           public_price_idr: number
+        }[]
+      }
+      ml_public_product: {
+        Args: { _slug: string }
+        Returns: {
+          availability: string
+          avg_weight_kg: number
+          avg_weight_text: string
+          brand: string
+          category: Database["public"]["Enums"]["ml_product_category"]
+          condition: string
+          description: string
+          id: string
+          image_url: string
+          name: string
+          origin: string
+          public_price_idr: number
+          slug: string
         }[]
       }
       ml_public_stock: {
@@ -3039,6 +3092,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      ml_slugify: { Args: { _text: string }; Returns: string }
       next_invoice_no: { Args: never; Returns: string }
       next_order_no: { Args: never; Returns: string }
       next_queue_no: { Args: { _date: string }; Returns: string }
