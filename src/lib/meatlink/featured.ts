@@ -62,8 +62,10 @@ export type FeaturedItem = Pick<
   InventoryItem,
   "id" | "name" | "origin" | "brand" | "condition" | "avg_weight_text" | "featured_rank" | "image_url"
 > & {
-  /** Final public price per kg (base cost + markup), computed server-side. */
+  /** Final public price per kg (promo price when active), computed server-side. */
   public_price_idr: number;
+  /** Normal price per kg before any promo. */
+  list_price_idr: number;
 };
 
 /** Public read of the admin-curated featured inventory, ordered 1 → 5.
