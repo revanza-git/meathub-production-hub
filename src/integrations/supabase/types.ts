@@ -1543,6 +1543,30 @@ export type Database = {
           },
         ]
       }
+      ops_job_runs: {
+        Row: {
+          created_at: string
+          detail: Json
+          id: string
+          job: string
+          run_key: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: Json
+          id?: string
+          job: string
+          run_key: string
+        }
+        Update: {
+          created_at?: string
+          detail?: Json
+          id?: string
+          job?: string
+          run_key?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -3378,6 +3402,7 @@ export type Database = {
         Args: { _order_no: string; _token: string }
         Returns: undefined
       }
+      ml_expire_unpaid_orders: { Args: never; Returns: Json }
       ml_has_role: {
         Args: {
           _role: Database["public"]["Enums"]["ml_role"]
@@ -3399,6 +3424,7 @@ export type Database = {
       ml_next_order_no: { Args: never; Returns: string }
       ml_next_store_order_no: { Args: never; Returns: string }
       ml_normalise_region: { Args: { _raw: string }; Returns: string }
+      ml_ops_digest: { Args: { p_day?: string }; Returns: Json }
       ml_place_order: {
         Args: {
           _buyer: Json
