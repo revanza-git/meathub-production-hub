@@ -66,7 +66,7 @@ async function settings(db: Admin) {
 
 /** Records a run; returns false when the same job+key already ran. */
 async function claim(db: Admin, job: string, runKey: string, detail: Record<string, unknown>) {
-  const { error } = await db.from("ops_job_runs").insert({ job, run_key: runKey, detail });
+  const { error } = await db.from("ops_job_runs").insert({ job, run_key: runKey, detail: detail as never });
   if (error) return false;
   return true;
 }
