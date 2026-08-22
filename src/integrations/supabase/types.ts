@@ -2790,8 +2790,15 @@ export type Database = {
           id: string
           notes: string | null
           order_no: string
+          paid_at: string | null
+          payment_channel: string | null
+          payment_expires_at: string | null
           payment_method: Database["public"]["Enums"]["ml_pay_method"]
+          payment_qr_url: string | null
           payment_ref: string | null
+          payment_trx_id: string | null
+          payment_url: string | null
+          payment_va: string | null
           phone: string
           status: Database["public"]["Enums"]["ml_store_order_status"]
           stock_deducted_at: string | null
@@ -2812,8 +2819,15 @@ export type Database = {
           id?: string
           notes?: string | null
           order_no: string
+          paid_at?: string | null
+          payment_channel?: string | null
+          payment_expires_at?: string | null
           payment_method: Database["public"]["Enums"]["ml_pay_method"]
+          payment_qr_url?: string | null
           payment_ref?: string | null
+          payment_trx_id?: string | null
+          payment_url?: string | null
+          payment_va?: string | null
           phone: string
           status?: Database["public"]["Enums"]["ml_store_order_status"]
           stock_deducted_at?: string | null
@@ -2834,8 +2848,15 @@ export type Database = {
           id?: string
           notes?: string | null
           order_no?: string
+          paid_at?: string | null
+          payment_channel?: string | null
+          payment_expires_at?: string | null
           payment_method?: Database["public"]["Enums"]["ml_pay_method"]
+          payment_qr_url?: string | null
           payment_ref?: string | null
+          payment_trx_id?: string | null
+          payment_url?: string | null
+          payment_va?: string | null
           phone?: string
           status?: Database["public"]["Enums"]["ml_store_order_status"]
           stock_deducted_at?: string | null
