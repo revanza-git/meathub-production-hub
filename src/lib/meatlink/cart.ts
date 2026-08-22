@@ -3,7 +3,12 @@ import type { Database } from "@/integrations/supabase/types";
 
 export type PayMethod = Database["public"]["Enums"]["ml_pay_method"];
 
-export const PAY_METHODS: { value: PayMethod; label: string; hint: string }[] = [
+export const PAY_METHODS: {
+  value: PayMethod;
+  label: string;
+  hint: string;
+  requiresCredit?: boolean;
+}[] = [
   {
     value: "BANK_TRANSFER",
     label: "Transfer bank / Virtual Account",
@@ -12,6 +17,12 @@ export const PAY_METHODS: { value: PayMethod; label: string; hint: string }[] = 
   { value: "QRIS", label: "QRIS", hint: "Bayar lewat scan QR dari aplikasi apa pun." },
   { value: "WHATSAPP", label: "Konfirmasi via WhatsApp", hint: "Tim kami menghubungi Anda untuk finalisasi." },
   { value: "CBD", label: "Cash Before Delivery", hint: "Bayar tunai sebelum barang dikirim." },
+  {
+    value: "TOP",
+    label: "Tempo (TOP)",
+    hint: "Bayar sesuai jatuh tempo limit kredit Anda.",
+    requiresCredit: true,
+  },
 ];
 
 export const PAY_METHOD_LABEL: Record<PayMethod, string> = {
@@ -19,6 +30,7 @@ export const PAY_METHOD_LABEL: Record<PayMethod, string> = {
   QRIS: "QRIS",
   WHATSAPP: "WhatsApp",
   CBD: "Cash Before Delivery",
+  TOP: "Tempo (TOP)",
 };
 
 export const ORDER_STATUS_LABEL: Record<string, string> = {
