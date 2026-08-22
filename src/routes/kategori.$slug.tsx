@@ -27,7 +27,9 @@ export const Route = createFileRoute("/kategori/$slug")({
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary_large_image" },
+        { name: "keywords", content: `${label}, harga ${label.toLowerCase()} per kg, supplier daging B2B, daging impor Indonesia` },
       ],
+      links: [{ rel: "canonical", href: `https://meatlink.id/kategori/${loaderData.category.slug}` }],
     };
   },
   component: CategoryPageView,
