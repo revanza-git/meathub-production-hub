@@ -54,6 +54,22 @@ function AdminStorefrontOrdersPage() {
   );
 }
 
+/** Payment proofs live in a private bucket — open them through a short-lived signed URL. */
+async function openProof(path: string) {
+  if (/^https?:\/\//i.test(path)) {
+    window.open(path, "_blank", "noopener");
+    return;
+  }
+  const { data, error } = await supabase.storage
+    .from("payment-proofs")
+    .createSignedUrl(path, 300);
+  if (error || !data?.signedUrl) {
+    toast.error(error?.message ?? "Bukti pembayaran tidak dapat dibuka.");
+    return;
+  }
+  window.open(data.signedUrl, "_blank", "noopener");
+}
+
 function OrdersTable() {
   const qc = useQueryClient();
   const [draft, setDraft] = useState<Record<string, { ref: string; note: string }>>({});
@@ -162,6 +178,15 @@ function OrdersTable() {
                   Payment: {PAY_METHOD_LABEL[o.payment_method as PayMethod] ?? o.payment_method}
                 </p>
                 {o.payment_ref ? <p className="mt-1 text-xs">Ref: {o.payment_ref}</p> : null}
+                {o.payment_proof_url ? (
+                  <button
+                    type="button"
+                    onClick={() => void openProof(o.payment_proof_url!)}
+                    className="mt-2 text-xs underline"
+                  >
+                    Lihat bukti pembayaran
+                  </button>
+                ) : null}
                 <p className="mt-1 text-lg font-semibold">{formatIdr(Number(o.total_idr))}</p>
                 {o.stock_deducted_at ? (
                   <p className="mt-1 text-xs text-muted-foreground">Stock deducted</p>
