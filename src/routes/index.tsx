@@ -1,305 +1,361 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ClipboardList, Handshake, Search, ShieldCheck, Truck } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  ClipboardList,
+  CreditCard,
+  Snowflake,
+  Truck,
+  Users,
+} from "lucide-react";
 import { SiteLayout } from "@/components/site/site-layout";
-import { CATEGORIES } from "@/lib/meatlink/config";
-import { resolveFeatureImage, useFeaturedInventory } from "@/lib/meatlink/featured";
+import { CatalogSearch } from "@/components/site/site-header";
+import { AvailabilityBadge } from "@/components/site/availability-badge";
+import { Recommendations } from "@/components/meatlink/recommendations";
+import { CATEGORIES, CATEGORY_LABEL, useCatalog } from "@/lib/meatlink/catalog";
+import { resolveFeatureImage, resolveProductImage, useFeaturedInventory } from "@/lib/meatlink/featured";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import heroImg from "@/assets/hero-wagyu.jpg";
-import buyersImg from "@/assets/for-buyers.jpg";
-import suppliersImg from "@/assets/for-suppliers.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Meatlink.id — B2B Meat Sourcing Network in Indonesia" },
+      { title: "Meatlink.id — Belanja Daging B2B, Harga Transparan" },
       {
         name: "description",
         content:
-          "Meatlink.id is a B2B meat sourcing network. Send one request and our team matches you with verified importers and suppliers across Indonesia.",
+          "Belanja daging premium untuk bisnis: prime cut, second cut, offal dan bone dari importir terverifikasi. Harga publik per kilogram, pengiriman ke seluruh Indonesia.",
       },
-      { property: "og:title", content: "Meatlink.id — B2B meat sourcing network" },
+      { property: "og:title", content: "Meatlink.id — Belanja daging B2B, harga transparan" },
       {
         property: "og:description",
         content:
-          "One request, matched quotes from verified meat importers and suppliers across Indonesia.",
+          "Katalog daging B2B siap pesan dari importir terverifikasi, dengan harga per kilogram dan pengiriman nasional.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: HomePage,
 });
 
-const STEPS = [
+const CATEGORY_NOTE: Record<string, string> = {
+  PRIME_CUT: "Ribeye, striploin, tenderloin, wagyu",
+  SECOND_CUT: "Short plate, brisket, chuck, shank",
+  OFFAL: "Lidah, hati, babat, jeroan pilihan",
+  BONE: "Marrow bone, soup bone, potongan tulang",
+};
+
+const BENEFITS = [
   {
-    icon: ClipboardList,
-    title: "Tell us what you need",
-    body: "Submit one request with your cut, grade, volume and delivery date. No account required.",
+    icon: BadgeCheck,
+    title: "Pasokan terverifikasi",
+    body: "Setiap importir dan pemasok diperiksa legalitas, dokumen dan konsistensinya sebelum masuk katalog.",
   },
   {
-    icon: Search,
-    title: "We source the market",
-    body: "Our team works the request across verified importers, distributors and specialty suppliers.",
+    icon: Snowflake,
+    title: "Rantai dingin terjaga",
+    body: "Produk frozen dan chilled ditangani sesuai standar suhu dari gudang sampai lokasi Anda.",
   },
   {
-    icon: Handshake,
-    title: "You receive matched quotes",
-    body: "We come back with the options that genuinely fit your spec, volume and payment terms.",
+    icon: CreditCard,
+    title: "Pembayaran fleksibel",
+    body: "Transfer VA, QRIS, bayar di tempat, atau tempo (TOP) untuk perusahaan yang telah disetujui.",
   },
   {
     icon: Truck,
-    title: "Supply gets delivered",
-    body: "You deal directly with the supplier we introduce, with Meatlink alongside the relationship.",
+    title: "Pengiriman nasional",
+    body: "Jadwal kirim dan estimasi tiba tercatat pada setiap pesanan, lengkap dengan nomor resi.",
+  },
+  {
+    icon: Users,
+    title: "Pemesanan untuk bisnis",
+    body: "Riwayat pesanan, pesan ulang sekali klik, dan harga kontrak untuk pembeli rutin.",
+  },
+  {
+    icon: ClipboardList,
+    title: "Special sourcing",
+    body: "Spesifikasi di luar katalog tetap kami carikan lewat jaringan pemasok Meatlink.",
   },
 ];
 
 function HomePage() {
   return (
     <SiteLayout>
-      {/* Hero */}
-      <section className="relative isolate overflow-hidden bg-noir text-bone">
-        <img
-          src={heroImg}
-          alt="Premium marbled wagyu ribeye on butcher paper"
-          width={1600}
-          height={1200}
-          className="absolute inset-0 h-full w-full object-cover opacity-45"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-noir via-noir/85 to-noir/30" />
-        <div className="relative mx-auto max-w-7xl px-5 py-24 lg:px-8 lg:py-36">
-          <div className="max-w-2xl fade-in-up">
-            <p className="eyebrow text-crimson">Better Meat | Better Connections</p>
-            <h1 className="mt-6 font-display text-4xl leading-[1.05] sm:text-5xl lg:text-6xl">
-              The meat you need.
-              <br />
-              <span className="italic text-bone/85">The connections you don't have.</span>
-            </h1>
-            <p className="mt-7 max-w-xl text-base leading-relaxed text-bone/70">
-              Meatlink.id is a B2B sourcing network for restaurants, hotels, caterers and
-              retailers. Send one request — we work our supplier network and come back with the
-              quotes that actually match your spec.
-            </p>
-            <div className="mt-9 flex flex-wrap gap-3">
-              <Link
-                to="/request-quote"
-                className="eyebrow inline-flex items-center gap-2 bg-crimson px-7 py-4 text-bone transition-colors hover:bg-crimson-deep"
-              >
-                Request a Quote <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </Link>
-              <Link
-                to="/supply"
-                className="eyebrow inline-flex items-center border border-white/25 px-7 py-4 text-bone transition-colors hover:bg-white/10"
-              >
-                Supply Through Meatlink
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="relative border-t border-white/10">
-          <dl className="mx-auto grid max-w-7xl grid-cols-2 divide-x divide-white/10 px-5 lg:grid-cols-4 lg:px-8">
-            {[
-              ["Verified suppliers", "Importers & distributors we know personally"],
-              ["One request", "No account, no browsing, no cold calls"],
-              ["Full spec matching", "Cut, grade, origin, volume, terms"],
-              ["Nationwide", "Jakarta, Bali and beyond"],
-            ].map(([term, desc]) => (
-              <div key={term} className="px-4 py-7 first:pl-0 lg:px-8">
-                <dt className="eyebrow text-bone">{term}</dt>
-                <dd className="mt-2 text-xs leading-relaxed text-bone/50">{desc}</dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
-
-      {/* Problem / promise */}
-      <section className="bg-bone">
-        <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-2 lg:px-8 lg:py-28">
-          <div>
-            <p className="eyebrow text-crimson">The problem</p>
-            <h2 className="mt-5 font-display text-3xl leading-tight sm:text-4xl">
-              Sourcing good meat in Indonesia still runs on who you know.
-            </h2>
-          </div>
-          <div className="space-y-6 text-sm leading-relaxed text-ash">
-            <p>
-              Buyers chase five WhatsApp groups for one price. Specs get lost in translation.
-              Quality is inconsistent between deliveries, and the best importers are invisible
-              unless someone introduces you.
-            </p>
-            <p>
-              Meatlink exists to replace that scramble with a single, accountable point of contact.
-              We already know the importers, the brands, the grades and the realistic price bands —
-              so you don't have to build that network from scratch.
-            </p>
-            <Link
-              to="/about"
-              className="eyebrow inline-flex items-center gap-2 text-ink hover:text-crimson"
-            >
-              About Meatlink <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section className="bg-sand">
-        <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28">
-          <p className="eyebrow text-crimson">How it works</p>
-          <h2 className="mt-5 max-w-2xl font-display text-3xl leading-tight sm:text-4xl">
-            One request. A network working behind it.
-          </h2>
-          <ol className="mt-14 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
-            {STEPS.map((step, i) => (
-              <li key={step.title} className="bg-bone p-8">
-                <div className="flex items-center justify-between">
-                  <step.icon className="h-6 w-6 text-crimson" aria-hidden="true" />
-                  <span className="font-display text-3xl text-line">0{i + 1}</span>
-                </div>
-                <h3 className="mt-6 font-display text-xl">{step.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-ash">{step.body}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      {/* Categories */}
-      <section className="bg-bone">
-        <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="eyebrow text-crimson">What we source</p>
-              <h2 className="mt-5 font-display text-3xl sm:text-4xl">Categories</h2>
-            </div>
-            <Link
-              to="/request-quote"
-              className="eyebrow inline-flex items-center gap-2 text-ink hover:text-crimson"
-            >
-              Can't see it? Ask anyway <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-          </div>
-          <div className="mt-12 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
-            {CATEGORIES.map((c) => (
-              <Link
-                key={c.slug}
-                to="/request-quote"
-                className="group bg-card p-7 transition-colors hover:bg-noir"
-              >
-                <h3 className="font-display text-2xl text-ink transition-colors group-hover:text-bone">
-                  {c.name}
-                </h3>
-                <p className="mt-3 text-xs leading-relaxed text-ash transition-colors group-hover:text-bone/60">
-                  {c.note}
-                </p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Two audiences */}
-      <section className="bg-noir text-bone">
-        <div className="mx-auto grid max-w-7xl gap-px bg-white/10 lg:grid-cols-2">
-          {[
-            {
-              img: buyersImg,
-              alt: "Chef slicing premium beef in a dark restaurant kitchen",
-              eyebrow: "For buyers",
-              title: "Stop chasing suppliers",
-              body: "Restaurants, hotels, caterers and retailers get one contact, matched quotes and consistent spec — instead of a group chat full of guesses.",
-              to: "/network" as const,
-              hash: "buyers" as const,
-              cta: "How sourcing works",
-            },
-            {
-              img: suppliersImg,
-              alt: "Premium beef export carton with vacuum sealed cuts",
-              eyebrow: "For suppliers",
-              title: "Reach qualified demand",
-              body: "Importers and distributors receive pre-qualified requests with real volume and spec, not tyre-kickers. Listing is free.",
-              to: "/network" as const,
-              hash: "suppliers" as const,
-              cta: "Why supply with us",
-            },
-          ].map((panel) => (
-            <article key={panel.eyebrow} className="bg-noir">
-              <img
-                src={panel.img}
-                alt={panel.alt}
-                loading="lazy"
-                width={1200}
-                height={912}
-                className="h-64 w-full object-cover opacity-80 lg:h-80"
-              />
-              <div className="p-8 lg:p-12">
-                <p className="eyebrow text-crimson">{panel.eyebrow}</p>
-                <h2 className="mt-5 font-display text-3xl">{panel.title}</h2>
-                <p className="mt-4 max-w-md text-sm leading-relaxed text-bone/65">{panel.body}</p>
-                <Link
-                  to={panel.to}
-                  hash={panel.hash}
-                  className="eyebrow mt-7 inline-flex items-center gap-2 text-bone hover:text-crimson"
-                >
-                  {panel.cta} <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* Market insights */}
-      <FeaturedStock />
-
-
-      {/* Trust */}
-      <section className="bg-sand">
-        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-20 lg:grid-cols-3 lg:px-8">
-          {[
-            {
-              icon: ShieldCheck,
-              title: "Verified network",
-              body: "Every supplier is vetted on legitimacy, cold chain and consistency before we introduce them.",
-            },
-            {
-              icon: Handshake,
-              title: "Neutral by design",
-              body: "We match on fit, not on who pays us the most. Your spec leads the conversation.",
-            },
-            {
-              icon: Truck,
-              title: "Built by operators",
-              body: "Meatlink is built alongside EV Butchers — people who move product daily, not a directory.",
-            },
-          ].map((t) => (
-            <div key={t.title}>
-              <t.icon className="h-7 w-7 text-crimson" aria-hidden="true" />
-              <h2 className="mt-5 font-display text-2xl">{t.title}</h2>
-              <p className="mt-3 text-sm leading-relaxed text-ash">{t.body}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      <CommercialHero />
+      <ShopByCategory />
+      <AvailableNow />
+      <Recommendations />
+      <ShopByOrigin />
+      <Benefits />
+      <SpecialSourcingCta />
+      <MarketInsights />
     </SiteLayout>
   );
 }
 
-function FeaturedStock() {
+/** Compact commercial hero: value proposition, working search, two CTAs. */
+function CommercialHero() {
+  return (
+    <section className="relative isolate overflow-hidden bg-noir text-bone">
+      <img
+        src={heroImg}
+        alt="Premium marbled wagyu ribeye on butcher paper"
+        width={1600}
+        height={1200}
+        className="absolute inset-0 h-full w-full object-cover opacity-40"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-noir via-noir/85 to-noir/30" />
+      <div className="relative mx-auto flex min-h-[420px] max-w-7xl flex-col justify-center px-5 py-14 lg:min-h-[480px] lg:px-8">
+        <div className="max-w-2xl fade-in-up">
+          <p className="eyebrow text-crimson">Better Meat | Better Connections</p>
+          <h1 className="mt-5 font-display text-4xl leading-[1.05] sm:text-5xl">
+            Daging premium untuk bisnis Anda,
+            <br />
+            <span className="italic text-bone/85">siap pesan hari ini.</span>
+          </h1>
+          <p className="mt-5 max-w-xl text-sm leading-relaxed text-bone/70">
+            Prime cut, second cut, offal dan bone dari importir terverifikasi. Harga per kilogram
+            ditampilkan terbuka, stok diperbarui setiap hari, pengiriman ke seluruh Indonesia.
+          </p>
+
+          <CatalogSearch dark className="mt-8 max-w-xl" />
+
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <Link
+              to="/produk"
+              className="eyebrow inline-flex items-center gap-2 bg-crimson px-7 py-4 text-bone transition-colors hover:bg-crimson-deep"
+            >
+              Belanja Produk <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+            <Link
+              to="/produk"
+              className="eyebrow inline-flex items-center border border-white/25 px-7 py-4 text-bone transition-colors hover:bg-white/10"
+            >
+              Lihat Kategori
+            </Link>
+            <Link
+              to="/request-quote"
+              className="eyebrow text-bone/65 underline-offset-4 transition-colors hover:text-bone hover:underline"
+            >
+              Butuh spesifikasi khusus?
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ShelfHeading({
+  eyebrow,
+  title,
+  to,
+  linkLabel,
+}: {
+  eyebrow: string;
+  title: string;
+  to?: "/produk" | "/insights";
+  linkLabel?: string;
+}) {
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p className="eyebrow text-crimson">{eyebrow}</p>
+        <h2 className="mt-4 font-display text-3xl sm:text-4xl">{title}</h2>
+      </div>
+      {to && linkLabel ? (
+        <Link to={to} className="eyebrow inline-flex items-center gap-2 text-ink hover:text-crimson">
+          {linkLabel} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </Link>
+      ) : null}
+    </div>
+  );
+}
+
+function ShopByCategory() {
+  return (
+    <section className="bg-bone">
+      <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
+        <ShelfHeading
+          eyebrow="Belanja per kategori"
+          title="Shop by Category"
+          to="/produk"
+          linkLabel="Semua produk"
+        />
+        <div className="mt-10 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+          {CATEGORIES.map((c) => (
+            <Link
+              key={c.value}
+              to="/produk"
+              search={{ category: c.value }}
+              className="group bg-card p-7 transition-colors hover:bg-noir"
+            >
+              <h3 className="font-display text-2xl text-ink transition-colors group-hover:text-bone">
+                {c.label}
+              </h3>
+              <p className="mt-3 text-xs leading-relaxed text-ash transition-colors group-hover:text-bone/60">
+                {CATEGORY_NOTE[c.value]}
+              </p>
+              <span className="eyebrow mt-6 inline-flex items-center gap-2 text-crimson">
+                Belanja <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Available-now shelf. Grid, not a carousel — never renders empty. */
+function AvailableNow() {
+  const { data, isLoading } = useCatalog({ page: 1, pageSize: 8 });
+  const rows = data?.rows ?? [];
+  if (!isLoading && rows.length === 0) return null;
+
+  return (
+    <section className="bg-sand">
+      <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
+        <ShelfHeading
+          eyebrow="Siap kirim"
+          title="Available Now"
+          to="/produk"
+          linkLabel="Lihat semua"
+        />
+        <div className="mt-10 grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
+          {isLoading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="h-80 animate-pulse bg-background" />
+              ))
+            : rows.map((row) => (
+                <Link
+                  key={row.id}
+                  to="/produk/$slug"
+                  params={{ slug: row.slug }}
+                  className="group flex flex-col bg-background transition-colors hover:bg-ink/[0.03]"
+                >
+                  <div className="relative aspect-[4/3] overflow-hidden bg-ink/5">
+                    <img
+                      src={resolveProductImage(row.image_url, row.name, row.category)}
+                      alt={row.name}
+                      loading="lazy"
+                      width={1024}
+                      height={768}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <AvailabilityBadge value={row.availability} />
+                  </div>
+                  <div className="flex flex-1 flex-col justify-between p-5">
+                    <div>
+                      <p className="eyebrow text-crimson">{CATEGORY_LABEL[row.category]}</p>
+                      <h3 className="mt-3 font-display text-lg leading-snug text-ink">{row.name}</h3>
+                      <p className="mt-2 text-xs text-ash">
+                        {[row.brand, row.origin, row.condition].filter(Boolean).join(" · ")}
+                      </p>
+                    </div>
+                    <p className="mt-5 font-display text-xl text-ink">
+                      {formatIdr(row.public_price_idr)}
+                      <span className="text-xs text-ash"> /kg</span>
+                    </p>
+                  </div>
+                </Link>
+              ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Origin shelf derived from live catalog data — no hardcoded brand claims. */
+function ShopByOrigin() {
+  const { data } = useCatalog({ page: 1, pageSize: 60 });
+  const origins = Array.from(
+    new Set((data?.rows ?? []).map((r) => r.origin).filter((o): o is string => Boolean(o))),
+  ).slice(0, 8);
+  if (origins.length === 0) return null;
+
+  return (
+    <section className="bg-bone">
+      <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
+        <ShelfHeading eyebrow="Asal produk" title="Shop by Origin" />
+        <div className="mt-8 flex flex-wrap gap-3">
+          {origins.map((origin) => (
+            <Link
+              key={origin}
+              to="/produk"
+              search={{ q: origin }}
+              className="eyebrow border border-line bg-card px-5 py-3 text-ink transition-colors hover:border-ink"
+            >
+              {origin}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Benefits() {
+  return (
+    <section className="bg-noir text-bone">
+      <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
+        <p className="eyebrow text-crimson">Kenapa Meatlink</p>
+        <h2 className="mt-4 max-w-2xl font-display text-3xl sm:text-4xl">
+          Dibangun untuk pembelian bisnis, bukan ritel.
+        </h2>
+        <div className="mt-12 grid gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+          {BENEFITS.map((b) => (
+            <div key={b.title} className="bg-noir p-7">
+              <b.icon className="h-6 w-6 text-crimson" aria-hidden="true" />
+              <h3 className="mt-5 font-display text-xl">{b.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-bone/65">{b.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SpecialSourcingCta() {
+  return (
+    <section className="bg-sand">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6 px-5 py-12 lg:px-8">
+        <div className="max-w-2xl">
+          <p className="eyebrow text-crimson">Special sourcing</p>
+          <h2 className="mt-4 font-display text-2xl sm:text-3xl">
+            Tidak menemukan spesifikasi yang Anda cari?
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-ash">
+            Kirim kebutuhan cut, grade, volume dan tanggal kirim. Tim kami mencarikannya lewat
+            jaringan importir dan pemasok Meatlink.
+          </p>
+        </div>
+        <Link
+          to="/request-quote"
+          className="eyebrow inline-flex items-center gap-2 border border-ink px-7 py-4 text-ink transition-colors hover:bg-ink hover:text-bone"
+        >
+          Kirim permintaan khusus <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+function MarketInsights() {
   const { data: items = [] } = useFeaturedInventory(3);
   if (items.length === 0) return null;
   return (
     <section className="bg-bone">
-      <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8 lg:py-28">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="eyebrow text-crimson">Market insights</p>
-            <h2 className="mt-5 font-display text-3xl sm:text-4xl">Recently sourced</h2>
-          </div>
-          <Link to="/insights" className="eyebrow text-ink hover:text-crimson">
-            View all insights
-          </Link>
-        </div>
-        <div className="mt-12 grid gap-px border border-line bg-line lg:grid-cols-3">
+      <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
+        <ShelfHeading
+          eyebrow="Market insights"
+          title="Recently sourced"
+          to="/insights"
+          linkLabel="Semua insight"
+        />
+        <div className="mt-10 grid gap-px border border-line bg-line lg:grid-cols-3">
           {items.map((item) => (
             <article key={item.id} className="bg-card">
               <img
@@ -308,9 +364,9 @@ function FeaturedStock() {
                 loading="lazy"
                 width={1200}
                 height={900}
-                className="h-56 w-full object-cover"
+                className="h-52 w-full object-cover"
               />
-              <div className="p-8">
+              <div className="p-7">
                 <p className="eyebrow text-crimson">{item.origin}</p>
                 <h3 className="mt-4 font-display text-2xl leading-snug">{item.name}</h3>
                 <dl className="mt-6 space-y-2 text-xs text-ash">
