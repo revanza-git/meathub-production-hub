@@ -337,8 +337,20 @@ function CartPage() {
                     className="mt-2 w-full border border-line bg-background px-4 py-3 text-sm text-ink outline-none focus:border-ink"
                   />
                 </div>
+                {signedIn ? (
+                  <label className="flex items-center gap-3 text-sm text-ink sm:col-span-2">
+                    <input
+                      type="checkbox"
+                      checked={saveNewAddress}
+                      onChange={(e) => setSaveNewAddress(e.target.checked)}
+                      className="h-4 w-4"
+                    />
+                    Simpan alamat ini ke buku alamat saya
+                  </label>
+                ) : null}
               </div>
             </div>
+
 
             <aside className="h-fit border border-line bg-background p-8 lg:sticky lg:top-28">
               <h2 className="eyebrow text-ash">Ringkasan</h2>
