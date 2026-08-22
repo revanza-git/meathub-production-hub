@@ -14,6 +14,7 @@ import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as RequestQuoteRouteImport } from './routes/request-quote'
+import { Route as PromoRouteImport } from './routes/promo'
 import { Route as NetworkRouteImport } from './routes/network'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as KeranjangRouteImport } from './routes/keranjang'
@@ -79,6 +80,11 @@ const SearchRoute = SearchRouteImport.update({
 const RequestQuoteRoute = RequestQuoteRouteImport.update({
   id: '/request-quote',
   path: '/request-quote',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PromoRoute = PromoRouteImport.update({
+  id: '/promo',
+  path: '/promo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NetworkRoute = NetworkRouteImport.update({
@@ -315,6 +321,7 @@ export interface FileRoutesByFullPath {
   '/keranjang': typeof KeranjangRoute
   '/mcp': typeof McpRoute
   '/network': typeof NetworkRoute
+  '/promo': typeof PromoRoute
   '/request-quote': typeof RequestQuoteRoute
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -362,6 +369,7 @@ export interface FileRoutesByTo {
   '/keranjang': typeof KeranjangRoute
   '/mcp': typeof McpRoute
   '/network': typeof NetworkRoute
+  '/promo': typeof PromoRoute
   '/request-quote': typeof RequestQuoteRoute
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -411,6 +419,7 @@ export interface FileRoutesById {
   '/keranjang': typeof KeranjangRoute
   '/mcp': typeof McpRoute
   '/network': typeof NetworkRoute
+  '/promo': typeof PromoRoute
   '/request-quote': typeof RequestQuoteRoute
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -460,6 +469,7 @@ export interface FileRouteTypes {
     | '/keranjang'
     | '/mcp'
     | '/network'
+    | '/promo'
     | '/request-quote'
     | '/search'
     | '/sitemap.xml'
@@ -507,6 +517,7 @@ export interface FileRouteTypes {
     | '/keranjang'
     | '/mcp'
     | '/network'
+    | '/promo'
     | '/request-quote'
     | '/search'
     | '/sitemap.xml'
@@ -555,6 +566,7 @@ export interface FileRouteTypes {
     | '/keranjang'
     | '/mcp'
     | '/network'
+    | '/promo'
     | '/request-quote'
     | '/search'
     | '/sitemap.xml'
@@ -604,6 +616,7 @@ export interface RootRouteChildren {
   KeranjangRoute: typeof KeranjangRoute
   McpRoute: typeof McpRoute
   NetworkRoute: typeof NetworkRoute
+  PromoRoute: typeof PromoRoute
   RequestQuoteRoute: typeof RequestQuoteRoute
   SearchRoute: typeof SearchRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -656,6 +669,13 @@ declare module '@tanstack/react-router' {
       path: '/request-quote'
       fullPath: '/request-quote'
       preLoaderRoute: typeof RequestQuoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/promo': {
+      id: '/promo'
+      path: '/promo'
+      fullPath: '/promo'
+      preLoaderRoute: typeof PromoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/network': {
@@ -1012,6 +1032,7 @@ const rootRouteChildren: RootRouteChildren = {
   KeranjangRoute: KeranjangRoute,
   McpRoute: McpRoute,
   NetworkRoute: NetworkRoute,
+  PromoRoute: PromoRoute,
   RequestQuoteRoute: RequestQuoteRoute,
   SearchRoute: SearchRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
