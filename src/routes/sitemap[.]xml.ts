@@ -18,6 +18,7 @@ const entries: SitemapEntry[] = [
   { path: "/request-quote", changefreq: "monthly", priority: "0.9" },
   { path: "/contact", changefreq: "monthly", priority: "0.6" },
   { path: "/produk", changefreq: "daily", priority: "0.9" },
+  { path: "/promo", changefreq: "daily", priority: "0.8" },
   { path: "/kategori/prime-cut", changefreq: "daily", priority: "0.8" },
   { path: "/kategori/second-cut", changefreq: "daily", priority: "0.8" },
   { path: "/kategori/offal", changefreq: "daily", priority: "0.7" },

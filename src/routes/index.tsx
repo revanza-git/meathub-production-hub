@@ -239,6 +239,11 @@ function AvailableNow() {
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <AvailabilityBadge value={row.availability} />
+                    <PromoFlag
+                      price={row.public_price_idr}
+                      listPrice={row.list_price_idr}
+                      className="absolute left-0 top-0"
+                    />
                   </div>
                   <div className="flex flex-1 flex-col justify-between p-5">
                     <div>
@@ -248,10 +253,12 @@ function AvailableNow() {
                         {[row.brand, row.origin, row.condition].filter(Boolean).join(" · ")}
                       </p>
                     </div>
-                    <p className="mt-5 font-display text-xl text-ink">
-                      {formatIdr(row.public_price_idr)}
-                      <span className="text-xs text-ash"> /kg</span>
-                    </p>
+                    <PriceTag
+                      price={row.public_price_idr}
+                      listPrice={row.list_price_idr}
+                      size="sm"
+                      className="mt-5"
+                    />
                   </div>
                 </Link>
               ))}

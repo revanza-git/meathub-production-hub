@@ -8,6 +8,7 @@ import { CONTACT_EMAIL, waLink } from "@/lib/meatlink/config";
 
 const NAV = [
   { to: "/produk", label: "Produk" },
+  { to: "/promo", label: "Promo" },
   { to: "/request-quote", label: "Special Sourcing" },
   { to: "/insights", label: "Market Insights" },
   { to: "/network", label: "Buyers & Suppliers" },
