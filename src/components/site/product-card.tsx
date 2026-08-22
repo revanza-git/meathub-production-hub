@@ -31,7 +31,7 @@ export function ProductCard({ row, headingLevel = "h2" }: { row: CatalogRow; hea
           <p className="eyebrow text-crimson">{CATEGORY_LABEL[row.category]}</p>
           <Heading className="mt-3 font-display text-xl leading-snug text-ink">{row.name}</Heading>
           {specs ? <p className="mt-2 text-sm text-ash">{specs}</p> : null}
-          {row.avg_weight_text ? (
+          {row.avg_weight_text && row.avg_weight_text.toUpperCase() !== "N/A" ? (
             <p className="mt-1 text-xs uppercase tracking-[0.14em] text-ash">
               Berat rata-rata {row.avg_weight_text}
             </p>
