@@ -142,6 +142,8 @@ function OrderPage() {
               </a>
             </div>
 
+            {!data.paid_at ? <PaymentProofUpload orderNo={data.order_no} token={t} /> : null}
+
             <h2 className="mt-12 font-display text-2xl text-ink">Rincian</h2>
             <ul className="mt-4 divide-y divide-line border-y border-line">
               {data.items.map((i, idx) => (
