@@ -12,6 +12,7 @@ import { CATEGORY_PAGES } from "@/lib/meatlink/categories";
 import { SiteLayout } from "@/components/site/site-layout";
 import { CatalogSearch } from "@/components/site/site-header";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
+import { PriceTag, PromoFlag } from "@/components/site/price-tag";
 import { Recommendations } from "@/components/meatlink/recommendations";
 import { CATEGORY_LABEL, useCatalog } from "@/lib/meatlink/catalog";
 import { resolveFeatureImage, resolveProductImage, useFeaturedInventory } from "@/lib/meatlink/featured";
