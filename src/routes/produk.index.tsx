@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, Search } from "lucide-react";
 import { SiteLayout, PageHero } from "@/components/site/site-layout";
 import { Recommendations } from "@/components/meatlink/recommendations";
