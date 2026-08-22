@@ -38,6 +38,7 @@ import { Route as AuthenticatedAdminStorefrontOrdersRouteImport } from './routes
 import { Route as AuthenticatedAdminStockRouteImport } from './routes/_authenticated/admin.stock'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as AuthenticatedAdminRfqRouteImport } from './routes/_authenticated/admin.rfq'
+import { Route as AuthenticatedAdminReportsRouteImport } from './routes/_authenticated/admin.reports'
 import { Route as AuthenticatedAdminInsightsRouteImport } from './routes/_authenticated/admin.insights'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
 import { Route as AuthenticatedAdminCommerceRouteImport } from './routes/_authenticated/admin.commerce'
@@ -201,6 +202,12 @@ const AuthenticatedAdminRfqRoute = AuthenticatedAdminRfqRouteImport.update({
   path: '/admin/rfq',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminReportsRoute =
+  AuthenticatedAdminReportsRouteImport.update({
+    id: '/admin/reports',
+    path: '/admin/reports',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminInsightsRoute =
   AuthenticatedAdminInsightsRouteImport.update({
     id: '/admin/insights',
@@ -296,6 +303,7 @@ export interface FileRoutesByFullPath {
   '/admin/commerce': typeof AuthenticatedAdminCommerceRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/insights': typeof AuthenticatedAdminInsightsRoute
+  '/admin/reports': typeof AuthenticatedAdminReportsRoute
   '/admin/rfq': typeof AuthenticatedAdminRfqRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/stock': typeof AuthenticatedAdminStockRoute
@@ -338,6 +346,7 @@ export interface FileRoutesByTo {
   '/admin/commerce': typeof AuthenticatedAdminCommerceRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/insights': typeof AuthenticatedAdminInsightsRoute
+  '/admin/reports': typeof AuthenticatedAdminReportsRoute
   '/admin/rfq': typeof AuthenticatedAdminRfqRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/stock': typeof AuthenticatedAdminStockRoute
@@ -382,6 +391,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/commerce': typeof AuthenticatedAdminCommerceRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/insights': typeof AuthenticatedAdminInsightsRoute
+  '/_authenticated/admin/reports': typeof AuthenticatedAdminReportsRoute
   '/_authenticated/admin/rfq': typeof AuthenticatedAdminRfqRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/stock': typeof AuthenticatedAdminStockRoute
@@ -426,6 +436,7 @@ export interface FileRouteTypes {
     | '/admin/commerce'
     | '/admin/dashboard'
     | '/admin/insights'
+    | '/admin/reports'
     | '/admin/rfq'
     | '/admin/settings'
     | '/admin/stock'
@@ -468,6 +479,7 @@ export interface FileRouteTypes {
     | '/admin/commerce'
     | '/admin/dashboard'
     | '/admin/insights'
+    | '/admin/reports'
     | '/admin/rfq'
     | '/admin/settings'
     | '/admin/stock'
@@ -511,6 +523,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/commerce'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/insights'
+    | '/_authenticated/admin/reports'
     | '/_authenticated/admin/rfq'
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/stock'
@@ -760,6 +773,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRfqRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/reports': {
+      id: '/_authenticated/admin/reports'
+      path: '/admin/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AuthenticatedAdminReportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/insights': {
       id: '/_authenticated/admin/insights'
       path: '/admin/insights'
@@ -851,6 +871,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminCommerceRoute: typeof AuthenticatedAdminCommerceRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedAdminInsightsRoute: typeof AuthenticatedAdminInsightsRoute
+  AuthenticatedAdminReportsRoute: typeof AuthenticatedAdminReportsRoute
   AuthenticatedAdminRfqRoute: typeof AuthenticatedAdminRfqRoute
   AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminStockRoute: typeof AuthenticatedAdminStockRoute
@@ -874,6 +895,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminCommerceRoute: AuthenticatedAdminCommerceRoute,
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
   AuthenticatedAdminInsightsRoute: AuthenticatedAdminInsightsRoute,
+  AuthenticatedAdminReportsRoute: AuthenticatedAdminReportsRoute,
   AuthenticatedAdminRfqRoute: AuthenticatedAdminRfqRoute,
   AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
   AuthenticatedAdminStockRoute: AuthenticatedAdminStockRoute,
