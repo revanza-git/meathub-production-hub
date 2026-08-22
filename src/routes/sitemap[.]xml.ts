@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createClient } from "@supabase/supabase-js";
 import type {} from "@tanstack/react-start";
+import type { Database } from "@/integrations/supabase/types";
 
 const BASE_URL = "https://meatlink.id";
 
