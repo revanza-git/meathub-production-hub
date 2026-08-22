@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "@/lib/meatlink/orders";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { ORDER_STATUS_LABEL, PAY_METHOD_LABEL, type PayMethod } from "@/lib/meatlink/cart";
+import { notifyOrderEventAdmin } from "@/lib/meatlink/notify.functions";
 import type { Database } from "@/integrations/supabase/types";
 
 type StoreStatus = Database["public"]["Enums"]["ml_store_order_status"];
@@ -119,6 +120,14 @@ function OrdersTable() {
         ? "Status updated and stock deducted."
         : "Status updated.",
     );
+    if (status === "PAID" || status === "SHIPPED" || status === "COMPLETED") {
+      void notifyOrderEventAdmin({
+        data: {
+          orderNo: orders.find((o) => o.id === id)?.order_no ?? "",
+          event: status === "PAID" ? "paid" : status === "SHIPPED" ? "shipped" : "completed",
+        },
+      }).catch(() => undefined);
+    }
     setDraft((prev) => ({ ...prev, [id]: { ref: "", note: "" } }));
     qc.invalidateQueries({ queryKey: ["admin-storefront-orders"] });
   }

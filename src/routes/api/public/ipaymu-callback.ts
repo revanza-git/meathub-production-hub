@@ -71,6 +71,13 @@ export const Route = createFileRoute("/api/public/ipaymu-callback")({
           note: `Pembayaran iPaymu terverifikasi (trx ${trxId})`,
         });
 
+        try {
+          const { sendOrderEmail } = await import("@/lib/meatlink/notify.server");
+          await sendOrderEmail(order.order_no, "paid");
+        } catch (err) {
+          console.error("[notify] paid email failed", err);
+        }
+
         return new Response("ok");
       },
     },
