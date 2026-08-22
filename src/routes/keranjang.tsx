@@ -124,6 +124,25 @@ function CartPage() {
     toast.success("Kode promo diterapkan.");
   }
 
+  async function requestCredit() {
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) {
+      toast.error("Masuk terlebih dahulu untuk mengajukan pembayaran tempo.");
+      return;
+    }
+    const raw = window.prompt("Berapa limit tempo yang Anda ajukan (Rp)?", "50000000");
+    const limit = Number((raw ?? "").replace(/\D/g, ""));
+    if (!limit) return;
+    const { error } = await supabase.rpc("ml_request_credit", { _limit: limit, _note: null });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Pengajuan limit tempo terkirim.");
+    const { data: creditRow } = await supabase.rpc("ml_my_credit");
+    if (creditRow) setCredit(creditRow as unknown as CreditSummary);
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (lines.length === 0) {
@@ -281,6 +300,23 @@ function CartPage() {
                   </button>
                 </div>
               </div>
+
+              {credit && credit.status !== "APPROVED" ? (
+                <p className="mt-4 border border-line p-4 text-xs text-ash">
+                  Pengajuan limit tempo Anda berstatus {credit.status.toLowerCase()}. Tim kami akan
+                  mengabari setelah ditinjau.
+                </p>
+              ) : null}
+
+              {!credit ? (
+                <button
+                  type="button"
+                  onClick={() => void requestCredit()}
+                  className="eyebrow mt-4 w-full border border-ink px-4 py-3 text-ink"
+                >
+                  Ajukan pembayaran tempo
+                </button>
+              ) : null}
 
               {credit?.status === "APPROVED" ? (
                 <p className="mt-4 border border-line bg-ink/[0.03] p-4 text-xs text-ash">
