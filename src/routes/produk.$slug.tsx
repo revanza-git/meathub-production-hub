@@ -2,13 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Check, MessageCircle } from "lucide-react";
 import { SiteLayout } from "@/components/site/site-layout";
 import { AddToCart } from "@/components/site/add-to-cart";
+import { AvailabilityBadge } from "@/components/site/availability-badge";
 import { WHATSAPP_NUMBER } from "@/lib/meatlink/config";
 import { formatIdr } from "@/lib/meatlink/inventory";
+import { resolveProductImage } from "@/lib/meatlink/featured";
 import {
   AVAILABILITY_LABEL,
   CATEGORY_LABEL,
+  useCatalog,
   useProduct,
   type Availability,
+  type ProductCategory,
 } from "@/lib/meatlink/catalog";
 
 export const Route = createFileRoute("/produk/$slug")({
@@ -57,6 +61,16 @@ function ProductPage() {
         ) : (
           <div className="mt-10 grid gap-12 lg:grid-cols-[1.2fr_1fr]">
             <div>
+              <div className="relative mb-8 aspect-[16/10] overflow-hidden bg-ink/5">
+                <img
+                  src={resolveProductImage(product.image_url, product.name, product.category)}
+                  alt={product.name}
+                  width={1024}
+                  height={768}
+                  className="h-full w-full object-cover"
+                />
+                <AvailabilityBadge value={product.availability} />
+              </div>
               <p className="eyebrow text-crimson">{CATEGORY_LABEL[product.category]}</p>
               <h1 className="mt-4 font-display text-4xl leading-tight text-ink lg:text-5xl">
                 {product.name}
@@ -138,8 +152,60 @@ function ProductPage() {
             </aside>
           </div>
         )}
+
+        {product ? <RelatedProducts category={product.category} slug={slug} /> : null}
       </section>
     </SiteLayout>
+  );
+}
+
+/** Other products in the same category, excluding the one being viewed. */
+function RelatedProducts({ category, slug }: { category: ProductCategory; slug: string }) {
+  const { data } = useCatalog({ category, page: 1, pageSize: 8 });
+  const rows = (data?.rows ?? []).filter((r) => r.slug !== slug).slice(0, 4);
+  if (rows.length === 0) return null;
+
+  return (
+    <section className="mt-20 border-t border-line pt-12">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <h2 className="font-display text-3xl text-ink">Produk terkait</h2>
+        <Link to="/produk" className="eyebrow text-ash hover:text-ink">
+          Lihat semua
+        </Link>
+      </div>
+      <div className="mt-8 grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
+        {rows.map((row) => (
+          <Link
+            key={row.id}
+            to="/produk/$slug"
+            params={{ slug: row.slug }}
+            className="group flex flex-col bg-background transition-colors hover:bg-ink/[0.03]"
+          >
+            <div className="relative aspect-[4/3] overflow-hidden bg-ink/5">
+              <img
+                src={resolveProductImage(row.image_url, row.name, row.category)}
+                alt={row.name}
+                loading="lazy"
+                width={1024}
+                height={768}
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <AvailabilityBadge value={row.availability} />
+            </div>
+            <div className="p-5">
+              <h3 className="font-display text-lg leading-snug text-ink">{row.name}</h3>
+              <p className="mt-1 text-xs text-ash">
+                {[row.brand, row.origin].filter(Boolean).join(" · ")}
+              </p>
+              <p className="mt-3 font-display text-xl text-ink">
+                {formatIdr(row.public_price_idr)}
+                <span className="text-sm text-ash"> /kg</span>
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 
