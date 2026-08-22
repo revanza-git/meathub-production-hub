@@ -154,6 +154,21 @@ function OrderPage() {
 
             {!data.paid_at ? <PaymentProofUpload orderNo={data.order_no} token={t} /> : null}
 
+            <DeliveryPanel
+              orderNo={data.order_no}
+              token={t}
+              status={data.status}
+              courier={data.courier_name ?? null}
+              trackingNo={data.tracking_no ?? null}
+              etaDate={data.eta_date ?? null}
+              shippedAt={data.shipped_at ?? null}
+              deliveredAt={data.delivered_at ?? null}
+              confirmedAt={data.buyer_confirmed_at ?? null}
+              onConfirmed={() => refetch()}
+            />
+
+            <OrderTimeline events={data.timeline ?? []} />
+
             <h2 className="mt-12 font-display text-2xl text-ink">Rincian</h2>
             <ul className="mt-4 divide-y divide-line border-y border-line">
               {data.items.map((i, idx) => (
