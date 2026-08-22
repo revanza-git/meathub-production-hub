@@ -26,9 +26,9 @@ type MailInput = { to: string; subject: string; html: string; text: string };
 
 function relayConfig() {
   const url = process.env["SMTP_RELAY_URL"];
-  const user = process.env["SMTP_USER"];
-  const pass = process.env["SMTP_PASS"];
-  if (!url || !user || !pass) return null;
+  if (!url) return null;
+  const user = process.env["SMTP_USER"] ?? "";
+  const pass = process.env["SMTP_PASS"] ?? "";
   return {
     url,
     token: process.env["SMTP_RELAY_TOKEN"] ?? "",
@@ -54,20 +54,26 @@ export async function sendMail(input: MailInput): Promise<{ sent: boolean; reaso
     method: "POST",
     headers,
     body: JSON.stringify({
-      from: cfg.from,
+      from: cfg.from || undefined,
       to: input.to,
       bcc: cfg.adminTo || undefined,
       subject: input.subject,
       html: input.html,
       text: input.text,
-      smtp: {
-        host: cfg.host,
-        port: cfg.port,
-        secure: cfg.port === 465,
-        auth: { user: cfg.user, pass: cfg.pass },
-      },
+      // Credentials are optional: the relay normally holds the Titan login
+      // itself. They are only forwarded when set on this app.
+      smtp:
+        cfg.user && cfg.pass
+          ? {
+              host: cfg.host,
+              port: cfg.port,
+              secure: cfg.port === 465,
+              auth: { user: cfg.user, pass: cfg.pass },
+            }
+          : undefined,
     }),
   });
+
 
   if (!res.ok) {
     const body = await res.text().catch(() => "");
