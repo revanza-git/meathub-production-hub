@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { SiteLayout, PageHero } from "@/components/site/site-layout";
@@ -46,6 +46,38 @@ function CartPage() {
   function set<K extends keyof typeof form>(k: K, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
   }
+
+  // Signed-in buyers: prefill shipping details from their most recent order.
+  useEffect(() => {
+    let active = true;
+    void (async () => {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) return;
+      const { data } = await supabase
+        .from("storefront_orders")
+        .select("buyer_name, company, phone, email, address, city")
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!active || !data) return;
+      setForm((f) =>
+        f.buyer_name || f.phone || f.address
+          ? f
+          : {
+              ...f,
+              buyer_name: data.buyer_name ?? "",
+              company: data.company ?? "",
+              phone: data.phone ?? "",
+              email: data.email ?? "",
+              address: data.address ?? "",
+              city: data.city ?? "",
+            },
+      );
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
