@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SupplyRouteImport } from './routes/supply'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as RequestQuoteRouteImport } from './routes/request-quote'
 import { Route as NetworkRouteImport } from './routes/network'
 import { Route as McpRouteImport } from './routes/mcp'
@@ -68,6 +69,11 @@ const SuppliersRoute = SuppliersRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RequestQuoteRoute = RequestQuoteRouteImport.update({
@@ -310,6 +316,7 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/network': typeof NetworkRoute
   '/request-quote': typeof RequestQuoteRoute
+  '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
@@ -356,6 +363,7 @@ export interface FileRoutesByTo {
   '/mcp': typeof McpRoute
   '/network': typeof NetworkRoute
   '/request-quote': typeof RequestQuoteRoute
+  '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
@@ -404,6 +412,7 @@ export interface FileRoutesById {
   '/mcp': typeof McpRoute
   '/network': typeof NetworkRoute
   '/request-quote': typeof RequestQuoteRoute
+  '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
@@ -452,6 +461,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/network'
     | '/request-quote'
+    | '/search'
     | '/sitemap.xml'
     | '/suppliers'
     | '/supply'
@@ -498,6 +508,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/network'
     | '/request-quote'
+    | '/search'
     | '/sitemap.xml'
     | '/suppliers'
     | '/supply'
@@ -545,6 +556,7 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/network'
     | '/request-quote'
+    | '/search'
     | '/sitemap.xml'
     | '/suppliers'
     | '/supply'
@@ -593,6 +605,7 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   NetworkRoute: typeof NetworkRoute
   RequestQuoteRoute: typeof RequestQuoteRoute
+  SearchRoute: typeof SearchRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SuppliersRoute: typeof SuppliersRoute
   SupplyRoute: typeof SupplyRoute
@@ -629,6 +642,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/request-quote': {
@@ -993,6 +1013,7 @@ const rootRouteChildren: RootRouteChildren = {
   McpRoute: McpRoute,
   NetworkRoute: NetworkRoute,
   RequestQuoteRoute: RequestQuoteRoute,
+  SearchRoute: SearchRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SuppliersRoute: SuppliersRoute,
   SupplyRoute: SupplyRoute,
