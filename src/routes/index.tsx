@@ -13,7 +13,7 @@ import { SiteLayout } from "@/components/site/site-layout";
 import { CatalogSearch } from "@/components/site/site-header";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
 import { Recommendations } from "@/components/meatlink/recommendations";
-import { CATEGORIES, CATEGORY_LABEL, useCatalog } from "@/lib/meatlink/catalog";
+import { CATEGORY_LABEL, useCatalog } from "@/lib/meatlink/catalog";
 import { resolveFeatureImage, resolveProductImage, useFeaturedInventory } from "@/lib/meatlink/featured";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import heroImg from "@/assets/hero-wagyu.jpg";
@@ -39,13 +39,6 @@ export const Route = createFileRoute("/")({
   }),
   component: HomePage,
 });
-
-const CATEGORY_NOTE: Record<string, string> = {
-  PRIME_CUT: "Ribeye, striploin, tenderloin, wagyu",
-  SECOND_CUT: "Short plate, brisket, chuck, shank",
-  OFFAL: "Lidah, hati, babat, jeroan pilihan",
-  BONE: "Marrow bone, soup bone, potongan tulang",
-};
 
 const BENEFITS = [
   {
