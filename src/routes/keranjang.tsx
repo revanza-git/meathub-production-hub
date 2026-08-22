@@ -47,6 +47,10 @@ function CartPage() {
   const [applied, setApplied] = useState<{ code: string; discount: number } | null>(null);
   const [checkingCoupon, setCheckingCoupon] = useState(false);
   const [credit, setCredit] = useState<CreditSummary | null>(null);
+  const [signedIn, setSignedIn] = useState(false);
+  const [addresses, setAddresses] = useState<BuyerAddress[]>([]);
+  const [pickedAddress, setPickedAddress] = useState<string | null>(null);
+  const [saveNewAddress, setSaveNewAddress] = useState(false);
   const [form, setForm] = useState({
     buyer_name: "",
     company: "",
