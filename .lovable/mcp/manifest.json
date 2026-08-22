@@ -193,7 +193,7 @@
       {
         "name": "create_market_insight",
         "title": "Create market insight",
-        "description": "Write a new Meatlink sourcing note about the Indonesian beef market. Always saved as a draft — a Meatlink admin reviews and publishes it. Cite the aggregates you relied on in data_refs.",
+        "description": "Write a current, actionable Indonesian beef sourcing note. Always saved as a draft. Requires recent official public Indonesian market observations plus cited structural data; never use Meatlink internal marketplace data.",
         "annotations": {
           "readOnlyHint": false,
           "destructiveHint": false,
@@ -242,6 +242,32 @@
                 "high"
               ]
             },
+            "audience": {
+              "type": "string",
+              "enum": [
+                "buyer",
+                "supplier",
+                "both"
+              ],
+              "description": "Who can act on the recommendation."
+            },
+            "time_horizon_days": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 180,
+              "description": "How long the recommendation is intended to remain useful."
+            },
+            "observation_ids": {
+              "minItems": 1,
+              "maxItems": 20,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+              },
+              "description": "Recent public_market_observations that establish present-day relevance."
+            },
             "data_refs": {
               "description": "JSON object of the numbers the note is based on.",
               "type": "object",
@@ -253,7 +279,10 @@
           },
           "required": [
             "title",
-            "body"
+            "body",
+            "audience",
+            "time_horizon_days",
+            "observation_ids"
           ]
         },
         "outputSchema": null
@@ -366,6 +395,184 @@
               "maximum": 15
             }
           }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "record_public_market_observation",
+        "title": "Record public Indonesian market observation",
+        "description": "Record a dated candidate observation from an approved Indonesian government source. Admin only. This stores external public evidence, never Meatlink marketplace data.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "source_name": {
+              "type": "string",
+              "enum": [
+                "pihps_bi",
+                "sp2kp_kemendag",
+                "bapanas",
+                "kementan",
+                "bps",
+                "bank_indonesia"
+              ]
+            },
+            "source_url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "signal_type": {
+              "type": "string",
+              "enum": [
+                "price",
+                "industry",
+                "policy",
+                "seasonal",
+                "macro"
+              ]
+            },
+            "commodity": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "market_level": {
+              "type": "string",
+              "enum": [
+                "producer",
+                "rph_wholesale",
+                "retail",
+                "import",
+                "industry",
+                "policy",
+                "macro"
+              ]
+            },
+            "region": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "observed_on": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "price_idr_per_kg": {
+              "type": "number",
+              "minimum": 0
+            },
+            "value": {
+              "type": "number"
+            },
+            "unit": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "summary": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          },
+          "required": [
+            "source_name",
+            "source_url",
+            "signal_type",
+            "market_level",
+            "observed_on",
+            "summary"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_public_market_observations",
+        "title": "List public Indonesian market observations",
+        "description": "List recent price, policy, industry, seasonal, and macro observations from approved Indonesian government sources. Contains no Meatlink marketplace data.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "max_age_days": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365
+            },
+            "signal_type": {
+              "type": "string",
+              "enum": [
+                "price",
+                "industry",
+                "policy",
+                "seasonal",
+                "macro"
+              ]
+            },
+            "region": {
+              "type": "string"
+            },
+            "verification_status": {
+              "type": "string",
+              "enum": [
+                "candidate",
+                "verified"
+              ]
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "review_public_market_observation",
+        "title": "Review public market observation",
+        "description": "Verify or reject a candidate external market observation after checking its official source. Admin only.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+            },
+            "verification_status": {
+              "type": "string",
+              "enum": [
+                "verified",
+                "rejected"
+              ]
+            },
+            "review_notes": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 1000
+            }
+          },
+          "required": [
+            "id",
+            "verification_status",
+            "review_notes"
+          ]
         },
         "outputSchema": null
       }

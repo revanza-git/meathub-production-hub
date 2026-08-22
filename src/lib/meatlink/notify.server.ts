@@ -3,9 +3,12 @@
  *
  * The app server runs on a serverless edge runtime that cannot open raw SMTP
  * sockets, so mail is handed to an HTTP relay that performs the SMTP session
- * with the Titan credentials. Configure with secrets:
+ * with the Titan credentials. The relay URL is required for email to actually
+ * send; if it is missing, the module logs and skips gracefully.
  *
- *   SMTP_RELAY_URL    HTTPS endpoint of the relay (required)
+ * Configure with secrets:
+ *
+ *   SMTP_RELAY_URL    HTTPS endpoint of the relay (required for real sending)
  *   SMTP_RELAY_TOKEN  Bearer token for the relay (optional)
  *   SMTP_HOST         default smtp.titan.email
  *   SMTP_PORT         default 465
@@ -40,7 +43,10 @@ function relayConfig() {
 
 export async function sendMail(input: MailInput): Promise<{ sent: boolean; reason?: string }> {
   const cfg = relayConfig();
-  if (!cfg) return { sent: false, reason: "smtp_not_configured" };
+  if (!cfg) {
+    console.warn("[notify] SMTP relay not configured; skipping email.", input.to);
+    return { sent: false, reason: "smtp_not_configured" };
+  }
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (cfg.token) headers["Authorization"] = `Bearer ${cfg.token}`;
 

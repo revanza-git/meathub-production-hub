@@ -121,9 +121,10 @@ function OrdersTable() {
         : "Status updated.",
     );
     if (status === "PAID" || status === "SHIPPED" || status === "COMPLETED") {
+      const targetOrder = orders.find((o) => o.id === id);
       void notifyOrderEventAdmin({
         data: {
-          orderNo: orders.find((o) => o.id === id)?.order_no ?? "",
+          orderNo: targetOrder?.order_no ?? "",
           event: status === "PAID" ? "paid" : status === "SHIPPED" ? "shipped" : "completed",
         },
       }).catch(() => undefined);

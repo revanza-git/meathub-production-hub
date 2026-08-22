@@ -18,7 +18,7 @@ export default defineTool({
       return { content: [{ type: "text", text: "Not authenticated" }], isError: true };
     }
     const supabase = supabaseForUser(ctx);
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("public_market_observations")
       .update({
         verification_status,

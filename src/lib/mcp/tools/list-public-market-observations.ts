@@ -23,7 +23,7 @@ export default defineTool({
     cutoff.setUTCDate(cutoff.getUTCDate() - (max_age_days ?? 30));
 
     const supabase = supabaseForUser(ctx);
-    let query = supabase
+    const query = (supabase as any)
       .from("public_market_observations")
       .select(
         "id,source_name,source_url,signal_type,commodity,market_level,region,observed_on,price_idr_per_kg,value,unit,summary,verification_status,created_at",
@@ -32,9 +32,9 @@ export default defineTool({
       .neq("verification_status", "rejected")
       .order("observed_on", { ascending: false })
       .limit(limit ?? 50);
-    if (signal_type) query = query.eq("signal_type", signal_type);
-    if (region) query = query.eq("region", region);
-    if (verification_status) query = query.eq("verification_status", verification_status);
+    if (signal_type) query.eq("signal_type", signal_type);
+    if (region) query.eq("region", region);
+    if (verification_status) query.eq("verification_status", verification_status);
 
     const { data, error } = await query;
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
