@@ -3,6 +3,7 @@ import { ArrowLeft, Check, MessageCircle } from "lucide-react";
 import { SiteLayout } from "@/components/site/site-layout";
 import { AddToCart } from "@/components/site/add-to-cart";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
+import { PriceTag, PromoFlag } from "@/components/site/price-tag";
 import { WHATSAPP_NUMBER } from "@/lib/meatlink/config";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { resolveProductImage } from "@/lib/meatlink/featured";
@@ -12,6 +13,7 @@ import {
   useCatalog,
   useProduct,
   type Availability,
+  type CatalogProduct,
   type ProductCategory,
 } from "@/lib/meatlink/catalog";
 
@@ -70,6 +72,11 @@ function ProductPage() {
                   className="h-full w-full object-cover"
                 />
                 <AvailabilityBadge value={product.availability} />
+                <PromoFlag
+                  price={product.public_price_idr}
+                  listPrice={product.list_price_idr}
+                  className="absolute left-0 top-0"
+                />
               </div>
               <p className="eyebrow text-crimson">{CATEGORY_LABEL[product.category]}</p>
               <h1 className="mt-4 font-display text-4xl leading-tight text-ink lg:text-5xl">
@@ -108,13 +115,22 @@ function ProductPage() {
 
             <aside className="h-fit border border-line bg-background p-8 lg:sticky lg:top-28">
               <p className="eyebrow text-ash">Harga publik</p>
-              <p className="mt-3 font-display text-4xl text-ink">
-                {formatIdr(product.public_price_idr)}
-                <span className="text-base text-ash"> /kg</span>
-              </p>
+              <PriceTag
+                price={product.public_price_idr}
+                listPrice={product.list_price_idr}
+                size="lg"
+                className="mt-3"
+              />
+              {product.promo_until ? (
+                <p className="mt-2 text-xs text-crimson">
+                  Harga promo berlaku sampai {formatDate(product.promo_until)}.
+                </p>
+              ) : null}
               <p className="mt-2 text-xs text-ash">
                 Harga indikatif untuk pembelian B2B. Harga final mengikuti volume dan lokasi kirim.
               </p>
+
+              <VolumeTiers price={Number(product.public_price_idr)} />
 
               <ul className="mt-7 space-y-3 text-sm text-ink/80">
                 {[
@@ -154,8 +170,82 @@ function ProductPage() {
         )}
 
         {product ? <RelatedProducts category={product.category} slug={slug} /> : null}
+        {product ? <ProductJsonLd product={product} /> : null}
       </section>
     </SiteLayout>
+  );
+}
+
+/** Indicative volume pricing — confirmed by sales, not applied automatically. */
+const VOLUME_TIERS = [
+  { min: 100, off: 0.02 },
+  { min: 300, off: 0.04 },
+  { min: 500, off: 0.06 },
+] as const;
+
+function VolumeTiers({ price }: { price: number }) {
+  if (!Number.isFinite(price) || price <= 0) return null;
+  return (
+    <div className="mt-6 border border-line">
+      <p className="eyebrow border-b border-line px-4 py-3 text-ash">Indikasi harga volume</p>
+      <ul className="divide-y divide-line text-sm">
+        <li className="flex items-center justify-between px-4 py-2.5">
+          <span className="text-ash">&lt; 100 kg</span>
+          <span className="text-ink">{formatIdr(price)} /kg</span>
+        </li>
+        {VOLUME_TIERS.map((t) => (
+          <li key={t.min} className="flex items-center justify-between px-4 py-2.5">
+            <span className="text-ash">&ge; {t.min} kg</span>
+            <span className="text-ink">{formatIdr(Math.round(price * (1 - t.off)))} /kg</span>
+          </li>
+        ))}
+      </ul>
+      <p className="border-t border-line px-4 py-3 text-xs text-ash">
+        Indikatif. Harga volume dikonfirmasi tim sales setelah permintaan dikirim.
+      </p>
+    </div>
+  );
+}
+
+function formatDate(value: string) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return value;
+  return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+}
+
+/** Product structured data so search engines can surface price and availability. */
+function ProductJsonLd({ product }: { product: CatalogProduct }) {
+  const price = Number(product.public_price_idr);
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description:
+      product.description ??
+      `${product.name} — ${[product.brand, product.origin, product.condition].filter(Boolean).join(", ")}`,
+    category: CATEGORY_LABEL[product.category],
+    brand: product.brand ? { "@type": "Brand", name: product.brand } : undefined,
+    countryOfOrigin: product.origin ?? undefined,
+    offers:
+      price > 0
+        ? {
+            "@type": "Offer",
+            priceCurrency: "IDR",
+            price,
+            url: `https://meatlink.id/produk/${product.slug}`,
+            availability:
+              product.availability === "PRE_ORDER"
+                ? "https://schema.org/PreOrder"
+                : "https://schema.org/InStock",
+            ...(product.promo_until ? { priceValidUntil: product.promo_until } : {}),
+          }
+        : undefined,
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
   );
 }
 
