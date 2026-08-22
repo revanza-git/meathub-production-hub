@@ -6,6 +6,7 @@ import { SiteLayout, PageHero } from "@/components/site/site-layout";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { PAY_METHODS, useCart, type PayMethod } from "@/lib/meatlink/cart";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyOrderEventPublic } from "@/lib/meatlink/notify.functions";
 
 type CreditSummary = {
   status: string;
@@ -162,6 +163,9 @@ function CartPage() {
       if (!row) throw new Error("Pesanan gagal dibuat");
       clear();
       toast.success(`Pesanan ${row.order_no} berhasil dibuat.`);
+      void notifyOrderEventPublic({
+        data: { orderNo: row.order_no, token: row.access_token, event: "placed" },
+      }).catch(() => undefined);
       navigate({
         to: "/pesanan/$orderNo",
         params: { orderNo: row.order_no },

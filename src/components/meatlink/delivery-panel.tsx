@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { PackageCheck, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyOrderEventPublic } from "@/lib/meatlink/notify.functions";
 
 type Props = {
   orderNo: string;
@@ -51,6 +52,9 @@ export function DeliveryPanel({
       toast.error(error.message);
       return;
     }
+    void notifyOrderEventPublic({
+      data: { orderNo, token, event: "completed" },
+    }).catch(() => undefined);
     toast.success("Terima kasih — pesanan ditandai selesai.");
     onConfirmed();
   }
