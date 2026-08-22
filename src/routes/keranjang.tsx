@@ -7,6 +7,14 @@ import { formatIdr } from "@/lib/meatlink/inventory";
 import { PAY_METHODS, useCart, type PayMethod } from "@/lib/meatlink/cart";
 import { supabase } from "@/integrations/supabase/client";
 
+type CreditSummary = {
+  status: string;
+  limit_idr: number;
+  term_days: number;
+  outstanding_idr: number;
+  available_idr: number;
+};
+
 export const Route = createFileRoute("/keranjang")({
   head: () => ({
     meta: [
@@ -33,6 +41,10 @@ function CartPage() {
   const navigate = useNavigate();
   const [pending, setPending] = useState(false);
   const [method, setMethod] = useState<PayMethod>("BANK_TRANSFER");
+  const [coupon, setCoupon] = useState("");
+  const [applied, setApplied] = useState<{ code: string; discount: number } | null>(null);
+  const [checkingCoupon, setCheckingCoupon] = useState(false);
+  const [credit, setCredit] = useState<CreditSummary | null>(null);
   const [form, setForm] = useState({
     buyer_name: "",
     company: "",
@@ -59,6 +71,8 @@ function CartPage() {
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
+      const { data: creditRow } = await supabase.rpc("ml_my_credit");
+      if (active && creditRow) setCredit(creditRow as unknown as CreditSummary);
       if (!active || !data) return;
       setForm((f) =>
         f.buyer_name || f.phone || f.address
@@ -79,6 +93,56 @@ function CartPage() {
     };
   }, []);
 
+  // Re-check the code whenever the cart total moves so minimum-spend rules stay honest.
+  useEffect(() => {
+    if (!applied) return;
+    setApplied(null);
+  }, [subtotal]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function applyCoupon() {
+    const code = coupon.trim();
+    if (!code) return;
+    setCheckingCoupon(true);
+    const { data, error } = await supabase.rpc("ml_validate_coupon", {
+      _code: code,
+      _subtotal: subtotal,
+    });
+    setCheckingCoupon(false);
+    const res = data as unknown as
+      | { valid: boolean; reason?: string; code?: string; discount_idr?: number }
+      | null;
+    if (error || !res) {
+      toast.error(error?.message ?? "Kode promo tidak dapat diperiksa.");
+      return;
+    }
+    if (!res.valid) {
+      setApplied(null);
+      toast.error(res.reason ?? "Kode promo tidak berlaku.");
+      return;
+    }
+    setApplied({ code: res.code ?? code, discount: Number(res.discount_idr ?? 0) });
+    toast.success("Kode promo diterapkan.");
+  }
+
+  async function requestCredit() {
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) {
+      toast.error("Masuk terlebih dahulu untuk mengajukan pembayaran tempo.");
+      return;
+    }
+    const raw = window.prompt("Berapa limit tempo yang Anda ajukan (Rp)?", "50000000");
+    const limit = Number((raw ?? "").replace(/\D/g, ""));
+    if (!limit) return;
+    const { error } = await supabase.rpc("ml_request_credit", { _limit: limit });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Pengajuan limit tempo terkirim.");
+    const { data: creditRow } = await supabase.rpc("ml_my_credit");
+    if (creditRow) setCredit(creditRow as unknown as CreditSummary);
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (lines.length === 0) {
@@ -91,6 +155,7 @@ function CartPage() {
         _buyer: form,
         _items: lines.map((l) => ({ slug: l.slug, qty_kg: l.qty })),
         _payment_method: method,
+        _coupon: applied?.code ?? undefined,
       });
       if (error) throw error;
       const row = (data ?? [])[0];
@@ -195,14 +260,77 @@ function CartPage() {
                 <span className="text-sm text-ash">Subtotal</span>
                 <span className="font-display text-3xl text-ink">{formatIdr(subtotal)}</span>
               </div>
+              {applied ? (
+                <>
+                  <div className="mt-3 flex items-baseline justify-between text-sm">
+                    <span className="text-ash">Promo {applied.code}</span>
+                    <span className="text-crimson">-{formatIdr(applied.discount)}</span>
+                  </div>
+                  <div className="mt-3 flex items-baseline justify-between border-t border-line pt-3">
+                    <span className="text-sm text-ash">Total</span>
+                    <span className="font-display text-2xl text-ink">
+                      {formatIdr(Math.max(subtotal - applied.discount, 0))}
+                    </span>
+                  </div>
+                </>
+              ) : null}
               <p className="mt-2 text-xs text-ash">
                 Belum termasuk ongkos kirim. Tim kami mengonfirmasi total akhir.
               </p>
 
+              <div className="mt-6">
+                <label htmlFor="coupon" className="eyebrow text-ash">
+                  Kode promo
+                </label>
+                <div className="mt-2 flex gap-2">
+                  <input
+                    id="coupon"
+                    value={coupon}
+                    onChange={(e) => setCoupon(e.target.value.toUpperCase())}
+                    placeholder="MEATLINK10"
+                    className="w-full border border-line bg-background px-4 py-3 text-sm text-ink outline-none focus:border-ink"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void applyCoupon()}
+                    disabled={checkingCoupon || !coupon.trim()}
+                    className="eyebrow border border-ink px-4 text-ink disabled:opacity-50"
+                  >
+                    {checkingCoupon ? "…" : "Pakai"}
+                  </button>
+                </div>
+              </div>
+
+              {credit && credit.status !== "APPROVED" ? (
+                <p className="mt-4 border border-line p-4 text-xs text-ash">
+                  Pengajuan limit tempo Anda berstatus {credit.status.toLowerCase()}. Tim kami akan
+                  mengabari setelah ditinjau.
+                </p>
+              ) : null}
+
+              {!credit ? (
+                <button
+                  type="button"
+                  onClick={() => void requestCredit()}
+                  className="eyebrow mt-4 w-full border border-ink px-4 py-3 text-ink"
+                >
+                  Ajukan pembayaran tempo
+                </button>
+              ) : null}
+
+              {credit?.status === "APPROVED" ? (
+                <p className="mt-4 border border-line bg-ink/[0.03] p-4 text-xs text-ash">
+                  Limit tempo tersedia {formatIdr(Number(credit.available_idr))} dari{" "}
+                  {formatIdr(Number(credit.limit_idr))} · jatuh tempo {credit.term_days} hari.
+                </p>
+              ) : null}
+
               <fieldset className="mt-8">
                 <legend className="eyebrow text-ash">Metode pembayaran</legend>
                 <div className="mt-4 grid gap-2">
-                  {PAY_METHODS.map((m) => (
+                  {PAY_METHODS.filter(
+                    (m) => !m.requiresCredit || credit?.status === "APPROVED",
+                  ).map((m) => (
                     <label
                       key={m.value}
                       className={`flex cursor-pointer gap-3 border p-4 text-sm ${

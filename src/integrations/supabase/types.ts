@@ -1295,6 +1295,137 @@ export type Database = {
         }
         Relationships: []
       }
+      ml_buyer_prices: {
+        Row: {
+          created_at: string
+          id: string
+          inventory_id: string
+          note: string | null
+          price_idr: number
+          updated_at: string
+          user_id: string
+          valid_until: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          inventory_id: string
+          note?: string | null
+          price_idr: number
+          updated_at?: string
+          user_id: string
+          valid_until?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          inventory_id?: string
+          note?: string | null
+          price_idr?: number
+          updated_at?: string
+          user_id?: string
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ml_buyer_prices_inventory_id_fkey"
+            columns: ["inventory_id"]
+            isOneToOne: false
+            referencedRelation: "admin_inventory"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ml_coupons: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          discount_type: string
+          discount_value: number
+          ends_at: string | null
+          id: string
+          is_active: boolean
+          max_discount_idr: number | null
+          min_subtotal_idr: number
+          starts_at: string | null
+          updated_at: string
+          usage_limit: number | null
+          used_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          discount_type?: string
+          discount_value: number
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_discount_idr?: number | null
+          min_subtotal_idr?: number
+          starts_at?: string | null
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_discount_idr?: number | null
+          min_subtotal_idr?: number
+          starts_at?: string | null
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number
+        }
+        Relationships: []
+      }
+      ml_credit_accounts: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          id: string
+          limit_idr: number
+          note: string | null
+          status: string
+          term_days: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          limit_idr?: number
+          note?: string | null
+          status?: string
+          term_days?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          limit_idr?: number
+          note?: string | null
+          status?: string
+          term_days?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ml_role_audit: {
         Row: {
           actor_user_id: string | null
@@ -2786,9 +2917,13 @@ export type Database = {
           buyer_name: string
           city: string | null
           company: string | null
+          coupon_code: string | null
           courier_name: string | null
           created_at: string
+          credit_term_days: number | null
           delivered_at: string | null
+          discount_idr: number
+          due_date: string | null
           email: string | null
           eta_date: string | null
           id: string
@@ -2823,9 +2958,13 @@ export type Database = {
           buyer_name: string
           city?: string | null
           company?: string | null
+          coupon_code?: string | null
           courier_name?: string | null
           created_at?: string
+          credit_term_days?: number | null
           delivered_at?: string | null
+          discount_idr?: number
+          due_date?: string | null
           email?: string | null
           eta_date?: string | null
           id?: string
@@ -2860,9 +2999,13 @@ export type Database = {
           buyer_name?: string
           city?: string | null
           company?: string | null
+          coupon_code?: string | null
           courier_name?: string | null
           created_at?: string
+          credit_term_days?: number | null
           delivered_at?: string | null
+          discount_idr?: number
+          due_date?: string | null
           email?: string | null
           eta_date?: string | null
           id?: string
@@ -3237,12 +3380,23 @@ export type Database = {
         Returns: boolean
       }
       ml_market_snapshot: { Args: { _days?: number }; Returns: Json }
+      ml_my_credit: { Args: never; Returns: Json }
+      ml_my_frequent_products: {
+        Args: { _limit?: number }
+        Returns: {
+          last_price_idr: number
+          product_name: string
+          slug: string
+          times_ordered: number
+        }[]
+      }
       ml_next_order_no: { Args: never; Returns: string }
       ml_next_store_order_no: { Args: never; Returns: string }
       ml_normalise_region: { Args: { _raw: string }; Returns: string }
       ml_place_order: {
         Args: {
           _buyer: Json
+          _coupon?: string
           _items: Json
           _payment_method: Database["public"]["Enums"]["ml_pay_method"]
         }
@@ -3251,6 +3405,14 @@ export type Database = {
           id: string
           order_no: string
           total_idr: number
+        }[]
+      }
+      ml_popular_products: {
+        Args: { _limit?: number }
+        Returns: {
+          product_name: string
+          slug: string
+          total_qty_kg: number
         }[]
       }
       ml_public_catalog: {
@@ -3318,6 +3480,10 @@ export type Database = {
           source_count: number
         }[]
       }
+      ml_request_credit: {
+        Args: { _limit: number; _note?: string }
+        Returns: undefined
+      }
       ml_set_store_delivery: {
         Args: {
           _courier?: string
@@ -3348,6 +3514,10 @@ export type Database = {
           _status: Database["public"]["Enums"]["ml_store_order_status"]
         }
         Returns: undefined
+      }
+      ml_validate_coupon: {
+        Args: { _code: string; _subtotal: number }
+        Returns: Json
       }
       next_invoice_no: { Args: never; Returns: string }
       next_order_no: { Args: never; Returns: string }
@@ -3483,7 +3653,7 @@ export type Database = {
         | "ON_HOLD"
         | "REJECTED"
         | "DELIVERED"
-      ml_pay_method: "BANK_TRANSFER" | "QRIS" | "WHATSAPP" | "CBD"
+      ml_pay_method: "BANK_TRANSFER" | "QRIS" | "WHATSAPP" | "CBD" | "TOP"
       ml_payment_term: "CBD" | "TOP7" | "TOP14" | "TOP30"
       ml_product_category: "PRIME_CUT" | "SECOND_CUT" | "OFFAL" | "BONE"
       ml_role: "buyer" | "vendor" | "admin"
@@ -3738,7 +3908,7 @@ export const Constants = {
         "REJECTED",
         "DELIVERED",
       ],
-      ml_pay_method: ["BANK_TRANSFER", "QRIS", "WHATSAPP", "CBD"],
+      ml_pay_method: ["BANK_TRANSFER", "QRIS", "WHATSAPP", "CBD", "TOP"],
       ml_payment_term: ["CBD", "TOP7", "TOP14", "TOP30"],
       ml_product_category: ["PRIME_CUT", "SECOND_CUT", "OFFAL", "BONE"],
       ml_role: ["buyer", "vendor", "admin"],
