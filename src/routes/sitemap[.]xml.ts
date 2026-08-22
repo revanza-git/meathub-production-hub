@@ -31,7 +31,28 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        const urls = entries.map((e) =>
+        const all: SitemapEntry[] = [...entries];
+
+        try {
+          const supabase = createClient<Database>(
+            process.env["SUPABASE_URL"]!,
+            process.env["SUPABASE_PUBLISHABLE_KEY"]!,
+            { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
+          );
+          const { data, error } = await supabase.rpc("ml_public_catalog", {
+            _sort: "name_asc",
+            _limit: 1000,
+            _offset: 0,
+          });
+          if (error) throw error;
+          for (const row of data ?? []) {
+            all.push({ path: `/produk/${row.slug}`, changefreq: "daily", priority: "0.7" });
+          }
+        } catch (err) {
+          console.error("sitemap product read failed", err);
+        }
+
+        const urls = all.map((e) =>
           [
             `  <url>`,
             `    <loc>${BASE_URL}${e.path}</loc>`,
