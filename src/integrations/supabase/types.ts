@@ -3454,12 +3454,19 @@ export type Database = {
       }
       ml_public_catalog: {
         Args: {
+          _availability?: string[]
+          _brands?: string[]
           _category?: Database["public"]["Enums"]["ml_product_category"]
+          _conditions?: string[]
           _limit?: number
+          _max_price?: number
+          _min_price?: number
           _offset?: number
           _origin?: string
+          _origins?: string[]
           _promo_only?: boolean
           _search?: string
+          _sort?: string
         }
         Returns: {
           availability: string
@@ -3476,6 +3483,20 @@ export type Database = {
           public_price_idr: number
           slug: string
           total_count: number
+        }[]
+      }
+      ml_public_catalog_facets: {
+        Args: {
+          _category?: Database["public"]["Enums"]["ml_product_category"]
+          _promo_only?: boolean
+          _search?: string
+        }
+        Returns: {
+          cnt: number
+          kind: string
+          max_price: number
+          min_price: number
+          value: string
         }[]
       }
       ml_public_featured: {
