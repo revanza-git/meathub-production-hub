@@ -207,7 +207,8 @@ function HomePage() {
               eyebrow: "For buyers",
               title: "Stop chasing suppliers",
               body: "Restaurants, hotels, caterers and retailers get one contact, matched quotes and consistent spec — instead of a group chat full of guesses.",
-              to: "/buyers" as const,
+              to: "/network" as const,
+              hash: "buyers" as const,
               cta: "How sourcing works",
             },
             {
