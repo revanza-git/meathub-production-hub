@@ -38,6 +38,7 @@ import { Route as AuthenticatedVendorCatalogRouteImport } from './routes/_authen
 import { Route as AuthenticatedAppStockRouteImport } from './routes/_authenticated/app.stock'
 import { Route as AuthenticatedAppRfqRouteImport } from './routes/_authenticated/app.rfq'
 import { Route as AuthenticatedAppPesananRouteImport } from './routes/_authenticated/app.pesanan'
+import { Route as AuthenticatedAppAlamatRouteImport } from './routes/_authenticated/app.alamat'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedAdminStorefrontOrdersRouteImport } from './routes/_authenticated/admin.storefront-orders'
 import { Route as AuthenticatedAdminStockRouteImport } from './routes/_authenticated/admin.stock'
@@ -55,6 +56,7 @@ import { Route as AuthenticatedAdminInventoryIndexRouteImport } from './routes/_
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 import { Route as AuthenticatedAppOrdersNewRouteImport } from './routes/_authenticated/app.orders.new'
 import { Route as AuthenticatedAppOrdersIdRouteImport } from './routes/_authenticated/app.orders.$id'
+import { Route as AuthenticatedAppInvoiceOrderNoRouteImport } from './routes/_authenticated/app.invoice.$orderNo'
 import { Route as AuthenticatedAdminOrdersIdRouteImport } from './routes/_authenticated/admin.orders.$id'
 import { Route as AuthenticatedAdminInventoryImportRouteImport } from './routes/_authenticated/admin.inventory.import'
 
@@ -206,6 +208,11 @@ const AuthenticatedAppPesananRoute = AuthenticatedAppPesananRouteImport.update({
   path: '/app/pesanan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAppAlamatRoute = AuthenticatedAppAlamatRouteImport.update({
+  id: '/app/alamat',
+  path: '/app/alamat',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/admin/users',
   path: '/admin/users',
@@ -304,6 +311,12 @@ const AuthenticatedAppOrdersIdRoute =
     path: '/app/orders/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAppInvoiceOrderNoRoute =
+  AuthenticatedAppInvoiceOrderNoRouteImport.update({
+    id: '/app/invoice/$orderNo',
+    path: '/app/invoice/$orderNo',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminOrdersIdRoute =
   AuthenticatedAdminOrdersIdRouteImport.update({
     id: '/admin/orders/$id',
@@ -350,6 +363,7 @@ export interface FileRoutesByFullPath {
   '/admin/stock': typeof AuthenticatedAdminStockRoute
   '/admin/storefront-orders': typeof AuthenticatedAdminStorefrontOrdersRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/app/alamat': typeof AuthenticatedAppAlamatRoute
   '/app/pesanan': typeof AuthenticatedAppPesananRoute
   '/app/rfq': typeof AuthenticatedAppRfqRoute
   '/app/stock': typeof AuthenticatedAppStockRoute
@@ -359,6 +373,7 @@ export interface FileRoutesByFullPath {
   '/api/public/ops-cron': typeof ApiPublicOpsCronRoute
   '/admin/inventory/import': typeof AuthenticatedAdminInventoryImportRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
+  '/app/invoice/$orderNo': typeof AuthenticatedAppInvoiceOrderNoRoute
   '/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
   '/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -399,6 +414,7 @@ export interface FileRoutesByTo {
   '/admin/stock': typeof AuthenticatedAdminStockRoute
   '/admin/storefront-orders': typeof AuthenticatedAdminStorefrontOrdersRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/app/alamat': typeof AuthenticatedAppAlamatRoute
   '/app/pesanan': typeof AuthenticatedAppPesananRoute
   '/app/rfq': typeof AuthenticatedAppRfqRoute
   '/app/stock': typeof AuthenticatedAppStockRoute
@@ -408,6 +424,7 @@ export interface FileRoutesByTo {
   '/api/public/ops-cron': typeof ApiPublicOpsCronRoute
   '/admin/inventory/import': typeof AuthenticatedAdminInventoryImportRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
+  '/app/invoice/$orderNo': typeof AuthenticatedAppInvoiceOrderNoRoute
   '/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
   '/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -450,6 +467,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/stock': typeof AuthenticatedAdminStockRoute
   '/_authenticated/admin/storefront-orders': typeof AuthenticatedAdminStorefrontOrdersRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/app/alamat': typeof AuthenticatedAppAlamatRoute
   '/_authenticated/app/pesanan': typeof AuthenticatedAppPesananRoute
   '/_authenticated/app/rfq': typeof AuthenticatedAppRfqRoute
   '/_authenticated/app/stock': typeof AuthenticatedAppStockRoute
@@ -459,6 +477,7 @@ export interface FileRoutesById {
   '/api/public/ops-cron': typeof ApiPublicOpsCronRoute
   '/_authenticated/admin/inventory/import': typeof AuthenticatedAdminInventoryImportRoute
   '/_authenticated/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
+  '/_authenticated/app/invoice/$orderNo': typeof AuthenticatedAppInvoiceOrderNoRoute
   '/_authenticated/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
   '/_authenticated/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -501,6 +520,7 @@ export interface FileRouteTypes {
     | '/admin/stock'
     | '/admin/storefront-orders'
     | '/admin/users'
+    | '/app/alamat'
     | '/app/pesanan'
     | '/app/rfq'
     | '/app/stock'
@@ -510,6 +530,7 @@ export interface FileRouteTypes {
     | '/api/public/ops-cron'
     | '/admin/inventory/import'
     | '/admin/orders/$id'
+    | '/app/invoice/$orderNo'
     | '/app/orders/$id'
     | '/app/orders/new'
     | '/lovable/email/transactional/preview'
@@ -550,6 +571,7 @@ export interface FileRouteTypes {
     | '/admin/stock'
     | '/admin/storefront-orders'
     | '/admin/users'
+    | '/app/alamat'
     | '/app/pesanan'
     | '/app/rfq'
     | '/app/stock'
@@ -559,6 +581,7 @@ export interface FileRouteTypes {
     | '/api/public/ops-cron'
     | '/admin/inventory/import'
     | '/admin/orders/$id'
+    | '/app/invoice/$orderNo'
     | '/app/orders/$id'
     | '/app/orders/new'
     | '/lovable/email/transactional/preview'
@@ -600,6 +623,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/stock'
     | '/_authenticated/admin/storefront-orders'
     | '/_authenticated/admin/users'
+    | '/_authenticated/app/alamat'
     | '/_authenticated/app/pesanan'
     | '/_authenticated/app/rfq'
     | '/_authenticated/app/stock'
@@ -609,6 +633,7 @@ export interface FileRouteTypes {
     | '/api/public/ops-cron'
     | '/_authenticated/admin/inventory/import'
     | '/_authenticated/admin/orders/$id'
+    | '/_authenticated/app/invoice/$orderNo'
     | '/_authenticated/app/orders/$id'
     | '/_authenticated/app/orders/new'
     | '/lovable/email/transactional/preview'
@@ -852,6 +877,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppPesananRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/alamat': {
+      id: '/_authenticated/app/alamat'
+      path: '/app/alamat'
+      fullPath: '/app/alamat'
+      preLoaderRoute: typeof AuthenticatedAppAlamatRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/users': {
       id: '/_authenticated/admin/users'
       path: '/admin/users'
@@ -971,6 +1003,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppOrdersIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/invoice/$orderNo': {
+      id: '/_authenticated/app/invoice/$orderNo'
+      path: '/app/invoice/$orderNo'
+      fullPath: '/app/invoice/$orderNo'
+      preLoaderRoute: typeof AuthenticatedAppInvoiceOrderNoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/orders/$id': {
       id: '/_authenticated/admin/orders/$id'
       path: '/admin/orders/$id'
@@ -998,6 +1037,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminStockRoute: typeof AuthenticatedAdminStockRoute
   AuthenticatedAdminStorefrontOrdersRoute: typeof AuthenticatedAdminStorefrontOrdersRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAppAlamatRoute: typeof AuthenticatedAppAlamatRoute
   AuthenticatedAppPesananRoute: typeof AuthenticatedAppPesananRoute
   AuthenticatedAppRfqRoute: typeof AuthenticatedAppRfqRoute
   AuthenticatedAppStockRoute: typeof AuthenticatedAppStockRoute
@@ -1005,6 +1045,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedVendorImportRoute: typeof AuthenticatedVendorImportRoute
   AuthenticatedAdminInventoryImportRoute: typeof AuthenticatedAdminInventoryImportRoute
   AuthenticatedAdminOrdersIdRoute: typeof AuthenticatedAdminOrdersIdRoute
+  AuthenticatedAppInvoiceOrderNoRoute: typeof AuthenticatedAppInvoiceOrderNoRoute
   AuthenticatedAppOrdersIdRoute: typeof AuthenticatedAppOrdersIdRoute
   AuthenticatedAppOrdersNewRoute: typeof AuthenticatedAppOrdersNewRoute
   AuthenticatedAdminInventoryIndexRoute: typeof AuthenticatedAdminInventoryIndexRoute
@@ -1023,6 +1064,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminStorefrontOrdersRoute:
     AuthenticatedAdminStorefrontOrdersRoute,
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+  AuthenticatedAppAlamatRoute: AuthenticatedAppAlamatRoute,
   AuthenticatedAppPesananRoute: AuthenticatedAppPesananRoute,
   AuthenticatedAppRfqRoute: AuthenticatedAppRfqRoute,
   AuthenticatedAppStockRoute: AuthenticatedAppStockRoute,
@@ -1031,6 +1073,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminInventoryImportRoute:
     AuthenticatedAdminInventoryImportRoute,
   AuthenticatedAdminOrdersIdRoute: AuthenticatedAdminOrdersIdRoute,
+  AuthenticatedAppInvoiceOrderNoRoute: AuthenticatedAppInvoiceOrderNoRoute,
   AuthenticatedAppOrdersIdRoute: AuthenticatedAppOrdersIdRoute,
   AuthenticatedAppOrdersNewRoute: AuthenticatedAppOrdersNewRoute,
   AuthenticatedAdminInventoryIndexRoute: AuthenticatedAdminInventoryIndexRoute,

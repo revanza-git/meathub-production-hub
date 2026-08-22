@@ -1301,6 +1301,54 @@ export type Database = {
         }
         Relationships: []
       }
+      ml_buyer_addresses: {
+        Row: {
+          address: string
+          buyer_name: string
+          city: string | null
+          company: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_default: boolean
+          label: string
+          notes: string | null
+          phone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address: string
+          buyer_name: string
+          city?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_default?: boolean
+          label?: string
+          notes?: string | null
+          phone: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string
+          buyer_name?: string
+          city?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_default?: boolean
+          label?: string
+          notes?: string | null
+          phone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ml_buyer_prices: {
         Row: {
           created_at: string

@@ -195,6 +195,13 @@ function StoreOrdersPage() {
                   >
                     Pesan ulang
                   </button>
+                  <Link
+                    to="/app/invoice/$orderNo"
+                    params={{ orderNo: o.order_no }}
+                    className="eyebrow border border-ink/25 px-5 py-3 text-ink"
+                  >
+                    {o.buyer_confirmed_at ? "Tanda terima" : "Faktur"}
+                  </Link>
                 </div>
 
                 {open ? <OrderDetail order={o} onChanged={() => refetch()} /> : null}

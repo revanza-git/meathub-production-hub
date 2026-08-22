@@ -7,6 +7,7 @@ import { formatIdr } from "@/lib/meatlink/inventory";
 import { PAY_METHODS, useCart, type PayMethod } from "@/lib/meatlink/cart";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyOrderEventPublic } from "@/lib/meatlink/notify.functions";
+import { listAddresses, saveAddress, type BuyerAddress } from "@/lib/meatlink/addresses";
 
 type CreditSummary = {
   status: string;
@@ -46,6 +47,10 @@ function CartPage() {
   const [applied, setApplied] = useState<{ code: string; discount: number } | null>(null);
   const [checkingCoupon, setCheckingCoupon] = useState(false);
   const [credit, setCredit] = useState<CreditSummary | null>(null);
+  const [signedIn, setSignedIn] = useState(false);
+  const [addresses, setAddresses] = useState<BuyerAddress[]>([]);
+  const [pickedAddress, setPickedAddress] = useState<string | null>(null);
+  const [saveNewAddress, setSaveNewAddress] = useState(false);
   const [form, setForm] = useState({
     buyer_name: "",
     company: "",
@@ -60,20 +65,47 @@ function CartPage() {
     setForm((f) => ({ ...f, [k]: v }));
   }
 
-  // Signed-in buyers: prefill shipping details from their most recent order.
+  function applyAddress(a: BuyerAddress) {
+    setPickedAddress(a.id);
+    setForm((f) => ({
+      ...f,
+      buyer_name: a.buyer_name,
+      company: a.company ?? "",
+      phone: a.phone,
+      email: a.email ?? "",
+      address: a.address,
+      city: a.city ?? "",
+      notes: a.notes ?? f.notes,
+    }));
+  }
+
+  // Signed-in buyers: prefill from the saved address book, else the latest order.
   useEffect(() => {
     let active = true;
     void (async () => {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) return;
+      if (active) setSignedIn(true);
+
+      const saved = await listAddresses().catch(() => [] as BuyerAddress[]);
+      if (active) setAddresses(saved);
+
+      const { data: creditRow } = await supabase.rpc("ml_my_credit");
+      if (active && creditRow) setCredit(creditRow as unknown as CreditSummary);
+      if (!active) return;
+
+      const preferred = saved.find((a) => a.is_default) ?? saved[0];
+      if (preferred) {
+        applyAddress(preferred);
+        return;
+      }
+
       const { data } = await supabase
         .from("storefront_orders")
         .select("buyer_name, company, phone, email, address, city")
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
-      const { data: creditRow } = await supabase.rpc("ml_my_credit");
-      if (active && creditRow) setCredit(creditRow as unknown as CreditSummary);
       if (!active || !data) return;
       setForm((f) =>
         f.buyer_name || f.phone || f.address
@@ -92,7 +124,7 @@ function CartPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Re-check the code whenever the cart total moves so minimum-spend rules stay honest.
   useEffect(() => {
@@ -162,6 +194,20 @@ function CartPage() {
       const row = (data ?? [])[0];
       if (!row) throw new Error("Pesanan gagal dibuat");
       clear();
+      if (signedIn && saveNewAddress) {
+        await saveAddress(
+          {
+            label: form.company?.trim() || form.city?.trim() || "Alamat pengiriman",
+            buyer_name: form.buyer_name,
+            company: form.company,
+            phone: form.phone,
+            email: form.email,
+            address: form.address,
+            city: form.city,
+            is_default: addresses.length === 0,
+          },
+        ).catch(() => undefined);
+      }
       toast.success(`Pesanan ${row.order_no} berhasil dibuat.`);
       void notifyOrderEventPublic({
         data: { orderNo: row.order_no, token: row.access_token, event: "placed" },
@@ -234,6 +280,42 @@ function CartPage() {
               </ul>
 
               <h2 className="mt-12 font-display text-2xl text-ink">Data pengiriman</h2>
+
+              {signedIn && addresses.length > 0 ? (
+                <div className="mt-6 border border-line p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <h3 className="eyebrow text-ash">Alamat tersimpan</h3>
+                    <Link to="/app/alamat" className="text-xs text-ash underline">
+                      Kelola alamat
+                    </Link>
+                  </div>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    {addresses.map((a) => (
+                      <button
+                        key={a.id}
+                        type="button"
+                        onClick={() => applyAddress(a)}
+                        aria-pressed={pickedAddress === a.id}
+                        className={`border p-4 text-left text-sm transition-colors ${
+                          pickedAddress === a.id
+                            ? "border-crimson text-ink"
+                            : "border-line text-ash hover:border-ink/40"
+                        }`}
+                      >
+                        <span className="block text-ink">{a.label}</span>
+                        <span className="mt-1 block text-xs">
+                          {a.buyer_name} · {a.phone}
+                        </span>
+                        <span className="mt-1 block text-xs">
+                          {a.address}
+                          {a.city ? `, ${a.city}` : ""}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 <Input label="Nama pemesan" required value={form.buyer_name} onChange={(v) => set("buyer_name", v)} />
                 <Input label="Perusahaan" value={form.company} onChange={(v) => set("company", v)} />
@@ -255,8 +337,20 @@ function CartPage() {
                     className="mt-2 w-full border border-line bg-background px-4 py-3 text-sm text-ink outline-none focus:border-ink"
                   />
                 </div>
+                {signedIn ? (
+                  <label className="flex items-center gap-3 text-sm text-ink sm:col-span-2">
+                    <input
+                      type="checkbox"
+                      checked={saveNewAddress}
+                      onChange={(e) => setSaveNewAddress(e.target.checked)}
+                      className="h-4 w-4"
+                    />
+                    Simpan alamat ini ke buku alamat saya
+                  </label>
+                ) : null}
               </div>
             </div>
+
 
             <aside className="h-fit border border-line bg-background p-8 lg:sticky lg:top-28">
               <h2 className="eyebrow text-ash">Ringkasan</h2>
