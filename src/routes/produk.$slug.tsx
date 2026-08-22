@@ -152,8 +152,60 @@ function ProductPage() {
             </aside>
           </div>
         )}
+
+        {product ? <RelatedProducts category={product.category} slug={slug} /> : null}
       </section>
     </SiteLayout>
+  );
+}
+
+/** Other products in the same category, excluding the one being viewed. */
+function RelatedProducts({ category, slug }: { category: ProductCategory; slug: string }) {
+  const { data } = useCatalog({ category, page: 1, pageSize: 8 });
+  const rows = (data?.rows ?? []).filter((r) => r.slug !== slug).slice(0, 4);
+  if (rows.length === 0) return null;
+
+  return (
+    <section className="mt-20 border-t border-line pt-12">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <h2 className="font-display text-3xl text-ink">Produk terkait</h2>
+        <Link to="/produk" className="eyebrow text-ash hover:text-ink">
+          Lihat semua
+        </Link>
+      </div>
+      <div className="mt-8 grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
+        {rows.map((row) => (
+          <Link
+            key={row.id}
+            to="/produk/$slug"
+            params={{ slug: row.slug }}
+            className="group flex flex-col bg-background transition-colors hover:bg-ink/[0.03]"
+          >
+            <div className="relative aspect-[4/3] overflow-hidden bg-ink/5">
+              <img
+                src={resolveProductImage(row.image_url, row.name, row.category)}
+                alt={row.name}
+                loading="lazy"
+                width={1024}
+                height={768}
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              <AvailabilityBadge value={row.availability} />
+            </div>
+            <div className="p-5">
+              <h3 className="font-display text-lg leading-snug text-ink">{row.name}</h3>
+              <p className="mt-1 text-xs text-ash">
+                {[row.brand, row.origin].filter(Boolean).join(" · ")}
+              </p>
+              <p className="mt-3 font-display text-xl text-ink">
+                {formatIdr(row.public_price_idr)}
+                <span className="text-sm text-ash"> /kg</span>
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 
