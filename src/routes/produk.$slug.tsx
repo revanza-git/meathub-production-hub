@@ -2,13 +2,17 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Check, MessageCircle } from "lucide-react";
 import { SiteLayout } from "@/components/site/site-layout";
 import { AddToCart } from "@/components/site/add-to-cart";
+import { AvailabilityBadge } from "@/components/site/availability-badge";
 import { WHATSAPP_NUMBER } from "@/lib/meatlink/config";
 import { formatIdr } from "@/lib/meatlink/inventory";
+import { resolveProductImage } from "@/lib/meatlink/featured";
 import {
   AVAILABILITY_LABEL,
   CATEGORY_LABEL,
+  useCatalog,
   useProduct,
   type Availability,
+  type ProductCategory,
 } from "@/lib/meatlink/catalog";
 
 export const Route = createFileRoute("/produk/$slug")({
