@@ -59,7 +59,7 @@ function OrderPage() {
   const { orderNo } = Route.useParams();
   const { t } = Route.useSearch();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["ml-order", orderNo, t],
     enabled: Boolean(t),
     queryFn: async () => {
