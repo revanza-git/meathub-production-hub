@@ -71,7 +71,7 @@ export default defineTool({
     }
 
     const uniqueObservationIds = [...new Set(input.observation_ids)];
-    const { data: observations, error: observationError } = await supabase
+    const { data: observations, error: observationError } = await (supabase as any)
       .from("public_market_observations")
       .select(
         "id,source_name,source_url,signal_type,commodity,market_level,region,observed_on,price_idr_per_kg,value,unit,summary,verification_status",
@@ -90,7 +90,7 @@ export default defineTool({
     let relevance;
     try {
       relevance = evaluateMarketRelevance(
-        (observations ?? []) as MarketObservation[],
+        (observations ?? []) as unknown as MarketObservation[],
         input.confidence ?? "medium",
       );
     } catch (error) {
