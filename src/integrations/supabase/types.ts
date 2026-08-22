@@ -3424,6 +3424,7 @@ export type Database = {
       ml_next_order_no: { Args: never; Returns: string }
       ml_next_store_order_no: { Args: never; Returns: string }
       ml_normalise_region: { Args: { _raw: string }; Returns: string }
+      ml_ops_cron_call: { Args: { p_jobs: string[] }; Returns: undefined }
       ml_ops_digest: { Args: { p_day?: string }; Returns: Json }
       ml_place_order: {
         Args: {
