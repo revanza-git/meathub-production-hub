@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { ORDER_STATUS_LABEL, PAY_METHOD_LABEL, type PayMethod } from "@/lib/meatlink/cart";
 import { WHATSAPP_NUMBER } from "@/lib/meatlink/config";
+import { PaymentPanel } from "@/components/meatlink/payment-panel";
 
 type TrackedOrder = {
   order_no: string;
@@ -17,6 +18,11 @@ type TrackedOrder = {
   subtotal_idr: number;
   total_idr: number;
   created_at: string;
+  payment_channel?: string | null;
+  payment_va?: string | null;
+  payment_qr_url?: string | null;
+  payment_expires_at?: string | null;
+  paid_at?: string | null;
   items: {
     product_name: string;
     unit_price_idr: number;
