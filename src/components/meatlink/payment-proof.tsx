@@ -1,9 +1,25 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { uploadPaymentProof } from "@/lib/meatlink/payment-proof.functions";
+
+const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/heic", "application/pdf"];
+
+function toBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Gagal membaca file."));
+    reader.onload = () => {
+      const result = String(reader.result ?? "");
+      resolve(result.slice(result.indexOf(",") + 1));
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 /** Buyer-side upload of a transfer receipt / payment proof for an order.
- *  The file lands in the private payment-proofs bucket; only admins can read it. */
+ *  The file is validated and stored server-side in the private payment-proofs
+ *  bucket after the order token is verified; only admins can read it. */
 export function PaymentProofUpload({
   orderNo,
   token,
@@ -13,26 +29,29 @@ export function PaymentProofUpload({
 }) {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
+  const upload = useServerFn(uploadPaymentProof);
 
   async function handleFile(file: File) {
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Ukuran file maksimal 5 MB.");
       return;
     }
+    if (!ALLOWED.includes(file.type)) {
+      toast.error("Format file harus JPG, PNG, WEBP, atau PDF.");
+      return;
+    }
     setBusy(true);
     try {
-      const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-      const path = `${orderNo}/${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage
-        .from("payment-proofs")
-        .upload(path, file, { contentType: file.type || undefined, upsert: false });
-      if (upErr) throw upErr;
-      const { error } = await supabase.rpc("ml_attach_payment_proof", {
-        _order_no: orderNo,
-        _token: token,
-        _url: path,
+      const base64 = await toBase64(file);
+      await upload({
+        data: {
+          orderNo,
+          token,
+          fileName: file.name,
+          contentType: file.type,
+          data: base64,
+        },
       });
-      if (error) throw error;
       setDone(true);
       toast.success("Bukti pembayaran terkirim. Tim kami memverifikasi segera.");
     } catch (e) {
@@ -41,6 +60,7 @@ export function PaymentProofUpload({
       setBusy(false);
     }
   }
+
 
   return (
     <div className="mt-8 border border-line p-6">
