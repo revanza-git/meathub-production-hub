@@ -192,6 +192,7 @@ function InventoryBody() {
       brand: form.brand.trim(),
       name: form.name.trim(),
       condition: form.condition || null,
+      category: form.category as ProductCategory,
       avg_weight_text: form.avg_weight_text.trim() || null,
       avg_weight_kg: weightToKg(form.avg_weight_text),
       sale_price_idr: Number(form.sale_price_idr || 0),
