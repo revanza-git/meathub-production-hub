@@ -54,6 +54,22 @@ function AdminStorefrontOrdersPage() {
   );
 }
 
+/** Payment proofs live in a private bucket — open them through a short-lived signed URL. */
+async function openProof(path: string) {
+  if (/^https?:\/\//i.test(path)) {
+    window.open(path, "_blank", "noopener");
+    return;
+  }
+  const { data, error } = await supabase.storage
+    .from("payment-proofs")
+    .createSignedUrl(path, 300);
+  if (error || !data?.signedUrl) {
+    toast.error(error?.message ?? "Bukti pembayaran tidak dapat dibuka.");
+    return;
+  }
+  window.open(data.signedUrl, "_blank", "noopener");
+}
+
 function OrdersTable() {
   const qc = useQueryClient();
   const [draft, setDraft] = useState<Record<string, { ref: string; note: string }>>({});
