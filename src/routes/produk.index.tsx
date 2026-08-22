@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, Search } from "lucide-react";
 import { SiteLayout, PageHero } from "@/components/site/site-layout";
 import { Recommendations } from "@/components/meatlink/recommendations";
@@ -13,7 +13,15 @@ import {
   type ProductCategory,
 } from "@/lib/meatlink/catalog";
 
+type CatalogSearchParams = { q?: string; category?: ProductCategory };
+
 export const Route = createFileRoute("/produk/")({
+  validateSearch: (search: Record<string, unknown>): CatalogSearchParams => {
+    const q = typeof search.q === "string" && search.q.trim() ? search.q.trim() : undefined;
+    const raw = search.category;
+    const category = CATEGORIES.find((c) => c.value === raw)?.value;
+    return { ...(q ? { q } : {}), ...(category ? { category } : {}) };
+  },
   head: () => ({
     meta: [
       { title: "Katalog Produk Daging B2B — Meatlink.id" },
@@ -38,15 +46,25 @@ export const Route = createFileRoute("/produk/")({
 const PAGE_SIZE = 24;
 
 function CatalogPage() {
-  const [searchInput, setSearchInput] = useState("");
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState<ProductCategory | null>(null);
+  const params = Route.useSearch();
+  const [searchInput, setSearchInput] = useState(params.q ?? "");
+  const [search, setSearch] = useState(params.q ?? "");
+  const [category, setCategory] = useState<ProductCategory | null>(params.category ?? null);
   const [page, setPage] = useState(1);
+
+  // Header search and category menu drive the URL; mirror it into local state.
+  useEffect(() => {
+    setSearchInput(params.q ?? "");
+    setSearch(params.q ?? "");
+    setCategory(params.category ?? null);
+    setPage(1);
+  }, [params.q, params.category]);
 
   const { data, isLoading, isError } = useCatalog({ search, category, page, pageSize: PAGE_SIZE });
   const rows = data?.rows ?? [];
   const total = data?.total ?? 0;
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
 
   return (
     <SiteLayout>
