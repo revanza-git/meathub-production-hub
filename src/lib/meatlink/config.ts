@@ -16,8 +16,6 @@ export const CATEGORIES = [
   { slug: "beef", name: "Beef", note: "Grassfed, grainfed, prime cuts" },
   { slug: "wagyu", name: "Wagyu", note: "MB4 to MB12, AUS & JP" },
   { slug: "lamb", name: "Lamb", note: "NZ & AUS racks, legs, shoulder" },
-  { slug: "poultry", name: "Poultry", note: "Chicken, duck, specialty" },
-  { slug: "seafood", name: "Seafood", note: "Frozen & chilled programmes" },
 ] as const;
 
 export const RECENTLY_SOURCED = [
