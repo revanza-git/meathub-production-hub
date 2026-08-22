@@ -6,8 +6,7 @@ import { useCart } from "@/lib/meatlink/cart";
 
 const NAV = [
   { to: "/produk", label: "Katalog" },
-  { to: "/buyers", label: "For Buyers" },
-  { to: "/suppliers", label: "For Suppliers" },
+  { to: "/network", label: "Buyers & Suppliers" },
   { to: "/insights", label: "Market Insights" },
   { to: "/about", label: "About Us" },
   { to: "/contact", label: "Contact" },
