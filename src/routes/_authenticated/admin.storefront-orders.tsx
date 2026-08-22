@@ -55,6 +55,7 @@ function AdminStorefrontOrdersPage() {
 
 function OrdersTable() {
   const qc = useQueryClient();
+  const [draft, setDraft] = useState<Record<string, { ref: string; note: string }>>({});
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-storefront-orders"],
@@ -70,17 +71,35 @@ function OrdersTable() {
         ? await supabase.from("storefront_order_items").select("*").in("order_id", ids)
         : { data: [], error: null };
       if (itemsError) throw itemsError;
-      return { orders: orders ?? [], items: items ?? [] };
+      const { data: events } = ids.length
+        ? await supabase
+            .from("storefront_order_events")
+            .select("*")
+            .in("order_id", ids)
+            .order("created_at", { ascending: false })
+        : { data: [] };
+      return { orders: orders ?? [], items: items ?? [], events: events ?? [] };
     },
   });
 
   async function updateStatus(id: string, status: StoreStatus) {
-    const { error } = await supabase.from("storefront_orders").update({ status }).eq("id", id);
+    const d = draft[id];
+    const { error } = await supabase.rpc("ml_update_store_order", {
+      _order_id: id,
+      _status: status,
+      _payment_ref: d?.ref?.trim() || undefined,
+      _note: d?.note?.trim() || undefined,
+    });
     if (error) {
       toast.error(error.message);
       return;
     }
-    toast.success("Status updated.");
+    toast.success(
+      status === "SHIPPED" || status === "COMPLETED"
+        ? "Status updated and stock deducted."
+        : "Status updated.",
+    );
+    setDraft((prev) => ({ ...prev, [id]: { ref: "", note: "" } }));
     qc.invalidateQueries({ queryKey: ["admin-storefront-orders"] });
   }
 
@@ -95,6 +114,14 @@ function OrdersTable() {
     <div className="grid gap-4">
       {orders.map((o) => {
         const lines = (data?.items ?? []).filter((i) => i.order_id === o.id);
+        const events = (data?.events ?? []).filter((e) => e.order_id === o.id);
+        const d = draft[o.id] ?? { ref: "", note: "" };
+        const waText = encodeURIComponent(
+          `Halo ${o.buyer_name}, update pesanan Meatlink ${o.order_no}: status ${
+            ORDER_STATUS_LABEL[o.status as StoreStatus] ?? o.status
+          }. Total ${formatIdr(Number(o.total_idr))}.`,
+        );
+        const waHref = `https://wa.me/${o.phone.replace(/\D/g, "").replace(/^0/, "62")}?text=${waText}`;
         return (
           <Panel key={o.id}>
             <h2 className="text-base font-semibold">{o.order_no} · {o.buyer_name}</h2>
@@ -117,14 +144,49 @@ function OrdersTable() {
                     </li>
                   ))}
                 </ul>
+                {events.length ? (
+                  <ol className="mt-4 space-y-1 text-xs text-muted-foreground">
+                    {events.map((e) => (
+                      <li key={e.id}>
+                        {formatDate(e.created_at)} — {ORDER_STATUS_LABEL[e.to_status as StoreStatus] ?? e.to_status}
+                        {e.note ? ` · ${e.note}` : ""}
+                      </li>
+                    ))}
+                  </ol>
+                ) : null}
               </div>
               <div className="text-sm">
                 <p className="text-muted-foreground">{formatDate(o.created_at)}</p>
                 <p className="mt-1">
                   Payment: {PAY_METHOD_LABEL[o.payment_method as PayMethod] ?? o.payment_method}
                 </p>
+                {o.payment_ref ? <p className="mt-1 text-xs">Ref: {o.payment_ref}</p> : null}
                 <p className="mt-1 text-lg font-semibold">{formatIdr(Number(o.total_idr))}</p>
+                {o.stock_deducted_at ? (
+                  <p className="mt-1 text-xs text-muted-foreground">Stock deducted</p>
+                ) : null}
                 <label className="mt-4 block text-xs uppercase tracking-wide text-muted-foreground">
+                  Payment reference
+                  <input
+                    value={d.ref}
+                    onChange={(e) =>
+                      setDraft((p) => ({ ...p, [o.id]: { ...d, ref: e.target.value } }))
+                    }
+                    placeholder="No. transaksi / bukti transfer"
+                    className="mt-1 w-full rounded border bg-background px-3 py-2 text-sm"
+                  />
+                </label>
+                <label className="mt-3 block text-xs uppercase tracking-wide text-muted-foreground">
+                  Internal note
+                  <input
+                    value={d.note}
+                    onChange={(e) =>
+                      setDraft((p) => ({ ...p, [o.id]: { ...d, note: e.target.value } }))
+                    }
+                    className="mt-1 w-full rounded border bg-background px-3 py-2 text-sm"
+                  />
+                </label>
+                <label className="mt-3 block text-xs uppercase tracking-wide text-muted-foreground">
                   Status
                   <select
                     value={o.status}
@@ -138,11 +200,20 @@ function OrdersTable() {
                     ))}
                   </select>
                 </label>
+                <a
+                  href={waHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-3 inline-block rounded border px-3 py-2 text-xs uppercase tracking-wide"
+                >
+                  Notify buyer on WhatsApp
+                </a>
               </div>
             </div>
           </Panel>
         );
       })}
+
     </div>
   );
 }
