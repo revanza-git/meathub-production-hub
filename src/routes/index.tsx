@@ -217,7 +217,8 @@ function HomePage() {
               eyebrow: "For suppliers",
               title: "Reach qualified demand",
               body: "Importers and distributors receive pre-qualified requests with real volume and spec, not tyre-kickers. Listing is free.",
-              to: "/suppliers" as const,
+              to: "/network" as const,
+              hash: "suppliers" as const,
               cta: "Why supply with us",
             },
           ].map((panel) => (
