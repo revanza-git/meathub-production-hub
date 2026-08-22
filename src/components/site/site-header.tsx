@@ -1,7 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, ShoppingCart, X } from "lucide-react";
 import mark from "@/assets/meatlink-mark.png.asset.json";
+import { useCart } from "@/lib/meatlink/cart";
 
 const NAV = [
   { to: "/produk", label: "Katalog" },
@@ -47,6 +48,7 @@ export function Wordmark({ tone = "light" }: { tone?: "light" | "dark" }) {
 export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
   const [open, setOpen] = useState(false);
   const dark = tone === "dark";
+  const { count } = useCart();
 
   return (
     <header
@@ -73,6 +75,20 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
+          <Link
+            to="/keranjang"
+            aria-label={`Keranjang (${count} item)`}
+            className={`eyebrow relative inline-flex items-center gap-2 px-3 py-3 transition-colors ${
+              dark ? "text-bone/80 hover:text-bone" : "text-ash hover:text-ink"
+            }`}
+          >
+            <ShoppingCart className="h-5 w-5" />
+            {count > 0 ? (
+              <span className="absolute -right-0.5 top-1.5 min-w-4 bg-crimson px-1 text-center text-[0.6rem] leading-4 text-bone">
+                {count}
+              </span>
+            ) : null}
+          </Link>
           <Link
             to="/supply"
             className={`eyebrow whitespace-nowrap border px-5 py-3 transition-colors ${
@@ -116,6 +132,15 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
               </Link>
             ))}
             <div className="mt-3 grid gap-2">
+              <Link
+                to="/keranjang"
+                onClick={() => setOpen(false)}
+                className={`eyebrow border px-5 py-3 text-center ${
+                  dark ? "border-white/25 text-bone" : "border-ink/25 text-ink"
+                }`}
+              >
+                Keranjang ({count})
+              </Link>
               <Link
                 to="/supply"
                 onClick={() => setOpen(false)}

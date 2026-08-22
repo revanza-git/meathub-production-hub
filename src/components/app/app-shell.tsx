@@ -21,6 +21,7 @@ const NAV: Record<MlRole, NavItem[]> = {
   admin: [
     { to: "/admin/orders", label: "Orders" },
     { to: "/admin/rfq", label: "RFQ Inbox" },
+    { to: "/admin/storefront-orders", label: "Storefront Orders" },
     { to: "/admin/inventory", label: "Inventory" },
     { to: "/admin/insights", label: "Insights" },
     { to: "/admin/users", label: "Users" },

@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Check, MessageCircle } from "lucide-react";
 import { SiteLayout } from "@/components/site/site-layout";
+import { AddToCart } from "@/components/site/add-to-cart";
+import { WHATSAPP_NUMBER } from "@/lib/meatlink/config";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import {
   AVAILABILITY_LABEL,
@@ -113,7 +115,9 @@ function ProductPage() {
                 ))}
               </ul>
 
-              <div className="mt-8 grid gap-3">
+              <AddToCart slug={slug} name={product.name} price={Number(product.public_price_idr)} />
+
+              <div className="mt-4 grid gap-3">
                 <Link
                   to="/request-quote"
                   className="eyebrow bg-crimson px-6 py-4 text-center text-bone transition-colors hover:bg-crimson-deep"
@@ -121,7 +125,7 @@ function ProductPage() {
                   Minta penawaran
                 </Link>
                 <a
-                  href={`https://wa.me/6281234567890?text=${encodeURIComponent(
+                  href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
                     `Halo Meatlink, saya tertarik dengan ${product.name}.`,
                   )}`}
                   target="_blank"
