@@ -8,6 +8,7 @@ import {
   Truck,
   Users,
 } from "lucide-react";
+import { CATEGORY_PAGES } from "@/lib/meatlink/categories";
 import { SiteLayout } from "@/components/site/site-layout";
 import { CatalogSearch } from "@/components/site/site-header";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
