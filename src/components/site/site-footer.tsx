@@ -39,7 +39,7 @@ export function SiteFooter() {
           <h2 className="eyebrow text-crimson">Buyers</h2>
           <ul className="mt-4 space-y-2 text-sm text-bone/70">
             <li>
-              <Link to="/buyers" className="hover:text-bone">
+              <Link to="/network" hash="buyers" className="hover:text-bone">
                 How sourcing works
               </Link>
             </li>
