@@ -162,6 +162,15 @@ function OrdersTable() {
                   Payment: {PAY_METHOD_LABEL[o.payment_method as PayMethod] ?? o.payment_method}
                 </p>
                 {o.payment_ref ? <p className="mt-1 text-xs">Ref: {o.payment_ref}</p> : null}
+                {o.payment_proof_url ? (
+                  <button
+                    type="button"
+                    onClick={() => void openProof(o.payment_proof_url!)}
+                    className="mt-2 text-xs underline"
+                  >
+                    Lihat bukti pembayaran
+                  </button>
+                ) : null}
                 <p className="mt-1 text-lg font-semibold">{formatIdr(Number(o.total_idr))}</p>
                 {o.stock_deducted_at ? (
                   <p className="mt-1 text-xs text-muted-foreground">Stock deducted</p>
