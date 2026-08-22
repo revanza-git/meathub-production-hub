@@ -12,6 +12,8 @@ export type InventoryDraft = {
   category: "PRIME_CUT" | "SECOND_CUT" | "OFFAL" | "BONE";
   sale_price_idr: number;
   markup_idr: number;
+  promo_price_idr: number | null;
+  promo_until: string | null;
   qty_on_hand_kg: number;
 };
 
@@ -89,13 +91,15 @@ export const IMPORT_COLUMNS = [
   "avg_weight",
   "sale_price_idr",
   "markup_idr",
+  "promo_price_idr",
+  "promo_until",
   "qty_on_hand_kg",
 ] as const;
 
 export const IMPORT_SAMPLE_ROWS = [
-  ["Australia", "AACO - DARLING DOWNS", "CHK FLAP TAIL WGY MB7", "FRZ", "PRIME_CUT", "2KG", 1000000, 60000, 417.17],
-  ["Japan", "KIWAMI", "BOLAR BLD WGY A5", "FRZ", "PRIME_CUT", "5KG", 990000, 150000, 44.1],
-  ["USA", "SWIFT", "S-PLATE CHO AGS", "", "SECOND_CUT", "5KG", 160000, 60000, 46651.3],
+  ["Australia", "AACO - DARLING DOWNS", "CHK FLAP TAIL WGY MB7", "FRZ", "PRIME_CUT", "2KG", 1000000, 60000, "", "", 417.17],
+  ["Japan", "KIWAMI", "BOLAR BLD WGY A5", "FRZ", "PRIME_CUT", "5KG", 990000, 150000, 1050000, "2026-12-31", 44.1],
+  ["USA", "SWIFT", "S-PLATE CHO AGS", "", "SECOND_CUT", "5KG", 160000, 60000, "", "", 46651.3],
 ];
 
 
@@ -142,6 +146,22 @@ export function normaliseRow(
     errors.push(`Row ${rowNumber}: invalid markup`);
     return null;
   }
+  const promoRaw = get("promo_price_idr").replace(/[^\d.-]/g, "");
+  const promo = promoRaw === "" ? null : Number(promoRaw);
+  if (promo !== null && (!Number.isFinite(promo) || promo <= 0)) {
+    errors.push(`Row ${rowNumber}: invalid promo price`);
+    return null;
+  }
+  const promoUntilRaw = get("promo_until");
+  let promoUntil: string | null = null;
+  if (promoUntilRaw) {
+    const parsed = new Date(promoUntilRaw);
+    if (Number.isNaN(parsed.getTime())) {
+      errors.push(`Row ${rowNumber}: promo_until must be a date (YYYY-MM-DD)`);
+      return null;
+    }
+    promoUntil = parsed.toISOString().slice(0, 10);
+  }
   const categoryRaw = get("category").toUpperCase().replace(/[\s-]+/g, "_");
   const category = (CATEGORY_VALUES as readonly string[]).includes(categoryRaw)
     ? (categoryRaw as InventoryDraft["category"])
@@ -160,6 +180,8 @@ export function normaliseRow(
       avg_weight_kg: weightToKg(weightText),
       sale_price_idr: price,
       markup_idr: markup,
+      promo_price_idr: promo,
+      promo_until: promoUntil,
       qty_on_hand_kg: qty,
     },
   };
