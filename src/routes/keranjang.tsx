@@ -7,6 +7,7 @@ import { formatIdr } from "@/lib/meatlink/inventory";
 import { PAY_METHODS, useCart, type PayMethod } from "@/lib/meatlink/cart";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyOrderEventPublic } from "@/lib/meatlink/notify.functions";
+import { listAddresses, saveAddress, type BuyerAddress } from "@/lib/meatlink/addresses";
 
 type CreditSummary = {
   status: string;
