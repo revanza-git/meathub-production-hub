@@ -108,15 +108,16 @@ function CategoryMenu({ dark }: { dark: boolean }) {
       </button>
       {open ? (
         <div className="absolute left-0 top-full z-50 mt-2 w-64 border border-line bg-background shadow-xl">
-          {PRODUCT_CATEGORIES.map((c) => (
+          {CATEGORY_PAGES.map((c) => (
             <Link
-              key={c.value}
-              to="/produk"
-              search={{ category: c.value }}
+              key={c.slug}
+              to="/kategori/$slug"
+              params={{ slug: c.slug }}
               onClick={() => setOpen(false)}
               className="block border-b border-line px-5 py-3 text-sm text-ink transition-colors last:border-b-0 hover:bg-ink/5"
             >
-              {c.label}
+              <span className="block">{c.label}</span>
+              <span className="mt-0.5 block text-xs text-ash">{c.tagline}</span>
             </Link>
           ))}
           <Link
