@@ -85,6 +85,8 @@ export const Route = createFileRoute("/produk/")({
 
 const PAGE_SIZE = 24;
 
+const CONDITION_LABEL: Record<string, string> = { FRZ: "Frozen (FRZ)", CHL: "Chilled (CHL)" };
+
 const rupiah = (n: number) => new Intl.NumberFormat("id-ID").format(Math.round(n));
 
 function CatalogPage() {
@@ -148,7 +150,7 @@ function CatalogPage() {
     ...(params.origin ?? []).map((v) => ({ label: v, onRemove: () => toggleValue("origin", v) })),
     ...(params.brand ?? []).map((v) => ({ label: v, onRemove: () => toggleValue("brand", v) })),
     ...(params.condition ?? []).map((v) => ({
-      label: v,
+      label: CONDITION_LABEL[v] ?? v,
       onRemove: () => toggleValue("condition", v),
     })),
     ...(params.avail ?? []).map((v) => ({
@@ -242,7 +244,10 @@ function CatalogPage() {
               />
               <FacetGroup
                 title="Kondisi"
-                options={facets?.conditions ?? []}
+                options={(facets?.conditions ?? []).map((f) => ({
+                  ...f,
+                  label: CONDITION_LABEL[f.value] ?? f.value,
+                }))}
                 selected={params.condition ?? []}
                 onToggle={(v) => toggleValue("condition", v)}
               />
