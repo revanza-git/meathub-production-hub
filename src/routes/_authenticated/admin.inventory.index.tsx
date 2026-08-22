@@ -453,6 +453,21 @@ function InventoryBody() {
                   <td className="px-4 py-3 text-xs text-ash">
                     {item.condition ? CONDITION_LABEL[item.condition] ?? item.condition : "—"}
                   </td>
+                  <td className="px-4 py-3">
+                    <select
+                      className="border border-line bg-transparent px-2 py-1 text-xs text-ink"
+                      value={item.category}
+                      onChange={(e) =>
+                        void patch(item.id, { category: e.target.value as ProductCategory })
+                      }
+                    >
+                      {CATEGORIES.map((c) => (
+                        <option key={c.value} value={c.value}>
+                          {c.label}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
                   <td className="px-4 py-3 text-xs text-ash">{item.avg_weight_text ?? "—"}</td>
                   <td className="px-4 py-3">
                     <input
