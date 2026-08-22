@@ -3396,6 +3396,7 @@ export type Database = {
       ml_place_order: {
         Args: {
           _buyer: Json
+          _coupon?: string
           _items: Json
           _payment_method: Database["public"]["Enums"]["ml_pay_method"]
         }
