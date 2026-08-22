@@ -2679,6 +2679,50 @@ export type Database = {
         }
         Relationships: []
       }
+      storefront_order_events: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          from_status:
+            | Database["public"]["Enums"]["ml_store_order_status"]
+            | null
+          id: string
+          note: string | null
+          order_id: string
+          to_status: Database["public"]["Enums"]["ml_store_order_status"]
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          from_status?:
+            | Database["public"]["Enums"]["ml_store_order_status"]
+            | null
+          id?: string
+          note?: string | null
+          order_id: string
+          to_status: Database["public"]["Enums"]["ml_store_order_status"]
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          from_status?:
+            | Database["public"]["Enums"]["ml_store_order_status"]
+            | null
+          id?: string
+          note?: string | null
+          order_id?: string
+          to_status?: Database["public"]["Enums"]["ml_store_order_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "storefront_order_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "storefront_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       storefront_order_items: {
         Row: {
           category: Database["public"]["Enums"]["ml_product_category"] | null
@@ -2737,6 +2781,7 @@ export type Database = {
         Row: {
           access_token: string
           address: string
+          admin_note: string | null
           buyer_name: string
           city: string | null
           company: string | null
@@ -2749,6 +2794,7 @@ export type Database = {
           payment_ref: string | null
           phone: string
           status: Database["public"]["Enums"]["ml_store_order_status"]
+          stock_deducted_at: string | null
           subtotal_idr: number
           total_idr: number
           updated_at: string
@@ -2757,6 +2803,7 @@ export type Database = {
         Insert: {
           access_token?: string
           address: string
+          admin_note?: string | null
           buyer_name: string
           city?: string | null
           company?: string | null
@@ -2769,6 +2816,7 @@ export type Database = {
           payment_ref?: string | null
           phone: string
           status?: Database["public"]["Enums"]["ml_store_order_status"]
+          stock_deducted_at?: string | null
           subtotal_idr?: number
           total_idr?: number
           updated_at?: string
@@ -2777,6 +2825,7 @@ export type Database = {
         Update: {
           access_token?: string
           address?: string
+          admin_note?: string | null
           buyer_name?: string
           city?: string | null
           company?: string | null
@@ -2789,6 +2838,7 @@ export type Database = {
           payment_ref?: string | null
           phone?: string
           status?: Database["public"]["Enums"]["ml_store_order_status"]
+          stock_deducted_at?: string | null
           subtotal_idr?: number
           total_idr?: number
           updated_at?: string
@@ -3227,6 +3277,15 @@ export type Database = {
       ml_track_order: {
         Args: { _order_no: string; _token: string }
         Returns: Json
+      }
+      ml_update_store_order: {
+        Args: {
+          _note?: string
+          _order_id: string
+          _payment_ref?: string
+          _status: Database["public"]["Enums"]["ml_store_order_status"]
+        }
+        Returns: undefined
       }
       next_invoice_no: { Args: never; Returns: string }
       next_order_no: { Args: never; Returns: string }
