@@ -8,11 +8,12 @@ import {
   Truck,
   Users,
 } from "lucide-react";
+import { CATEGORY_PAGES } from "@/lib/meatlink/categories";
 import { SiteLayout } from "@/components/site/site-layout";
 import { CatalogSearch } from "@/components/site/site-header";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
 import { Recommendations } from "@/components/meatlink/recommendations";
-import { CATEGORIES, CATEGORY_LABEL, useCatalog } from "@/lib/meatlink/catalog";
+import { CATEGORY_LABEL, useCatalog } from "@/lib/meatlink/catalog";
 import { resolveFeatureImage, resolveProductImage, useFeaturedInventory } from "@/lib/meatlink/featured";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import heroImg from "@/assets/hero-wagyu.jpg";
@@ -38,13 +39,6 @@ export const Route = createFileRoute("/")({
   }),
   component: HomePage,
 });
-
-const CATEGORY_NOTE: Record<string, string> = {
-  PRIME_CUT: "Ribeye, striploin, tenderloin, wagyu",
-  SECOND_CUT: "Short plate, brisket, chuck, shank",
-  OFFAL: "Lidah, hati, babat, jeroan pilihan",
-  BONE: "Marrow bone, soup bone, potongan tulang",
-};
 
 const BENEFITS = [
   {
@@ -184,18 +178,18 @@ function ShopByCategory() {
           linkLabel="Semua produk"
         />
         <div className="mt-10 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
-          {CATEGORIES.map((c) => (
+          {CATEGORY_PAGES.map((c) => (
             <Link
-              key={c.value}
-              to="/produk"
-              search={{ category: c.value }}
+              key={c.slug}
+              to="/kategori/$slug"
+              params={{ slug: c.slug }}
               className="group bg-card p-7 transition-colors hover:bg-noir"
             >
               <h3 className="font-display text-2xl text-ink transition-colors group-hover:text-bone">
                 {c.label}
               </h3>
               <p className="mt-3 text-xs leading-relaxed text-ash transition-colors group-hover:text-bone/60">
-                {CATEGORY_NOTE[c.value]}
+                {c.tagline}
               </p>
               <span className="eyebrow mt-6 inline-flex items-center gap-2 text-crimson">
                 Belanja <ArrowRight className="h-4 w-4" aria-hidden="true" />

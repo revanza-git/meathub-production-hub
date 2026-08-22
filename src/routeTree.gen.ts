@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SupplyRouteImport } from './routes/supply'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as RequestQuoteRouteImport } from './routes/request-quote'
 import { Route as NetworkRouteImport } from './routes/network'
 import { Route as McpRouteImport } from './routes/mcp'
@@ -26,6 +27,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProdukIndexRouteImport } from './routes/produk.index'
 import { Route as ProdukSlugRouteImport } from './routes/produk.$slug'
 import { Route as PesananOrderNoRouteImport } from './routes/pesanan.$orderNo'
+import { Route as KategoriSlugRouteImport } from './routes/kategori.$slug'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as ApiPublicIpaymuCallbackRouteImport } from './routes/api/public/ipaymu-callback'
@@ -67,6 +69,11 @@ const SuppliersRoute = SuppliersRouteImport.update({
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RequestQuoteRoute = RequestQuoteRouteImport.update({
@@ -136,6 +143,11 @@ const ProdukSlugRoute = ProdukSlugRouteImport.update({
 const PesananOrderNoRoute = PesananOrderNoRouteImport.update({
   id: '/pesanan/$orderNo',
   path: '/pesanan/$orderNo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KategoriSlugRoute = KategoriSlugRouteImport.update({
+  id: '/kategori/$slug',
+  path: '/kategori/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const Char91DotwellKnownChar93OauthProtectedResourceRoute =
@@ -304,11 +316,13 @@ export interface FileRoutesByFullPath {
   '/mcp': typeof McpRoute
   '/network': typeof NetworkRoute
   '/request-quote': typeof RequestQuoteRoute
+  '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/kategori/$slug': typeof KategoriSlugRoute
   '/pesanan/$orderNo': typeof PesananOrderNoRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/produk/': typeof ProdukIndexRoute
@@ -349,11 +363,13 @@ export interface FileRoutesByTo {
   '/mcp': typeof McpRoute
   '/network': typeof NetworkRoute
   '/request-quote': typeof RequestQuoteRoute
+  '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/kategori/$slug': typeof KategoriSlugRoute
   '/pesanan/$orderNo': typeof PesananOrderNoRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/produk': typeof ProdukIndexRoute
@@ -396,11 +412,13 @@ export interface FileRoutesById {
   '/mcp': typeof McpRoute
   '/network': typeof NetworkRoute
   '/request-quote': typeof RequestQuoteRoute
+  '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/suppliers': typeof SuppliersRoute
   '/supply': typeof SupplyRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/kategori/$slug': typeof KategoriSlugRoute
   '/pesanan/$orderNo': typeof PesananOrderNoRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/produk/': typeof ProdukIndexRoute
@@ -443,11 +461,13 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/network'
     | '/request-quote'
+    | '/search'
     | '/sitemap.xml'
     | '/suppliers'
     | '/supply'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/kategori/$slug'
     | '/pesanan/$orderNo'
     | '/produk/$slug'
     | '/produk/'
@@ -488,11 +508,13 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/network'
     | '/request-quote'
+    | '/search'
     | '/sitemap.xml'
     | '/suppliers'
     | '/supply'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/kategori/$slug'
     | '/pesanan/$orderNo'
     | '/produk/$slug'
     | '/produk'
@@ -534,11 +556,13 @@ export interface FileRouteTypes {
     | '/mcp'
     | '/network'
     | '/request-quote'
+    | '/search'
     | '/sitemap.xml'
     | '/suppliers'
     | '/supply'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
+    | '/kategori/$slug'
     | '/pesanan/$orderNo'
     | '/produk/$slug'
     | '/produk/'
@@ -581,11 +605,13 @@ export interface RootRouteChildren {
   McpRoute: typeof McpRoute
   NetworkRoute: typeof NetworkRoute
   RequestQuoteRoute: typeof RequestQuoteRoute
+  SearchRoute: typeof SearchRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SuppliersRoute: typeof SuppliersRoute
   SupplyRoute: typeof SupplyRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  KategoriSlugRoute: typeof KategoriSlugRoute
   PesananOrderNoRoute: typeof PesananOrderNoRoute
   ProdukSlugRoute: typeof ProdukSlugRoute
   ProdukIndexRoute: typeof ProdukIndexRoute
@@ -616,6 +642,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/request-quote': {
@@ -714,6 +747,13 @@ declare module '@tanstack/react-router' {
       path: '/pesanan/$orderNo'
       fullPath: '/pesanan/$orderNo'
       preLoaderRoute: typeof PesananOrderNoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kategori/$slug': {
+      id: '/kategori/$slug'
+      path: '/kategori/$slug'
+      fullPath: '/kategori/$slug'
+      preLoaderRoute: typeof KategoriSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.well-known/oauth-protected-resource': {
@@ -973,12 +1013,14 @@ const rootRouteChildren: RootRouteChildren = {
   McpRoute: McpRoute,
   NetworkRoute: NetworkRoute,
   RequestQuoteRoute: RequestQuoteRoute,
+  SearchRoute: SearchRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SuppliersRoute: SuppliersRoute,
   SupplyRoute: SupplyRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  KategoriSlugRoute: KategoriSlugRoute,
   PesananOrderNoRoute: PesananOrderNoRoute,
   ProdukSlugRoute: ProdukSlugRoute,
   ProdukIndexRoute: ProdukIndexRoute,
