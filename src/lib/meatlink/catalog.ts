@@ -36,21 +36,37 @@ export type CatalogFilters = {
   search?: string;
   category?: ProductCategory | null;
   origin?: string | null;
+  promoOnly?: boolean;
   page?: number;
   pageSize?: number;
 };
 
+/** True when a catalog/product row is currently sold below its list price. */
+export function isPromo(row: { public_price_idr: number | string; list_price_idr?: number | string | null }) {
+  const price = Number(row.public_price_idr);
+  const list = Number(row.list_price_idr ?? 0);
+  return list > 0 && price > 0 && list > price;
+}
+
 /** Sanitized public catalog listing — no internal cost, markup or exact stock. */
 export function useCatalog(filters: CatalogFilters = {}) {
-  const { search = "", category = null, origin = null, page = 1, pageSize = 24 } = filters;
+  const {
+    search = "",
+    category = null,
+    origin = null,
+    promoOnly = false,
+    page = 1,
+    pageSize = 24,
+  } = filters;
   return useQuery({
-    queryKey: ["ml-catalog", search, category, origin, page, pageSize],
+    queryKey: ["ml-catalog", search, category, origin, promoOnly, page, pageSize],
     staleTime: 60_000,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("ml_public_catalog", {
         _search: search || undefined,
         _category: category ?? undefined,
         _origin: origin ?? undefined,
+        _promo_only: promoOnly,
         _limit: pageSize,
         _offset: (page - 1) * pageSize,
       });
