@@ -178,7 +178,7 @@ function HomePage() {
               Can't see it? Ask anyway <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>
-          <div className="mt-12 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-5">
+          <div className="mt-12 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
             {CATEGORIES.map((c) => (
               <Link
                 key={c.slug}
