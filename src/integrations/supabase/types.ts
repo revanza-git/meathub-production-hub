@@ -2794,6 +2794,8 @@ export type Database = {
           payment_channel: string | null
           payment_expires_at: string | null
           payment_method: Database["public"]["Enums"]["ml_pay_method"]
+          payment_proof_at: string | null
+          payment_proof_url: string | null
           payment_qr_url: string | null
           payment_ref: string | null
           payment_trx_id: string | null
@@ -2823,6 +2825,8 @@ export type Database = {
           payment_channel?: string | null
           payment_expires_at?: string | null
           payment_method: Database["public"]["Enums"]["ml_pay_method"]
+          payment_proof_at?: string | null
+          payment_proof_url?: string | null
           payment_qr_url?: string | null
           payment_ref?: string | null
           payment_trx_id?: string | null
@@ -2852,6 +2856,8 @@ export type Database = {
           payment_channel?: string | null
           payment_expires_at?: string | null
           payment_method?: Database["public"]["Enums"]["ml_pay_method"]
+          payment_proof_at?: string | null
+          payment_proof_url?: string | null
           payment_qr_url?: string | null
           payment_ref?: string | null
           payment_trx_id?: string | null
@@ -3195,6 +3201,10 @@ export type Database = {
       mark_notification_read: { Args: { _id: string }; Returns: undefined }
       mark_settlement_paid: {
         Args: { _id: string; _reference: string }
+        Returns: undefined
+      }
+      ml_attach_payment_proof: {
+        Args: { _order_no: string; _token: string; _url: string }
         Returns: undefined
       }
       ml_has_role: {
