@@ -3,12 +3,12 @@ import { useState } from "react";
 import { ArrowRight, Search } from "lucide-react";
 import { SiteLayout, PageHero } from "@/components/site/site-layout";
 import { formatIdr } from "@/lib/meatlink/inventory";
+import { resolveProductImage } from "@/lib/meatlink/featured";
+import { AvailabilityBadge } from "@/components/site/availability-badge";
 import {
-  AVAILABILITY_LABEL,
   CATEGORIES,
   CATEGORY_LABEL,
   useCatalog,
-  type Availability,
   type ProductCategory,
 } from "@/lib/meatlink/catalog";
 
