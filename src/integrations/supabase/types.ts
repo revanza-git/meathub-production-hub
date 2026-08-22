@@ -1190,6 +1190,72 @@ export type Database = {
           },
         ]
       }
+      public_market_observations: {
+        Row: {
+          commodity: string
+          created_at: string
+          created_by: string | null
+          id: string
+          market_level: string
+          observed_on: string
+          price_idr_per_kg: number | null
+          region: string
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          signal_type: string
+          source_name: string
+          source_url: string
+          summary: string
+          unit: string | null
+          updated_at: string
+          value: number | null
+          verification_status: string
+        }
+        Insert: {
+          commodity?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          market_level: string
+          observed_on: string
+          price_idr_per_kg?: number | null
+          region?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          signal_type: string
+          source_name: string
+          source_url: string
+          summary: string
+          unit?: string | null
+          updated_at?: string
+          value?: number | null
+          verification_status?: string
+        }
+        Update: {
+          commodity?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          market_level?: string
+          observed_on?: string
+          price_idr_per_kg?: number | null
+          region?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          signal_type?: string
+          source_name?: string
+          source_url?: string
+          summary?: string
+          unit?: string | null
+          updated_at?: string
+          value?: number | null
+          verification_status?: string
+        }
+        Relationships: []
+      }
       market_insights: {
         Row: {
           body: string
