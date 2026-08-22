@@ -60,7 +60,7 @@ export function SiteFooter() {
           <h2 className="eyebrow text-crimson">Suppliers</h2>
           <ul className="mt-4 space-y-2 text-sm text-bone/70">
             <li>
-              <Link to="/suppliers" className="hover:text-bone">
+              <Link to="/network" hash="suppliers" className="hover:text-bone">
                 Why supply through Meatlink
               </Link>
             </li>
