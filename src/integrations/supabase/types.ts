@@ -2782,11 +2782,15 @@ export type Database = {
           access_token: string
           address: string
           admin_note: string | null
+          buyer_confirmed_at: string | null
           buyer_name: string
           city: string | null
           company: string | null
+          courier_name: string | null
           created_at: string
+          delivered_at: string | null
           email: string | null
+          eta_date: string | null
           id: string
           notes: string | null
           order_no: string
@@ -2802,10 +2806,12 @@ export type Database = {
           payment_url: string | null
           payment_va: string | null
           phone: string
+          shipped_at: string | null
           status: Database["public"]["Enums"]["ml_store_order_status"]
           stock_deducted_at: string | null
           subtotal_idr: number
           total_idr: number
+          tracking_no: string | null
           updated_at: string
           user_id: string | null
         }
@@ -2813,11 +2819,15 @@ export type Database = {
           access_token?: string
           address: string
           admin_note?: string | null
+          buyer_confirmed_at?: string | null
           buyer_name: string
           city?: string | null
           company?: string | null
+          courier_name?: string | null
           created_at?: string
+          delivered_at?: string | null
           email?: string | null
+          eta_date?: string | null
           id?: string
           notes?: string | null
           order_no: string
@@ -2833,10 +2843,12 @@ export type Database = {
           payment_url?: string | null
           payment_va?: string | null
           phone: string
+          shipped_at?: string | null
           status?: Database["public"]["Enums"]["ml_store_order_status"]
           stock_deducted_at?: string | null
           subtotal_idr?: number
           total_idr?: number
+          tracking_no?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -2844,11 +2856,15 @@ export type Database = {
           access_token?: string
           address?: string
           admin_note?: string | null
+          buyer_confirmed_at?: string | null
           buyer_name?: string
           city?: string | null
           company?: string | null
+          courier_name?: string | null
           created_at?: string
+          delivered_at?: string | null
           email?: string | null
+          eta_date?: string | null
           id?: string
           notes?: string | null
           order_no?: string
@@ -2864,10 +2880,12 @@ export type Database = {
           payment_url?: string | null
           payment_va?: string | null
           phone?: string
+          shipped_at?: string | null
           status?: Database["public"]["Enums"]["ml_store_order_status"]
           stock_deducted_at?: string | null
           subtotal_idr?: number
           total_idr?: number
+          tracking_no?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -3207,6 +3225,10 @@ export type Database = {
         Args: { _order_no: string; _token: string; _url: string }
         Returns: undefined
       }
+      ml_confirm_store_receipt: {
+        Args: { _order_no: string; _token: string }
+        Returns: undefined
+      }
       ml_has_role: {
         Args: {
           _role: Database["public"]["Enums"]["ml_role"]
@@ -3295,6 +3317,15 @@ export type Database = {
           qty_kg: number
           source_count: number
         }[]
+      }
+      ml_set_store_delivery: {
+        Args: {
+          _courier?: string
+          _eta?: string
+          _order_id: string
+          _tracking_no?: string
+        }
+        Returns: undefined
       }
       ml_set_user_role: {
         Args: {

@@ -8,6 +8,8 @@ import { ORDER_STATUS_LABEL, PAY_METHOD_LABEL, type PayMethod } from "@/lib/meat
 import { WHATSAPP_NUMBER } from "@/lib/meatlink/config";
 import { PaymentPanel } from "@/components/meatlink/payment-panel";
 import { PaymentProofUpload } from "@/components/meatlink/payment-proof";
+import { OrderTimeline, type TimelineEvent } from "@/components/meatlink/order-timeline";
+import { DeliveryPanel } from "@/components/meatlink/delivery-panel";
 
 type TrackedOrder = {
   order_no: string;
@@ -24,12 +26,19 @@ type TrackedOrder = {
   payment_qr_url?: string | null;
   payment_expires_at?: string | null;
   paid_at?: string | null;
+  courier_name?: string | null;
+  tracking_no?: string | null;
+  eta_date?: string | null;
+  shipped_at?: string | null;
+  delivered_at?: string | null;
+  buyer_confirmed_at?: string | null;
   items: {
     product_name: string;
     unit_price_idr: number;
     qty_kg: number;
     line_total_idr: number;
   }[];
+  timeline?: TimelineEvent[];
 };
 
 export const Route = createFileRoute("/pesanan/$orderNo")({
@@ -144,6 +153,21 @@ function OrderPage() {
             </div>
 
             {!data.paid_at ? <PaymentProofUpload orderNo={data.order_no} token={t} /> : null}
+
+            <DeliveryPanel
+              orderNo={data.order_no}
+              token={t}
+              status={data.status}
+              courier={data.courier_name ?? null}
+              trackingNo={data.tracking_no ?? null}
+              etaDate={data.eta_date ?? null}
+              shippedAt={data.shipped_at ?? null}
+              deliveredAt={data.delivered_at ?? null}
+              confirmedAt={data.buyer_confirmed_at ?? null}
+              onConfirmed={() => refetch()}
+            />
+
+            <OrderTimeline events={data.timeline ?? []} />
 
             <h2 className="mt-12 font-display text-2xl text-ink">Rincian</h2>
             <ul className="mt-4 divide-y divide-line border-y border-line">
