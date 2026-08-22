@@ -80,7 +80,7 @@ export default defineTool({
     }
 
     const supabase = supabaseForUser(ctx);
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from("public_market_observations")
       .insert({
         ...input,
