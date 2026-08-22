@@ -73,6 +73,9 @@ async function openProof(path: string) {
 function OrdersTable() {
   const qc = useQueryClient();
   const [draft, setDraft] = useState<Record<string, { ref: string; note: string }>>({});
+  const [ship, setShip] = useState<
+    Record<string, { courier: string; tracking: string; eta: string }>
+  >({});
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-storefront-orders"],
@@ -120,6 +123,22 @@ function OrdersTable() {
     qc.invalidateQueries({ queryKey: ["admin-storefront-orders"] });
   }
 
+  async function saveDelivery(id: string) {
+    const s = ship[id];
+    const { error } = await supabase.rpc("ml_set_store_delivery", {
+      _order_id: id,
+      _courier: s?.courier?.trim() || undefined,
+      _tracking_no: s?.tracking?.trim() || undefined,
+      _eta: s?.eta || undefined,
+    });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Delivery details saved.");
+    qc.invalidateQueries({ queryKey: ["admin-storefront-orders"] });
+  }
+
   if (isLoading) return <Panel>Loading orders…</Panel>;
 
   const orders = data?.orders ?? [];
@@ -133,6 +152,12 @@ function OrdersTable() {
         const lines = (data?.items ?? []).filter((i) => i.order_id === o.id);
         const events = (data?.events ?? []).filter((e) => e.order_id === o.id);
         const d = draft[o.id] ?? { ref: "", note: "" };
+        const sh =
+          ship[o.id] ?? {
+            courier: o.courier_name ?? "",
+            tracking: o.tracking_no ?? "",
+            eta: o.eta_date ?? "",
+          };
         const waText = encodeURIComponent(
           `Halo ${o.buyer_name}, update pesanan Meatlink ${o.order_no}: status ${
             ORDER_STATUS_LABEL[o.status as StoreStatus] ?? o.status
@@ -226,6 +251,47 @@ function OrdersTable() {
                     ))}
                   </select>
                 </label>
+                <fieldset className="mt-4 border-t pt-4">
+                  <legend className="text-xs uppercase tracking-wide text-muted-foreground">
+                    Delivery
+                  </legend>
+                  <input
+                    value={sh.courier}
+                    onChange={(e) =>
+                      setShip((p) => ({ ...p, [o.id]: { ...sh, courier: e.target.value } }))
+                    }
+                    placeholder="Kurir / armada"
+                    className="mt-2 w-full rounded border bg-background px-3 py-2 text-sm"
+                  />
+                  <input
+                    value={sh.tracking}
+                    onChange={(e) =>
+                      setShip((p) => ({ ...p, [o.id]: { ...sh, tracking: e.target.value } }))
+                    }
+                    placeholder="No. resi"
+                    className="mt-2 w-full rounded border bg-background px-3 py-2 text-sm"
+                  />
+                  <input
+                    type="date"
+                    value={sh.eta}
+                    onChange={(e) =>
+                      setShip((p) => ({ ...p, [o.id]: { ...sh, eta: e.target.value } }))
+                    }
+                    className="mt-2 w-full rounded border bg-background px-3 py-2 text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void saveDelivery(o.id)}
+                    className="mt-2 rounded border px-3 py-2 text-xs uppercase tracking-wide"
+                  >
+                    Save delivery
+                  </button>
+                  {o.buyer_confirmed_at ? (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Buyer confirmed receipt {formatDate(o.buyer_confirmed_at)}
+                    </p>
+                  ) : null}
+                </fieldset>
                 <a
                   href={waHref}
                   target="_blank"
