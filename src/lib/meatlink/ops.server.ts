@@ -1,0 +1,193 @@
+/**
+ * Meatlink ops automation — server only.
+ *
+ * Three unattended jobs, all driven by the `/api/public/ops/cron` endpoint:
+ *  1. expire-unpaid  — cancels unpaid orders past the admin-configured window
+ *  2. low-stock      — emails ops when published items fall to/below the threshold
+ *  3. daily-digest   — one summary email per Jakarta day
+ *
+ * Runs are recorded in `ops_job_runs` so a repeated call in the same window
+ * does not re-send an email. Never import from client code.
+ */
+
+import { sendTemplateEmail } from "@/lib/email-templates/send-email";
+
+const SITE = "https://meatlink.id";
+
+const idr = (n: number) =>
+  new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(n);
+
+/** Current date in Asia/Jakarta as YYYY-MM-DD. */
+function jakartaToday(): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta" }).format(new Date());
+}
+
+function jakartaYesterday(): string {
+  const d = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta" }).format(d);
+}
+
+function dayLabel(day: string): string {
+  return new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeZone: "Asia/Jakarta" }).format(
+    new Date(`${day}T06:00:00+07:00`),
+  );
+}
+
+type Admin = Awaited<typeof import("@/integrations/supabase/client.server")>["supabaseAdmin"];
+
+async function admin(): Promise<Admin> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  return supabaseAdmin;
+}
+
+async function settings(db: Admin) {
+  const { data } = await db.from("admin_settings").select("key, value");
+  const map = new Map((data ?? []).map((r) => [r.key as string, r.value as unknown]));
+  const num = (k: string, fallback: number) => {
+    const v = Number(map.get(k));
+    return Number.isFinite(v) ? v : fallback;
+  };
+  const bool = (k: string, fallback: boolean) => {
+    const v = map.get(k);
+    return typeof v === "boolean" ? v : fallback;
+  };
+  const str = (k: string) => {
+    const v = map.get(k);
+    return typeof v === "string" && v.trim() ? v.trim() : null;
+  };
+  return {
+    alertEmail: str("ops_alert_email"),
+    lowStockKg: num("inventory_low_stock_kg", 10),
+    lowStockEnabled: bool("ops_low_stock_alert_enabled", true),
+    digestEnabled: bool("ops_daily_digest_enabled", true),
+    expiryHours: num("order_expiry_hours", 48),
+  };
+}
+
+/** Records a run; returns false when the same job+key already ran. */
+async function claim(db: Admin, job: string, runKey: string, detail: Record<string, unknown>) {
+  const { error } = await db.from("ops_job_runs").insert({ job, run_key: runKey, detail: detail as never });
+  if (error) return false;
+  return true;
+}
+
+export async function expireUnpaidOrders() {
+  const db = await admin();
+  const { data, error } = await db.rpc("ml_expire_unpaid_orders");
+  if (error) throw new Error(error.message);
+  const result = (data ?? {}) as { expired?: number; orders?: Array<{ order_no: string }> };
+  const expired = Number(result.expired ?? 0);
+  if (expired > 0) {
+    await db.from("ops_job_runs").insert({
+      job: "expire-unpaid",
+      run_key: new Date().toISOString(),
+      detail: result as never,
+    });
+  }
+  return { expired, orders: result.orders ?? [] };
+}
+
+export async function lowStockAlert() {
+  const db = await admin();
+  const cfg = await settings(db);
+  if (!cfg.lowStockEnabled) return { sent: false, reason: "disabled" as const };
+  if (!cfg.alertEmail) return { sent: false, reason: "no_alert_email" as const };
+
+  const { data, error } = await db
+    .from("admin_inventory")
+    .select("name, qty_on_hand_kg")
+    .eq("is_published", true)
+    .lte("qty_on_hand_kg", cfg.lowStockKg)
+    .order("qty_on_hand_kg", { ascending: true })
+    .limit(40);
+  if (error) throw new Error(error.message);
+
+  const items = data ?? [];
+  if (items.length === 0) return { sent: false, reason: "nothing_low" as const };
+
+  // One alert per Jakarta day, keyed on the affected item set so a new item
+  // dropping below the line still triggers a fresh alert.
+  const fingerprint = items.map((i) => `${i.name}:${Number(i.qty_on_hand_kg)}`).join("|");
+  const runKey = `${jakartaToday()}#${fingerprint.length}:${items.length}`;
+  if (!(await claim(db, "low-stock", runKey, { count: items.length }))) {
+    return { sent: false, reason: "already_sent" as const };
+  }
+
+  await sendTemplateEmail("ops-alert", cfg.alertEmail, {
+    idempotencyKey: `low-stock-${runKey}`,
+    templateData: {
+      subject: `Stok menipis: ${items.length} item — Meatlink`,
+      heading: "Stok menipis",
+      intro: `${items.length} produk aktif berada pada atau di bawah ambang ${cfg.lowStockKg} kg.`,
+      stats: [
+        { label: "Item di bawah ambang", value: String(items.length) },
+        { label: "Ambang batas", value: `${cfg.lowStockKg} kg` },
+      ],
+      listTitle: "Perlu restock",
+      list: items.map((i) => ({ label: i.name as string, value: `${Number(i.qty_on_hand_kg)} kg` })),
+      ctaUrl: `${SITE}/admin/inventory`,
+      ctaLabel: "Buka inventory",
+    },
+  });
+
+  return { sent: true, count: items.length };
+}
+
+export async function dailyDigest(day?: string) {
+  const db = await admin();
+  const cfg = await settings(db);
+  if (!cfg.digestEnabled) return { sent: false, reason: "disabled" as const };
+  if (!cfg.alertEmail) return { sent: false, reason: "no_alert_email" as const };
+
+  const target = day ?? jakartaYesterday();
+  if (!(await claim(db, "daily-digest", target, {}))) {
+    return { sent: false, reason: "already_sent" as const };
+  }
+
+  const { data, error } = await db.rpc("ml_ops_digest", { p_day: target });
+  if (error) throw new Error(error.message);
+  const d = (data ?? {}) as {
+    orders?: number;
+    revenue_idr?: number;
+    paid_orders?: number;
+    awaiting_payment?: number;
+    to_ship?: number;
+    low_stock?: Array<{ name: string; qty_kg: number }>;
+    low_stock_threshold_kg?: number;
+  };
+
+  await sendTemplateEmail("ops-alert", cfg.alertEmail, {
+    idempotencyKey: `daily-digest-${target}`,
+    templateData: {
+      subject: `Ringkasan harian Meatlink — ${dayLabel(target)}`,
+      heading: "Ringkasan harian",
+      intro: `Aktivitas toko untuk ${dayLabel(target)}.`,
+      stats: [
+        { label: "Pesanan masuk", value: String(d.orders ?? 0) },
+        { label: "Omzet (non-batal)", value: idr(Number(d.revenue_idr ?? 0)) },
+        { label: "Pesanan terbayar", value: String(d.paid_orders ?? 0) },
+        { label: "Menunggu pembayaran", value: String(d.awaiting_payment ?? 0) },
+        { label: "Siap dikirim", value: String(d.to_ship ?? 0) },
+      ],
+      listTitle: `Stok menipis (≤ ${d.low_stock_threshold_kg ?? cfg.lowStockKg} kg)`,
+      list: (d.low_stock ?? []).slice(0, 20).map((i) => ({
+        label: i.name,
+        value: `${Number(i.qty_kg)} kg`,
+      })),
+      ctaUrl: `${SITE}/admin`,
+      ctaLabel: "Buka dashboard",
+    },
+  });
+
+  return { sent: true, day: target };
+}
+
+/** Runs every scheduled job; safe to call repeatedly. */
+export async function runOpsCron(jobs?: string[]) {
+  const wanted = (name: string) => !jobs || jobs.length === 0 || jobs.includes(name);
+  const out: Record<string, unknown> = {};
+  if (wanted("expire-unpaid")) out["expire-unpaid"] = await expireUnpaidOrders();
+  if (wanted("low-stock")) out["low-stock"] = await lowStockAlert();
+  if (wanted("daily-digest")) out["daily-digest"] = await dailyDigest();
+  return out;
+}
