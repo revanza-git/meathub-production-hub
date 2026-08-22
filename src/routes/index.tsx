@@ -207,7 +207,8 @@ function HomePage() {
               eyebrow: "For buyers",
               title: "Stop chasing suppliers",
               body: "Restaurants, hotels, caterers and retailers get one contact, matched quotes and consistent spec — instead of a group chat full of guesses.",
-              to: "/buyers" as const,
+              to: "/network" as const,
+              hash: "buyers" as const,
               cta: "How sourcing works",
             },
             {
@@ -216,7 +217,8 @@ function HomePage() {
               eyebrow: "For suppliers",
               title: "Reach qualified demand",
               body: "Importers and distributors receive pre-qualified requests with real volume and spec, not tyre-kickers. Listing is free.",
-              to: "/suppliers" as const,
+              to: "/network" as const,
+              hash: "suppliers" as const,
               cta: "Why supply with us",
             },
           ].map((panel) => (
@@ -235,6 +237,7 @@ function HomePage() {
                 <p className="mt-4 max-w-md text-sm leading-relaxed text-bone/65">{panel.body}</p>
                 <Link
                   to={panel.to}
+                  hash={panel.hash}
                   className="eyebrow mt-7 inline-flex items-center gap-2 text-bone hover:text-crimson"
                 >
                   {panel.cta} <ArrowRight className="h-4 w-4" aria-hidden="true" />
