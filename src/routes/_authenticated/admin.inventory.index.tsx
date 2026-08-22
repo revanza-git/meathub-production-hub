@@ -360,6 +360,18 @@ function InventoryBody() {
                 ))}
               </SelectInput>
             </Field>
+            <Field label="Category">
+              <SelectInput
+                value={form.category}
+                onChange={(e) => setForm({ ...form, category: e.target.value })}
+              >
+                {CATEGORIES.map((c) => (
+                  <option key={c.value} value={c.value}>
+                    {c.label}
+                  </option>
+                ))}
+              </SelectInput>
+            </Field>
             <Field label="Average weight" hint="e.g. 8KG or 250GR">
               <TextInput
                 value={form.avg_weight_text}
