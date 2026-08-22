@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import mark from "@/assets/meatlink-mark.png.asset.json";
 
 const NAV = [
+  { to: "/produk", label: "Katalog" },
   { to: "/buyers", label: "For Buyers" },
   { to: "/suppliers", label: "For Suppliers" },
   { to: "/insights", label: "Market Insights" },

@@ -116,7 +116,6 @@ function ProductPage() {
               <div className="mt-8 grid gap-3">
                 <Link
                   to="/request-quote"
-                  search={{ produk: product.name }}
                   className="eyebrow bg-crimson px-6 py-4 text-center text-bone transition-colors hover:bg-crimson-deep"
                 >
                   Minta penawaran
