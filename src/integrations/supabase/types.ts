@@ -3480,6 +3480,10 @@ export type Database = {
           source_count: number
         }[]
       }
+      ml_request_credit: {
+        Args: { _limit: number; _note?: string }
+        Returns: undefined
+      }
       ml_set_store_delivery: {
         Args: {
           _courier?: string
