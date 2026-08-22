@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronDown, Menu, Phone, Search, ShoppingCart, Truck, User, X } from "lucide-react";
 import mark from "@/assets/meatlink-mark.png.asset.json";
 import { useCart } from "@/lib/meatlink/cart";
-import { CATEGORIES as PRODUCT_CATEGORIES } from "@/lib/meatlink/catalog";
+import { CATEGORY_PAGES } from "@/lib/meatlink/categories";
 import { CONTACT_EMAIL, waLink } from "@/lib/meatlink/config";
 
 const NAV = [
