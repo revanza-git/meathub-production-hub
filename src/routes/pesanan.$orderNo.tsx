@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { ORDER_STATUS_LABEL, PAY_METHOD_LABEL, type PayMethod } from "@/lib/meatlink/cart";
 import { WHATSAPP_NUMBER } from "@/lib/meatlink/config";
+import { PaymentPanel } from "@/components/meatlink/payment-panel";
 
 type TrackedOrder = {
   order_no: string;
@@ -17,6 +18,11 @@ type TrackedOrder = {
   subtotal_idr: number;
   total_idr: number;
   created_at: string;
+  payment_channel?: string | null;
+  payment_va?: string | null;
+  payment_qr_url?: string | null;
+  payment_expires_at?: string | null;
+  paid_at?: string | null;
   items: {
     product_name: string;
     unit_price_idr: number;
@@ -53,7 +59,7 @@ function OrderPage() {
   const { orderNo } = Route.useParams();
   const { t } = Route.useSearch();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["ml-order", orderNo, t],
     enabled: Boolean(t),
     queryFn: async () => {
@@ -93,16 +99,36 @@ function OrderPage() {
               {PAY_METHOD_LABEL[data.payment_method] ?? data.payment_method}
             </p>
 
+            {(data.payment_method === "BANK_TRANSFER" || data.payment_method === "QRIS") &&
+            !data.paid_at &&
+            (data.status === "NEW" || data.status === "AWAITING_PAYMENT") ? (
+              <PaymentPanel
+                orderNo={data.order_no}
+                token={t}
+                method={data.payment_method}
+                total={data.total_idr}
+                existing={{
+                  channel: data.payment_channel ?? null,
+                  va: data.payment_va ?? null,
+                  qrUrl: data.payment_qr_url ?? null,
+                  expiresAt: data.payment_expires_at ?? null,
+                }}
+                onPaid={() => refetch()}
+              />
+            ) : null}
+
             <div className="mt-8 border border-line p-6">
               <h2 className="eyebrow text-ash">Instruksi berikutnya</h2>
               <p className="mt-3 text-sm leading-relaxed text-ink/80">
-                {data.payment_method === "BANK_TRANSFER"
-                  ? "Tim kami mengirimkan nomor Virtual Account melalui WhatsApp dalam waktu singkat. Pesanan diproses setelah pembayaran diterima."
-                  : data.payment_method === "QRIS"
-                    ? "Tim kami mengirimkan kode QRIS melalui WhatsApp. Pesanan diproses setelah pembayaran diterima."
-                    : data.payment_method === "CBD"
-                      ? "Pembayaran tunai dilakukan sebelum pengiriman. Tim kami menghubungi Anda untuk menjadwalkan pengiriman."
-                      : "Tim kami menghubungi Anda melalui WhatsApp untuk finalisasi pesanan dan pembayaran."}
+                {data.paid_at
+                  ? "Pembayaran sudah kami terima. Tim kami memproses dan menjadwalkan pengiriman pesanan Anda."
+                  : data.payment_method === "BANK_TRANSFER"
+                    ? "Transfer ke nomor Virtual Account di atas. Status pesanan otomatis diperbarui setelah pembayaran diterima."
+                    : data.payment_method === "QRIS"
+                      ? "Scan QRIS di atas dari aplikasi bank atau e-wallet mana pun. Status pesanan otomatis diperbarui setelah pembayaran diterima."
+                      : data.payment_method === "CBD"
+                        ? "Pembayaran tunai dilakukan sebelum pengiriman. Tim kami menghubungi Anda untuk menjadwalkan pengiriman."
+                        : "Tim kami menghubungi Anda melalui WhatsApp untuk finalisasi pesanan dan pembayaran."}
               </p>
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(

@@ -1,0 +1,1 @@
+DELETE FROM public.storefront_orders WHERE order_no = 'MLO-260822-0004';

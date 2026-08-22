@@ -27,6 +27,7 @@ import { Route as ProdukSlugRouteImport } from './routes/produk.$slug'
 import { Route as PesananOrderNoRouteImport } from './routes/pesanan.$orderNo'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as ApiPublicIpaymuCallbackRouteImport } from './routes/api/public/ipaymu-callback'
 import { Route as AuthenticatedVendorImportRouteImport } from './routes/_authenticated/vendor.import'
 import { Route as AuthenticatedVendorCatalogRouteImport } from './routes/_authenticated/vendor.catalog'
 import { Route as AuthenticatedAppStockRouteImport } from './routes/_authenticated/app.stock'
@@ -138,6 +139,11 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicIpaymuCallbackRoute = ApiPublicIpaymuCallbackRouteImport.update({
+  id: '/api/public/ipaymu-callback',
+  path: '/api/public/ipaymu-callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedVendorImportRoute =
   AuthenticatedVendorImportRouteImport.update({
     id: '/vendor/import',
@@ -277,6 +283,7 @@ export interface FileRoutesByFullPath {
   '/app/stock': typeof AuthenticatedAppStockRoute
   '/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
   '/vendor/import': typeof AuthenticatedVendorImportRoute
+  '/api/public/ipaymu-callback': typeof ApiPublicIpaymuCallbackRoute
   '/admin/inventory/import': typeof AuthenticatedAdminInventoryImportRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
@@ -315,6 +322,7 @@ export interface FileRoutesByTo {
   '/app/stock': typeof AuthenticatedAppStockRoute
   '/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
   '/vendor/import': typeof AuthenticatedVendorImportRoute
+  '/api/public/ipaymu-callback': typeof ApiPublicIpaymuCallbackRoute
   '/admin/inventory/import': typeof AuthenticatedAdminInventoryImportRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
@@ -355,6 +363,7 @@ export interface FileRoutesById {
   '/_authenticated/app/stock': typeof AuthenticatedAppStockRoute
   '/_authenticated/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
   '/_authenticated/vendor/import': typeof AuthenticatedVendorImportRoute
+  '/api/public/ipaymu-callback': typeof ApiPublicIpaymuCallbackRoute
   '/_authenticated/admin/inventory/import': typeof AuthenticatedAdminInventoryImportRoute
   '/_authenticated/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
   '/_authenticated/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
@@ -395,6 +404,7 @@ export interface FileRouteTypes {
     | '/app/stock'
     | '/vendor/catalog'
     | '/vendor/import'
+    | '/api/public/ipaymu-callback'
     | '/admin/inventory/import'
     | '/admin/orders/$id'
     | '/app/orders/$id'
@@ -433,6 +443,7 @@ export interface FileRouteTypes {
     | '/app/stock'
     | '/vendor/catalog'
     | '/vendor/import'
+    | '/api/public/ipaymu-callback'
     | '/admin/inventory/import'
     | '/admin/orders/$id'
     | '/app/orders/$id'
@@ -472,6 +483,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/stock'
     | '/_authenticated/vendor/catalog'
     | '/_authenticated/vendor/import'
+    | '/api/public/ipaymu-callback'
     | '/_authenticated/admin/inventory/import'
     | '/_authenticated/admin/orders/$id'
     | '/_authenticated/app/orders/$id'
@@ -502,6 +514,7 @@ export interface RootRouteChildren {
   ProdukIndexRoute: typeof ProdukIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  ApiPublicIpaymuCallbackRoute: typeof ApiPublicIpaymuCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -630,6 +643,13 @@ declare module '@tanstack/react-router' {
       path: '/.mcp/list-tools'
       fullPath: '/.mcp/list-tools'
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/ipaymu-callback': {
+      id: '/api/public/ipaymu-callback'
+      path: '/api/public/ipaymu-callback'
+      fullPath: '/api/public/ipaymu-callback'
+      preLoaderRoute: typeof ApiPublicIpaymuCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/vendor/import': {
@@ -835,6 +855,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProdukIndexRoute: ProdukIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  ApiPublicIpaymuCallbackRoute: ApiPublicIpaymuCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
