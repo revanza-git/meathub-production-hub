@@ -420,7 +420,7 @@ function InventoryBody() {
         <Panel className="p-10 text-center text-sm text-ash">No inventory matches these filters.</Panel>
       ) : (
         <Panel className="overflow-x-auto">
-          <table className="w-full min-w-[1180px] text-left text-sm">
+          <table className="w-full min-w-[1460px] text-left text-sm">
             <thead className="border-b border-line text-xs uppercase tracking-[0.16em] text-ash">
               <tr>
                 <th className="px-4 py-3">Product</th>
@@ -432,6 +432,8 @@ function InventoryBody() {
                 <th className="px-4 py-3">Price / kg</th>
                 <th className="px-4 py-3">Markup / kg</th>
                 <th className="px-4 py-3">Public price</th>
+                <th className="px-4 py-3">Promo / kg</th>
+                <th className="px-4 py-3">Promo until</th>
                 <th className="px-4 py-3">Qty (kg)</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Homepage</th>
@@ -503,6 +505,39 @@ function InventoryBody() {
                   </td>
                   <td className="px-4 py-3 text-xs text-crimson">
                     {formatIdr(publicPrice(item.sale_price_idr, item.markup_idr))}
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="number"
+                      min={0}
+                      step="1000"
+                      placeholder="—"
+                      defaultValue={item.promo_price_idr ?? ""}
+                      aria-label={`Promo price for ${item.name}`}
+                      onBlur={(e) => {
+                        const raw = e.target.value.trim();
+                        const v = raw === "" ? null : Number(raw);
+                        if (v !== null && !Number.isFinite(v)) return;
+                        if (Number(v ?? -1) !== Number(item.promo_price_idr ?? -1)) {
+                          void patch(item.id, { promo_price_idr: v });
+                        }
+                      }}
+                      className="w-32 border border-line bg-bone px-2 py-1 text-sm text-ink outline-none focus:border-crimson"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="date"
+                      defaultValue={item.promo_until ?? ""}
+                      aria-label={`Promo end date for ${item.name}`}
+                      onBlur={(e) => {
+                        const v = e.target.value || null;
+                        if (v !== (item.promo_until ?? null)) {
+                          void patch(item.id, { promo_until: v });
+                        }
+                      }}
+                      className="w-36 border border-line bg-bone px-2 py-1 text-sm text-ink outline-none focus:border-crimson"
+                    />
                   </td>
                   <td className="px-4 py-3">
                     <input

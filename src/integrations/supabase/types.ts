@@ -101,6 +101,8 @@ export type Database = {
           name: string
           notes: string | null
           origin: string
+          promo_price_idr: number | null
+          promo_until: string | null
           qty_on_hand_kg: number
           sale_price_idr: number
           slug: string | null
@@ -123,6 +125,8 @@ export type Database = {
           name: string
           notes?: string | null
           origin: string
+          promo_price_idr?: number | null
+          promo_until?: string | null
           qty_on_hand_kg?: number
           sale_price_idr?: number
           slug?: string | null
@@ -145,6 +149,8 @@ export type Database = {
           name?: string
           notes?: string | null
           origin?: string
+          promo_price_idr?: number | null
+          promo_until?: string | null
           qty_on_hand_kg?: number
           sale_price_idr?: number
           slug?: string | null
@@ -3415,12 +3421,17 @@ export type Database = {
           total_qty_kg: number
         }[]
       }
+      ml_promo_active: {
+        Args: { _list: number; _promo: number; _until: string }
+        Returns: boolean
+      }
       ml_public_catalog: {
         Args: {
           _category?: Database["public"]["Enums"]["ml_product_category"]
           _limit?: number
           _offset?: number
           _origin?: string
+          _promo_only?: boolean
           _search?: string
         }
         Returns: {
@@ -3431,8 +3442,10 @@ export type Database = {
           condition: string
           id: string
           image_url: string
+          list_price_idr: number
           name: string
           origin: string
+          promo_until: string
           public_price_idr: number
           slug: string
           total_count: number
@@ -3447,6 +3460,7 @@ export type Database = {
           featured_rank: number
           id: string
           image_url: string
+          list_price_idr: number
           name: string
           origin: string
           public_price_idr: number
@@ -3464,8 +3478,10 @@ export type Database = {
           description: string
           id: string
           image_url: string
+          list_price_idr: number
           name: string
           origin: string
+          promo_until: string
           public_price_idr: number
           slug: string
         }[]

@@ -152,7 +152,14 @@ function InsightsPage() {
                       </div>
                       <div className="flex justify-between pt-1">
                         <dt>Indicative price</dt>
-                        <dd className="text-crimson">{formatIdr(item.public_price_idr)} / kg</dd>
+                        <dd className="text-crimson">
+                          {Number(item.list_price_idr) > Number(item.public_price_idr) ? (
+                            <span className="mr-2 text-ash line-through">
+                              {formatIdr(item.list_price_idr)}
+                            </span>
+                          ) : null}
+                          {formatIdr(item.public_price_idr)} / kg
+                        </dd>
                       </div>
                     </dl>
                   </div>

@@ -12,6 +12,7 @@ import { CATEGORY_PAGES } from "@/lib/meatlink/categories";
 import { SiteLayout } from "@/components/site/site-layout";
 import { CatalogSearch } from "@/components/site/site-header";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
+import { PriceTag, PromoFlag } from "@/components/site/price-tag";
 import { Recommendations } from "@/components/meatlink/recommendations";
 import { CATEGORY_LABEL, useCatalog } from "@/lib/meatlink/catalog";
 import { resolveFeatureImage, resolveProductImage, useFeaturedInventory } from "@/lib/meatlink/featured";
@@ -239,6 +240,11 @@ function AvailableNow() {
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                     <AvailabilityBadge value={row.availability} />
+                    <PromoFlag
+                      price={row.public_price_idr}
+                      listPrice={row.list_price_idr}
+                      className="absolute left-0 top-0"
+                    />
                   </div>
                   <div className="flex flex-1 flex-col justify-between p-5">
                     <div>
@@ -248,10 +254,12 @@ function AvailableNow() {
                         {[row.brand, row.origin, row.condition].filter(Boolean).join(" · ")}
                       </p>
                     </div>
-                    <p className="mt-5 font-display text-xl text-ink">
-                      {formatIdr(row.public_price_idr)}
-                      <span className="text-xs text-ash"> /kg</span>
-                    </p>
+                    <PriceTag
+                      price={row.public_price_idr}
+                      listPrice={row.list_price_idr}
+                      size="sm"
+                      className="mt-5"
+                    />
                   </div>
                 </Link>
               ))}
@@ -374,7 +382,14 @@ function MarketInsights() {
                   </div>
                   <div className="flex justify-between pt-1">
                     <dt>Indicative price</dt>
-                    <dd className="text-crimson">{formatIdr(item.public_price_idr)} / kg</dd>
+                    <dd className="text-crimson">
+                      {Number(item.list_price_idr) > Number(item.public_price_idr) ? (
+                        <span className="mr-2 text-ash line-through">
+                          {formatIdr(item.list_price_idr)}
+                        </span>
+                      ) : null}
+                      {formatIdr(item.public_price_idr)} / kg
+                    </dd>
                   </div>
                 </dl>
               </div>
