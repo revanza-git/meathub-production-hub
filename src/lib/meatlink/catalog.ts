@@ -32,14 +32,32 @@ export type CatalogRow =
 export type CatalogProduct =
   Database["public"]["Functions"]["ml_public_product"]["Returns"][number];
 
+export type CatalogSort = "featured" | "price_asc" | "price_desc" | "name_asc" | "newest";
+
+export const SORT_OPTIONS: { value: CatalogSort; label: string }[] = [
+  { value: "featured", label: "Unggulan" },
+  { value: "price_asc", label: "Harga terendah" },
+  { value: "price_desc", label: "Harga tertinggi" },
+  { value: "name_asc", label: "Nama A–Z" },
+  { value: "newest", label: "Terbaru" },
+];
+
 export type CatalogFilters = {
   search?: string;
   category?: ProductCategory | null;
   origin?: string | null;
+  origins?: string[];
+  brands?: string[];
+  conditions?: string[];
+  availability?: string[];
+  minPrice?: number | null;
+  maxPrice?: number | null;
+  sort?: CatalogSort;
   promoOnly?: boolean;
   page?: number;
   pageSize?: number;
 };
+
 
 /** True when a catalog/product row is currently sold below its list price. */
 export function isPromo(row: { public_price_idr: number | string; list_price_idr?: number | string | null }) {
