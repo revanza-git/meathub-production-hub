@@ -14,6 +14,7 @@ import { CATEGORY_PAGES } from "@/lib/meatlink/categories";
 import { SiteLayout } from "@/components/site/site-layout";
 import { CatalogSearch } from "@/components/site/site-header";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
+import { ImageDisclaimer } from "@/components/site/image-disclaimer";
 import { PriceTag, PromoFlag } from "@/components/site/price-tag";
 import { Recommendations } from "@/components/meatlink/recommendations";
 import { CATEGORY_LABEL, useCatalog } from "@/lib/meatlink/catalog";
@@ -221,6 +222,7 @@ function AvailableNow() {
                       height={768}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
+                    <ImageDisclaimer className="absolute bottom-2 left-2 z-10 rounded bg-background/80 px-1.5 py-1" />
                     <AvailabilityBadge value={row.availability} />
                     <PromoFlag
                       price={row.public_price_idr}
@@ -422,14 +424,17 @@ function MarketInsights() {
         <div className="mt-10 grid gap-px border border-line bg-line lg:grid-cols-3">
           {items.map((item) => (
             <article key={item.id} className="bg-card">
-              <img
-                src={resolveFeatureImage(item.image_url)}
-                alt={item.name}
-                loading="lazy"
-                width={1200}
-                height={900}
-                className="h-52 w-full object-cover"
-              />
+              <div className="relative">
+                <img
+                  src={resolveFeatureImage(item.image_url)}
+                  alt={item.name}
+                  loading="lazy"
+                  width={1200}
+                  height={900}
+                  className="h-52 w-full object-cover"
+                />
+                <ImageDisclaimer className="absolute bottom-2 left-2 z-10 rounded bg-background/80 px-1.5 py-1" />
+              </div>
               <div className="p-7">
                 <p className="eyebrow text-crimson">{item.origin}</p>
                 <h3 className="mt-4 font-display text-2xl leading-snug">{item.name}</h3>

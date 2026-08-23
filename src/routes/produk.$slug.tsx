@@ -3,6 +3,7 @@ import { ArrowLeft, Check, MessageCircle } from "lucide-react";
 import { SiteLayout } from "@/components/site/site-layout";
 import { AddToCart } from "@/components/site/add-to-cart";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
+import { ImageDisclaimer } from "@/components/site/image-disclaimer";
 import { PriceTag, PromoFlag } from "@/components/site/price-tag";
 import { WHATSAPP_NUMBER } from "@/lib/meatlink/config";
 import {
@@ -87,7 +88,7 @@ function ProductPage() {
         ) : (
           <div className="mt-10 grid gap-12 lg:grid-cols-[1.2fr_1fr]">
             <div>
-              <div className="relative mb-8 aspect-[16/10] overflow-hidden bg-ink/5">
+              <div className="relative mb-3 aspect-[16/10] overflow-hidden bg-ink/5">
                 <img
                   src={resolveProductImage(product.image_url, product.name, product.category, product.grade_band, product.cut_type)}
                   alt={product.name}
@@ -102,6 +103,7 @@ function ProductPage() {
                   className="absolute left-0 top-0"
                 />
               </div>
+              <ImageDisclaimer />
               <p className="eyebrow text-crimson">{label(CATEGORY_LABEL_I18N, product.category)}</p>
               <h1 className="mt-4 font-display text-4xl leading-tight text-ink lg:text-5xl">
                 {product.name}
@@ -364,6 +366,7 @@ function RelatedProducts({ category, slug }: { category: ProductCategory; slug: 
                 height={768}
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
+              <ImageDisclaimer className="absolute bottom-2 left-2 z-10 rounded bg-background/80 px-1.5 py-1" />
               <AvailabilityBadge value={row.availability} />
             </div>
             <div className="p-5">
