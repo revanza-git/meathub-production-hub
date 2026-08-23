@@ -88,6 +88,8 @@ export type CatalogFilters = {
   brands?: string[];
   conditions?: string[];
   availability?: string[];
+  grades?: string[];
+  cuts?: string[];
   minPrice?: number | null;
   maxPrice?: number | null;
   sort?: CatalogSort;
@@ -114,6 +116,8 @@ export function useCatalog(filters: CatalogFilters = {}) {
     brands = [],
     conditions = [],
     availability = [],
+    grades = [],
+    cuts = [],
     minPrice = null,
     maxPrice = null,
     sort = "featured",
@@ -131,6 +135,8 @@ export function useCatalog(filters: CatalogFilters = {}) {
       brands,
       conditions,
       availability,
+      grades,
+      cuts,
       minPrice,
       maxPrice,
       sort,
@@ -148,6 +154,8 @@ export function useCatalog(filters: CatalogFilters = {}) {
         _brands: brands.length ? brands : undefined,
         _conditions: conditions.length ? conditions : undefined,
         _availability: availability.length ? availability : undefined,
+        _grades: grades.length ? grades : undefined,
+        _cuts: cuts.length ? cuts : undefined,
         _min_price: minPrice ?? undefined,
         _max_price: maxPrice ?? undefined,
         _sort: sort,
@@ -169,6 +177,8 @@ export type CatalogFacets = {
   conditions: FacetValue[];
   availability: FacetValue[];
   categories: FacetValue[];
+  grades: FacetValue[];
+  cuts: FacetValue[];
   minPrice: number;
   maxPrice: number;
 };
@@ -210,6 +220,8 @@ export function useCatalogFacets(scope: {
         conditions: pick("condition"),
         availability: pick("availability"),
         categories: pick("category"),
+        grades: pick("grade"),
+        cuts: pick("cut"),
 
         minPrice: Math.floor(Number(price?.min_price ?? 0)),
         maxPrice: Math.ceil(Number(price?.max_price ?? 0)),
