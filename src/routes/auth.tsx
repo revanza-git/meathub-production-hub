@@ -124,22 +124,14 @@ function AuthPage() {
 
             <form onSubmit={submit} className="mt-6 grid gap-5">
               {mode === "register" ? (
-                <>
-                  <Field label="Full name" required>
-                    <TextInput
-                      required
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      autoComplete="name"
-                    />
-                  </Field>
-                  <Field label="Account type" required hint="Vendor accounts are reviewed by our team.">
-                    <SelectInput value={role} onChange={(e) => setRole(e.target.value)}>
-                      <option value="buyer">Buyer — I want to order meat</option>
-                      <option value="vendor">Vendor — I supply meat</option>
-                    </SelectInput>
-                  </Field>
-                </>
+                <Field label="Full name" required>
+                  <TextInput
+                    required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    autoComplete="name"
+                  />
+                </Field>
               ) : null}
 
               <Field label="Email" required>
