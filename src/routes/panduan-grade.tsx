@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, SiteLayout } from "@/components/site/site-layout";
+import { ImageDisclaimer } from "@/components/site/image-disclaimer";
 import { useBi } from "@/lib/i18n";
 import { GRADE_BANDS, GRADE_HINT, GRADE_LABEL, type GradeBand } from "@/lib/meatlink/catalog";
 import { GRADE_IMAGES } from "@/lib/meatlink/featured";
