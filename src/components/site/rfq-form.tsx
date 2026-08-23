@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useBi } from "@/lib/i18n";
+import { useBi, useErr } from "@/lib/i18n";
 import { toast } from "sonner";
 import { CheckCircle2, Plus, Trash2 } from "lucide-react";
 import { Field, SelectInput, SubmitButton, TextArea, TextInput } from "./form-kit";
@@ -35,6 +35,7 @@ export function RfqForm() {
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState<RfqInput | null>(null);
   const bi = useBi();
+  const err = useErr();
 
   function set<K extends keyof RfqInput>(key: K, value: RfqInput[K]) {
     setValues((v) => ({ ...v, [key]: value }));
@@ -63,7 +64,7 @@ export function RfqForm() {
     const parsed = rfqSchema.safeParse(values);
     if (!parsed.success) {
       const next: Record<string, string> = {};
-      for (const issue of parsed.error.issues) next[issue.path.join(".")] = issue.message;
+      for (const issue of parsed.error.issues) next[issue.path.join(".")] = err(issue.message);
       setErrors(next);
       toast.error(bi("Lengkapi kolom yang wajib diisi.", "Please complete the required fields."));
       return;

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useBi } from "@/lib/i18n";
+import { useBi, useErr } from "@/lib/i18n";
 import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 import { Field, SubmitButton, TextArea, TextInput } from "./form-kit";
@@ -31,6 +31,7 @@ export function SupplierForm() {
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState<SupplierInput | null>(null);
   const bi = useBi();
+  const err = useErr();
 
   function set<K extends keyof SupplierInput>(key: K, value: SupplierInput[K]) {
     setValues((v) => ({ ...v, [key]: value }));
