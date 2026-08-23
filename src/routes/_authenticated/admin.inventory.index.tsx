@@ -18,8 +18,12 @@ import {
   defaultMarkup,
   weightToKg,
   type InventoryItem,
+  GRADE_BAND_VALUES,
+  guessGradeBand,
+  guessCutType,
+  type GradeBandValue,
 } from "@/lib/meatlink/inventory";
-import { CATEGORIES, type ProductCategory } from "@/lib/meatlink/catalog";
+import { CATEGORIES, GRADE_LABEL, type ProductCategory } from "@/lib/meatlink/catalog";
 import { useBi } from "@/lib/i18n";
 
 
