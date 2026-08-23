@@ -55,6 +55,30 @@ function InsightsPage() {
         )}
       />
 
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            itemListElement: notes.map((n, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              item: {
+                "@type": "BlogPosting",
+                headline: pickLocale(lang, n.title, n.title_en),
+                articleSection: n.category,
+                description: pickLocale(lang, n.body, n.body_en).slice(0, 300),
+                inLanguage: lang === "en" ? "en" : "id-ID",
+                author: { "@type": "Organization", name: "Meatlink.id" },
+                publisher: { "@type": "Organization", name: "Meatlink.id" },
+                mainEntityOfPage: "https://meatlink.id/insights",
+              },
+            })),
+          }),
+        }}
+      />
+
       <section className="bg-bone">
         <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
           <div className="flex items-end justify-between gap-4">

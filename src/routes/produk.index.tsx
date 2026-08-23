@@ -218,6 +218,7 @@ function CatalogPage() {
       />
 
       <section className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
+        <h2 className="mb-6 font-display text-2xl sm:text-3xl">Semua produk</h2>
         <form
           onSubmit={(e) => {
             e.preventDefault();

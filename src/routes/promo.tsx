@@ -46,7 +46,8 @@ function PromoPage() {
       />
 
       <section className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
-        <p className="text-sm text-ash" aria-live="polite">
+        <h2 className="font-display text-2xl sm:text-3xl">Produk promo aktif</h2>
+        <p className="mt-2 text-sm text-ash" aria-live="polite">
           {isLoading ? "Memuat promo…" : `${total} produk sedang promo`}
         </p>
 
