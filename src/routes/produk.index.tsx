@@ -129,6 +129,13 @@ function CatalogPage() {
   };
 
   const { data: facets } = useCatalogFacets({ search: params.q ?? "", category });
+  // Category chip counts must stay scoped to the search term only, never to the
+  // currently selected category, so the tabs reflect the same Prime/Second rules.
+  const { data: categoryFacets } = useCatalogFacets({ search: params.q ?? "", category: null });
+  const categoryCounts = new Map(
+    (categoryFacets?.categories ?? []).map((f) => [f.value, f.count] as const),
+  );
+
   const { data, isLoading, isError } = useCatalog({
     search: params.q ?? "",
     category,
