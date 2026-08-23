@@ -193,7 +193,7 @@
       {
         "name": "create_market_insight",
         "title": "Create market insight",
-        "description": "Write a current, actionable Indonesian beef sourcing note. Always saved as a draft. Requires recent official public Indonesian market observations plus cited structural data; never use Meatlink internal marketplace data.",
+        "description": "Write a current, actionable Indonesian beef sourcing note in both Bahasa Indonesia and English. Always saved as a draft. Requires recent official public Indonesian market observations plus cited structural data; never use Meatlink internal marketplace data.",
         "annotations": {
           "readOnlyHint": false,
           "destructiveHint": false,
@@ -203,16 +203,27 @@
           "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
-            "title": {
+            "title_id": {
               "type": "string",
               "minLength": 1,
               "maxLength": 160,
-              "description": "Short headline for the note."
+              "description": "Short Bahasa Indonesia headline for the note."
             },
-            "body": {
+            "body_id": {
               "type": "string",
               "minLength": 1,
-              "description": "The analysis, 2-5 sentences, concrete and practical."
+              "description": "Bahasa Indonesia analysis, 2-5 sentences, concrete and practical."
+            },
+            "title_en": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "description": "Faithful English translation of title_id."
+            },
+            "body_en": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Faithful English translation of body_id, preserving all figures and caveats."
             },
             "category": {
               "description": "Note category. Defaults to demand.",
@@ -278,8 +289,10 @@
             }
           },
           "required": [
-            "title",
-            "body",
+            "title_id",
+            "body_id",
+            "title_en",
+            "body_en",
             "audience",
             "time_horizon_days",
             "observation_ids"
@@ -290,7 +303,7 @@
       {
         "name": "update_market_insight",
         "title": "Update market insight draft",
-        "description": "Revise an existing Meatlink sourcing note that is still a draft. Publishing is done by a Meatlink admin, not by this tool.",
+        "description": "Revise an existing bilingual Meatlink sourcing note that is still a draft. Publishing is done by a Meatlink admin, not by this tool.",
         "annotations": {
           "readOnlyHint": false,
           "destructiveHint": false,
@@ -305,12 +318,21 @@
               "minLength": 1,
               "description": "Insight id to update."
             },
-            "title": {
+            "title_id": {
               "type": "string",
               "minLength": 1,
               "maxLength": 160
             },
-            "body": {
+            "body_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "title_en": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "body_en": {
               "type": "string",
               "minLength": 1
             },
