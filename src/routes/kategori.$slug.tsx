@@ -81,7 +81,8 @@ function CategoryPageView() {
       </nav>
 
       <section className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
-        <p className="text-sm text-ash" aria-live="polite">
+        <h2 className="font-display text-2xl sm:text-3xl">{category.label}</h2>
+        <p className="mt-2 text-sm text-ash" aria-live="polite">
           {isLoading ? "Memuat katalog…" : `${data?.total ?? 0} produk dalam ${category.label}`}
         </p>
 

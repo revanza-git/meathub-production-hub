@@ -21,7 +21,7 @@ import { CATEGORY_LABEL, useCatalog } from "@/lib/meatlink/catalog";
 import { resolveFeatureImage, resolveProductImage, useFeaturedInventory } from "@/lib/meatlink/featured";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import heroImg from "@/assets/hero-wagyu.jpg";
-import { useLang, type TKey } from "@/lib/i18n";
+import { DICT, useLang, type TKey } from "@/lib/i18n";
 
 const FAQ_JSONLD_KEYS = ["scale", "minimum", "coverage", "price", "top", "sourcing"] as const;
 
@@ -30,10 +30,10 @@ const FAQ_JSONLD = {
   "@type": "FAQPage",
   mainEntity: FAQ_JSONLD_KEYS.map((key) => ({
     "@type": "Question",
-    name: DICTIONARY[`home.faq.${key}.q` as TKey].id,
+    name: DICT[`home.faq.${key}.q` as TKey].id,
     acceptedAnswer: {
       "@type": "Answer",
-      text: DICTIONARY[`home.faq.${key}.a` as TKey].id,
+      text: DICT[`home.faq.${key}.a` as TKey].id,
     },
   })),
 };
@@ -56,6 +56,8 @@ export const Route = createFileRoute("/")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "canonical", href: "https://meatlink.id/" }],
+    scripts: [{ type: "application/ld+json", children: JSON.stringify(FAQ_JSONLD) }],
   }),
   component: HomePage,
 });
