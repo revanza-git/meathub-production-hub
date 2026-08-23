@@ -177,32 +177,36 @@ function ProductPage() {
   );
 }
 
-/** Indicative volume pricing — confirmed by sales, not applied automatically. */
-const VOLUME_TIERS = [
-  { min: 100, off: 0.02 },
-  { min: 300, off: 0.04 },
-  { min: 500, off: 0.06 },
+/**
+ * Indicative pricing per purchase unit. The listed public price is the loaf/retail
+ * level; larger units are cheaper per kg. Internal margin structure is never shown.
+ */
+const UNIT_TIERS = [
+  { label: "Loaf / ritel", note: "Per loaf atau satuan", cut: 0 },
+  { label: "Karton", note: "Kelipatan karton utuh", cut: 15_000 },
+  { label: "Ton", note: "Mulai 1.000 kg", cut: 20_000 },
 ] as const;
 
 function VolumeTiers({ price }: { price: number }) {
   if (!Number.isFinite(price) || price <= 0) return null;
   return (
     <div className="mt-6 border border-line">
-      <p className="eyebrow border-b border-line px-4 py-3 text-ash">Indikasi harga volume</p>
+      <p className="eyebrow border-b border-line px-4 py-3 text-ash">Indikasi harga per satuan beli</p>
       <ul className="divide-y divide-line text-sm">
-        <li className="flex items-center justify-between px-4 py-2.5">
-          <span className="text-ash">&lt; 100 kg</span>
-          <span className="text-ink">{formatIdr(price)} /kg</span>
-        </li>
-        {VOLUME_TIERS.map((t) => (
-          <li key={t.min} className="flex items-center justify-between px-4 py-2.5">
-            <span className="text-ash">&ge; {t.min} kg</span>
-            <span className="text-ink">{formatIdr(Math.round(price * (1 - t.off)))} /kg</span>
+        {UNIT_TIERS.map((t) => (
+          <li key={t.label} className="flex items-center justify-between gap-4 px-4 py-2.5">
+            <span className="text-ash">
+              {t.label}
+              <span className="block text-xs text-ash/70">{t.note}</span>
+            </span>
+            <span className="whitespace-nowrap text-ink">
+              {formatIdr(Math.max(0, price - t.cut))} /kg
+            </span>
           </li>
         ))}
       </ul>
       <p className="border-t border-line px-4 py-3 text-xs text-ash">
-        Indikatif. Harga volume dikonfirmasi tim sales setelah permintaan dikirim.
+        Indikatif. Harga final per satuan beli dikonfirmasi tim sales setelah permintaan dikirim.
       </p>
     </div>
   );
