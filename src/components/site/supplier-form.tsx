@@ -42,7 +42,7 @@ export function SupplierForm() {
     const parsed = supplierSchema.safeParse(values);
     if (!parsed.success) {
       const next: Record<string, string> = {};
-      for (const issue of parsed.error.issues) next[String(issue.path[0])] = issue.message;
+      for (const issue of parsed.error.issues) next[String(issue.path[0])] = err(issue.message);
       setErrors(next);
       toast.error(bi("Lengkapi kolom yang wajib diisi.", "Please complete the required fields."));
       return;
