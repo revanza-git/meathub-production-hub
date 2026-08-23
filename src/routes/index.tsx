@@ -26,7 +26,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Belanja daging premium untuk bisnis: prime cut, second cut, offal dan bone dari importir terverifikasi. Harga publik per kilogram, pengiriman ke seluruh Indonesia.",
+          "Belanja daging premium untuk resto, hotel, katering, toko daging dan reseller: prime cut, second cut, offal dan bone dari importir terverifikasi. Harga per kilogram terbuka, kirim se-Indonesia.",
       },
       { property: "og:title", content: "Meatlink.id — Belanja daging B2B, harga transparan" },
       {
