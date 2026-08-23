@@ -37,6 +37,70 @@ export function guessCategory(name: string): InventoryDraft["category"] {
   return "SECOND_CUT";
 }
 
+export const GRADE_BAND_VALUES = [
+  "UNGRADED",
+  "MB0_2",
+  "MB2_4",
+  "MB4_6",
+  "MB6_9",
+  "MB9_12",
+] as const;
+export type GradeBandValue = (typeof GRADE_BAND_VALUES)[number];
+
+/** Marbling band parsed from the supplier product name (MB7, MB9+, A5 …). */
+export function guessGradeBand(name: string): GradeBandValue {
+  const n = (name || "").toLowerCase();
+  const m = /mb\s*(\d{1,2})/.exec(n);
+  if (m) {
+    const v = Number(m[1]);
+    if (v >= 9) return "MB9_12";
+    if (v >= 6) return "MB6_9";
+    if (v >= 4) return "MB4_6";
+    if (v >= 2) return "MB2_4";
+    return "MB0_2";
+  }
+  if (/a5\b/.test(n)) return "MB9_12";
+  if (/a4\b/.test(n)) return "MB6_9";
+  if (/a3\b/.test(n)) return "MB4_6";
+  return "UNGRADED";
+}
+
+const CUT_RULES: [RegExp, string][] = [
+  [/tomahawk/, "Tomahawk"],
+  [/(op ribs|op rib|ribeye b\/in|rib eye bone)/, "OP Ribs"],
+  [/(tenderloin|tndrloin|tender loin|fillet mignon|filet mignon|chateaubriand)/, "Tenderloin"],
+  [/(striploin|strip loin|ny strip|sirloin|contra fil)/, "Striploin / Sirloin"],
+  [/(ribeye|rib eye|rib-eye|cuberoll|cube roll|bife ancho)/, "Ribeye / Cuberoll"],
+  [/(shortloin|short loin|t-bone|tbone|t bone|porterhouse)/, "Shortloin"],
+  [/(flat iron|flatiron)/, "Flat Iron"],
+  [/(oyster bl|misuji)/, "Oyster Blade"],
+  [/(chk eye roll|chuck eye roll)/, "Chuck Eye Roll"],
+  [/(flap tail|chuck flap)/, "Chuck Flap Tail"],
+  [/(chk roll|chuck roll|chk crest|chuck)/, "Chuck"],
+  [/(short rib|s-rib|chk ribs|rib finger|intercostal)/, "Short Ribs"],
+  [/(short plate|s-plate|plate)/, "Short Plate"],
+  [/brisket/, "Brisket"],
+  [/(picanha|rump cap|d-rump|rump)/, "Rump / Picanha"],
+  [/knuckle/, "Knuckle"],
+  [/(topside|inside)/, "Topside"],
+  [/(silverside|outside|eye round)/, "Silverside"],
+  [/(bolar|blade)/, "Blade / Bolar"],
+  [/(shank|shin|sengkel)/, "Shank"],
+  [/(skirt|hanger|onglet)/, "Skirt"],
+  [/flank/, "Flank"],
+  [/(minced|mince|ground|cl ?\d|trim|patty|burger|slice|shabu|yakiniku)/, "Minced / Prepared"],
+  [/(fat|abura|tallow|suet)/, "Fat"],
+  [/(tongue|lidah|liver|hati|tripe|babat|heart|jantung|kidney|usus|oxtail|buntut|offal)/, "Offal"],
+  [/(bone|tulang|marrow|sumsum)/, "Bone"],
+];
+
+/** Specific cut derived from the product name; mirrors ml_guess_cut_type in SQL. */
+export function guessCutType(name: string): string {
+  const n = (name || "").toLowerCase();
+  for (const [re, label] of CUT_RULES) if (re.test(n)) return label;
+  return "Lainnya";
+}
+
 
 export const ORIGINS = ["Australia", "Japan", "USA", "Canada", "Lokal Premium"] as const;
 export const CONDITIONS = ["FRZ", "CHL"] as const;
