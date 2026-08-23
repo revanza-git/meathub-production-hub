@@ -10,6 +10,8 @@ export type InventoryDraft = {
   avg_weight_text: string | null;
   avg_weight_kg: number | null;
   category: "PRIME_CUT" | "SECOND_CUT" | "OFFAL" | "BONE";
+  grade_band: "UNGRADED" | "MB0_2" | "MB2_4" | "MB4_6" | "MB6_9" | "MB9_12";
+  cut_type: string;
   sale_price_idr: number;
   markup_idr: number;
   promo_price_idr: number | null;
@@ -212,6 +214,8 @@ export const IMPORT_COLUMNS = [
   "name",
   "condition",
   "category",
+  "grade_band",
+  "cut_type",
   "avg_weight",
   "sale_price_idr",
   "markup_idr",
@@ -221,9 +225,9 @@ export const IMPORT_COLUMNS = [
 ] as const;
 
 export const IMPORT_SAMPLE_ROWS = [
-  ["Australia", "AACO - DARLING DOWNS", "CHK FLAP TAIL WGY MB7", "FRZ", "PRIME_CUT", "2KG", 1000000, 60000, "", "", 417.17],
-  ["Japan", "KIWAMI", "BOLAR BLD WGY A5", "FRZ", "PRIME_CUT", "5KG", 990000, 150000, 1050000, "2026-12-31", 44.1],
-  ["USA", "SWIFT", "S-PLATE CHO AGS", "", "SECOND_CUT", "5KG", 160000, 60000, "", "", 46651.3],
+  ["Australia", "AACO - DARLING DOWNS", "CHK FLAP TAIL WGY MB7", "FRZ", "PRIME_CUT", "MB6_9", "Chuck Flap Tail", "2KG", 1000000, 60000, "", "", 417.17],
+  ["Japan", "KIWAMI", "BOLAR BLD WGY A5", "FRZ", "PRIME_CUT", "MB9_12", "Blade / Bolar", "5KG", 990000, 150000, 1050000, "2026-12-31", 44.1],
+  ["USA", "SWIFT", "S-PLATE CHO AGS", "", "SECOND_CUT", "UNGRADED", "Short Plate", "5KG", 160000, 60000, "", "", 46651.3],
 ];
 
 
@@ -291,6 +295,11 @@ export function normaliseRow(
     ? (categoryRaw as InventoryDraft["category"])
     : guessCategory(name);
   const weightText = get("avg_weight") || null;
+  const gradeRaw = get("grade_band").toUpperCase().replace(/[\s.\-]+/g, "_");
+  const gradeBand = (GRADE_BAND_VALUES as readonly string[]).includes(gradeRaw)
+    ? (gradeRaw as InventoryDraft["grade_band"])
+    : guessGradeBand(name);
+  const cutType = get("cut_type") || guessCutType(name);
 
   return {
     row: rowNumber,
@@ -300,6 +309,8 @@ export function normaliseRow(
       name,
       condition,
       category,
+      grade_band: gradeBand,
+      cut_type: cutType,
       avg_weight_text: weightText,
       avg_weight_kg: weightToKg(weightText),
       sale_price_idr: price,
