@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { PageHero, SiteLayout } from "@/components/site/site-layout";
+import { ImageDisclaimer } from "@/components/site/image-disclaimer";
 import { resolveFeatureImage, useFeaturedInventory } from "@/lib/meatlink/featured";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { FALLBACK_NOTES, usePublishedInsights } from "@/lib/meatlink/insights";
@@ -143,14 +144,17 @@ function InsightsPage() {
                   key={item.id}
                   className="w-[85%] shrink-0 snap-start border border-line bg-card sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]"
                 >
-                  <img
-                    src={resolveFeatureImage(item.image_url)}
-                    alt={item.name}
-                    loading="lazy"
-                    width={1200}
-                    height={900}
-                    className="h-48 w-full object-cover"
-                  />
+                  <div className="relative">
+                    <img
+                      src={resolveFeatureImage(item.image_url)}
+                      alt={item.name}
+                      loading="lazy"
+                      width={1200}
+                      height={900}
+                      className="h-48 w-full object-cover"
+                    />
+                    <ImageDisclaimer className="absolute bottom-2 left-2 z-10 rounded bg-background/80 px-1.5 py-1" />
+                  </div>
                   <div className="p-6">
                     <p className="eyebrow text-crimson">{item.origin}</p>
                     <h3 className="mt-3 font-display text-xl leading-snug">{item.name}</h3>
