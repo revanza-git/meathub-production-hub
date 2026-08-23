@@ -26,7 +26,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Belanja daging premium untuk bisnis: prime cut, second cut, offal dan bone dari importir terverifikasi. Harga publik per kilogram, pengiriman ke seluruh Indonesia.",
+          "Belanja daging premium untuk resto, hotel, katering, toko daging dan reseller: prime cut, second cut, offal dan bone dari importir terverifikasi. Harga per kilogram terbuka, kirim se-Indonesia.",
       },
       { property: "og:title", content: "Meatlink.id — Belanja daging B2B, harga transparan" },
       {
@@ -64,8 +64,8 @@ const BENEFITS = [
   },
   {
     icon: Users,
-    title: "Pemesanan untuk bisnis",
-    body: "Riwayat pesanan, pesan ulang sekali klik, dan harga kontrak untuk pembeli rutin.",
+    title: "Cocok untuk semua skala",
+    body: "Dari resto, katering dan hotel sampai toko daging dan reseller — riwayat pesanan, pesan ulang sekali klik, dan harga kontrak untuk pembeli rutin.",
   },
   {
     icon: ClipboardList,
@@ -105,13 +105,14 @@ function CommercialHero() {
         <div className="max-w-2xl fade-in-up">
           <p className="eyebrow text-crimson">Better Meat | Better Connections</p>
           <h1 className="mt-5 font-display text-4xl leading-[1.05] sm:text-5xl">
-            Daging premium untuk bisnis Anda,
+            Daging premium untuk setiap skala usaha,
             <br />
             <span className="italic text-bone/85">siap pesan hari ini.</span>
           </h1>
           <p className="mt-5 max-w-xl text-sm leading-relaxed text-bone/70">
             Prime cut, second cut, offal dan bone dari importir terverifikasi. Harga per kilogram
-            ditampilkan terbuka, stok diperbarui setiap hari, pengiriman ke seluruh Indonesia.
+            terbuka, stok diperbarui setiap hari, pengiriman ke seluruh Indonesia — untuk resto,
+            hotel, katering, toko daging maupun reseller.
           </p>
 
           <CatalogSearch dark className="mt-8 max-w-xl" />
@@ -306,6 +307,11 @@ function Benefits() {
         <h2 className="mt-6 max-w-3xl font-display text-3xl sm:text-4xl lg:text-5xl">
           Dibangun untuk pembelian bisnis, terbuka untuk berbagai skala.
         </h2>
+        <p className="mt-5 max-w-2xl text-sm leading-relaxed text-bone/65">
+          Pembelian rutin dalam volume besar maupun order kecil untuk toko dan reseller berjalan di
+          alur yang sama: harga jelas, stok nyata, dokumen lengkap.
+        </p>
+
 
         <div className="mt-16 grid border border-white/10 sm:grid-cols-2 lg:grid-cols-3">
           {BENEFITS.map((b) => (
