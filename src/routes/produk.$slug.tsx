@@ -5,7 +5,11 @@ import { AddToCart } from "@/components/site/add-to-cart";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
 import { PriceTag, PromoFlag } from "@/components/site/price-tag";
 import { WHATSAPP_NUMBER } from "@/lib/meatlink/config";
-import { formatIdr } from "@/lib/meatlink/inventory";
+import {
+  formatIdr,
+  unitPriceFromPublic,
+  type PurchaseUnit,
+} from "@/lib/meatlink/inventory";
 import { resolveProductImage } from "@/lib/meatlink/featured";
 import {
   AVAILABILITY_LABEL,
