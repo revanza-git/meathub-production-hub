@@ -130,12 +130,13 @@ function useStatusUpdater(table: "quote_requests" | "supplier_applications", key
       toast.error(error.message);
       return;
     }
-    toast.success("Status updated");
+    toast.success(bi("Status diperbarui", "Status updated"));
     void qc.invalidateQueries({ queryKey: [key] });
   };
 }
 
 function QuoteRequests() {
+  const bi = useBi();
   const { data, isLoading } = useQuery({
     queryKey: ["admin-quote-requests"],
     queryFn: async () => {
@@ -149,11 +150,11 @@ function QuoteRequests() {
   });
   const setStatus = useStatusUpdater("quote_requests", "admin-quote-requests");
 
-  if (isLoading) return <p className="text-sm text-ash">Loading…</p>;
+  if (isLoading) return <p className="text-sm text-ash">{bi("Memuat…", "Loading…")}</p>;
   if (!data?.length)
     return (
       <Panel className="p-8">
-        <p className="text-sm text-ash">No quote requests yet.</p>
+        <p className="text-sm text-ash">{bi("Belum ada permintaan penawaran.", "No quote requests yet.")}</p>
       </Panel>
     );
 
@@ -169,7 +170,7 @@ function QuoteRequests() {
                 {r.email ? ` · ${r.email}` : ""}
               </p>
               <p className="mt-1 text-xs text-ash">
-                {formatDate(r.created_at)} · Deliver to {r.delivery_location} · Needed{" "}
+                {formatDate(r.created_at)} · {bi("Kirim ke", "Deliver to")} {r.delivery_location} · {bi("Dibutuhkan", "Needed")}{" "}
                 {r.required_delivery_date}
               </p>
             </div>
@@ -212,6 +213,7 @@ function QuoteRequests() {
 }
 
 function SupplierApplications() {
+  const bi = useBi();
   const { data, isLoading } = useQuery({
     queryKey: ["admin-supplier-applications"],
     queryFn: async () => {
@@ -225,11 +227,11 @@ function SupplierApplications() {
   });
   const setStatus = useStatusUpdater("supplier_applications", "admin-supplier-applications");
 
-  if (isLoading) return <p className="text-sm text-ash">Loading…</p>;
+  if (isLoading) return <p className="text-sm text-ash">{bi("Memuat…", "Loading…")}</p>;
   if (!data?.length)
     return (
       <Panel className="p-8">
-        <p className="text-sm text-ash">No supplier applications yet.</p>
+        <p className="text-sm text-ash">{bi("Belum ada aplikasi pemasok.", "No supplier applications yet.")}</p>
       </Panel>
     );
 
@@ -263,11 +265,11 @@ function SupplierApplications() {
           </div>
           <dl className="mt-5 grid gap-2 border-t border-line pt-4 text-sm sm:grid-cols-2">
             {[
-              ["Categories", s.product_categories],
-              ["Origins", s.origins],
-              ["Coverage", s.delivery_coverage],
-              ["MOQ", s.moq],
-              ["Payment terms", s.payment_terms],
+              [bi("Kategori", "Categories"), s.product_categories],
+              [bi("Asal", "Origins"), s.origins],
+              [bi("Jangkauan", "Coverage"), s.delivery_coverage],
+              [bi("MOQ", "MOQ"), s.moq],
+              [bi("Termin pembayaran", "Payment terms"), s.payment_terms],
             ].map(([label, value]) =>
               value ? (
                 <div key={label as string}>
