@@ -130,9 +130,11 @@ export type CatalogFacets = {
   brands: FacetValue[];
   conditions: FacetValue[];
   availability: FacetValue[];
+  categories: FacetValue[];
   minPrice: number;
   maxPrice: number;
 };
+
 
 /** Available filter options (with counts) for the current search/category scope. */
 export function useCatalogFacets(scope: {
