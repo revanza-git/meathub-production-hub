@@ -462,12 +462,14 @@ function FacetGroup({
   selected,
   onToggle,
   collapsibleAfter,
+  hint,
 }: {
   title: string;
   options: (FacetValue & { label?: string })[];
   selected: string[];
   onToggle: (value: string) => void;
   collapsibleAfter?: number;
+  hint?: React.ReactNode;
 }) {
   const [expanded, setExpanded] = useState(false);
   if (options.length === 0) return null;
@@ -477,6 +479,7 @@ function FacetGroup({
   return (
     <fieldset>
       <legend className="eyebrow mb-3 text-ink">{title}</legend>
+      {hint ? <p className="-mt-1 mb-3 text-xs text-ash">{hint}</p> : null}
       <div className="space-y-2">
         {visible.map((opt) => (
           <label key={opt.value} className="flex cursor-pointer items-center gap-2 text-sm text-ash">
