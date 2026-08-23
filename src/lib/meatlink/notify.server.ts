@@ -81,7 +81,6 @@ export async function sendOrderEmail(orderNo: string, event: OrderEvent) {
     .maybeSingle();
 
   if (!order) return { sent: false, reason: "order_not_found" };
-  if (!order.email) return { sent: false, reason: "no_email" };
 
   const { data: items } = await supabaseAdmin
     .from("storefront_order_items")
@@ -89,12 +88,46 @@ export async function sendOrderEmail(orderNo: string, event: OrderEvent) {
     .eq("order_id", order.id);
 
   const row = order as OrderRow;
+  const lines = ((items ?? []) as ItemRow[]).map((i) => ({
+    name: i.product_name,
+    qty: String(Number(i.qty_kg)),
+    amount: idr(Number(i.line_total_idr)),
+  }));
   const { subject, heading, body } = copyFor(event, row);
   const trackUrl = row.access_token
     ? `${SITE}/pesanan/${row.order_no}?t=${row.access_token}`
     : `${SITE}/pesanan/${row.order_no}`;
 
+  // Internal ops copy for the events the team must act on.
+  if (event === "placed" || event === "paid") {
+    const { sendOpsAlert } = await import("./ops-notify.server");
+    await sendOpsAlert(
+      {
+        subject:
+          event === "placed"
+            ? `Pesanan baru ${row.order_no} — Meatlink`
+            : `Pembayaran masuk ${row.order_no} — Meatlink`,
+        heading: event === "placed" ? "Pesanan baru masuk" : "Pembayaran dikonfirmasi",
+        intro: `${row.buyer_name} — ${idr(Number(row.total_idr))} (${row.payment_method ?? "metode tidak diketahui"})`,
+        stats: [
+          { label: "No. pesanan", value: row.order_no },
+          { label: "Pembeli", value: row.buyer_name },
+          { label: "Email pembeli", value: row.email ?? "-" },
+          { label: "Total", value: idr(Number(row.total_idr)) },
+        ],
+        listTitle: "Item",
+        list: lines.map((l) => ({ label: `${l.name} × ${l.qty} kg`, value: l.amount })),
+        ctaUrl: `${SITE}/admin/storefront-orders`,
+        ctaLabel: "Buka pesanan",
+      },
+      `ops-order-${row.id}-${event}`,
+    ).catch(() => undefined);
+  }
+
+  if (!order.email) return { sent: false, reason: "no_email" };
+
   const result = await sendTemplateEmail("order-status", row.email!, {
+
     idempotencyKey: `order-status-${row.id}-${event}`,
     templateData: {
       subject,
