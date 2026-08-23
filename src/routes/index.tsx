@@ -301,16 +301,22 @@ function ShopByOrigin() {
 function Benefits() {
   return (
     <section className="bg-noir text-bone">
-      <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
-        <p className="eyebrow text-crimson">Kenapa Meatlink</p>
-        <h2 className="mt-4 max-w-2xl font-display text-3xl sm:text-4xl">
+      <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+        <p className="eyebrow text-crimson">KENAPA MEATLINK</p>
+        <h2 className="mt-6 max-w-3xl font-display text-3xl sm:text-4xl lg:text-5xl">
           Dibangun untuk pembelian bisnis, bukan ritel.
         </h2>
-        <div className="mt-12 grid gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+
+        <div className="mt-16 grid border border-white/10 sm:grid-cols-2 lg:grid-cols-3">
           {BENEFITS.map((b) => (
-            <div key={b.title} className="bg-noir p-7">
-              <b.icon className="h-6 w-6 text-crimson" aria-hidden="true" />
-              <h3 className="mt-5 font-display text-xl">{b.title}</h3>
+            <div
+              key={b.title}
+              className="group border-b border-white/10 p-8 last:border-b-0 sm:[&:nth-child(odd)]:border-r lg:[&:nth-child(odd)]:border-r-0 lg:[&:not(:nth-child(3n))]:border-r"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-crimson/40 text-crimson">
+                <b.icon className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
+              </div>
+              <h3 className="mt-6 font-display text-xl">{b.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-bone/65">{b.body}</p>
             </div>
           ))}
@@ -319,6 +325,7 @@ function Benefits() {
     </section>
   );
 }
+
 
 function SpecialSourcingCta() {
   return (
