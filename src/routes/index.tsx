@@ -86,6 +86,7 @@ function HomePage() {
       <ShopByOrigin />
       <Benefits />
       <SpecialSourcingCta />
+      <Faq />
       <MarketInsights />
     </SiteLayout>
   );
