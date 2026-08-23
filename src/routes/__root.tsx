@@ -20,17 +20,29 @@ import { trackPageView } from "@/lib/analytics";
 
 
 function NotFoundComponent() {
+  const bi = useBi();
   return (
     <div className="flex min-h-screen items-center justify-center bg-noir px-4 text-bone">
       <div className="max-w-md text-center">
         <h1 className="font-display text-7xl">404</h1>
-        <h2 className="mt-4 font-display text-xl">Page not found</h2>
+        <h2 className="mt-4 font-display text-xl">
+          {bi("Halaman tidak ditemukan", "Page not found")}
+        </h2>
         <p className="mt-2 text-sm text-bone/60">
-          The page you are looking for doesn't exist or has been moved.
+          {bi(
+            "Halaman yang Anda cari tidak tersedia atau sudah dipindahkan.",
+            "The page you are looking for doesn't exist or has been moved.",
+          )}
         </p>
-        <div className="mt-6">
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link to="/" className="eyebrow inline-flex bg-crimson px-5 py-3 text-bone">
-            Back to home
+            {bi("Kembali ke beranda", "Back to home")}
+          </Link>
+          <Link
+            to="/produk"
+            className="eyebrow inline-flex border border-bone/30 px-5 py-3 text-bone"
+          >
+            {bi("Lihat produk", "Browse products")}
           </Link>
         </div>
       </div>
