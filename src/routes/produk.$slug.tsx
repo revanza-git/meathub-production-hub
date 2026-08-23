@@ -182,10 +182,10 @@ function ProductPage() {
  * level; larger units are cheaper per kg. Internal margin structure is never shown.
  */
 const UNIT_TIERS = [
-  { label: "Loaf / ritel", note: "Per loaf atau satuan", cut: 0 },
-  { label: "Karton", note: "Kelipatan karton utuh", cut: 15_000 },
-  { label: "Ton", note: "Mulai 1.000 kg", cut: 20_000 },
-] as const;
+  { unit: "loaf", label: "Loaf / ritel", note: "Per loaf atau satuan" },
+  { unit: "carton", label: "Karton", note: "Kelipatan karton utuh" },
+  { unit: "ton", label: "Ton", note: "Mulai 1.000 kg" },
+] as const satisfies readonly { unit: PurchaseUnit; label: string; note: string }[];
 
 function VolumeTiers({ price }: { price: number }) {
   if (!Number.isFinite(price) || price <= 0) return null;
