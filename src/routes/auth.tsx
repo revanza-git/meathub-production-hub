@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { SiteLayout } from "@/components/site/site-layout";
 import { Field, SelectInput, TextInput } from "@/components/site/form-kit";
 import { supabase } from "@/integrations/supabase/client";
+import { notifyNewRegistration } from "@/lib/meatlink/account.functions";
+
 import { homeForRole, useAuth } from "@/hooks/use-auth";
 
 function safeNext(value: unknown): string | undefined {
@@ -66,7 +68,9 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        void notifyNewRegistration({ data: { email } }).catch(() => undefined);
         toast.success("Account created. You can sign in now.");
+
         setMode("signin");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
