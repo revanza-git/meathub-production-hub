@@ -41,6 +41,10 @@ export const DICT = {
   "header.openMenu": { id: "Buka menu", en: "Open menu" },
   "header.closeMenu": { id: "Tutup menu", en: "Close menu" },
   "lang.label": { id: "Bahasa", en: "Language" },
+  "image.disclaimer": {
+    id: "Gambar ilustrasi. Produk asli dapat sedikit berbeda.",
+    en: "Illustrative image. Actual product may vary slightly.",
+  },
 
   // --- footer ---------------------------------------------------------------
   "footer.helpTitle": {

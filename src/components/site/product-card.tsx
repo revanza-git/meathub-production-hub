@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
 import { PriceTag, PromoFlag } from "@/components/site/price-tag";
+import { ImageDisclaimer } from "@/components/site/image-disclaimer";
 import { resolveProductImage } from "@/lib/meatlink/featured";
 import { CATEGORY_LABEL, gradeLabel, type CatalogRow } from "@/lib/meatlink/catalog";
 
@@ -25,7 +26,7 @@ export function ProductCard({ row, headingLevel = "h2" }: { row: CatalogRow; hea
           height={768}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <AvailabilityBadge value={row.availability} />
+        <ImageDisclaimer className="absolute bottom-2 left-2 z-10 rounded bg-background/80 px-1.5 py-1" />
         <PromoFlag
           price={row.public_price_idr}
           listPrice={row.list_price_idr}
