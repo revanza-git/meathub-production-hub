@@ -280,11 +280,14 @@ export function normaliseRow(
     errors.push(`Row ${rowNumber}: invalid sale price`);
     return null;
   }
-  const qty = Number(get("qty_on_hand_kg").replace(/[^\d.-]/g, "") || 0);
+  const qtyRaw = get("qty_on_hand_kg").replace(/[^\d.-]/g, "");
+  const fallbackQty = options.defaultQtyKg ?? 0;
+  const qty = qtyRaw === "" ? fallbackQty : Number(qtyRaw);
   if (!Number.isFinite(qty) || qty < 0) {
     errors.push(`Row ${rowNumber}: invalid quantity`);
     return null;
   }
+
   const brand = get("brand");
   const markupRaw = get("markup_idr").replace(/[^\d.-]/g, "");
   const markup = markupRaw === "" ? defaultMarkup(name, brand) : Number(markupRaw);
