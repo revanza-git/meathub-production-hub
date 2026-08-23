@@ -68,7 +68,9 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        void notifyNewRegistration({ data: { email } }).catch(() => undefined);
         toast.success("Account created. You can sign in now.");
+
         setMode("signin");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
