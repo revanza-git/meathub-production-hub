@@ -31,6 +31,8 @@ export function DeliveryPanel({
   onConfirmed,
 }: Props) {
   const bi = useBi();
+  const fmt = useFormat();
+  const fmtDay = fmt.longDate;
   const [saving, setSaving] = useState(false);
   const hasInfo = Boolean(courier || trackingNo || etaDate || shippedAt || deliveredAt);
   if (!hasInfo && status !== "SHIPPED") return null;

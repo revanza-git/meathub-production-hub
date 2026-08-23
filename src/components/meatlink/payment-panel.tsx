@@ -4,7 +4,7 @@ import { Copy, Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 import { createOrderPayment, type PaymentInstruction } from "@/lib/meatlink/payment.functions";
-import { useBi } from "@/lib/i18n";
+import { useBi, useFormat } from "@/lib/i18n";
 
 const VA_BANKS: { value: string; label: string }[] = [
   { value: "bag", label: "Bank Artha Graha" },
@@ -32,6 +32,7 @@ type Props = {
 
 export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }: Props) {
   const bi = useBi();
+  const fmt = useFormat();
   const create = useServerFn(createOrderPayment);
   const [bank, setBank] = useState(existing.channel || "bag");
   const [pending, setPending] = useState(false);
