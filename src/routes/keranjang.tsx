@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { SiteLayout, PageHero } from "@/components/site/site-layout";
-import { formatIdr } from "@/lib/meatlink/inventory";
+
 import { PAY_METHODS, useCart, type PayMethod } from "@/lib/meatlink/cart";
-import { useBi, useLabel, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
+import { useBi, useLabel, useFormat, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyOrderEventPublic } from "@/lib/meatlink/notify.functions";
 import { listAddresses, saveAddress, type BuyerAddress } from "@/lib/meatlink/addresses";
@@ -49,6 +49,7 @@ export const Route = createFileRoute("/keranjang")({
 
 function CartPage() {
   const bi = useBi();
+  const fmt = useFormat();
   const label = useLabel();
   const { lines, setQty, remove, clear, subtotal } = useCart();
   const navigate = useNavigate();
@@ -264,7 +265,7 @@ function CartPage() {
                   <li key={l.slug} className="flex flex-wrap items-center gap-4 py-5">
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-ink">{l.name}</p>
-                      <p className="mt-1 text-xs text-ash">{formatIdr(l.price)} /kg</p>
+                      <p className="mt-1 text-xs text-ash">{fmt.money(l.price)} /kg</p>
                     </div>
                     <div className="flex items-center border border-line">
                       <input
@@ -279,7 +280,7 @@ function CartPage() {
                       <span className="px-3 text-xs text-ash">{bi("kg", "kg")}</span>
                     </div>
                     <p className="w-32 text-right text-sm text-ink">
-                      {formatIdr(l.price * l.qty)}
+                      {fmt.money(l.price * l.qty)}
                     </p>
                     <button
                       type="button"
@@ -370,18 +371,18 @@ function CartPage() {
               <h2 className="eyebrow text-ash">{bi("Ringkasan", "Summary")}</h2>
               <div className="mt-4 flex items-baseline justify-between">
                 <span className="text-sm text-ash">{bi("Subtotal", "Subtotal")}</span>
-                <span className="font-display text-3xl text-ink">{formatIdr(subtotal)}</span>
+                <span className="font-display text-3xl text-ink">{fmt.money(subtotal)}</span>
               </div>
               {applied ? (
                 <>
                   <div className="mt-3 flex items-baseline justify-between text-sm">
                     <span className="text-ash">{bi("Promo", "Promo")} {applied.code}</span>
-                    <span className="text-crimson">-{formatIdr(applied.discount)}</span>
+                    <span className="text-crimson">-{fmt.money(applied.discount)}</span>
                   </div>
                   <div className="mt-3 flex items-baseline justify-between border-t border-line pt-3">
                     <span className="text-sm text-ash">{bi("Total", "Total")}</span>
                     <span className="font-display text-2xl text-ink">
-                      {formatIdr(Math.max(subtotal - applied.discount, 0))}
+                      {fmt.money(Math.max(subtotal - applied.discount, 0))}
                     </span>
                   </div>
                 </>
@@ -438,8 +439,8 @@ function CartPage() {
               {credit?.status === "APPROVED" ? (
                 <p className="mt-4 border border-line bg-ink/[0.03] p-4 text-xs text-ash">
                   {bi(
-                    `Limit tempo tersedia ${formatIdr(Number(credit.available_idr))} dari ${formatIdr(Number(credit.limit_idr))} · jatuh tempo ${credit.term_days} hari.`,
-                    `Available credit ${formatIdr(Number(credit.available_idr))} of ${formatIdr(Number(credit.limit_idr))} · due in ${credit.term_days} days.`,
+                    `Limit tempo tersedia ${fmt.money(Number(credit.available_idr))} dari ${fmt.money(Number(credit.limit_idr))} · jatuh tempo ${credit.term_days} hari.`,
+                    `Available credit ${fmt.money(Number(credit.available_idr))} of ${fmt.money(Number(credit.limit_idr))} · due in ${credit.term_days} days.`,
                   )}
                 </p>
               ) : null}

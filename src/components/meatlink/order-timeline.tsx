@@ -1,4 +1,4 @@
-import { useBi, useLabel, ORDER_STATUS_LABEL_I18N } from "@/lib/i18n";
+import { useBi, useLabel, useFormat, ORDER_STATUS_LABEL_I18N } from "@/lib/i18n";
 
 export type TimelineEvent = {
   to_status: string;
@@ -7,19 +7,10 @@ export type TimelineEvent = {
   created_at: string;
 };
 
-function formatStamp(value: string) {
-  return new Date(value).toLocaleString("id-ID", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
 export function OrderTimeline({ events }: { events: TimelineEvent[] }) {
   const bi = useBi();
   const label = useLabel();
+  const fmt = useFormat();
   if (!events.length) return null;
   return (
     <div className="mt-8 border border-line p-6">
@@ -39,7 +30,7 @@ export function OrderTimeline({ events }: { events: TimelineEvent[] }) {
                 <p className="text-sm text-ink">
                   {label(ORDER_STATUS_LABEL_I18N, e.to_status)}
                 </p>
-                <p className="mt-1 text-xs text-ash">{formatStamp(e.created_at)}</p>
+                <p className="mt-1 text-xs text-ash">{fmt.dateTime(e.created_at)}</p>
                 {e.note ? <p className="mt-1 text-xs italic text-ash">{e.note}</p> : null}
               </div>
             </li>

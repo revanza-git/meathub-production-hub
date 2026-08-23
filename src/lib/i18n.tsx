@@ -226,7 +226,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
+      const cookie = document.cookie
+        .split("; ")
+        .find((c) => c.startsWith(`${STORAGE_KEY}=`))
+        ?.split("=")[1];
+      const stored = window.localStorage.getItem(STORAGE_KEY) ?? cookie;
       if (stored === "en" || stored === "id") setLangState(stored);
     } catch {
       /* storage unavailable */
@@ -241,6 +245,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLangState(next);
     try {
       window.localStorage.setItem(STORAGE_KEY, next);
+      document.cookie = `${STORAGE_KEY}=${next}; path=/; max-age=31536000; samesite=lax`;
     } catch {
       /* storage unavailable */
     }
@@ -365,4 +370,76 @@ export function formatValidationError(lang: Lang, message: string): string {
 export function useErr() {
   const { lang } = useContext(LangContext);
   return useCallback((message: string) => formatValidationError(lang, message), [lang]);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Locale-aware number / currency / date formatting                            */
+/* -------------------------------------------------------------------------- */
+
+export function localeTag(lang: Lang) {
+  return lang === "en" ? "en-GB" : "id-ID";
+}
+
+export function formatNumberLocale(lang: Lang, value: number | string, maximumFractionDigits = 0) {
+  const n = typeof value === "string" ? Number(value) : value;
+  if (!Number.isFinite(n)) return "-";
+  return new Intl.NumberFormat(localeTag(lang), { maximumFractionDigits }).format(n);
+}
+
+export function formatMoneyLocale(lang: Lang, value: number | string) {
+  const n = typeof value === "string" ? Number(value) : value;
+  if (!Number.isFinite(n) || n <= 0) return lang === "en" ? "On request" : "Atas permintaan";
+  return lang === "en"
+    ? `IDR ${formatNumberLocale("en", n)}`
+    : `Rp ${formatNumberLocale("id", n)}`;
+}
+
+export function formatQtyLocale(lang: Lang, value: number | string) {
+  return `${formatNumberLocale(lang, value, 2)} kg`;
+}
+
+export function formatDateLocale(lang: Lang, value: string | Date) {
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return "-";
+  return d.toLocaleDateString(localeTag(lang), {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+export function formatLongDateLocale(lang: Lang, value: string | Date) {
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return "-";
+  return d.toLocaleDateString(localeTag(lang), { day: "2-digit", month: "long", year: "numeric" });
+}
+
+export function formatDateTimeLocale(lang: Lang, value: string | Date) {
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return "-";
+  return d.toLocaleString(localeTag(lang), {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+/** Hook returning locale-bound formatters that follow the ID/EN toggle. */
+export function useFormat() {
+  const { lang } = useContext(LangContext);
+  return useMemo(
+    () => ({
+      lang,
+      locale: localeTag(lang),
+      money: (v: number | string) => formatMoneyLocale(lang, v),
+      number: (v: number | string, digits?: number) => formatNumberLocale(lang, v, digits),
+      qty: (v: number | string) => formatQtyLocale(lang, v),
+      date: (v: string | Date) => formatDateLocale(lang, v),
+      longDate: (v: string | Date) => formatLongDateLocale(lang, v),
+      dateTime: (v: string | Date) => formatDateTimeLocale(lang, v),
+    }),
+    [lang],
+  );
 }

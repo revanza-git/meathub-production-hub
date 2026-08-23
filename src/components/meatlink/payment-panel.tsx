@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Copy, Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
-import { formatIdr } from "@/lib/meatlink/inventory";
+
 import { createOrderPayment, type PaymentInstruction } from "@/lib/meatlink/payment.functions";
-import { useBi } from "@/lib/i18n";
+import { useBi, useFormat } from "@/lib/i18n";
 
 const VA_BANKS: { value: string; label: string }[] = [
   { value: "bag", label: "Bank Artha Graha" },
@@ -32,6 +32,7 @@ type Props = {
 
 export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }: Props) {
   const bi = useBi();
+  const fmt = useFormat();
   const create = useServerFn(createOrderPayment);
   const [bank, setBank] = useState(existing.channel || "bag");
   const [pending, setPending] = useState(false);
@@ -76,7 +77,7 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
         {method === "QRIS" ? bi("Bayar dengan QRIS", "Pay with QRIS") : bi("Bayar dengan Virtual Account", "Pay with Virtual Account")}
       </h2>
       <p className="mt-3 text-sm text-ink/80">
-        {bi("Total tagihan", "Total due")} <span className="font-medium text-ink">{formatIdr(total)}</span>.{" "}
+        {bi("Total tagihan", "Total due")} <span className="font-medium text-ink">{fmt.money(total)}</span>.{" "}
         {bi(
           "Status pesanan diperbarui otomatis setelah pembayaran terverifikasi.",
           "The order status updates automatically once payment is verified.",
@@ -142,7 +143,7 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
           </div>
           {info.expiresAt ? (
             <p className="mt-2 text-xs text-ash">
-              {bi("Berlaku sampai", "Valid until")} {new Date(info.expiresAt).toLocaleString("id-ID")}
+              {bi("Berlaku sampai", "Valid until")} {fmt.dateTime(info.expiresAt)}
             </p>
           ) : null}
         </div>
@@ -157,7 +158,7 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
           />
           {info.expiresAt ? (
             <p className="mt-2 text-xs text-ash">
-              {bi("Berlaku sampai", "Valid until")} {new Date(info.expiresAt).toLocaleString("id-ID")}
+              {bi("Berlaku sampai", "Valid until")} {fmt.dateTime(info.expiresAt)}
             </p>
           ) : null}
         </div>
