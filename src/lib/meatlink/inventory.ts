@@ -72,6 +72,57 @@ export function publicPrice(
   return b + (Number.isFinite(m) ? m : 0);
 }
 
+/**
+ * Internal margin per kg by purchase unit. Loaf/retail is the reference level used
+ * for the listed public price; ton and carton carry a thinner margin.
+ * These numbers are internal — never render them to buyers.
+ */
+export const UNIT_MARGIN_IDR = {
+  ton: 40000,
+  carton: 45000,
+  loaf: 60000,
+} as const;
+
+export type PurchaseUnit = keyof typeof UNIT_MARGIN_IDR;
+
+/**
+ * Margin actually applied for a unit. Products with a custom markup (e.g. A5 at 150k)
+ * keep their premium: the unit spread is applied relative to the loaf reference.
+ */
+export function unitMargin(
+  markup: number | string | null | undefined,
+  unit: PurchaseUnit,
+): number {
+  const m = Number(markup ?? UNIT_MARGIN_IDR.loaf);
+  const loaf = Number.isFinite(m) && m > 0 ? m : UNIT_MARGIN_IDR.loaf;
+  const spread = UNIT_MARGIN_IDR.loaf - UNIT_MARGIN_IDR[unit];
+  return Math.max(0, loaf - spread);
+}
+
+/** Public price per kg for a purchase unit = base cost + unit margin. */
+export function unitPrice(
+  base: number | string,
+  markup: number | string | null | undefined,
+  unit: PurchaseUnit,
+): number {
+  const b = Number(base);
+  if (!Number.isFinite(b) || b <= 0) return 0;
+  return b + unitMargin(markup, unit);
+}
+
+/**
+ * Derives per-unit prices from an already-marked-up public price when the base cost
+ * is not exposed client-side (public catalogue RPCs only return the public price).
+ */
+export function unitPriceFromPublic(
+  publicPriceIdr: number | string,
+  unit: PurchaseUnit,
+): number {
+  const p = Number(publicPriceIdr);
+  if (!Number.isFinite(p) || p <= 0) return 0;
+  return Math.max(0, p - (UNIT_MARGIN_IDR.loaf - UNIT_MARGIN_IDR[unit]));
+}
+
 /** Turns "8KG" / "250GR" / "4KG UP" into kilograms, or null when unparseable. */
 export function weightToKg(text: string | null | undefined): number | null {
   if (!text) return null;
