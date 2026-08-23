@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { SiteLayout } from "@/components/site/site-layout";
-import { Field, SelectInput, TextInput } from "@/components/site/form-kit";
+import { Field, TextInput } from "@/components/site/form-kit";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyNewRegistration } from "@/lib/meatlink/account.functions";
 
@@ -22,12 +22,12 @@ export const Route = createFileRoute("/auth")({
       {
         name: "description",
         content:
-          "Sign in to your Meatlink.id account to submit orders, track status, or manage your vendor catalogue and stock.",
+          "Sign in to your Meatlink.id account to submit orders, track delivery status, and reorder in a few clicks.",
       },
       { property: "og:title", content: "Sign In — Meatlink.id" },
       {
         property: "og:description",
-        content: "Buyer and vendor access to the Meatlink.id order management workspace.",
+        content: "Buyer access to the Meatlink.id order management workspace.",
       },
     ],
   }),
@@ -39,7 +39,6 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const [role, setRole] = useState("buyer");
   const [pending, setPending] = useState(false);
   const navigate = useNavigate();
   const auth = useAuth();
@@ -64,7 +63,7 @@ function AuthPage() {
           password,
           options: {
             emailRedirectTo: `${window.location.origin}${next ?? "/auth"}`,
-            data: { display_name: name, ml_role: role },
+            data: { display_name: name, ml_role: "buyer" },
           },
         });
         if (error) throw error;
@@ -91,11 +90,11 @@ function AuthPage() {
           <div>
             <p className="eyebrow text-crimson">Account access</p>
             <h1 className="mt-5 font-display text-4xl leading-tight lg:text-5xl">
-              Order management for buyers and suppliers.
+              Order management for every buyer.
             </h1>
             <p className="mt-6 max-w-lg text-sm leading-relaxed text-bone/65">
-              Buyers submit orders and follow their status without chasing anyone. Vendors keep their
-              catalogue and stock current. Meatlink matches demand to supply behind the scenes.
+              Submit orders and follow their status without chasing anyone — from resto, hotel, katering,
+              toko daging, sampai reseller. Meatlink matches your demand to verified supply behind the scenes.
             </p>
             <p className="mt-8 text-sm text-bone/50">
               Not ready for an account?{" "}
