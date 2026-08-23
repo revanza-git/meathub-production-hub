@@ -130,9 +130,11 @@ export type CatalogFacets = {
   brands: FacetValue[];
   conditions: FacetValue[];
   availability: FacetValue[];
+  categories: FacetValue[];
   minPrice: number;
   maxPrice: number;
 };
+
 
 /** Available filter options (with counts) for the current search/category scope. */
 export function useCatalogFacets(scope: {
@@ -169,6 +171,8 @@ export function useCatalogFacets(scope: {
         brands: pick("brand"),
         conditions: pick("condition"),
         availability: pick("availability"),
+        categories: pick("category"),
+
         minPrice: Math.floor(Number(price?.min_price ?? 0)),
         maxPrice: Math.ceil(Number(price?.max_price ?? 0)),
       };
