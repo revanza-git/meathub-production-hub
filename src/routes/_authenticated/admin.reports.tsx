@@ -252,50 +252,42 @@ function AdminReportsPage() {
       intro="Ringkasan penjualan, pembayaran, nilai stok, dan piutang tempo — siap diunduh sebagai CSV."
     >
       <RoleGate allow="admin">
-        <div className="grid gap-6">
-          <Panel>
-            <div className="flex flex-wrap items-end gap-3">
-              <label className="text-xs uppercase tracking-wide text-muted-foreground">
-                Dari
-                <input
-                  type="date"
-                  value={from}
-                  onChange={(e) => setFrom(e.target.value)}
-                  className="mt-1 block rounded border bg-background px-3 py-2 text-sm"
-                />
-              </label>
-              <label className="text-xs uppercase tracking-wide text-muted-foreground">
-                Sampai
-                <input
-                  type="date"
-                  value={to}
-                  onChange={(e) => setTo(e.target.value)}
-                  className="mt-1 block rounded border bg-background px-3 py-2 text-sm"
-                />
-              </label>
-              {loading ? <span className="text-sm text-muted-foreground">Memuat…</span> : null}
+        <div className="grid gap-8">
+          <Panel className="p-6 lg:p-8">
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,auto)_minmax(0,1fr)] lg:items-end">
+              <div className="flex flex-wrap items-end gap-4">
+                <Field label="Dari" value={from} onChange={setFrom} />
+                <Field label="Sampai" value={to} onChange={setTo} />
+              </div>
+              <p className="text-xs text-ash lg:text-right">
+                {loading ? "Memuat data…" : `${orders.length} pesanan pada rentang terpilih`}
+              </p>
             </div>
 
-            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-8 grid gap-px border border-line bg-line sm:grid-cols-2 xl:grid-cols-3">
               <Stat label="Pesanan" value={String(orders.length)} />
-              <Stat label="Omzet terbayar" value={formatIdr(revenue)} />
+              <Stat label="Omzet terbayar" value={formatIdr(revenue)} accent />
               <Stat label="Total diskon" value={formatIdr(discounts)} />
               <Stat label="Nilai stok (publik)" value={formatIdr(stockValue)} />
               <Stat
                 label="Piutang tempo"
-                value={`${formatIdr(receivableTotal)} · ${receivables.length} order`}
+                value={formatIdr(receivableTotal)}
+                hint={`${receivables.length} order`}
               />
-              <Stat label="Jatuh tempo lewat" value={`${overdue.length} order`} />
+              <Stat
+                label="Jatuh tempo lewat"
+                value={`${overdue.length} order`}
+                accent={overdue.length > 0}
+              />
             </div>
           </Panel>
 
-          <Panel>
-            <h2 className="text-base font-semibold">Unduh CSV</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Semua ekspor mengikuti rentang tanggal di atas, kecuali laporan stok yang selalu
-              memakai posisi terkini.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-3">
+          <Panel className="p-6 lg:p-8">
+            <SectionHead
+              title="Unduh CSV"
+              note="Semua ekspor mengikuti rentang tanggal di atas, kecuali laporan stok yang selalu memakai posisi terkini."
+            />
+            <div className="mt-6 flex flex-wrap gap-3">
               <ExportButton label="Penjualan" onClick={exportSales} />
               <ExportButton label="Pergerakan produk" onClick={exportItems} />
               <ExportButton label="Pembayaran" onClick={exportPayments} />
@@ -304,28 +296,38 @@ function AdminReportsPage() {
             </div>
           </Panel>
 
-          <Panel>
-            <h2 className="text-base font-semibold">Piutang tempo</h2>
+          <Panel className="p-6 lg:p-8">
+            <SectionHead
+              title="Piutang tempo"
+              note="Tagihan TOP yang belum terbayar, diurutkan dari pesanan terbaru."
+            />
             {receivables.length === 0 ? (
-              <p className="mt-3 text-sm text-muted-foreground">
+              <p className="mt-6 border border-dashed border-line px-5 py-8 text-center text-sm text-ash">
                 Tidak ada tagihan tempo yang belum dibayar pada rentang ini.
               </p>
             ) : (
-              <ul className="mt-3 divide-y text-sm">
+              <ul className="mt-6 divide-y divide-line border-t border-line text-sm">
                 {receivables.slice(0, 15).map((o) => {
                   const late = o.due_date && new Date(o.due_date) < new Date();
                   return (
-                    <li key={o.id} className="flex items-center justify-between gap-3 py-3">
-                      <div>
-                        <p className="font-medium">
+                    <li
+                      key={o.id}
+                      className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 py-4"
+                    >
+                      <div className="min-w-0">
+                        <p className="truncate font-medium text-ink">
                           {o.order_no} · {o.buyer_name}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="mt-1 text-xs text-ash">
                           Jatuh tempo {o.due_date ?? "—"}
-                          {late ? " · terlambat" : ""}
+                          {late ? (
+                            <span className="ml-2 eyebrow text-crimson">terlambat</span>
+                          ) : null}
                         </p>
                       </div>
-                      <span className="font-medium">{formatIdr(Number(o.total_idr))}</span>
+                      <span className="shrink-0 font-medium text-ink">
+                        {formatIdr(Number(o.total_idr))}
+                      </span>
                     </li>
                   );
                 })}
@@ -338,11 +340,57 @@ function AdminReportsPage() {
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Field({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
   return (
-    <div className="rounded border p-4">
-      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-1 text-lg font-semibold">{value}</p>
+    <label className="block">
+      <span className="eyebrow text-ash">{label}</span>
+      <input
+        type="date"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="mt-2 block border border-line bg-card px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-crimson"
+      />
+    </label>
+  );
+}
+
+function SectionHead({ title, note }: { title: string; note: string }) {
+  return (
+    <div>
+      <h2 className="font-display text-xl text-ink">{title}</h2>
+      <p className="mt-2 max-w-2xl text-sm text-ash">{note}</p>
+    </div>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  hint,
+  accent,
+}: {
+  label: string;
+  value: string;
+  hint?: string;
+  accent?: boolean;
+}) {
+  return (
+    <div className="bg-card p-5">
+      <p className="eyebrow text-ash">{label}</p>
+      <p
+        className={`mt-3 font-display text-2xl ${accent ? "text-crimson" : "text-ink"}`}
+      >
+        {value}
+      </p>
+      {hint ? <p className="mt-1 text-xs text-ash">{hint}</p> : null}
     </div>
   );
 }
@@ -352,7 +400,7 @@ function ExportButton({ label, onClick }: { label: string; onClick: () => void }
     <button
       type="button"
       onClick={onClick}
-      className="rounded border px-4 py-2 text-xs uppercase tracking-wide"
+      className="eyebrow border border-line bg-card px-5 py-3 text-ink transition-colors hover:border-crimson hover:text-crimson"
     >
       {label}
     </button>
