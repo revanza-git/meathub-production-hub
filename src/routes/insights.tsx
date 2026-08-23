@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Bot, ChevronLeft, ChevronRight } from "lucide-react";
 import { PageHero, SiteLayout } from "@/components/site/site-layout";
 import { ImageDisclaimer } from "@/components/site/image-disclaimer";
 import { resolveFeatureImage, useFeaturedInventory } from "@/lib/meatlink/featured";
@@ -99,6 +99,13 @@ function InsightsPage() {
                 </h2>
                 <p className="mt-4 text-sm leading-relaxed text-ash" lang={lang}>
                   {pickLocale(lang, n.body, n.body_en)}
+                </p>
+                <p className="mt-5 inline-flex items-center gap-1.5 text-[11px] italic text-ash/80">
+                  <Bot className="h-3 w-3" aria-hidden="true" />
+                  {bi(
+                    "Hasil analisis AI — verifikasi sebelum digunakan sebagai dasar keputusan pembelian.",
+                    "AI-generated analysis — please verify before using it as a basis for purchasing decisions.",
+                  )}
                 </p>
               </article>
             ))}
