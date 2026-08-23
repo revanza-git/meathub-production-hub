@@ -20,14 +20,23 @@ export type InventoryDraft = {
 
 export const CATEGORY_VALUES = ["PRIME_CUT", "SECOND_CUT", "OFFAL", "BONE"] as const;
 
+/**
+ * Prime Cut is defined strictly by the cut itself (never by grade/wagyu/A5):
+ * tenderloin, sirloin/striploin, ribeye/cuberoll, shortloin (t-bone, porterhouse),
+ * tomahawk, OP ribs (ribeye bone-in) and flat iron. Everything else is Second Cut.
+ */
+export const PRIME_CUT_PATTERN =
+  /(tenderloin|tndrloin|tender loin|fill?et mignon|filet mignon|chateaubriand|sirloin|striploin|strip loin|ny strip|contra fil|ribeye|rib eye|rib-eye|cuberoll|cube roll|bife ancho|shortloin|short loin|t-bone|tbone|t bone|porterhouse|tomahawk|op ribs|op rib|flat iron|flatiron)/;
+
 /** Best-guess category from the product name, used when a sheet omits it. */
 export function guessCategory(name: string): InventoryDraft["category"] {
   const n = name.toLowerCase();
   if (/(tongue|lidah|liver|hati|tripe|babat|heart|jantung|kidney|usus|offal|oxtail|buntut)/.test(n)) return "OFFAL";
+  if (PRIME_CUT_PATTERN.test(n)) return "PRIME_CUT";
   if (/(bone|tulang|marrow|sumsum)/.test(n)) return "BONE";
-  if (/(tenderloin|striploin|ribeye|rib eye|sirloin|cube roll|short rib|wagyu|a5|picanha|rump)/.test(n)) return "PRIME_CUT";
   return "SECOND_CUT";
 }
+
 
 export const ORIGINS = ["Australia", "Japan", "USA", "Canada", "Lokal Premium"] as const;
 export const CONDITIONS = ["FRZ", "CHL"] as const;

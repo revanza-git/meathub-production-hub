@@ -14,17 +14,18 @@ export const CATEGORY_PAGES: CategoryPage[] = [
     slug: "prime-cut",
     value: "PRIME_CUT",
     label: "Prime Cut",
-    tagline: "Ribeye, striploin, tenderloin, wagyu",
+    tagline: "Tenderloin, sirloin, ribeye, shortloin, tomahawk, OP ribs, flat iron",
     intro:
-      "Potongan premium untuk steakhouse, hotel dan fine dining. Grade wagyu dan angus dari importir terverifikasi, harga per kilogram ditampilkan terbuka.",
+      "Delapan kelompok potongan utama: tenderloin, sirloin/striploin, ribeye/cuberoll, shortloin (T-bone & porterhouse), tomahawk, OP ribs dan flat iron. Kategori ditentukan murni oleh jenis potongan, bukan oleh grade.",
   },
   {
     slug: "second-cut",
     value: "SECOND_CUT",
     label: "Second Cut",
-    tagline: "Short plate, brisket, chuck, shank",
+    tagline: "Picanha, rump, knuckle, short plate, brisket, chuck",
     intro:
-      "Potongan bernilai untuk volume harian: katering, restoran casual, hotel dan retail. Konsisten secara spesifikasi dan siap kirim ke seluruh Indonesia.",
+      "Semua potongan di luar delapan kelompok prime — termasuk picanha/rump cap, knuckle, oyster blade, short plate, brisket dan chuck. Bernilai untuk volume harian dan siap kirim ke seluruh Indonesia.",
+
   },
   {
     slug: "offal",
