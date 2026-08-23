@@ -27,6 +27,44 @@ export const AVAILABILITY_LABEL: Record<Availability, string> = {
   PRE_ORDER: "Pre-order",
 };
 
+/** Marbling grade bands (BMS). Ungraded = no visible marbling. */
+export const GRADE_BANDS = [
+  "UNGRADED",
+  "MB0_2",
+  "MB2_4",
+  "MB4_6",
+  "MB6_9",
+  "MB9_12",
+] as const;
+export type GradeBand = (typeof GRADE_BANDS)[number];
+
+export const GRADE_LABEL: Record<GradeBand, string> = {
+  UNGRADED: "Ungraded",
+  MB0_2: "MB 0–2",
+  MB2_4: "MB 2–4",
+  MB4_6: "MB 4–6",
+  MB6_9: "MB 6–9",
+  MB9_12: "MB 9–12",
+};
+
+export const GRADE_HINT: Record<GradeBand, { id: string; en: string }> = {
+  UNGRADED: {
+    id: "Tanpa marbling terlihat — grass/grain-fed standar.",
+    en: "No visible marbling — standard grass/grain-fed.",
+  },
+  MB0_2: { id: "Marbling tipis dan jarang.", en: "Thin, sparse marbling." },
+  MB2_4: { id: "Marbling halus mulai merata.", en: "Fine marbling, more even." },
+  MB4_6: { id: "Marbling sedang, serat lemak jelas.", en: "Medium marbling, clear fat threads." },
+  MB6_9: { id: "Marbling padat dan rapat.", en: "Dense, tightly packed marbling." },
+  MB9_12: { id: "Marbling sangat rapat (setara A5).", en: "Very dense marbling (A5 class)." },
+};
+
+export function gradeLabel(value: string | null | undefined) {
+  if (!value) return null;
+  return GRADE_LABEL[value as GradeBand] ?? value;
+}
+
+
 export type CatalogRow =
   Database["public"]["Functions"]["ml_public_catalog"]["Returns"][number];
 export type CatalogProduct =
