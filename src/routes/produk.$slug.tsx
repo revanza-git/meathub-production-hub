@@ -20,6 +20,9 @@ import {
 } from "@/lib/i18n";
 import {
   CATEGORY_LABEL,
+  GRADE_HINT,
+  gradeLabel,
+  type GradeBand,
   useCatalog,
   useProduct,
   type CatalogProduct,
@@ -104,8 +107,24 @@ function ProductPage() {
                 {product.name}
               </h1>
               <p className="mt-4 text-sm text-ash">
-                {[product.brand, product.origin, product.condition].filter(Boolean).join(" · ")}
+                {[product.brand, product.origin, product.condition, product.cut_type]
+                  .filter(Boolean)
+                  .join(" · ")}
               </p>
+              {product.grade_band ? (
+                <p className="mt-3 text-sm text-ash">
+                  <span className="mr-2 inline-block border border-line px-2 py-0.5 text-[11px] uppercase tracking-[0.14em] text-ink">
+                    {gradeLabel(product.grade_band)}
+                  </span>
+                  {bi(
+                    GRADE_HINT[product.grade_band as GradeBand]?.id ?? "",
+                    GRADE_HINT[product.grade_band as GradeBand]?.en ?? "",
+                  )}{" "}
+                  <Link to="/panduan-grade" className="underline hover:text-ink">
+                    {bi("Panduan grade", "Grade guide")}
+                  </Link>
+                </p>
+              ) : null}
 
               {product.description ? (
                 <p className="mt-8 max-w-2xl text-base leading-relaxed text-ink/80">
@@ -121,6 +140,11 @@ function ProductPage() {
                 <Spec label={bi("Asal", "Origin")} value={product.origin ?? "—"} />
                 <Spec label={bi("Brand", "Brand")} value={product.brand ?? "—"} />
                 <Spec label={bi("Kondisi", "Condition")} value={product.condition ?? "—"} />
+                <Spec
+                  label={bi("Grade marbling", "Marbling grade")}
+                  value={gradeLabel(product.grade_band) ?? bi("Ungraded", "Ungraded")}
+                />
+                <Spec label={bi("Cut", "Cut")} value={product.cut_type ?? "—"} />
                 <Spec
                   label={bi("Berat rata-rata", "Average weight")}
                   value={
