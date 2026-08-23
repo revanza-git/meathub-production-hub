@@ -6,7 +6,7 @@ import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { supabase } from "@/integrations/supabase/client";
 
 import { downloadCsv, toCsv } from "@/lib/meatlink/csv";
-import { useBi, useFormat, useLang } from "@/lib/i18n";
+import { useBi, useFormat } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/reports")({
   head: () => ({
@@ -38,7 +38,6 @@ const REVENUE_STATUSES = ["PAID", "PROCESSING", "SHIPPED", "DELIVERED", "COMPLET
 function AdminReportsPage() {
   const bi = useBi();
   const fmt = useFormat();
-  const { lang } = useLang();
   const today = new Date();
   const monthAgo = new Date(today.getTime() - 29 * 86400000);
   const [from, setFrom] = useState(isoDate(monthAgo));
