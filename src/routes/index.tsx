@@ -307,6 +307,11 @@ function Benefits() {
         <h2 className="mt-6 max-w-3xl font-display text-3xl sm:text-4xl lg:text-5xl">
           Dibangun untuk pembelian bisnis, terbuka untuk berbagai skala.
         </h2>
+        <p className="mt-5 max-w-2xl text-sm leading-relaxed text-bone/65">
+          Pembelian rutin dalam volume besar maupun order kecil untuk toko dan reseller berjalan di
+          alur yang sama: harga jelas, stok nyata, dokumen lengkap.
+        </p>
+
 
         <div className="mt-16 grid border border-white/10 sm:grid-cols-2 lg:grid-cols-3">
           {BENEFITS.map((b) => (
