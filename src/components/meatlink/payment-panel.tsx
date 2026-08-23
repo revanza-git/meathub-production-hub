@@ -4,6 +4,7 @@ import { Copy, Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { createOrderPayment, type PaymentInstruction } from "@/lib/meatlink/payment.functions";
+import { useBi } from "@/lib/i18n";
 
 const VA_BANKS: { value: string; label: string }[] = [
   { value: "bag", label: "Bank Artha Graha" },
@@ -30,6 +31,7 @@ type Props = {
 };
 
 export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }: Props) {
+  const bi = useBi();
   const create = useServerFn(createOrderPayment);
   const [bank, setBank] = useState(existing.channel || "bag");
   const [pending, setPending] = useState(false);
@@ -62,7 +64,7 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
       setInfo(result);
       onPaid();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Gagal membuat pembayaran.");
+      toast.error(err instanceof Error ? err.message : bi("Gagal membuat pembayaran.", "Failed to create payment."));
     } finally {
       setPending(false);
     }
@@ -71,17 +73,20 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
   return (
     <div className="mt-8 border border-crimson/40 bg-crimson/5 p-6">
       <h2 className="eyebrow text-crimson">
-        {method === "QRIS" ? "Bayar dengan QRIS" : "Bayar dengan Virtual Account"}
+        {method === "QRIS" ? bi("Bayar dengan QRIS", "Pay with QRIS") : bi("Bayar dengan Virtual Account", "Pay with Virtual Account")}
       </h2>
       <p className="mt-3 text-sm text-ink/80">
-        Total tagihan <span className="font-medium text-ink">{formatIdr(total)}</span>. Status
-        pesanan diperbarui otomatis setelah pembayaran terverifikasi.
+        {bi("Total tagihan", "Total due")} <span className="font-medium text-ink">{formatIdr(total)}</span>.{" "}
+        {bi(
+          "Status pesanan diperbarui otomatis setelah pembayaran terverifikasi.",
+          "The order status updates automatically once payment is verified.",
+        )}
       </p>
 
       {method === "BANK_TRANSFER" ? (
         <div className="mt-5 flex flex-wrap items-end gap-3">
           <label className="text-xs text-ash">
-            <span className="mb-1 block">Pilih bank</span>
+            <span className="mb-1 block">{bi("Pilih bank", "Choose bank")}</span>
             <select
               value={bank}
               onChange={(e) => setBank(e.target.value)}
@@ -101,7 +106,7 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
             className="eyebrow inline-flex items-center gap-2 bg-crimson px-5 py-3 text-bone hover:bg-crimson-deep disabled:opacity-60"
           >
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-            {info?.va ? "Ganti bank / perbarui" : "Buat nomor VA"}
+            {info?.va ? bi("Ganti bank / perbarui", "Change bank / refresh") : bi("Buat nomor VA", "Generate VA number")}
           </button>
         </div>
       ) : (
@@ -112,23 +117,23 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
           className="eyebrow mt-5 inline-flex items-center gap-2 bg-crimson px-5 py-3 text-bone hover:bg-crimson-deep disabled:opacity-60"
         >
           {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-          {info?.qrUrl ? "Perbarui kode QRIS" : "Tampilkan kode QRIS"}
+          {info?.qrUrl ? bi("Perbarui kode QRIS", "Refresh QRIS code") : bi("Tampilkan kode QRIS", "Show QRIS code")}
         </button>
       )}
 
       {info?.va ? (
         <div className="mt-6 border border-line bg-background p-5">
           <p className="text-xs uppercase tracking-wide text-ash">
-            Nomor Virtual Account {info.channel ? `· ${info.channel.toUpperCase()}` : ""}
+            {bi("Nomor Virtual Account", "Virtual Account number")} {info.channel ? `· ${info.channel.toUpperCase()}` : ""}
           </p>
           <div className="mt-2 flex items-center gap-3">
             <p className="font-display text-2xl text-ink">{info.va}</p>
             <button
               type="button"
-              aria-label="Salin nomor VA"
+              aria-label={bi("Salin nomor VA", "Copy VA number")}
               onClick={() => {
                 void navigator.clipboard.writeText(info.va ?? "");
-                toast.success("Nomor VA disalin.");
+                toast.success(bi("Nomor VA disalin.", "VA number copied."));
               }}
               className="text-ash hover:text-crimson"
             >
@@ -137,7 +142,7 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
           </div>
           {info.expiresAt ? (
             <p className="mt-2 text-xs text-ash">
-              Berlaku sampai {new Date(info.expiresAt).toLocaleString("id-ID")}
+              {bi("Berlaku sampai", "Valid until")} {new Date(info.expiresAt).toLocaleString("id-ID")}
             </p>
           ) : null}
         </div>
@@ -147,12 +152,12 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
         <div className="mt-6 border border-line bg-background p-5">
           <img
             src={info.qrUrl}
-            alt={`Kode QRIS pembayaran pesanan ${orderNo}`}
+            alt={bi(`Kode QRIS pembayaran pesanan ${orderNo}`, `QRIS payment code for order ${orderNo}`)}
             className="h-64 w-64 object-contain"
           />
           {info.expiresAt ? (
             <p className="mt-2 text-xs text-ash">
-              Berlaku sampai {new Date(info.expiresAt).toLocaleString("id-ID")}
+              {bi("Berlaku sampai", "Valid until")} {new Date(info.expiresAt).toLocaleString("id-ID")}
             </p>
           ) : null}
         </div>

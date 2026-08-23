@@ -12,6 +12,7 @@ import {
   INSIGHT_STATUSES,
   type MarketInsight,
 } from "@/lib/meatlink/insights";
+import { useBi } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/insights")({
   component: AdminInsightsPage,
@@ -38,10 +39,14 @@ const FILTERS = ["all", ...INSIGHT_STATUSES] as const;
 type Filter = (typeof FILTERS)[number];
 
 function AdminInsightsPage() {
+  const bi = useBi();
   return (
     <AppShell
-      title="Market insights"
-      intro="Sourcing notes for the public Insights page. Agent-written notes arrive as drafts — publish the ones you agree with."
+      title={bi("Market insights", "Market insights")}
+      intro={bi(
+        "Catatan sourcing untuk halaman Insights publik. Catatan tulisan agent tiba sebagai draft — publikasikan yang Anda setujui.",
+        "Sourcing notes for the public Insights page. Agent-written notes arrive as drafts — publish the ones you agree with.",
+      )}
     >
       <RoleGate allow="admin">
         <InsightsBody />
@@ -54,6 +59,7 @@ const inputClass =
   "w-full border border-line bg-card px-3 py-2 text-sm text-ink outline-none focus:border-crimson";
 
 function InsightsBody() {
+  const bi = useBi();
   const qc = useQueryClient();
   const [filter, setFilter] = useState<Filter>("all");
   const [creating, setCreating] = useState(false);
@@ -79,7 +85,12 @@ function InsightsBody() {
     const titleEn = String(form.get("title_en") ?? "").trim();
     const bodyEn = String(form.get("body_en") ?? "").trim();
     if (!title || !body || !titleEn || !bodyEn) {
-      toast.error("Bahasa Indonesia and English title and body are required");
+      toast.error(
+        bi(
+          "Judul dan isi Bahasa Indonesia serta Bahasa Inggris wajib diisi",
+          "Bahasa Indonesia and English title and body are required",
+        ),
+      );
       return;
     }
     const { error } = await supabase.from("market_insights").insert({
@@ -97,7 +108,7 @@ function InsightsBody() {
       toast.error(error.message);
       return;
     }
-    toast.success("Draft created");
+    toast.success(bi("Draft dibuat", "Draft created"));
     setCreating(false);
     refresh();
   }
@@ -124,7 +135,7 @@ function InsightsBody() {
           onClick={() => setCreating((v) => !v)}
           className="eyebrow ml-auto border border-line bg-card px-4 py-3 text-ink transition-colors hover:bg-noir hover:text-bone"
         >
-          {creating ? "Cancel" : "New note"}
+          {creating ? bi("Batal", "Cancel") : bi("Catatan baru", "New note")}
         </button>
       </div>
 
@@ -160,10 +171,10 @@ function InsightsBody() {
                   </option>
                 ))}
               </select>
-              <input name="region" placeholder="Region (Nasional)" className={inputClass} />
+              <input name="region" placeholder={bi("Wilayah (Nasional)", "Region (Nasional)")} className={inputClass} />
               <input
                 name="period_label"
-                placeholder="Period (Agustus 2026)"
+                placeholder={bi("Periode (Agustus 2026)", "Period (Agustus 2026)")}
                 className={inputClass}
               />
             </div>
@@ -171,18 +182,20 @@ function InsightsBody() {
               type="submit"
               className="eyebrow justify-self-start bg-crimson px-6 py-3 text-bone transition-colors hover:bg-crimson-deep"
             >
-              Save draft
+              {bi("Simpan draft", "Save draft")}
             </button>
           </form>
         </Panel>
       ) : null}
 
-      {isLoading ? <p className="text-sm text-ash">Loading…</p> : null}
+      {isLoading ? <p className="text-sm text-ash">{bi("Memuat…", "Loading…")}</p> : null}
       {!isLoading && rows.length === 0 ? (
         <Panel className="p-8">
           <p className="text-sm text-ash">
-            No notes here yet. Connect Codex to the Meatlink agent endpoint and ask it to analyse
-            the market — its drafts land in this list.
+            {bi(
+              "Belum ada catatan di sini. Hubungkan Codex ke endpoint agent Meatlink dan minta agent menganalisis pasar — draftnya akan muncul di daftar ini.",
+              "No notes here yet. Connect Codex to the Meatlink agent endpoint and ask it to analyse the market — its drafts land in this list.",
+            )}
           </p>
         </Panel>
       ) : null}
@@ -193,8 +206,14 @@ function InsightsBody() {
             return (
               <p className="text-xs text-ash">
                 {pending === 0
-                  ? `All ${rows.length} notes have Bahasa Indonesia and English versions.`
-                  : `${pending} of ${rows.length} notes still need an English version.`}
+                  ? bi(
+                      `Semua ${rows.length} catatan sudah memiliki versi Bahasa Indonesia dan Inggris.`,
+                      `All ${rows.length} notes have Bahasa Indonesia and English versions.`,
+                    )
+                  : bi(
+                      `${pending} dari ${rows.length} catatan masih membutuhkan versi Bahasa Inggris.`,
+                      `${pending} of ${rows.length} notes still need an English version.`,
+                    )}
               </p>
             );
           })()
@@ -209,12 +228,13 @@ function InsightsBody() {
 }
 
 function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => void }) {
+  const bi = useBi();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(row);
 
   async function patch(values: Partial<MarketInsight>) {
     if (values.status === "published" && (!row.title_en?.trim() || !row.body_en?.trim())) {
-      toast.error("Add the English title and body before publishing");
+      toast.error(bi("Tambahkan judul dan isi Bahasa Inggris sebelum mempublikasikan", "Add the English title and body before publishing"));
       return;
     }
     const { error } = await supabase
@@ -225,7 +245,7 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
       toast.error(error.message);
       return;
     }
-    toast.success("Saved");
+    toast.success(bi("Disimpan", "Saved"));
     setEditing(false);
     onChanged();
   }
@@ -236,7 +256,7 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
       toast.error(error.message);
       return;
     }
-    toast.success("Deleted");
+    toast.success(bi("Dihapus", "Deleted"));
     onChanged();
   }
 
@@ -253,7 +273,7 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
           </p>
           <h2 className="mt-1 font-display text-xl text-ink">{row.title}</h2>
           <p className="mt-1 text-xs text-ash">
-            {row.source === "agent" ? "Written by agent" : "Written by admin"} · confidence{" "}
+            {row.source === "agent" ? bi("Ditulis oleh agent", "Written by agent") : bi("Ditulis oleh admin", "Written by admin")} · {bi("keyakinan", "confidence")}{" "}
             {row.confidence} · {formatDate(row.created_at)}
           </p>
         </div>
@@ -273,7 +293,7 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
               onClick={() => void patch({ status: "draft" })}
               className="eyebrow border border-line bg-card px-3 py-2 text-ink hover:bg-noir hover:text-bone"
             >
-              Unpublish
+              {bi("Batalkan publikasi", "Unpublish")}
             </button>
           ) : (
             <button
@@ -281,7 +301,7 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
               onClick={() => void patch({ status: "published" })}
               className="eyebrow border border-crimson bg-crimson px-3 py-2 text-bone hover:bg-crimson-deep"
             >
-              Publish
+              {bi("Publikasikan", "Publish")}
             </button>
           )}
           {row.status === "archived" ? null : (
@@ -290,7 +310,7 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
               onClick={() => void patch({ status: "archived" })}
               className="eyebrow border border-line bg-card px-3 py-2 text-ash hover:text-ink"
             >
-              Archive
+              {bi("Arsipkan", "Archive")}
             </button>
           )}
           <button
@@ -298,14 +318,14 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
             onClick={() => setEditing((v) => !v)}
             className="eyebrow border border-line bg-card px-3 py-2 text-ash hover:text-ink"
           >
-            {editing ? "Close" : "Edit"}
+            {editing ? bi("Tutup", "Close") : bi("Ubah", "Edit")}
           </button>
           <button
             type="button"
             onClick={() => void remove()}
             className="eyebrow border border-line bg-card px-3 py-2 text-ash hover:text-ink"
           >
-            Delete
+            {bi("Hapus", "Delete")}
           </button>
         </div>
       </div>
@@ -322,17 +342,17 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
       ) : (
         <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-line pt-4">
           <span className="eyebrow border border-line bg-sand px-3 py-2 text-ash">
-            Legacy — EN pending
+            {bi("Lama — EN tertunda", "Legacy — EN pending")}
           </span>
           <p className="min-w-0 text-xs text-ash">
-            This note has no English version yet. Add it before publishing.
+            {bi("Catatan ini belum memiliki versi Bahasa Inggris. Tambahkan sebelum mempublikasikan.", "This note has no English version yet. Add it before publishing.")}
           </p>
           <button
             type="button"
             onClick={() => setEditing(true)}
             className="eyebrow border border-crimson bg-crimson px-3 py-2 text-bone hover:bg-crimson-deep"
           >
-            Add translation
+            {bi("Tambah terjemahan", "Add translation")}
           </button>
         </div>
       )}
@@ -376,14 +396,14 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
               value={draft.title_en ?? ""}
               onChange={(e) => setDraft({ ...draft, title_en: e.target.value || null })}
               className={inputClass}
-              placeholder="English title"
+              placeholder={bi("Judul Bahasa Inggris", "English title")}
             />
             <textarea
               value={draft.body_en ?? ""}
               rows={5}
               onChange={(e) => setDraft({ ...draft, body_en: e.target.value || null })}
               className={inputClass}
-              placeholder="English body"
+              placeholder={bi("Isi Bahasa Inggris", "English body")}
             />
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -407,13 +427,13 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
               value={draft.region}
               onChange={(e) => setDraft({ ...draft, region: e.target.value })}
               className={inputClass}
-              placeholder="Region"
+              placeholder={bi("Wilayah", "Region")}
             />
             <input
               value={draft.period_label ?? ""}
               onChange={(e) => setDraft({ ...draft, period_label: e.target.value || null })}
               className={inputClass}
-              placeholder="Period"
+              placeholder={bi("Periode", "Period")}
             />
             <select
               value={draft.confidence}
@@ -422,7 +442,7 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
             >
               {INSIGHT_CONFIDENCE.map((c) => (
                 <option key={c} value={c}>
-                  confidence: {c}
+                  {bi("keyakinan", "confidence")}: {c}
                 </option>
               ))}
             </select>
@@ -436,21 +456,21 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
                 })
               }
               className={inputClass}
-              placeholder="Order"
+              placeholder={bi("Urutan", "Order")}
             />
           </div>
           <button
             type="submit"
             className="eyebrow justify-self-start bg-crimson px-6 py-3 text-bone transition-colors hover:bg-crimson-deep"
           >
-            Save changes
+            {bi("Simpan perubahan", "Save changes")}
           </button>
         </form>
       ) : null}
 
       {row.data_refs && Object.keys(row.data_refs as object).length > 0 ? (
         <details className="mt-4 border-t border-line pt-4">
-          <summary className="eyebrow cursor-pointer text-ash">Supporting data</summary>
+          <summary className="eyebrow cursor-pointer text-ash">{bi("Data pendukung", "Supporting data")}</summary>
           <pre className="mt-3 overflow-x-auto text-xs text-ash">
             {JSON.stringify(row.data_refs, null, 2)}
           </pre>

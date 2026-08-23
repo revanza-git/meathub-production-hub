@@ -1,4 +1,4 @@
-import { ORDER_STATUS_LABEL } from "@/lib/meatlink/cart";
+import { useBi, useLabel, ORDER_STATUS_LABEL_I18N } from "@/lib/i18n";
 
 export type TimelineEvent = {
   to_status: string;
@@ -18,10 +18,12 @@ function formatStamp(value: string) {
 }
 
 export function OrderTimeline({ events }: { events: TimelineEvent[] }) {
+  const bi = useBi();
+  const label = useLabel();
   if (!events.length) return null;
   return (
     <div className="mt-8 border border-line p-6">
-      <h2 className="eyebrow text-ash">Riwayat pesanan</h2>
+      <h2 className="eyebrow text-ash">{bi("Riwayat pesanan", "Order history")}</h2>
       <ol className="mt-4 space-y-4">
         {events.map((e, idx) => {
           const last = idx === events.length - 1;
@@ -35,7 +37,7 @@ export function OrderTimeline({ events }: { events: TimelineEvent[] }) {
               </div>
               <div className="pb-1">
                 <p className="text-sm text-ink">
-                  {ORDER_STATUS_LABEL[e.to_status] ?? e.to_status}
+                  {label(ORDER_STATUS_LABEL_I18N, e.to_status)}
                 </p>
                 <p className="mt-1 text-xs text-ash">{formatStamp(e.created_at)}</p>
                 {e.note ? <p className="mt-1 text-xs italic text-ash">{e.note}</p> : null}

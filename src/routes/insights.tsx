@@ -5,6 +5,7 @@ import { PageHero, SiteLayout } from "@/components/site/site-layout";
 import { resolveFeatureImage, useFeaturedInventory } from "@/lib/meatlink/featured";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { FALLBACK_NOTES, usePublishedInsights } from "@/lib/meatlink/insights";
+import { pickLocale, useBi, useLang } from "@/lib/i18n";
 
 export const Route = createFileRoute("/insights")({
   head: () => ({
@@ -26,6 +27,8 @@ export const Route = createFileRoute("/insights")({
 });
 
 function InsightsPage() {
+  const bi = useBi();
+  const { lang } = useLang();
   const { data: featured = [] } = useFeaturedInventory(5);
   const { data: published = [] } = usePublishedInsights(9);
   const notes = published.length > 0 ? published : FALLBACK_NOTES;
@@ -43,20 +46,23 @@ function InsightsPage() {
   return (
     <SiteLayout>
       <PageHero
-        eyebrow="Market insights"
-        title="What we're seeing in the trade."
-        intro="Practical notes from the requests moving through the Meatlink network — no fluff, no vanity data."
+        eyebrow={bi("Market insights", "Market insights")}
+        title={bi("Yang kami lihat di pasar daging.", "What we're seeing in the trade.")}
+        intro={bi(
+          "Catatan praktis dari permintaan yang bergerak lewat jaringan Meatlink — tanpa basa-basi, tanpa data hiasan.",
+          "Practical notes from the requests moving through the Meatlink network — no fluff, no vanity data.",
+        )}
       />
 
       <section className="bg-bone">
         <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
           <div className="flex items-end justify-between gap-4">
-            <p className="eyebrow text-crimson">Sourcing notes</p>
+            <p className="eyebrow text-crimson">{bi("Catatan sourcing", "Sourcing notes")}</p>
             {notes.length > 1 ? (
               <div className="flex gap-px bg-line">
                 <button
                   type="button"
-                  aria-label="Previous notes"
+                  aria-label={bi("Catatan sebelumnya", "Previous notes")}
                   onClick={() => scrollByCards(notesTrackRef, -1)}
                   className="bg-card p-3 text-ink transition-colors hover:bg-noir hover:text-bone"
                 >
@@ -64,7 +70,7 @@ function InsightsPage() {
                 </button>
                 <button
                   type="button"
-                  aria-label="Next notes"
+                  aria-label={bi("Catatan berikutnya", "Next notes")}
                   onClick={() => scrollByCards(notesTrackRef, 1)}
                   className="bg-card p-3 text-ink transition-colors hover:bg-noir hover:text-bone"
                 >
@@ -87,29 +93,23 @@ function InsightsPage() {
                   {n.category} · {n.region}
                   {"period_label" in n && n.period_label ? ` · ${n.period_label}` : ""}
                 </p>
-                <p className="mt-3 text-xs font-medium uppercase tracking-wide text-ash">
-                  Bahasa Indonesia
+                <h2 className="mt-3 font-display text-2xl leading-snug" lang={lang}>
+                  {pickLocale(lang, n.title, n.title_en)}
+                </h2>
+                <p className="mt-4 text-sm leading-relaxed text-ash" lang={lang}>
+                  {pickLocale(lang, n.body, n.body_en)}
                 </p>
-                <h2 className="mt-1 font-display text-2xl leading-snug">{n.title}</h2>
-                <p className="mt-4 text-sm leading-relaxed text-ash">{n.body}</p>
-                {n.title_en && n.body_en ? (
-                  <div className="mt-6 border-t border-line pt-5" lang="en">
-                    <p className="text-xs font-medium uppercase tracking-wide text-ash">English</p>
-                    <h3 className="mt-1 font-display text-xl leading-snug">{n.title_en}</h3>
-                    <p className="mt-3 text-sm leading-relaxed text-ash">{n.body_en}</p>
-                  </div>
-                ) : null}
               </article>
             ))}
           </div>
 
           <div className="mt-20 flex items-end justify-between gap-4">
-            <p className="eyebrow text-crimson">Recently sourced</p>
+            <p className="eyebrow text-crimson">{bi("Baru disourcing", "Recently sourced")}</p>
             {featured.length > 0 ? (
               <div className="flex gap-px bg-line">
                 <button
                   type="button"
-                  aria-label="Previous items"
+                  aria-label={bi("Item sebelumnya", "Previous items")}
                   onClick={() => scrollByCards(trackRef, -1)}
                   className="bg-card p-3 text-ink transition-colors hover:bg-noir hover:text-bone"
                 >
@@ -117,7 +117,7 @@ function InsightsPage() {
                 </button>
                 <button
                   type="button"
-                  aria-label="Next items"
+                  aria-label={bi("Item berikutnya", "Next items")}
                   onClick={() => scrollByCards(trackRef, 1)}
                   className="bg-card p-3 text-ink transition-colors hover:bg-noir hover:text-bone"
                 >
@@ -128,7 +128,10 @@ function InsightsPage() {
           </div>
           {featured.length === 0 ? (
             <p className="mt-10 border border-line bg-card p-6 text-sm text-ash">
-              No featured stock published yet — check back shortly.
+              {bi(
+                "Belum ada stok unggulan yang dipublikasikan — silakan cek kembali sebentar lagi.",
+                "No featured stock published yet — check back shortly.",
+              )}
             </p>
           ) : (
             <div
@@ -153,15 +156,15 @@ function InsightsPage() {
                     <h3 className="mt-3 font-display text-xl leading-snug">{item.name}</h3>
                     <dl className="mt-5 space-y-2 text-xs text-ash">
                       <div className="flex justify-between border-b border-line pb-2">
-                        <dt>Brand</dt>
+                        <dt>{bi("Brand", "Brand")}</dt>
                         <dd className="text-ink">{item.brand || "Meatlink select"}</dd>
                       </div>
                       <div className="flex justify-between border-b border-line pb-2">
-                        <dt>Average weight</dt>
-                        <dd className="text-ink">{item.avg_weight_text ?? "On request"}</dd>
+                        <dt>{bi("Berat rata-rata", "Average weight")}</dt>
+                        <dd className="text-ink">{item.avg_weight_text ?? bi("Atas permintaan", "On request")}</dd>
                       </div>
                       <div className="flex justify-between pt-1">
-                        <dt>Indicative price</dt>
+                        <dt>{bi("Harga indikatif", "Indicative price")}</dt>
                         <dd className="text-crimson">
                           {Number(item.list_price_idr) > Number(item.public_price_idr) ? (
                             <span className="mr-2 text-ash line-through">
@@ -183,7 +186,7 @@ function InsightsPage() {
               to="/request-quote"
               className="eyebrow inline-flex bg-crimson px-7 py-4 text-bone transition-colors hover:bg-crimson-deep"
             >
-              Request a Quote
+              {bi("Minta Penawaran", "Request a Quote")}
             </Link>
           </div>
         </div>

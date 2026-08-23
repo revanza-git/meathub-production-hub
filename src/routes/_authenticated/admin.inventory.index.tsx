@@ -20,6 +20,7 @@ import {
   type InventoryItem,
 } from "@/lib/meatlink/inventory";
 import { CATEGORIES, type ProductCategory } from "@/lib/meatlink/catalog";
+import { useBi } from "@/lib/i18n";
 
 
 export const Route = createFileRoute("/_authenticated/admin/inventory/")({
@@ -36,13 +37,17 @@ export const Route = createFileRoute("/_authenticated/admin/inventory/")({
 });
 
 function AdminInventoryPage() {
+  const bi = useBi();
   return (
     <AppShell
-      title="Meatlink inventory"
-      intro="Our own stock list — origins, brands, sale prices and quantities on hand."
+      title={bi("Inventaris Meatlink", "Meatlink inventory")}
+      intro={bi(
+        "Daftar stok kami sendiri — asal, merek, harga jual, dan jumlah yang tersedia.",
+        "Our own stock list — origins, brands, sale prices and quantities on hand.",
+      )}
       actions={
         <Link to="/admin/inventory/import" className="eyebrow border border-ink/25 px-5 py-3 text-ink">
-          Import spreadsheet
+          {bi("Impor spreadsheet", "Import spreadsheet")}
         </Link>
       }
     >
@@ -66,6 +71,7 @@ const EMPTY_FORM = {
 };
 
 function InventoryBody() {
+  const bi = useBi();
   const qc = useQueryClient();
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
@@ -184,7 +190,7 @@ function InventoryBody() {
   async function addItem(e: React.FormEvent) {
     e.preventDefault();
     if (!form.name.trim()) {
-      toast.error("Product name is required.");
+      toast.error(bi("Nama produk wajib diisi.", "Product name is required."));
       return;
     }
     setPending(true);
@@ -207,7 +213,7 @@ function InventoryBody() {
     }
     setForm(EMPTY_FORM);
     setShowForm(false);
-    toast.success("Item added.");
+    toast.success(bi("Item ditambahkan.", "Item added."));
     refresh();
   }
 
@@ -215,7 +221,7 @@ function InventoryBody() {
     const { error } = await supabase.from("admin_inventory").update(values).eq("id", id);
     if (error) toast.error(error.message);
     else {
-      toast.success("Inventory updated.");
+      toast.success(bi("Inventaris diperbarui.", "Inventory updated."));
       refresh();
     }
   }
@@ -238,11 +244,11 @@ function InventoryBody() {
   }
 
   async function remove(item: InventoryItem) {
-    if (!window.confirm(`Delete "${item.name}"?`)) return;
+    if (!window.confirm(bi(`Hapus "${item.name}"?`, `Delete "${item.name}"?`))) return;
     const { error } = await supabase.from("admin_inventory").delete().eq("id", item.id);
     if (error) toast.error(error.message);
     else {
-      toast.success("Item deleted.");
+      toast.success(bi("Item dihapus.", "Item deleted."));
       refresh();
     }
   }
@@ -250,10 +256,10 @@ function InventoryBody() {
   return (
     <div className="grid gap-6">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="SKUs (filtered)" value={String(total)} />
-        <Stat label={`Needs restock (≤ ${threshold} kg)`} value={String(lowCount)} />
-        <Stat label="Page stock value" value={formatIdr(pageValue)} />
-        <Stat label="Total stock value" value={formatIdr(totalValue)} />
+        <Stat label={bi("SKU (difilter)", "SKUs (filtered)")} value={String(total)} />
+        <Stat label={bi(`Perlu restock (≤ ${threshold} kg)`, `Needs restock (≤ ${threshold} kg)`)} value={String(lowCount)} />
+        <Stat label={bi("Nilai stok halaman ini", "Page stock value")} value={formatIdr(pageValue)} />
+        <Stat label={bi("Total nilai stok", "Total stock value")} value={formatIdr(totalValue)} />
       </div>
 
 
@@ -261,17 +267,17 @@ function InventoryBody() {
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search product or brand"
-          aria-label="Search inventory"
+          placeholder={bi("Cari produk atau merek", "Search product or brand")}
+          aria-label={bi("Cari inventaris", "Search inventory")}
           className="min-w-[220px] flex-1 border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
         />
         <select
           value={origin}
           onChange={(e) => setOrigin(e.target.value)}
-          aria-label="Filter by origin"
+          aria-label={bi("Filter berdasarkan asal", "Filter by origin")}
           className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
         >
-          <option value="">All origins</option>
+          <option value="">{bi("Semua asal", "All origins")}</option>
           {originOptions.map((o) => (
             <option key={o} value={o}>
               {o}
@@ -281,10 +287,10 @@ function InventoryBody() {
         <select
           value={condition}
           onChange={(e) => setCondition(e.target.value)}
-          aria-label="Filter by condition"
+          aria-label={bi("Filter berdasarkan kondisi", "Filter by condition")}
           className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
         >
-          <option value="">All conditions</option>
+          <option value="">{bi("Semua kondisi", "All conditions")}</option>
           {CONDITIONS.map((c) => (
             <option key={c} value={c}>
               {CONDITION_LABEL[c]}
@@ -294,22 +300,22 @@ function InventoryBody() {
         <select
           value={featuredFilter}
           onChange={(e) => setFeaturedFilter(e.target.value as typeof featuredFilter)}
-          aria-label="Filter by featured status"
+          aria-label={bi("Filter berdasarkan status unggulan", "Filter by featured status")}
           className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
         >
-          <option value="all">All items</option>
-          <option value="featured">Featured only</option>
-          <option value="not-featured">Not featured</option>
+          <option value="all">{bi("Semua item", "All items")}</option>
+          <option value="featured">{bi("Hanya unggulan", "Featured only")}</option>
+          <option value="not-featured">{bi("Tidak unggulan", "Not featured")}</option>
         </select>
         <select
           value={pageSize}
           onChange={(e) => setPageSize(Number(e.target.value))}
-          aria-label="Rows per page"
+          aria-label={bi("Baris per halaman", "Rows per page")}
           className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
         >
           {PAGE_SIZES.map((n) => (
             <option key={n} value={n}>
-              {n} / page
+              {n} / {bi("hal", "page")}
             </option>
           ))}
         </select>
@@ -318,7 +324,7 @@ function InventoryBody() {
           onClick={() => setShowForm((v) => !v)}
           className="eyebrow bg-crimson px-5 py-3 text-bone"
         >
-          {showForm ? "Close" : "Add item"}
+          {showForm ? bi("Tutup", "Close") : bi("Tambah item", "Add item")}
         </button>
       </div>
 
@@ -326,7 +332,7 @@ function InventoryBody() {
       {showForm ? (
         <Panel className="p-6">
           <form onSubmit={addItem} className="grid gap-4 md:grid-cols-3">
-            <Field label="Origin" required>
+            <Field label={bi("Asal", "Origin")} required>
               <SelectInput
                 value={form.origin}
                 onChange={(e) => setForm({ ...form, origin: e.target.value })}
@@ -338,22 +344,22 @@ function InventoryBody() {
                 ))}
               </SelectInput>
             </Field>
-            <Field label="Brand">
+            <Field label={bi("Merek", "Brand")}>
               <TextInput value={form.brand} onChange={(e) => setForm({ ...form, brand: e.target.value })} />
             </Field>
-            <Field label="Product name" required>
+            <Field label={bi("Nama produk", "Product name")} required>
               <TextInput
                 required
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
             </Field>
-            <Field label="Condition">
+            <Field label={bi("Kondisi", "Condition")}>
               <SelectInput
                 value={form.condition}
                 onChange={(e) => setForm({ ...form, condition: e.target.value })}
               >
-                <option value="">Not specified</option>
+                <option value="">{bi("Tidak ditentukan", "Not specified")}</option>
                 {CONDITIONS.map((c) => (
                   <option key={c} value={c}>
                     {CONDITION_LABEL[c]}
@@ -361,7 +367,7 @@ function InventoryBody() {
                 ))}
               </SelectInput>
             </Field>
-            <Field label="Category">
+            <Field label={bi("Kategori", "Category")}>
               <SelectInput
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
@@ -373,20 +379,20 @@ function InventoryBody() {
                 ))}
               </SelectInput>
             </Field>
-            <Field label="Average weight" hint="e.g. 8KG or 250GR">
+            <Field label={bi("Berat rata-rata", "Average weight")} hint={bi("contoh: 8KG atau 250GR", "e.g. 8KG or 250GR")}>
               <TextInput
                 value={form.avg_weight_text}
                 onChange={(e) => setForm({ ...form, avg_weight_text: e.target.value })}
               />
             </Field>
-            <Field label="Sale price (IDR / kg)">
+            <Field label={bi("Harga jual (IDR / kg)", "Sale price (IDR / kg)")}>
               <TextInput
                 inputMode="numeric"
                 value={form.sale_price_idr}
                 onChange={(e) => setForm({ ...form, sale_price_idr: e.target.value })}
               />
             </Field>
-            <Field label="Markup (IDR / kg)">
+            <Field label={bi("Markup (IDR / kg)", "Markup (IDR / kg)")}>
               <TextInput
                 inputMode="numeric"
                 placeholder={String(defaultMarkup(form.name, form.brand))}
@@ -394,7 +400,7 @@ function InventoryBody() {
                 onChange={(e) => setForm({ ...form, markup_idr: e.target.value })}
               />
             </Field>
-            <Field label="Quantity on hand (kg)">
+            <Field label={bi("Jumlah tersedia (kg)", "Quantity on hand (kg)")}>
               <TextInput
                 inputMode="decimal"
                 value={form.qty_on_hand_kg}
@@ -407,7 +413,7 @@ function InventoryBody() {
                 disabled={pending}
                 className="eyebrow w-full bg-crimson px-6 py-4 text-bone disabled:opacity-60"
               >
-                {pending ? "Saving…" : "Save item"}
+                {pending ? bi("Menyimpan…", "Saving…") : bi("Simpan item", "Save item")}
               </button>
             </div>
           </form>
@@ -415,28 +421,28 @@ function InventoryBody() {
       ) : null}
 
       {isLoading ? (
-        <p className="text-sm text-ash">Loading inventory…</p>
+        <p className="text-sm text-ash">{bi("Memuat inventaris…", "Loading inventory…")}</p>
       ) : rows.length === 0 ? (
-        <Panel className="p-10 text-center text-sm text-ash">No inventory matches these filters.</Panel>
+        <Panel className="p-10 text-center text-sm text-ash">{bi("Tidak ada inventaris yang cocok dengan filter ini.", "No inventory matches these filters.")}</Panel>
       ) : (
         <Panel className="overflow-x-auto">
           <table className="w-full min-w-[1460px] text-left text-sm">
             <thead className="border-b border-line text-xs uppercase tracking-[0.16em] text-ash">
               <tr>
-                <th className="px-4 py-3">Product</th>
-                <th className="px-4 py-3">Origin</th>
-                <th className="px-4 py-3">Brand</th>
-                <th className="px-4 py-3">Cond.</th>
-                <th className="px-4 py-3">Category</th>
-                <th className="px-4 py-3">Avg wt</th>
-                <th className="px-4 py-3">Price / kg</th>
-                <th className="px-4 py-3">Markup / kg</th>
-                <th className="px-4 py-3">Public price</th>
-                <th className="px-4 py-3">Promo / kg</th>
-                <th className="px-4 py-3">Promo until</th>
-                <th className="px-4 py-3">Qty (kg)</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Homepage</th>
+                <th className="px-4 py-3">{bi("Produk", "Product")}</th>
+                <th className="px-4 py-3">{bi("Asal", "Origin")}</th>
+                <th className="px-4 py-3">{bi("Merek", "Brand")}</th>
+                <th className="px-4 py-3">{bi("Kondisi", "Cond.")}</th>
+                <th className="px-4 py-3">{bi("Kategori", "Category")}</th>
+                <th className="px-4 py-3">{bi("Berat rata-rata", "Avg wt")}</th>
+                <th className="px-4 py-3">{bi("Harga / kg", "Price / kg")}</th>
+                <th className="px-4 py-3">{bi("Markup / kg", "Markup / kg")}</th>
+                <th className="px-4 py-3">{bi("Harga publik", "Public price")}</th>
+                <th className="px-4 py-3">{bi("Promo / kg", "Promo / kg")}</th>
+                <th className="px-4 py-3">{bi("Promo sampai", "Promo until")}</th>
+                <th className="px-4 py-3">{bi("Jumlah (kg)", "Qty (kg)")}</th>
+                <th className="px-4 py-3">{bi("Status", "Status")}</th>
+                <th className="px-4 py-3">{bi("Beranda", "Homepage")}</th>
 
                 <th className="px-4 py-3" />
               </tr>
@@ -448,7 +454,7 @@ function InventoryBody() {
                 <tr key={item.id} className="border-b border-line/60 last:border-0">
                   <td className="px-4 py-3 text-ink">
                     {item.name}
-                    {!item.is_active ? <span className="ml-2 text-xs text-ash">(hidden)</span> : null}
+                    {!item.is_active ? <span className="ml-2 text-xs text-ash">{bi("(disembunyikan)", "(hidden)")}</span> : null}
                   </td>
                   <td className="px-4 py-3 text-ash">{item.origin}</td>
                   <td className="px-4 py-3 text-xs text-ash">{item.brand || "—"}</td>
@@ -558,10 +564,10 @@ function InventoryBody() {
                   <td className="px-4 py-3">
                     {Number(item.qty_on_hand_kg) <= threshold ? (
                       <span className="eyebrow inline-block bg-crimson/10 px-2 py-1 text-crimson">
-                        Restock
+                        {bi("Restok", "Restock")}
                       </span>
                     ) : (
-                      <span className="eyebrow inline-block bg-ink/5 px-2 py-1 text-ash">In stock</span>
+                      <span className="eyebrow inline-block bg-ink/5 px-2 py-1 text-ash">{bi("Tersedia", "In stock")}</span>
                     )}
                   </td>
                   <td className="px-4 py-3">
@@ -574,10 +580,10 @@ function InventoryBody() {
                         }
                         className="border border-line bg-bone px-2 py-1 text-xs text-ink outline-none focus:border-crimson"
                       >
-                        <option value="">Not featured</option>
+                        <option value="">{bi("Tidak unggulan", "Not featured")}</option>
                         {FEATURED_RANKS.map((r) => (
                           <option key={r} value={r}>
-                            Top {r}
+                            {bi(`Top ${r}`, `Top ${r}`)}
                           </option>
                         ))}
                       </select>
@@ -605,14 +611,14 @@ function InventoryBody() {
                       onClick={() => void patch(item.id, { is_active: !item.is_active })}
                       className="text-xs text-ash underline underline-offset-4"
                     >
-                      {item.is_active ? "Hide" : "Show"}
+                      {item.is_active ? bi("Sembunyikan", "Hide") : bi("Tampilkan", "Show")}
                     </button>
                     <button
                       type="button"
                       onClick={() => void remove(item)}
                       className="ml-3 text-xs text-crimson underline underline-offset-4"
                     >
-                      Delete
+                      {bi("Hapus", "Delete")}
                     </button>
                   </td>
                 </tr>
@@ -625,7 +631,10 @@ function InventoryBody() {
       {total > 0 ? (
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-ash">
           <p>
-            Showing {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)} of {total} items
+            {bi(
+              `Menampilkan ${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, total)} dari ${total} item`,
+              `Showing ${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, total)} of ${total} items`,
+            )}
           </p>
 
           <div className="flex items-center gap-3">
@@ -635,10 +644,10 @@ function InventoryBody() {
               disabled={page <= 1}
               className="eyebrow border border-line px-4 py-2 text-ink disabled:opacity-40"
             >
-              Previous
+              {bi("Sebelumnya", "Previous")}
             </button>
             <span>
-              Page {page} / {pageCount}
+              {bi(`Halaman ${page} / ${pageCount}`, `Page ${page} / ${pageCount}`)}
             </span>
             <button
               type="button"
@@ -646,7 +655,7 @@ function InventoryBody() {
               disabled={page >= pageCount}
               className="eyebrow border border-line px-4 py-2 text-ink disabled:opacity-40"
             >
-              Next
+              {bi("Berikutnya", "Next")}
             </button>
           </div>
         </div>

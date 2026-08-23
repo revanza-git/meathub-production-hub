@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { formatIdr } from "@/lib/meatlink/inventory";
+import { useBi } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/commerce")({
   head: () => ({
@@ -28,10 +29,14 @@ export const Route = createFileRoute("/_authenticated/admin/commerce")({
 });
 
 function AdminCommercePage() {
+  const bi = useBi();
   return (
     <AppShell
-      title="Promo & kredit"
-      intro="Kode promo checkout, harga kontrak per pembeli, dan limit pembayaran tempo."
+      title={bi("Promo & kredit", "Promotions & credit")}
+      intro={bi(
+        "Kode promo checkout, harga kontrak per pembeli, dan limit pembayaran tempo.",
+        "Checkout promo codes, per-buyer contract prices, and payment-terms limits.",
+      )}
     >
       <RoleGate allow="admin">
         <div className="space-y-10 sm:space-y-12">
@@ -125,6 +130,7 @@ function EmptyState({
 /* ---------- coupons ---------- */
 
 function Coupons() {
+  const bi = useBi();
   const qc = useQueryClient();
   const [form, setForm] = useState({
     code: "",
@@ -155,7 +161,7 @@ function Coupons() {
     const code = form.code.trim().toUpperCase();
     const value = Number(form.discount_value);
     if (!code || !value) {
-      toast.error("Kode dan nilai diskon wajib diisi.");
+      toast.error(bi("Kode dan nilai diskon wajib diisi.", "Code and discount value are required."));
       return;
     }
     const { error } = await supabase.from("ml_coupons").insert({
@@ -172,7 +178,7 @@ function Coupons() {
       toast.error(error.message);
       return;
     }
-    toast.success("Kode promo dibuat.");
+    toast.success(bi("Kode promo dibuat.", "Promo code created."));
     setForm({
       code: "",
       description: "",
@@ -197,30 +203,30 @@ function Coupons() {
 
   return (
     <section className="space-y-5 sm:space-y-6">
-      <SectionHeader title="Kode promo" hint="Formulir baru" />
+      <SectionHeader title={bi("Kode promo", "Promo codes")} hint={bi("Formulir baru", "New entry")} />
 
       <Panel className="overflow-hidden p-0 shadow-sm">
         <div className={formGrid}>
-          <Field label="Kode">
+          <Field label={bi("Kode", "Code")}>
             <input
               type="text"
               className={`${inputClass} uppercase`}
-              placeholder="KODE"
+              placeholder={bi("KODE", "CODE")}
               value={form.code}
               onChange={(e) => setForm((f) => ({ ...f, code: e.target.value.toUpperCase() }))}
             />
           </Field>
-          <Field label="Tipe">
+          <Field label={bi("Tipe", "Type")}>
             <select
               className={inputClass}
               value={form.discount_type}
               onChange={(e) => setForm((f) => ({ ...f, discount_type: e.target.value }))}
             >
-              <option value="PERCENT">Persen (%)</option>
-              <option value="AMOUNT">Nominal (Rp)</option>
+              <option value="PERCENT">{bi("Persen (%)", "Percent (%)")}</option>
+              <option value="AMOUNT">{bi("Nominal (Rp)", "Amount (Rp)")}</option>
             </select>
           </Field>
-          <Field label="Nilai diskon">
+          <Field label={bi("Nilai diskon", "Discount value")}>
             <input
               type="number"
               inputMode="numeric"
@@ -230,7 +236,7 @@ function Coupons() {
               onChange={(e) => setForm((f) => ({ ...f, discount_value: e.target.value }))}
             />
           </Field>
-          <Field label="Min. belanja">
+          <Field label={bi("Min. belanja", "Min. spend")}>
             <input
               type="number"
               inputMode="numeric"
@@ -240,7 +246,7 @@ function Coupons() {
               onChange={(e) => setForm((f) => ({ ...f, min_subtotal_idr: e.target.value }))}
             />
           </Field>
-          <Field label="Maks. diskon">
+          <Field label={bi("Maks. diskon", "Max discount")}>
             <input
               type="number"
               inputMode="numeric"
@@ -250,7 +256,7 @@ function Coupons() {
               onChange={(e) => setForm((f) => ({ ...f, max_discount_idr: e.target.value }))}
             />
           </Field>
-          <Field label="Berlaku sampai">
+          <Field label={bi("Berlaku sampai", "Valid until")}>
             <input
               type="date"
               className={inputClass}
@@ -258,7 +264,7 @@ function Coupons() {
               onChange={(e) => setForm((f) => ({ ...f, ends_at: e.target.value }))}
             />
           </Field>
-          <Field label="Kuota">
+          <Field label={bi("Kuota", "Usage limit")}>
             <input
               type="number"
               inputMode="numeric"
@@ -268,7 +274,7 @@ function Coupons() {
               onChange={(e) => setForm((f) => ({ ...f, usage_limit: e.target.value }))}
             />
           </Field>
-          <Field label="Keterangan">
+          <Field label={bi("Keterangan", "Description")}>
             <input
               type="text"
               className={inputClass}
@@ -281,13 +287,13 @@ function Coupons() {
         <div className={actionBar}>
           <p className="min-w-0 text-xs text-ash">
             {isLoading
-              ? "Memuat kode promo…"
+              ? bi("Memuat kode promo…", "Loading promo codes…")
               : rows.length === 0
-                ? "Belum ada kode promo."
-                : `${rows.length} kode promo tersimpan.`}
+                ? bi("Belum ada kode promo.", "No promo codes yet.")
+                : bi(`${rows.length} kode promo tersimpan.`, `${rows.length} promo codes saved.`)}
           </p>
           <button type="button" onClick={() => void create()} className={buttonPrimary}>
-            Tambah kode
+            {bi("Tambah kode", "Add code")}
           </button>
         </div>
       </Panel>
@@ -296,9 +302,15 @@ function Coupons() {
         <ListSkeleton rows={3} />
       ) : rows.length === 0 ? (
         <EmptyState
-          title="Belum ada promo"
-          description="Kode promo pertama Anda akan tampil di sini."
-          hint="Isi kode, tipe diskon, dan nilainya pada formulir di atas, lalu tekan “Tambah kode”."
+          title={bi("Belum ada promo", "No promos yet")}
+          description={bi(
+            "Kode promo pertama Anda akan tampil di sini.",
+            "Your first promo code will show up here.",
+          )}
+          hint={bi(
+            "Isi kode, tipe diskon, dan nilainya pada formulir di atas, lalu tekan “Tambah kode”.",
+            "Fill in the code, discount type and value above, then press “Add code”.",
+          )}
         />
       ) : (
         <ul className="border border-line bg-card text-sm">
@@ -315,9 +327,9 @@ function Coupons() {
                     : formatIdr(Number(c.discount_value))}
                 </p>
                 <p className="mt-1 text-xs text-ash">
-                  Min {formatIdr(Number(c.min_subtotal_idr))} · dipakai {c.used_count}
+                  {bi("Min", "Min")} {formatIdr(Number(c.min_subtotal_idr))} · {bi("dipakai", "used")} {c.used_count}
                   {c.usage_limit ? `/${c.usage_limit}` : ""}
-                  {c.ends_at ? ` · s/d ${new Date(c.ends_at).toLocaleDateString("id-ID")}` : ""}
+                  {c.ends_at ? ` · ${bi("s/d", "until")} ${new Date(c.ends_at).toLocaleDateString("id-ID")}` : ""}
                 </p>
               </div>
               <button
@@ -325,7 +337,7 @@ function Coupons() {
                 onClick={() => void toggle(c.id, !c.is_active)}
                 className={buttonSecondary}
               >
-                {c.is_active ? "Nonaktifkan" : "Aktifkan"}
+                {c.is_active ? bi("Nonaktifkan", "Deactivate") : bi("Aktifkan", "Activate")}
               </button>
             </li>
           ))}
@@ -338,6 +350,7 @@ function Coupons() {
 /* ---------- credit accounts ---------- */
 
 function CreditAccounts() {
+  const bi = useBi();
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ["admin-credit"],
@@ -368,21 +381,30 @@ function CreditAccounts() {
       toast.error(error.message);
       return;
     }
-    toast.success("Limit tempo diperbarui.");
+    toast.success(bi("Limit tempo diperbarui.", "Payment-terms limit updated."));
     qc.invalidateQueries({ queryKey: ["admin-credit"] });
   }
 
   return (
     <section className="space-y-5 sm:space-y-6">
-      <SectionHeader title="Limit pembayaran tempo (TOP)" hint="Persetujuan" />
+      <SectionHeader
+        title={bi("Limit pembayaran tempo (TOP)", "Payment-terms limit (TOP)")}
+        hint={bi("Persetujuan", "Approval")}
+      />
 
       {isLoading ? (
         <ListSkeleton rows={2} />
       ) : rows.length === 0 ? (
         <EmptyState
-          title="Belum ada pengajuan"
-          description="Belum ada pembeli yang mengajukan limit pembayaran tempo."
-          hint="Pengajuan dari halaman akun pembeli akan otomatis muncul di sini untuk disetujui atau dibekukan."
+          title={bi("Belum ada pengajuan", "No applications yet")}
+          description={bi(
+            "Belum ada pembeli yang mengajukan limit pembayaran tempo.",
+            "No buyer has applied for a payment-terms limit yet.",
+          )}
+          hint={bi(
+            "Pengajuan dari halaman akun pembeli akan otomatis muncul di sini untuk disetujui atau dibekukan.",
+            "Applications from the buyer account page will automatically appear here to approve or suspend.",
+          )}
         />
       ) : (
         <ul className="border border-line bg-card text-sm">
@@ -398,10 +420,10 @@ function CreditAccounts() {
               >
                 <div className="min-w-0">
                   <p className="truncate font-mono text-xs text-ash">{a.user_id}</p>
-                  <p className="mt-1 text-xs text-ash">Status: {a.status}</p>
+                  <p className="mt-1 text-xs text-ash">{bi("Status", "Status")}: {a.status}</p>
                 </div>
                 <div className="min-w-0">
-                  <label className={labelClass}>Limit</label>
+                  <label className={labelClass}>{bi("Limit", "Limit")}</label>
                   <input
                     type="number"
                     inputMode="numeric"
@@ -411,7 +433,7 @@ function CreditAccounts() {
                   />
                 </div>
                 <div className="min-w-0">
-                  <label className={labelClass}>Hari</label>
+                  <label className={labelClass}>{bi("Hari", "Days")}</label>
                   <input
                     type="number"
                     inputMode="numeric"
@@ -431,7 +453,7 @@ function CreditAccounts() {
                     }
                     className={buttonSecondary}
                   >
-                    Setujui
+                    {bi("Setujui", "Approve")}
                   </button>
                   <button
                     type="button"
@@ -443,7 +465,7 @@ function CreditAccounts() {
                     }
                     className={buttonSecondary}
                   >
-                    Bekukan
+                    {bi("Bekukan", "Suspend")}
                   </button>
                 </div>
               </li>
@@ -458,6 +480,7 @@ function CreditAccounts() {
 /* ---------- buyer contract prices ---------- */
 
 function BuyerPrices() {
+  const bi = useBi();
   const qc = useQueryClient();
   const [form, setForm] = useState({ user_id: "", slug: "", price: "", valid_until: "" });
 
@@ -483,7 +506,7 @@ function BuyerPrices() {
       .eq("slug", form.slug.trim())
       .maybeSingle();
     if (invError || !inv) {
-      toast.error("Produk dengan slug tersebut tidak ditemukan.");
+      toast.error(bi("Produk dengan slug tersebut tidak ditemukan.", "No product found with that slug."));
       return;
     }
     const { error } = await supabase.from("ml_buyer_prices").upsert(
@@ -499,7 +522,7 @@ function BuyerPrices() {
       toast.error(error.message);
       return;
     }
-    toast.success("Harga kontrak disimpan.");
+    toast.success(bi("Harga kontrak disimpan.", "Contract price saved."));
     setForm({ user_id: "", slug: "", price: "", valid_until: "" });
     qc.invalidateQueries({ queryKey: ["admin-buyer-prices"] });
   }
@@ -515,20 +538,20 @@ function BuyerPrices() {
 
   return (
     <section className="space-y-5 sm:space-y-6">
-      <SectionHeader title="Harga kontrak pembeli" hint="Formulir baru" />
+      <SectionHeader title={bi("Harga kontrak pembeli", "Buyer contract prices")} hint={bi("Formulir baru", "New entry")} />
 
       <Panel className="overflow-hidden p-0 shadow-sm">
         <div className={formGrid}>
-          <Field label="User ID pembeli">
+          <Field label={bi("User ID pembeli", "Buyer user ID")}>
             <input
               type="text"
               className={inputClass}
-              placeholder="Cari user…"
+              placeholder={bi("Cari user…", "Search user…")}
               value={form.user_id}
               onChange={(e) => setForm((f) => ({ ...f, user_id: e.target.value }))}
             />
           </Field>
-          <Field label="Slug produk">
+          <Field label={bi("Slug produk", "Product slug")}>
             <input
               type="text"
               className={inputClass}
@@ -537,7 +560,7 @@ function BuyerPrices() {
               onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
             />
           </Field>
-          <Field label="Harga /kg">
+          <Field label={bi("Harga /kg", "Price /kg")}>
             <input
               type="number"
               inputMode="numeric"
@@ -547,7 +570,7 @@ function BuyerPrices() {
               onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
             />
           </Field>
-          <Field label="Berlaku sampai">
+          <Field label={bi("Berlaku sampai", "Valid until")}>
             <input
               type="date"
               className={inputClass}
@@ -559,13 +582,13 @@ function BuyerPrices() {
         <div className={actionBar}>
           <p className="min-w-0 text-xs text-ash">
             {isLoading
-              ? "Memuat harga kontrak…"
+              ? bi("Memuat harga kontrak…", "Loading contract prices…")
               : rows.length === 0
-                ? "Belum ada harga kontrak."
-                : `${rows.length} harga kontrak tercatat.`}
+                ? bi("Belum ada harga kontrak.", "No contract prices yet.")
+                : bi(`${rows.length} harga kontrak tercatat.`, `${rows.length} contract prices recorded.`)}
           </p>
           <button type="button" onClick={() => void add()} className={buttonPrimary}>
-            Simpan harga
+            {bi("Simpan harga", "Save price")}
           </button>
         </div>
       </Panel>
@@ -574,9 +597,15 @@ function BuyerPrices() {
         <ListSkeleton rows={2} />
       ) : rows.length === 0 ? (
         <EmptyState
-          title="Belum ada kontrak"
-          description="Harga khusus per pembeli belum ditetapkan."
-          hint="Masukkan User ID pembeli dan slug produk untuk mengunci harga kontrak pada periode tertentu."
+          title={bi("Belum ada kontrak", "No contracts yet")}
+          description={bi(
+            "Harga khusus per pembeli belum ditetapkan.",
+            "No buyer-specific price has been set yet.",
+          )}
+          hint={bi(
+            "Masukkan User ID pembeli dan slug produk untuk mengunci harga kontrak pada periode tertentu.",
+            "Enter the buyer user ID and product slug to lock in a contract price for a set period.",
+          )}
         />
       ) : (
         <ul className="border border-line bg-card text-sm">
@@ -587,16 +616,16 @@ function BuyerPrices() {
             >
               <div className="min-w-0">
                 <p className="truncate text-ink">
-                  {(p as { admin_inventory?: { name?: string } }).admin_inventory?.name ?? "Produk"} —{" "}
+                  {(p as { admin_inventory?: { name?: string } }).admin_inventory?.name ?? bi("Produk", "Product")} —{" "}
                   {formatIdr(Number(p.price_idr))}/kg
                 </p>
                 <p className="mt-1 truncate font-mono text-xs text-ash">
                   {p.user_id}
-                  {p.valid_until ? ` · s/d ${p.valid_until}` : ""}
+                  {p.valid_until ? ` · ${bi("s/d", "until")} ${p.valid_until}` : ""}
                 </p>
               </div>
               <button type="button" onClick={() => void remove(p.id)} className={buttonSecondary}>
-                Hapus
+                {bi("Hapus", "Delete")}
               </button>
             </li>
           ))}

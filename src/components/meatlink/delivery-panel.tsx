@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { PackageCheck, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyOrderEventPublic } from "@/lib/meatlink/notify.functions";
+import { useBi } from "@/lib/i18n";
 
 type Props = {
   orderNo: string;
@@ -37,6 +38,7 @@ export function DeliveryPanel({
   confirmedAt,
   onConfirmed,
 }: Props) {
+  const bi = useBi();
   const [saving, setSaving] = useState(false);
   const hasInfo = Boolean(courier || trackingNo || etaDate || shippedAt || deliveredAt);
   if (!hasInfo && status !== "SHIPPED") return null;
@@ -55,43 +57,43 @@ export function DeliveryPanel({
     void notifyOrderEventPublic({
       data: { orderNo, token, event: "completed" },
     }).catch(() => undefined);
-    toast.success("Terima kasih — pesanan ditandai selesai.");
+    toast.success(bi("Terima kasih — pesanan ditandai selesai.", "Thank you — the order has been marked completed."));
     onConfirmed();
   }
 
   return (
     <div className="mt-8 border border-line p-6">
       <h2 className="eyebrow inline-flex items-center gap-2 text-ash">
-        <Truck className="h-4 w-4" /> Pengiriman
+        <Truck className="h-4 w-4" /> {bi("Pengiriman", "Delivery")}
       </h2>
       <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
         {courier ? (
           <div>
-            <dt className="text-xs uppercase tracking-wide text-ash">Kurir</dt>
+            <dt className="text-xs uppercase tracking-wide text-ash">{bi("Kurir", "Courier")}</dt>
             <dd className="mt-1 text-ink">{courier}</dd>
           </div>
         ) : null}
         {trackingNo ? (
           <div>
-            <dt className="text-xs uppercase tracking-wide text-ash">No. resi</dt>
+            <dt className="text-xs uppercase tracking-wide text-ash">{bi("No. resi", "Tracking no.")}</dt>
             <dd className="mt-1 font-mono text-ink">{trackingNo}</dd>
           </div>
         ) : null}
         {etaDate ? (
           <div>
-            <dt className="text-xs uppercase tracking-wide text-ash">Estimasi tiba</dt>
+            <dt className="text-xs uppercase tracking-wide text-ash">{bi("Estimasi tiba", "Estimated arrival")}</dt>
             <dd className="mt-1 text-ink">{formatDay(etaDate)}</dd>
           </div>
         ) : null}
         {shippedAt ? (
           <div>
-            <dt className="text-xs uppercase tracking-wide text-ash">Dikirim</dt>
+            <dt className="text-xs uppercase tracking-wide text-ash">{bi("Dikirim", "Shipped")}</dt>
             <dd className="mt-1 text-ink">{formatDay(shippedAt)}</dd>
           </div>
         ) : null}
         {deliveredAt ? (
           <div>
-            <dt className="text-xs uppercase tracking-wide text-ash">Diterima</dt>
+            <dt className="text-xs uppercase tracking-wide text-ash">{bi("Diterima", "Received")}</dt>
             <dd className="mt-1 text-ink">{formatDay(deliveredAt)}</dd>
           </div>
         ) : null}
@@ -100,7 +102,10 @@ export function DeliveryPanel({
       {status === "SHIPPED" && !confirmedAt ? (
         <div className="mt-6 border-t border-line pt-6">
           <p className="text-sm text-ink/80">
-            Sudah menerima pesanan Anda? Konfirmasi penerimaan agar pesanan ditutup.
+            {bi(
+              "Sudah menerima pesanan Anda? Konfirmasi penerimaan agar pesanan ditutup.",
+              "Have you received your order? Confirm receipt to close it out.",
+            )}
           </p>
           <button
             type="button"
@@ -109,15 +114,17 @@ export function DeliveryPanel({
             className="eyebrow mt-4 inline-flex items-center gap-2 bg-crimson px-6 py-3 text-bone hover:bg-crimson-deep disabled:opacity-60"
           >
             <PackageCheck className="h-4 w-4" />
-            {saving ? "Menyimpan…" : "Konfirmasi pesanan diterima"}
+            {saving ? bi("Menyimpan…", "Saving…") : bi("Konfirmasi pesanan diterima", "Confirm order received")}
           </button>
         </div>
       ) : null}
 
       {confirmedAt ? (
         <p className="mt-6 border-t border-line pt-6 text-sm text-ink/80">
-          Penerimaan dikonfirmasi pada {formatDay(confirmedAt)}. Terima kasih telah berbelanja di
-          Meatlink.
+          {bi(
+            `Penerimaan dikonfirmasi pada ${formatDay(confirmedAt)}. Terima kasih telah berbelanja di Meatlink.`,
+            `Receipt confirmed on ${formatDay(confirmedAt)}. Thank you for shopping with Meatlink.`,
+          )}
         </p>
       ) : null}
     </div>

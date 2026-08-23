@@ -15,6 +15,7 @@ import {
 
   type InventoryDraft,
 } from "@/lib/meatlink/inventory";
+import { useBi } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/inventory/import")({
   component: InventoryImportPage,
@@ -30,13 +31,17 @@ export const Route = createFileRoute("/_authenticated/admin/inventory/import")({
 });
 
 function InventoryImportPage() {
+  const bi = useBi();
   return (
     <AppShell
-      title="Import inventory"
-      intro="Upload an Excel or CSV file using the Meatlink template. Review the preview before writing to the database."
+      title={bi("Impor inventaris", "Import inventory")}
+      intro={bi(
+        "Unggah file Excel atau CSV menggunakan template Meatlink. Tinjau pratinjau sebelum menyimpan ke database.",
+        "Upload an Excel or CSV file using the Meatlink template. Review the preview before writing to the database.",
+      )}
       actions={
         <Link to="/admin/inventory" className="eyebrow border border-ink/25 px-5 py-3 text-ink">
-          Back to inventory
+          {bi("Kembali ke inventaris", "Back to inventory")}
         </Link>
       }
     >
@@ -50,6 +55,7 @@ function InventoryImportPage() {
 type Mode = "append" | "replace";
 
 function ImportBody() {
+  const bi = useBi();
   const [rows, setRows] = useState<InventoryDraft[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
   const [fileName, setFileName] = useState("");
@@ -74,7 +80,7 @@ function ImportBody() {
       const book = XLSX.read(await file.arrayBuffer(), { type: "array" });
       const first = book.SheetNames[0];
       if (!first) {
-        setErrors(["The workbook has no sheets."]);
+        setErrors([bi("Berkas tidak memiliki sheet.", "The workbook has no sheets.")]);
         setRows([]);
         return;
       }
@@ -90,7 +96,7 @@ function ImportBody() {
     setRows(parsed);
     setErrors(collected);
     if (parsed.length === 0 && collected.length === 0) {
-      setErrors(["No usable rows found. Check that the header matches the template."]);
+      setErrors([bi("Tidak ada baris yang dapat digunakan. Periksa apakah header sesuai template.", "No usable rows found. Check that the header matches the template.")]);
     }
   }
 
@@ -106,12 +112,12 @@ function ImportBody() {
         const { error } = await supabase.from("admin_inventory").insert(rows.slice(i, i + 200));
         if (error) throw error;
       }
-      toast.success(`${rows.length} items imported.`);
+      toast.success(bi(`${rows.length} item berhasil diimpor.`, `${rows.length} items imported.`));
       setRows([]);
       setErrors([]);
       setFileName("");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Import failed.");
+      toast.error(err instanceof Error ? err.message : bi("Impor gagal.", "Import failed."));
     } finally {
       setPending(false);
     }
@@ -122,10 +128,11 @@ function ImportBody() {
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       <Panel className="p-6 lg:col-span-1">
-        <p className="eyebrow text-ash">Step 1 — template</p>
+        <p className="eyebrow text-ash">{bi("Langkah 1 — template", "Step 1 — template")}</p>
         <p className="mt-3 text-sm text-ash">
-          Columns: {IMPORT_COLUMNS.join(", ")}. Condition accepts FRZ or CHL. Prices are IDR per kg.
-          Leave <span className="text-ink">markup_idr</span> blank to auto-apply Rp 150.000 for A5 and Rp 60.000 for the rest.
+          {bi("Kolom", "Columns")}: {IMPORT_COLUMNS.join(", ")}. {bi("Condition menerima FRZ atau CHL. Harga dalam IDR per kg.", "Condition accepts FRZ or CHL. Prices are IDR per kg.")}
+          {" "}
+          {bi("Biarkan", "Leave")} <span className="text-ink">markup_idr</span> {bi("kosong untuk otomatis menerapkan Rp 150.000 untuk A5 dan Rp 60.000 untuk lainnya.", "blank to auto-apply Rp 150.000 for A5 and Rp 60.000 for the rest.")}
         </p>
 
         <button
@@ -133,14 +140,14 @@ function ImportBody() {
           onClick={downloadTemplate}
           className="eyebrow mt-4 w-full border border-ink/25 px-5 py-3 text-ink"
         >
-          Download .xlsx template
+          {bi("Unduh template .xlsx", "Download .xlsx template")}
         </button>
 
-        <p className="eyebrow mt-8 text-ash">Step 2 — upload</p>
+        <p className="eyebrow mt-8 text-ash">{bi("Langkah 2 — unggah", "Step 2 — upload")}</p>
         <input
           type="file"
           accept=".xlsx,.xls,.csv"
-          aria-label="Inventory spreadsheet"
+          aria-label={bi("Spreadsheet inventaris", "Inventory spreadsheet")}
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) void onFile(file);
@@ -149,7 +156,7 @@ function ImportBody() {
         />
         {fileName ? <p className="mt-2 text-xs text-ash">{fileName}</p> : null}
 
-        <p className="eyebrow mt-8 text-ash">Step 3 — mode</p>
+        <p className="eyebrow mt-8 text-ash">{bi("Langkah 3 — mode", "Step 3 — mode")}</p>
         <div className="mt-3 grid gap-2 text-sm text-ink">
           <label className="flex items-start gap-3">
             <input
@@ -160,8 +167,8 @@ function ImportBody() {
               className="mt-1"
             />
             <span>
-              Add to existing list
-              <span className="block text-xs text-ash">Keeps current items and appends the file.</span>
+              {bi("Tambahkan ke daftar yang ada", "Add to existing list")}
+              <span className="block text-xs text-ash">{bi("Mempertahankan item saat ini dan menambahkan berkas.", "Keeps current items and appends the file.")}</span>
             </span>
           </label>
           <label className="flex items-start gap-3">
@@ -173,8 +180,8 @@ function ImportBody() {
               className="mt-1"
             />
             <span>
-              Replace everything
-              <span className="block text-xs text-ash">Deletes all current inventory first.</span>
+              {bi("Ganti semuanya", "Replace everything")}
+              <span className="block text-xs text-ash">{bi("Menghapus semua inventaris saat ini terlebih dahulu.", "Deletes all current inventory first.")}</span>
             </span>
           </label>
         </div>
@@ -185,14 +192,14 @@ function ImportBody() {
           onClick={() => void commit()}
           className="eyebrow mt-6 w-full bg-crimson px-6 py-4 text-bone disabled:opacity-50"
         >
-          {pending ? "Importing…" : `Import ${rows.length} item(s)`}
+          {pending ? bi("Mengimpor…", "Importing…") : bi(`Impor ${rows.length} item`, `Import ${rows.length} item(s)`)}
         </button>
       </Panel>
 
       <div className="grid gap-5 lg:col-span-2">
         {errors.length > 0 ? (
           <Panel className="border-crimson/40 p-5">
-            <p className="eyebrow text-crimson">{errors.length} row issue(s) skipped</p>
+            <p className="eyebrow text-crimson">{bi(`${errors.length} baris bermasalah dilewati`, `${errors.length} row issue(s) skipped`)}</p>
             <ul className="mt-3 grid gap-1 text-sm text-ash">
               {errors.slice(0, 20).map((e) => (
                 <li key={e}>{e}</li>
@@ -204,18 +211,18 @@ function ImportBody() {
         {rows.length > 0 ? (
           <Panel className="overflow-x-auto">
             <p className="border-b border-line px-4 py-3 text-xs text-ash">
-              Preview — {rows.length} rows, {formatQty(totalKg)} total
+              {bi(`Pratinjau — ${rows.length} baris, total ${formatQty(totalKg)}`, `Preview — ${rows.length} rows, ${formatQty(totalKg)} total`)}
             </p>
             <table className="w-full min-w-[900px] text-left text-sm">
               <thead className="border-b border-line text-xs uppercase tracking-[0.16em] text-ash">
                 <tr>
-                  <th className="px-4 py-3">Product</th>
-                  <th className="px-4 py-3">Origin</th>
-                  <th className="px-4 py-3">Brand</th>
-                  <th className="px-4 py-3">Base / kg</th>
-                  <th className="px-4 py-3">Markup / kg</th>
-                  <th className="px-4 py-3">Public / kg</th>
-                  <th className="px-4 py-3">Qty</th>
+                  <th className="px-4 py-3">{bi("Produk", "Product")}</th>
+                  <th className="px-4 py-3">{bi("Asal", "Origin")}</th>
+                  <th className="px-4 py-3">{bi("Merek", "Brand")}</th>
+                  <th className="px-4 py-3">{bi("Dasar / kg", "Base / kg")}</th>
+                  <th className="px-4 py-3">{bi("Markup / kg", "Markup / kg")}</th>
+                  <th className="px-4 py-3">{bi("Publik / kg", "Public / kg")}</th>
+                  <th className="px-4 py-3">{bi("Jumlah", "Qty")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -237,13 +244,13 @@ function ImportBody() {
 
             {rows.length > 50 ? (
               <p className="border-t border-line px-4 py-3 text-xs text-ash">
-                Showing first 50 of {rows.length} rows.
+                {bi(`Menampilkan 50 pertama dari ${rows.length} baris.`, `Showing first 50 of ${rows.length} rows.`)}
               </p>
             ) : null}
           </Panel>
         ) : (
           <Panel className="p-10 text-center text-sm text-ash">
-            Upload a file to preview the rows before importing.
+            {bi("Unggah berkas untuk melihat pratinjau baris sebelum mengimpor.", "Upload a file to preview the rows before importing.")}
           </Panel>
         )}
       </div>

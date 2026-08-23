@@ -4,7 +4,8 @@ import { CheckCircle2 } from "lucide-react";
 import { SiteLayout } from "@/components/site/site-layout";
 import { supabase } from "@/integrations/supabase/client";
 import { formatIdr } from "@/lib/meatlink/inventory";
-import { ORDER_STATUS_LABEL, PAY_METHOD_LABEL, type PayMethod } from "@/lib/meatlink/cart";
+import { type PayMethod } from "@/lib/meatlink/cart";
+import { useBi, useLabel, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
 import { WHATSAPP_NUMBER } from "@/lib/meatlink/config";
 import { PaymentPanel } from "@/components/meatlink/payment-panel";
 import { PaymentProofUpload } from "@/components/meatlink/payment-proof";
@@ -66,6 +67,8 @@ export const Route = createFileRoute("/pesanan/$orderNo")({
 });
 
 function OrderPage() {
+  const bi = useBi();
+  const label = useLabel();
   const { orderNo } = Route.useParams();
   const { t } = Route.useSearch();
 
@@ -89,9 +92,12 @@ function OrderPage() {
           <div className="h-64 animate-pulse bg-ink/5" />
         ) : !data ? (
           <>
-            <h1 className="font-display text-3xl text-ink">Pesanan tidak ditemukan</h1>
+            <h1 className="font-display text-3xl text-ink">{bi("Pesanan tidak ditemukan", "Order not found")}</h1>
             <p className="mt-3 text-sm text-ash">
-              Tautan pelacakan tidak valid atau sudah kedaluwarsa. Hubungi tim kami di{" "}
+              {bi(
+                "Tautan pelacakan tidak valid atau sudah kedaluwarsa. Hubungi tim kami di",
+                "This tracking link is invalid or has expired. Contact our team on",
+              )}{" "}
               <a href={`https://wa.me/${WHATSAPP_NUMBER}`} className="underline">
                 WhatsApp
               </a>
@@ -101,12 +107,12 @@ function OrderPage() {
         ) : (
           <>
             <p className="eyebrow inline-flex items-center gap-2 text-crimson">
-              <CheckCircle2 className="h-4 w-4" /> Pesanan diterima
+              <CheckCircle2 className="h-4 w-4" /> {bi("Pesanan diterima", "Order received")}
             </p>
             <h1 className="mt-4 font-display text-4xl text-ink">{data.order_no}</h1>
             <p className="mt-3 text-sm text-ash">
-              Status: {ORDER_STATUS_LABEL[data.status] ?? data.status} · Pembayaran:{" "}
-              {PAY_METHOD_LABEL[data.payment_method] ?? data.payment_method}
+              {bi("Status", "Status")}: {label(ORDER_STATUS_LABEL_I18N, data.status)} ·{" "}
+              {bi("Pembayaran", "Payment")}: {label(PAY_METHOD_LABEL_I18N, data.payment_method)}
             </p>
 
             {(data.payment_method === "BANK_TRANSFER" || data.payment_method === "QRIS") &&
@@ -128,27 +134,45 @@ function OrderPage() {
             ) : null}
 
             <div className="mt-8 border border-line p-6">
-              <h2 className="eyebrow text-ash">Instruksi berikutnya</h2>
+              <h2 className="eyebrow text-ash">{bi("Instruksi berikutnya", "Next steps")}</h2>
               <p className="mt-3 text-sm leading-relaxed text-ink/80">
                 {data.paid_at
-                  ? "Pembayaran sudah kami terima. Tim kami memproses dan menjadwalkan pengiriman pesanan Anda."
+                  ? bi(
+                      "Pembayaran sudah kami terima. Tim kami memproses dan menjadwalkan pengiriman pesanan Anda.",
+                      "We have received your payment. Our team is processing and scheduling delivery of your order.",
+                    )
                   : data.payment_method === "BANK_TRANSFER"
-                    ? "Transfer ke nomor Virtual Account di atas. Status pesanan otomatis diperbarui setelah pembayaran diterima."
+                    ? bi(
+                        "Transfer ke nomor Virtual Account di atas. Status pesanan otomatis diperbarui setelah pembayaran diterima.",
+                        "Transfer to the Virtual Account number above. The order status updates automatically once payment is received.",
+                      )
                     : data.payment_method === "QRIS"
-                      ? "Scan QRIS di atas dari aplikasi bank atau e-wallet mana pun. Status pesanan otomatis diperbarui setelah pembayaran diterima."
+                      ? bi(
+                          "Scan QRIS di atas dari aplikasi bank atau e-wallet mana pun. Status pesanan otomatis diperbarui setelah pembayaran diterima.",
+                          "Scan the QRIS above from any bank or e-wallet app. The order status updates automatically once payment is received.",
+                        )
                       : data.payment_method === "CBD"
-                        ? "Pembayaran tunai dilakukan sebelum pengiriman. Tim kami menghubungi Anda untuk menjadwalkan pengiriman."
-                        : "Tim kami menghubungi Anda melalui WhatsApp untuk finalisasi pesanan dan pembayaran."}
+                        ? bi(
+                            "Pembayaran tunai dilakukan sebelum pengiriman. Tim kami menghubungi Anda untuk menjadwalkan pengiriman.",
+                            "Cash payment is made before delivery. Our team will contact you to schedule delivery.",
+                          )
+                        : bi(
+                            "Tim kami menghubungi Anda melalui WhatsApp untuk finalisasi pesanan dan pembayaran.",
+                            "Our team will contact you via WhatsApp to finalize the order and payment.",
+                          )}
               </p>
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-                  `Halo Meatlink, saya ingin menindaklanjuti pesanan ${data.order_no}.`,
+                  bi(
+                    `Halo Meatlink, saya ingin menindaklanjuti pesanan ${data.order_no}.`,
+                    `Hello Meatlink, I would like to follow up on order ${data.order_no}.`,
+                  ),
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="eyebrow mt-6 inline-block bg-crimson px-6 py-3 text-bone hover:bg-crimson-deep"
               >
-                Hubungi tim via WhatsApp
+                {bi("Hubungi tim via WhatsApp", "Contact our team via WhatsApp")}
               </a>
             </div>
 
@@ -169,7 +193,7 @@ function OrderPage() {
 
             <OrderTimeline events={data.timeline ?? []} />
 
-            <h2 className="mt-12 font-display text-2xl text-ink">Rincian</h2>
+            <h2 className="mt-12 font-display text-2xl text-ink">{bi("Rincian", "Details")}</h2>
             <ul className="mt-4 divide-y divide-line border-y border-line">
               {data.items.map((i, idx) => (
                 <li key={idx} className="flex items-center justify-between gap-4 py-4">
@@ -184,14 +208,17 @@ function OrderPage() {
               ))}
             </ul>
             <div className="mt-6 flex items-baseline justify-between">
-              <span className="eyebrow text-ash">Total</span>
+              <span className="eyebrow text-ash">{bi("Total", "Total")}</span>
               <span className="font-display text-3xl text-ink">{formatIdr(data.total_idr)}</span>
             </div>
 
             <p className="mt-10 text-sm text-ash">
-              Simpan tautan halaman ini untuk memantau status pesanan.{" "}
+              {bi(
+                "Simpan tautan halaman ini untuk memantau status pesanan.",
+                "Save this page link to track your order status.",
+              )}{" "}
               <Link to="/produk" className="underline">
-                Belanja lagi
+                {bi("Belanja lagi", "Shop again")}
               </Link>
             </p>
           </>

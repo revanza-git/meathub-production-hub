@@ -12,11 +12,16 @@ import {
 } from "@/lib/meatlink/inventory";
 import { resolveProductImage } from "@/lib/meatlink/featured";
 import {
-  AVAILABILITY_LABEL,
+  useBi,
+  useLabel,
+  useLang,
+  AVAILABILITY_LABEL_I18N,
+  CATEGORY_LABEL_I18N,
+} from "@/lib/i18n";
+import {
   CATEGORY_LABEL,
   useCatalog,
   useProduct,
-  type Availability,
   type CatalogProduct,
   type ProductCategory,
 } from "@/lib/meatlink/catalog";
@@ -43,26 +48,37 @@ export const Route = createFileRoute("/produk/$slug")({
 
 function ProductPage() {
   const { slug } = Route.useParams();
+  const bi = useBi();
+  const label = useLabel();
+  const { lang } = useLang();
   const { data: product, isLoading, isError } = useProduct(slug);
 
   return (
     <SiteLayout>
       <section className="mx-auto max-w-7xl px-5 py-12 lg:px-8">
         <Link to="/produk" className="eyebrow inline-flex items-center gap-2 text-ash hover:text-ink">
-          <ArrowLeft className="h-4 w-4" /> Kembali ke katalog
+          <ArrowLeft className="h-4 w-4" /> {bi("Kembali ke katalog", "Back to catalog")}
         </Link>
 
         {isLoading ? (
           <div className="mt-10 h-64 animate-pulse bg-ink/5" />
         ) : isError || !product ? (
           <div className="mt-10">
-            <h1 className="font-display text-3xl text-ink">Produk tidak ditemukan</h1>
+            <h1 className="font-display text-3xl text-ink">
+              {bi("Produk tidak ditemukan", "Product not found")}
+            </h1>
             <p className="mt-3 text-sm text-ash">
-              Produk ini mungkin sudah tidak dipublikasikan.{" "}
+              {bi(
+                "Produk ini mungkin sudah tidak dipublikasikan.",
+                "This product may no longer be published.",
+              )}{" "}
               <Link to="/request-quote" className="underline">
-                Kirim permintaan
+                {bi("Kirim permintaan", "Send a request")}
               </Link>{" "}
-              dan tim kami akan mencarikan alternatif.
+              {bi(
+                "dan tim kami akan mencarikan alternatif.",
+                "and our team will source an alternative.",
+              )}
             </p>
           </div>
         ) : (
@@ -83,7 +99,7 @@ function ProductPage() {
                   className="absolute left-0 top-0"
                 />
               </div>
-              <p className="eyebrow text-crimson">{CATEGORY_LABEL[product.category]}</p>
+              <p className="eyebrow text-crimson">{label(CATEGORY_LABEL_I18N, product.category)}</p>
               <h1 className="mt-4 font-display text-4xl leading-tight text-ink lg:text-5xl">
                 {product.name}
               </h1>
@@ -98,28 +114,29 @@ function ProductPage() {
               ) : null}
 
               <dl className="mt-10 grid gap-px border border-line bg-line sm:grid-cols-2">
-                <Spec label="Kategori" value={CATEGORY_LABEL[product.category]} />
-                <Spec label="Asal" value={product.origin ?? "—"} />
-                <Spec label="Brand" value={product.brand ?? "—"} />
-                <Spec label="Kondisi" value={product.condition ?? "—"} />
                 <Spec
-                  label="Berat rata-rata"
+                  label={bi("Kategori", "Category")}
+                  value={label(CATEGORY_LABEL_I18N, product.category)}
+                />
+                <Spec label={bi("Asal", "Origin")} value={product.origin ?? "—"} />
+                <Spec label={bi("Brand", "Brand")} value={product.brand ?? "—"} />
+                <Spec label={bi("Kondisi", "Condition")} value={product.condition ?? "—"} />
+                <Spec
+                  label={bi("Berat rata-rata", "Average weight")}
                   value={
                     product.avg_weight_text ??
                     (product.avg_weight_kg ? `${product.avg_weight_kg} kg` : "—")
                   }
                 />
                 <Spec
-                  label="Ketersediaan"
-                  value={
-                    AVAILABILITY_LABEL[product.availability as Availability] ?? product.availability
-                  }
+                  label={bi("Ketersediaan", "Availability")}
+                  value={label(AVAILABILITY_LABEL_I18N, product.availability)}
                 />
               </dl>
             </div>
 
             <aside className="h-fit border border-line bg-background p-8 lg:sticky lg:top-28">
-              <p className="eyebrow text-ash">Harga publik</p>
+              <p className="eyebrow text-ash">{bi("Harga publik", "Public price")}</p>
               <PriceTag
                 price={product.public_price_idr}
                 listPrice={product.list_price_idr}
@@ -128,20 +145,24 @@ function ProductPage() {
               />
               {product.promo_until ? (
                 <p className="mt-2 text-xs text-crimson">
-                  Harga promo berlaku sampai {formatDate(product.promo_until)}.
+                  {bi("Harga promo berlaku sampai", "Promo price valid until")}{" "}
+                  {formatDate(product.promo_until, lang)}.
                 </p>
               ) : null}
               <p className="mt-2 text-xs text-ash">
-                Harga indikatif untuk pembelian B2B. Harga final mengikuti volume dan lokasi kirim.
+                {bi(
+                  "Harga indikatif untuk pembelian B2B. Harga final mengikuti volume dan lokasi kirim.",
+                  "Indicative price for business purchases. Final pricing depends on volume and delivery location.",
+                )}
               </p>
 
               <VolumeTiers price={Number(product.public_price_idr)} />
 
               <ul className="mt-7 space-y-3 text-sm text-ink/80">
                 {[
-                  "Pemasok terverifikasi",
-                  "Dokumen halal & sertifikat tersedia",
-                  "Pengiriman ke seluruh Indonesia",
+                  bi("Pemasok terverifikasi", "Verified suppliers"),
+                  bi("Dokumen halal & sertifikat tersedia", "Halal documents & certificates available"),
+                  bi("Pengiriman ke seluruh Indonesia", "Delivery across Indonesia"),
                 ].map((b) => (
                   <li key={b} className="flex gap-3">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-crimson" />
@@ -157,17 +178,20 @@ function ProductPage() {
                   to="/request-quote"
                   className="eyebrow bg-crimson px-6 py-4 text-center text-bone transition-colors hover:bg-crimson-deep"
                 >
-                  Minta penawaran
+                  {bi("Minta penawaran", "Request a quote")}
                 </Link>
                 <a
                   href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-                    `Halo Meatlink, saya tertarik dengan ${product.name}.`,
+                    bi(
+                      `Halo Meatlink, saya tertarik dengan ${product.name}.`,
+                      `Hello Meatlink, I am interested in ${product.name}.`,
+                    ),
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="eyebrow inline-flex items-center justify-center gap-2 border border-ink/25 px-6 py-4 text-ink transition-colors hover:bg-ink/5"
                 >
-                  <MessageCircle className="h-4 w-4" /> Tanya via WhatsApp
+                  <MessageCircle className="h-4 w-4" /> {bi("Tanya via WhatsApp", "Ask via WhatsApp")}
                 </a>
               </div>
             </aside>
@@ -186,22 +210,41 @@ function ProductPage() {
  * level; larger units are cheaper per kg. Internal margin structure is never shown.
  */
 const UNIT_TIERS = [
-  { unit: "loaf", label: "Loaf / ritel", note: "Per loaf atau satuan" },
-  { unit: "carton", label: "Karton", note: "Kelipatan karton utuh" },
-  { unit: "ton", label: "Ton", note: "Mulai 1.000 kg" },
-] as const satisfies readonly { unit: PurchaseUnit; label: string; note: string }[];
+  {
+    unit: "loaf",
+    label: { id: "Loaf / ritel", en: "Loaf / retail" },
+    note: { id: "Per loaf atau satuan", en: "Per loaf or single unit" },
+  },
+  {
+    unit: "carton",
+    label: { id: "Karton", en: "Carton" },
+    note: { id: "Kelipatan karton utuh", en: "Full carton multiples" },
+  },
+  {
+    unit: "ton",
+    label: { id: "Ton", en: "Ton" },
+    note: { id: "Mulai 1.000 kg", en: "From 1,000 kg" },
+  },
+] as const satisfies readonly {
+  unit: PurchaseUnit;
+  label: { id: string; en: string };
+  note: { id: string; en: string };
+}[];
 
 function VolumeTiers({ price }: { price: number }) {
+  const bi = useBi();
   if (!Number.isFinite(price) || price <= 0) return null;
   return (
     <div className="mt-6 border border-line">
-      <p className="eyebrow border-b border-line px-4 py-3 text-ash">Indikasi harga per satuan beli</p>
+      <p className="eyebrow border-b border-line px-4 py-3 text-ash">
+        {bi("Indikasi harga per satuan beli", "Indicative price per purchase unit")}
+      </p>
       <ul className="divide-y divide-line text-sm">
         {UNIT_TIERS.map((t) => (
           <li key={t.unit} className="flex items-center justify-between gap-4 px-4 py-2.5">
             <span className="text-ash">
-              {t.label}
-              <span className="block text-xs text-ash/70">{t.note}</span>
+              {bi(t.label.id, t.label.en)}
+              <span className="block text-xs text-ash/70">{bi(t.note.id, t.note.en)}</span>
             </span>
             <span className="whitespace-nowrap text-ink">
               {formatIdr(unitPriceFromPublic(price, t.unit))} /kg
@@ -210,16 +253,23 @@ function VolumeTiers({ price }: { price: number }) {
         ))}
       </ul>
       <p className="border-t border-line px-4 py-3 text-xs text-ash">
-        Indikatif. Harga final per satuan beli dikonfirmasi tim sales setelah permintaan dikirim.
+        {bi(
+          "Indikatif. Harga final per satuan beli dikonfirmasi tim sales setelah permintaan dikirim.",
+          "Indicative only. Final per-unit pricing is confirmed by our sales team after your request is sent.",
+        )}
       </p>
     </div>
   );
 }
 
-function formatDate(value: string) {
+function formatDate(value: string, lang: "id" | "en" = "id") {
   const d = new Date(value);
   if (Number.isNaN(d.getTime())) return value;
-  return d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+  return d.toLocaleDateString(lang === "en" ? "en-GB" : "id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 /** Product structured data so search engines can surface price and availability. */
@@ -260,6 +310,7 @@ function ProductJsonLd({ product }: { product: CatalogProduct }) {
 
 /** Other products in the same category, excluding the one being viewed. */
 function RelatedProducts({ category, slug }: { category: ProductCategory; slug: string }) {
+  const bi = useBi();
   const { data } = useCatalog({ category, page: 1, pageSize: 8 });
   const rows = (data?.rows ?? []).filter((r) => r.slug !== slug).slice(0, 4);
   if (rows.length === 0) return null;
@@ -267,9 +318,9 @@ function RelatedProducts({ category, slug }: { category: ProductCategory; slug: 
   return (
     <section className="mt-20 border-t border-line pt-12">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h2 className="font-display text-3xl text-ink">Produk terkait</h2>
+        <h2 className="font-display text-3xl text-ink">{bi("Produk terkait", "Related products")}</h2>
         <Link to="/produk" className="eyebrow text-ash hover:text-ink">
-          Lihat semua
+          {bi("Lihat semua", "View all")}
         </Link>
       </div>
       <div className="mt-8 grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
