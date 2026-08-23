@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { PackageCheck, Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyOrderEventPublic } from "@/lib/meatlink/notify.functions";
-import { useBi } from "@/lib/i18n";
+import { useBi, useFormat } from "@/lib/i18n";
 
 type Props = {
   orderNo: string;
@@ -17,14 +17,6 @@ type Props = {
   confirmedAt: string | null;
   onConfirmed: () => void;
 };
-
-function formatDay(value: string) {
-  return new Date(value).toLocaleDateString("id-ID", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-}
 
 export function DeliveryPanel({
   orderNo,
@@ -82,19 +74,19 @@ export function DeliveryPanel({
         {etaDate ? (
           <div>
             <dt className="text-xs uppercase tracking-wide text-ash">{bi("Estimasi tiba", "Estimated arrival")}</dt>
-            <dd className="mt-1 text-ink">{formatDay(etaDate)}</dd>
+            <dd className="mt-1 text-ink">{fmtDay(etaDate)}</dd>
           </div>
         ) : null}
         {shippedAt ? (
           <div>
             <dt className="text-xs uppercase tracking-wide text-ash">{bi("Dikirim", "Shipped")}</dt>
-            <dd className="mt-1 text-ink">{formatDay(shippedAt)}</dd>
+            <dd className="mt-1 text-ink">{fmtDay(shippedAt)}</dd>
           </div>
         ) : null}
         {deliveredAt ? (
           <div>
             <dt className="text-xs uppercase tracking-wide text-ash">{bi("Diterima", "Received")}</dt>
-            <dd className="mt-1 text-ink">{formatDay(deliveredAt)}</dd>
+            <dd className="mt-1 text-ink">{fmtDay(deliveredAt)}</dd>
           </div>
         ) : null}
       </dl>
@@ -122,8 +114,8 @@ export function DeliveryPanel({
       {confirmedAt ? (
         <p className="mt-6 border-t border-line pt-6 text-sm text-ink/80">
           {bi(
-            `Penerimaan dikonfirmasi pada ${formatDay(confirmedAt)}. Terima kasih telah berbelanja di Meatlink.`,
-            `Receipt confirmed on ${formatDay(confirmedAt)}. Thank you for shopping with Meatlink.`,
+            `Penerimaan dikonfirmasi pada ${fmtDay(confirmedAt)}. Terima kasih telah berbelanja di Meatlink.`,
+            `Receipt confirmed on ${fmtDay(confirmedAt)}. Thank you for shopping with Meatlink.`,
           )}
         </p>
       ) : null}
