@@ -24,7 +24,7 @@ export default defineTool({
     let query = supabase
       .from("market_insights")
       .select(
-        "id,title,body,category,region,period_label,source,confidence,status,display_rank,created_at",
+        "id,title,body,title_en,body_en,category,region,period_label,source,confidence,status,display_rank,created_at",
       )
       .order("created_at", { ascending: false })
       .limit(limit ?? 20);

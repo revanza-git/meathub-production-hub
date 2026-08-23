@@ -87,8 +87,18 @@ function InsightsPage() {
                   {n.category} · {n.region}
                   {"period_label" in n && n.period_label ? ` · ${n.period_label}` : ""}
                 </p>
-                <h2 className="mt-3 font-display text-2xl leading-snug">{n.title}</h2>
+                <p className="mt-3 text-xs font-medium uppercase tracking-wide text-ash">
+                  Bahasa Indonesia
+                </p>
+                <h2 className="mt-1 font-display text-2xl leading-snug">{n.title}</h2>
                 <p className="mt-4 text-sm leading-relaxed text-ash">{n.body}</p>
+                {n.title_en && n.body_en ? (
+                  <div className="mt-6 border-t border-line pt-5" lang="en">
+                    <p className="text-xs font-medium uppercase tracking-wide text-ash">English</p>
+                    <h3 className="mt-1 font-display text-xl leading-snug">{n.title_en}</h3>
+                    <p className="mt-3 text-sm leading-relaxed text-ash">{n.body_en}</p>
+                  </div>
+                ) : null}
               </article>
             ))}
           </div>
@@ -167,8 +177,6 @@ function InsightsPage() {
               ))}
             </div>
           )}
-
-
 
           <div className="mt-14">
             <Link

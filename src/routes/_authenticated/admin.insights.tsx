@@ -76,13 +76,17 @@ function InsightsBody() {
   async function createBlank(form: FormData) {
     const title = String(form.get("title") ?? "").trim();
     const body = String(form.get("body") ?? "").trim();
-    if (!title || !body) {
-      toast.error("Title and body are required");
+    const titleEn = String(form.get("title_en") ?? "").trim();
+    const bodyEn = String(form.get("body_en") ?? "").trim();
+    if (!title || !body || !titleEn || !bodyEn) {
+      toast.error("Bahasa Indonesia and English title and body are required");
       return;
     }
     const { error } = await supabase.from("market_insights").insert({
       title,
       body,
+      title_en: titleEn,
+      body_en: bodyEn,
       category: String(form.get("category") ?? "demand"),
       region: String(form.get("region") ?? "").trim() || "Nasional",
       period_label: String(form.get("period_label") ?? "").trim() || null,
@@ -133,8 +137,21 @@ function InsightsBody() {
               void createBlank(new FormData(e.currentTarget));
             }}
           >
-            <input name="title" placeholder="Title" className={inputClass} />
-            <textarea name="body" placeholder="Body" rows={4} className={inputClass} />
+            <div className="grid gap-2">
+              <p className="eyebrow text-crimson">Bahasa Indonesia</p>
+              <input name="title" placeholder="Judul Bahasa Indonesia" className={inputClass} />
+              <textarea
+                name="body"
+                placeholder="Isi Bahasa Indonesia"
+                rows={4}
+                className={inputClass}
+              />
+            </div>
+            <div className="grid gap-2">
+              <p className="eyebrow text-crimson">English</p>
+              <input name="title_en" placeholder="English title" className={inputClass} />
+              <textarea name="body_en" placeholder="English body" rows={4} className={inputClass} />
+            </div>
             <div className="grid gap-4 sm:grid-cols-3">
               <select name="category" className={inputClass} defaultValue="demand">
                 {INSIGHT_CATEGORIES.map((c) => (
@@ -144,7 +161,11 @@ function InsightsBody() {
                 ))}
               </select>
               <input name="region" placeholder="Region (Nasional)" className={inputClass} />
-              <input name="period_label" placeholder="Period (Agustus 2026)" className={inputClass} />
+              <input
+                name="period_label"
+                placeholder="Period (Agustus 2026)"
+                className={inputClass}
+              />
             </div>
             <button
               type="submit"
@@ -160,8 +181,8 @@ function InsightsBody() {
       {!isLoading && rows.length === 0 ? (
         <Panel className="p-8">
           <p className="text-sm text-ash">
-            No notes here yet. Connect Codex to the Meatlink agent endpoint and ask it to analyse the
-            market — its drafts land in this list.
+            No notes here yet. Connect Codex to the Meatlink agent endpoint and ask it to analyse
+            the market — its drafts land in this list.
           </p>
         </Panel>
       ) : null}
@@ -178,6 +199,10 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
   const [draft, setDraft] = useState(row);
 
   async function patch(values: Partial<MarketInsight>) {
+    if (values.status === "published" && (!row.title_en?.trim() || !row.body_en?.trim())) {
+      toast.error("Add the English title and body before publishing");
+      return;
+    }
     const { error } = await supabase
       .from("market_insights")
       .update(values as never)
@@ -209,7 +234,10 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
             {row.category} · {row.region}
             {row.period_label ? ` · ${row.period_label}` : ""}
           </p>
-          <h2 className="mt-2 font-display text-xl text-ink">{row.title}</h2>
+          <p className="mt-2 text-xs font-medium uppercase tracking-wide text-ash">
+            Bahasa Indonesia
+          </p>
+          <h2 className="mt-1 font-display text-xl text-ink">{row.title}</h2>
           <p className="mt-1 text-xs text-ash">
             {row.source === "agent" ? "Written by agent" : "Written by admin"} · confidence{" "}
             {row.confidence} · {formatDate(row.created_at)}
@@ -271,6 +299,17 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
       <p className="mt-4 whitespace-pre-line border-t border-line pt-4 text-sm text-ash">
         {row.body}
       </p>
+      {row.title_en && row.body_en ? (
+        <div className="mt-4 border-t border-line pt-4" lang="en">
+          <p className="text-xs font-medium uppercase tracking-wide text-ash">English</p>
+          <h3 className="mt-1 font-display text-xl text-ink">{row.title_en}</h3>
+          <p className="mt-3 whitespace-pre-line text-sm text-ash">{row.body_en}</p>
+        </div>
+      ) : (
+        <p className="mt-4 border-t border-line pt-4 text-xs text-crimson">
+          English translation missing — add it before publishing this legacy note.
+        </p>
+      )}
 
       {editing ? (
         <form
@@ -280,6 +319,8 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
             void patch({
               title: draft.title,
               body: draft.body,
+              title_en: draft.title_en,
+              body_en: draft.body_en,
               category: draft.category,
               region: draft.region,
               period_label: draft.period_label,
@@ -288,17 +329,36 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
             });
           }}
         >
-          <input
-            value={draft.title}
-            onChange={(e) => setDraft({ ...draft, title: e.target.value })}
-            className={inputClass}
-          />
-          <textarea
-            value={draft.body}
-            rows={5}
-            onChange={(e) => setDraft({ ...draft, body: e.target.value })}
-            className={inputClass}
-          />
+          <div className="grid gap-2">
+            <p className="eyebrow text-crimson">Bahasa Indonesia</p>
+            <input
+              value={draft.title}
+              onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+              className={inputClass}
+            />
+            <textarea
+              value={draft.body}
+              rows={5}
+              onChange={(e) => setDraft({ ...draft, body: e.target.value })}
+              className={inputClass}
+            />
+          </div>
+          <div className="grid gap-2" lang="en">
+            <p className="eyebrow text-crimson">English</p>
+            <input
+              value={draft.title_en ?? ""}
+              onChange={(e) => setDraft({ ...draft, title_en: e.target.value || null })}
+              className={inputClass}
+              placeholder="English title"
+            />
+            <textarea
+              value={draft.body_en ?? ""}
+              rows={5}
+              onChange={(e) => setDraft({ ...draft, body_en: e.target.value || null })}
+              className={inputClass}
+              placeholder="English body"
+            />
+          </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <select
               value={draft.category}

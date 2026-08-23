@@ -8,6 +8,9 @@ Meatlink's MCP exposes `get_public_beef_market_data`, a read-only tool that comb
 The tool returns public external statistics only. It does not read or return Meatlink inventory,
 prices, orders, RFQs, buyers, vendors, or locations. Codex can use its output as evidence for
 `create_market_insight`; the resulting insight is always a draft until an administrator publishes it.
+Every new agent draft contains equivalent Bahasa Indonesia and English titles and bodies. Bahasa
+Indonesia remains the default public version; the English copy must preserve the same figures,
+sources, recommendation, uncertainty, and limitations.
 
 ## Current Indonesian market context without Bapanas API access
 
@@ -56,7 +59,8 @@ Registration and documentation:
 2. Call `get_public_beef_market_data` for the relevant countries and market year.
 3. Call `list_market_insights` to avoid duplicate coverage.
 4. Draft a concise recommendation for buyers, suppliers, or both using only public evidence.
-5. Pass the public observation IDs, audience, time horizon, and structural figures to
+5. Write equivalent Bahasa Indonesia and English versions without changing figures or caveats.
+6. Pass both language versions, the public observation IDs, audience, time horizon, and structural figures to
    `create_market_insight`; an administrator reviews and publishes the draft.
 
 If one upstream API is unavailable or unconfigured, the tool returns that source with
