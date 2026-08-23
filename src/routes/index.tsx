@@ -361,6 +361,97 @@ function SpecialSourcingCta() {
   );
 }
 
+function Faq() {
+  const [open, setOpen] = useState<string>("scale");
+
+  const toggle = (key: string) => setOpen((current) => (current === key ? "" : key));
+
+  const items = [
+    {
+      key: "scale",
+      question: "Apakah Meatlink hanya melayani pembeli B2B?",
+      answer:
+        "Tidak. Meski dirancang untuk kebutuhan bisnis — restoran, hotel, katering, dan toko daging — kami juga membuka order untuk reseller maupun pembeli ritel yang membutuhkan daging premium dalam jumlah kecil. Alur, harga, dan pengiriman tetap transparan di setiap skala.",
+    },
+    {
+      key: "minimum",
+      question: "Berapa minimum jumlah pembelian?",
+      answer:
+        "Tidak ada minimum order yang rumit. Beberapa produk tersedia per kilogram atau per pack kecil, sehingga toko daging, katering kecil, dan pembeli pribadi bisa mulai berbelanja tanpa harus mengambil volume besar.",
+    },
+    {
+      key: "coverage",
+      question: "Jangkauan pengiriman sampai ke mana?",
+      answer:
+        "Pengiriman kami menjangkau seluruh Indonesia. Produk frozen dan chilled dikemas sesuai standar rantai dingin, dengan jadwal kirim dan nomor resi yang tercatap di setiap pesanan.",
+    },
+    {
+      key: "price",
+      question: "Apakah harga berbeda untuk order kecil dan besar?",
+      answer:
+        "Harga yang tertera terbuka per kilogram. Pembeli volume rutin — restoran, hotel, katering, dan toko daging — bisa mendapatkan harga kontrak atau TOP (tempo) setelah disetujui. Pembeli kecil tetap menikmati harga katalog yang sama tanpa syarat tambahan.",
+    },
+    {
+      key: "top",
+      question: "Apakah tersedia pembayaran tempo (TOP)?",
+      answer:
+        "Ya, untuk pembeli bisnis dengan histori atau kontrak rutin. Pengajuan TOP diverifikasi tim kami dalam 1–2 hari kerja. Sementara itu, pembeli lain tetap bisa memilih transfer VA, QRIS, atau bayar di tempat.",
+    },
+    {
+      key: "sourcing",
+      question: "Bisa request produk yang belum ada di katalog?",
+      answer:
+        "Bisa. Gunakan fitur Special Sourcing atau kirimkan kebutuhan spesifik Anda — cut, grade, brand, volume, dan tujuan. Tim Meatlink akan mencarikannya lewat jaringan importir dan pemasok terverifikasi.",
+    },
+  ];
+
+  return (
+    <section className="bg-bone">
+      <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
+        <div className="max-w-3xl">
+          <p className="eyebrow text-crimson">TANYA JAWAB</p>
+          <h2 className="mt-6 font-display text-3xl sm:text-4xl">
+            Jangkauan layanan untuk berbagai skala pembeli
+          </h2>
+          <p className="mt-4 text-sm leading-relaxed text-ash">
+            Dari bisnis besar sampai pembeli pribadi — semua mendapat katalog, harga, dan layanan
+            yang sama-sama transparan.
+          </p>
+        </div>
+        <div className="mt-12 grid gap-3 lg:grid-cols-2">
+          {items.map((item) => {
+            const isOpen = open === item.key;
+            return (
+              <div
+                key={item.key}
+                className="border border-line bg-card transition-colors hover:border-ink/20"
+              >
+                <button
+                  type="button"
+                  onClick={() => toggle(item.key)}
+                  aria-expanded={isOpen}
+                  className="flex w-full items-center justify-between gap-4 p-6 text-left"
+                >
+                  <span className="font-display text-lg leading-snug text-ink">{item.question}</span>
+                  <ChevronDown
+                    className={`h-5 w-5 shrink-0 text-crimson transition-transform ${isOpen ? "rotate-180" : ""}`}
+                    aria-hidden="true"
+                  />
+                </button>
+                {isOpen ? (
+                  <div className="px-6 pb-6">
+                    <p className="text-sm leading-relaxed text-ash">{item.answer}</p>
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function MarketInsights() {
   const { data: items = [] } = useFeaturedInventory(3);
   if (items.length === 0) return null;
