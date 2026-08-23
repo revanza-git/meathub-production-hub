@@ -194,13 +194,13 @@ function VolumeTiers({ price }: { price: number }) {
       <p className="eyebrow border-b border-line px-4 py-3 text-ash">Indikasi harga per satuan beli</p>
       <ul className="divide-y divide-line text-sm">
         {UNIT_TIERS.map((t) => (
-          <li key={t.label} className="flex items-center justify-between gap-4 px-4 py-2.5">
+          <li key={t.unit} className="flex items-center justify-between gap-4 px-4 py-2.5">
             <span className="text-ash">
               {t.label}
               <span className="block text-xs text-ash/70">{t.note}</span>
             </span>
             <span className="whitespace-nowrap text-ink">
-              {formatIdr(Math.max(0, price - t.cut))} /kg
+              {formatIdr(unitPriceFromPublic(price, t.unit))} /kg
             </span>
           </li>
         ))}
