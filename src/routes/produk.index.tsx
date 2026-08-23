@@ -155,7 +155,16 @@ function CatalogPage() {
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   const activeChips: { label: string; onRemove: () => void }[] = [
+    ...(category
+      ? [
+          {
+            label: CATEGORIES.find((c) => c.value === category)?.label ?? category,
+            onRemove: () => setSearchParams({ category: undefined }),
+          },
+        ]
+      : []),
     ...(params.origin ?? []).map((v) => ({ label: v, onRemove: () => toggleValue("origin", v) })),
+
     ...(params.brand ?? []).map((v) => ({ label: v, onRemove: () => toggleValue("brand", v) })),
     ...(params.condition ?? []).map((v) => ({
       label: CONDITION_LABEL[v] ?? v,
