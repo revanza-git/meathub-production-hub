@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { supabase } from "@/integrations/supabase/client";
-import { formatIdr } from "@/lib/meatlink/inventory";
+
 import { downloadCsv, toCsv } from "@/lib/meatlink/csv";
 import { useBi, useLang } from "@/lib/i18n";
 
@@ -130,7 +130,7 @@ function AdminReportsPage() {
       toCsv(
         orders.map((o) => ({
           [bi("order_no", "Order No")]: o.order_no,
-          [bi("tanggal", "Date")]: new Date(o.created_at).toLocaleString(locale),
+          [bi("tanggal", "Date")]: fmt.dateTime(o.created_at),
           [bi("status", "Status")]: o.status,
           [bi("metode", "Method")]: o.payment_method,
           [bi("pembeli", "Buyer")]: o.buyer_name,
@@ -145,7 +145,7 @@ function AdminReportsPage() {
           [bi("kurir", "Courier")]: o.courier_name ?? "",
           [bi("resi", "Tracking No")]: o.tracking_no ?? "",
           [bi("diterima", "Received")]: o.buyer_confirmed_at
-            ? new Date(o.buyer_confirmed_at).toLocaleString(locale)
+            ? fmt.dateTime(o.buyer_confirmed_at)
             : "",
         })),
       ),
@@ -164,7 +164,7 @@ function AdminReportsPage() {
           return {
             [bi("order_no", "Order No")]: parent?.order_no ?? "",
             [bi("status_order", "Order Status")]: parent?.status ?? "",
-            [bi("tanggal", "Date")]: new Date(r.created_at).toLocaleString(locale),
+            [bi("tanggal", "Date")]: fmt.dateTime(r.created_at),
             [bi("produk", "Product")]: r.product_name,
             [bi("slug", "Slug")]: r.slug ?? "",
             [bi("kategori", "Category")]: r.category ?? "",
@@ -185,7 +185,7 @@ function AdminReportsPage() {
       toCsv(
         rows.map((o) => ({
           [bi("order_no", "Order No")]: o.order_no,
-          [bi("dibayar_pada", "Paid At")]: new Date(o.paid_at as string).toLocaleString(locale),
+          [bi("dibayar_pada", "Paid At")]: fmt.dateTime(o.paid_at as string),
           [bi("metode", "Method")]: o.payment_method,
           [bi("kanal", "Channel")]: o.payment_channel ?? "",
           [bi("referensi", "Reference")]: o.payment_ref ?? "",
@@ -235,7 +235,7 @@ function AdminReportsPage() {
             [bi("order_no", "Order No")]: o.order_no,
             [bi("pembeli", "Buyer")]: o.buyer_name,
             [bi("perusahaan", "Company")]: o.company ?? "",
-            [bi("tanggal_order", "Order Date")]: new Date(o.created_at).toLocaleDateString(locale),
+            [bi("tanggal_order", "Order Date")]: fmt.date(o.created_at),
             [bi("tempo_hari", "Term (days)")]: o.credit_term_days ?? "",
             [bi("jatuh_tempo", "Due Date")]: o.due_date ?? "",
             [bi("umur_hari", "Age (days)")]: days > 0 ? days : 0,
@@ -275,12 +275,12 @@ function AdminReportsPage() {
 
             <div className="mt-8 grid gap-px border border-line bg-line sm:grid-cols-2 xl:grid-cols-3">
               <Stat label={bi("Pesanan", "Orders")} value={String(orders.length)} />
-              <Stat label={bi("Omzet terbayar", "Paid revenue")} value={formatIdr(revenue)} accent />
-              <Stat label={bi("Total diskon", "Total discounts")} value={formatIdr(discounts)} />
-              <Stat label={bi("Nilai stok (publik)", "Stock value (public)")} value={formatIdr(stockValue)} />
+              <Stat label={bi("Omzet terbayar", "Paid revenue")} value={fmt.money(revenue)} accent />
+              <Stat label={bi("Total diskon", "Total discounts")} value={fmt.money(discounts)} />
+              <Stat label={bi("Nilai stok (publik)", "Stock value (public)")} value={fmt.money(stockValue)} />
               <Stat
                 label={bi("Piutang tempo", "Receivables (TOP)")}
-                value={formatIdr(receivableTotal)}
+                value={fmt.money(receivableTotal)}
                 hint={bi(`${receivables.length} order`, `${receivables.length} orders`)}
               />
               <Stat
@@ -344,7 +344,7 @@ function AdminReportsPage() {
                         </p>
                       </div>
                       <span className="shrink-0 font-medium text-ink">
-                        {formatIdr(Number(o.total_idr))}
+                        {fmt.money(Number(o.total_idr))}
                       </span>
                     </li>
                   );

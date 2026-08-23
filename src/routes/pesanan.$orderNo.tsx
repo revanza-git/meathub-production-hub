@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2 } from "lucide-react";
 import { SiteLayout } from "@/components/site/site-layout";
 import { supabase } from "@/integrations/supabase/client";
-import { formatIdr } from "@/lib/meatlink/inventory";
+
 import { type PayMethod } from "@/lib/meatlink/cart";
 import { useBi, useLabel, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
 import { WHATSAPP_NUMBER } from "@/lib/meatlink/config";
@@ -200,16 +200,16 @@ function OrderPage() {
                   <div>
                     <p className="text-sm text-ink">{i.product_name}</p>
                     <p className="mt-1 text-xs text-ash">
-                      {i.qty_kg} kg × {formatIdr(i.unit_price_idr)}
+                      {fmt.qty(i.qty_kg)} × {fmt.money(i.unit_price_idr)}
                     </p>
                   </div>
-                  <p className="text-sm text-ink">{formatIdr(i.line_total_idr)}</p>
+                  <p className="text-sm text-ink">{fmt.money(i.line_total_idr)}</p>
                 </li>
               ))}
             </ul>
             <div className="mt-6 flex items-baseline justify-between">
               <span className="eyebrow text-ash">{bi("Total", "Total")}</span>
-              <span className="font-display text-3xl text-ink">{formatIdr(data.total_idr)}</span>
+              <span className="font-display text-3xl text-ink">{fmt.money(data.total_idr)}</span>
             </div>
 
             <p className="mt-10 text-sm text-ash">
