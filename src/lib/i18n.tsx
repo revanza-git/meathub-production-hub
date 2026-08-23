@@ -45,6 +45,10 @@ export const DICT = {
     id: "Gambar ilustrasi. Produk asli dapat sedikit berbeda.",
     en: "Illustrative image. Actual product may vary slightly.",
   },
+  "ai.disclaimer": {
+    id: "Hasil analisis AI — verifikasi sebelum digunakan sebagai dasar keputusan pembelian.",
+    en: "AI-generated analysis — please verify before using it as a basis for purchasing decisions.",
+  },
 
   // --- footer ---------------------------------------------------------------
   "footer.helpTitle": {
