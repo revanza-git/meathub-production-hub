@@ -233,12 +233,30 @@ export const IMPORT_SAMPLE_ROWS = [
 
 export type ParsedRow = { row: number; item: InventoryDraft };
 
+/** Mirrors the SQL ml_slugify helper. */
+export function slugify(text: string) {
+  return (text || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/** Stable identity for an inventory line: brand + product name. */
+export function inventoryKey(brand: string, name: string) {
+  return slugify(`${brand}-${name}`);
+}
+
+/** Stock used when a sheet leaves qty_on_hand_kg blank. */
+export const DEFAULT_IMPORT_QTY_KG = 25;
+
 /** Normalises a raw sheet/CSV record into an inventory draft. */
 export function normaliseRow(
   raw: Record<string, unknown>,
   rowNumber: number,
   errors: string[],
+  options: { defaultQtyKg?: number } = {},
 ): ParsedRow | null {
+
   const get = (key: string) => {
     const found = Object.keys(raw).find((k) => k.trim().toLowerCase() === key);
     const value = found ? raw[found] : undefined;
