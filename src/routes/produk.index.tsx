@@ -220,17 +220,28 @@ function CatalogPage() {
         <div className="mt-6 flex flex-wrap gap-2">
           <FilterChip active={category === null} onClick={() => setSearchParams({ category: undefined })}>
             Semua
+            {categoryFacets ? ` (${[...categoryCounts.values()].reduce((a, b) => a + b, 0)})` : ""}
           </FilterChip>
-          {CATEGORIES.map((c) => (
-            <FilterChip
-              key={c.value}
-              active={category === c.value}
-              onClick={() => setSearchParams({ category: c.value })}
-            >
-              {c.label}
-            </FilterChip>
-          ))}
+          {CATEGORIES.map((c) => {
+            const count = categoryCounts.get(c.value) ?? 0;
+            const empty = Boolean(categoryFacets) && count === 0;
+            return (
+              <FilterChip
+                key={c.value}
+                active={category === c.value}
+                onClick={() => {
+                  if (!empty) setSearchParams({ category: c.value });
+                }}
+              >
+                <span className={empty ? "opacity-40" : undefined}>
+                  {c.label}
+                  {categoryFacets ? ` (${count})` : ""}
+                </span>
+              </FilterChip>
+            );
+          })}
         </div>
+
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[240px_1fr]">
           <aside className={`${showFilters ? "block" : "hidden"} lg:block`} aria-label="Filter produk">
