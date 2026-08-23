@@ -23,6 +23,21 @@ import { formatIdr } from "@/lib/meatlink/inventory";
 import heroImg from "@/assets/hero-wagyu.jpg";
 import { useLang, type TKey } from "@/lib/i18n";
 
+const FAQ_JSONLD_KEYS = ["scale", "minimum", "coverage", "price", "top", "sourcing"] as const;
+
+const FAQ_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ_JSONLD_KEYS.map((key) => ({
+    "@type": "Question",
+    name: DICTIONARY[`home.faq.${key}.q` as TKey].id,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: DICTIONARY[`home.faq.${key}.a` as TKey].id,
+    },
+  })),
+};
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
