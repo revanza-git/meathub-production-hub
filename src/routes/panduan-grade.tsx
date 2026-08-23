@@ -70,6 +70,7 @@ function GradeGuidePage() {
                 height={640}
                 className="aspect-square w-full object-cover"
               />
+              <ImageDisclaimer className="mt-2" />
               <h2 className="mt-5 font-display text-xl text-ink">{GRADE_LABEL[band]}</h2>
               <p className="mt-2 text-sm text-ash">{bi(GRADE_HINT[band].id, GRADE_HINT[band].en)}</p>
               <Link
