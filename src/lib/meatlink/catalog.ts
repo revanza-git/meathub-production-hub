@@ -171,6 +171,8 @@ export function useCatalogFacets(scope: {
         brands: pick("brand"),
         conditions: pick("condition"),
         availability: pick("availability"),
+        categories: pick("category"),
+
         minPrice: Math.floor(Number(price?.min_price ?? 0)),
         maxPrice: Math.ceil(Number(price?.max_price ?? 0)),
       };
