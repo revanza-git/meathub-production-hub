@@ -15,6 +15,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as RequestQuoteRouteImport } from './routes/request-quote'
 import { Route as PromoRouteImport } from './routes/promo'
+import { Route as PanduanGradeRouteImport } from './routes/panduan-grade'
 import { Route as NetworkRouteImport } from './routes/network'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as KeranjangRouteImport } from './routes/keranjang'
@@ -89,6 +90,11 @@ const RequestQuoteRoute = RequestQuoteRouteImport.update({
 const PromoRoute = PromoRouteImport.update({
   id: '/promo',
   path: '/promo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanduanGradeRoute = PanduanGradeRouteImport.update({
+  id: '/panduan-grade',
+  path: '/panduan-grade',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NetworkRoute = NetworkRouteImport.update({
@@ -347,6 +353,7 @@ export interface FileRoutesByFullPath {
   '/keranjang': typeof KeranjangRoute
   '/mcp': typeof McpRoute
   '/network': typeof NetworkRoute
+  '/panduan-grade': typeof PanduanGradeRoute
   '/promo': typeof PromoRoute
   '/request-quote': typeof RequestQuoteRoute
   '/search': typeof SearchRoute
@@ -399,6 +406,7 @@ export interface FileRoutesByTo {
   '/keranjang': typeof KeranjangRoute
   '/mcp': typeof McpRoute
   '/network': typeof NetworkRoute
+  '/panduan-grade': typeof PanduanGradeRoute
   '/promo': typeof PromoRoute
   '/request-quote': typeof RequestQuoteRoute
   '/search': typeof SearchRoute
@@ -453,6 +461,7 @@ export interface FileRoutesById {
   '/keranjang': typeof KeranjangRoute
   '/mcp': typeof McpRoute
   '/network': typeof NetworkRoute
+  '/panduan-grade': typeof PanduanGradeRoute
   '/promo': typeof PromoRoute
   '/request-quote': typeof RequestQuoteRoute
   '/search': typeof SearchRoute
@@ -507,6 +516,7 @@ export interface FileRouteTypes {
     | '/keranjang'
     | '/mcp'
     | '/network'
+    | '/panduan-grade'
     | '/promo'
     | '/request-quote'
     | '/search'
@@ -559,6 +569,7 @@ export interface FileRouteTypes {
     | '/keranjang'
     | '/mcp'
     | '/network'
+    | '/panduan-grade'
     | '/promo'
     | '/request-quote'
     | '/search'
@@ -612,6 +623,7 @@ export interface FileRouteTypes {
     | '/keranjang'
     | '/mcp'
     | '/network'
+    | '/panduan-grade'
     | '/promo'
     | '/request-quote'
     | '/search'
@@ -666,6 +678,7 @@ export interface RootRouteChildren {
   KeranjangRoute: typeof KeranjangRoute
   McpRoute: typeof McpRoute
   NetworkRoute: typeof NetworkRoute
+  PanduanGradeRoute: typeof PanduanGradeRoute
   PromoRoute: typeof PromoRoute
   RequestQuoteRoute: typeof RequestQuoteRoute
   SearchRoute: typeof SearchRoute
@@ -728,6 +741,13 @@ declare module '@tanstack/react-router' {
       path: '/promo'
       fullPath: '/promo'
       preLoaderRoute: typeof PromoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panduan-grade': {
+      id: '/panduan-grade'
+      path: '/panduan-grade'
+      fullPath: '/panduan-grade'
+      preLoaderRoute: typeof PanduanGradeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/network': {
@@ -1116,6 +1136,7 @@ const rootRouteChildren: RootRouteChildren = {
   KeranjangRoute: KeranjangRoute,
   McpRoute: McpRoute,
   NetworkRoute: NetworkRoute,
+  PanduanGradeRoute: PanduanGradeRoute,
   PromoRoute: PromoRoute,
   RequestQuoteRoute: RequestQuoteRoute,
   SearchRoute: SearchRoute,
