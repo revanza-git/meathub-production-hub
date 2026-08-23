@@ -187,9 +187,23 @@ function InsightsBody() {
         </Panel>
       ) : null}
 
+      {!isLoading && rows.length > 0
+        ? (() => {
+            const pending = rows.filter((r) => !r.title_en?.trim() || !r.body_en?.trim()).length;
+            return (
+              <p className="text-xs text-ash">
+                {pending === 0
+                  ? `All ${rows.length} notes have Bahasa Indonesia and English versions.`
+                  : `${pending} of ${rows.length} notes still need an English version.`}
+              </p>
+            );
+          })()
+        : null}
+
       {rows.map((row) => (
         <InsightCard key={row.id} row={row} onChanged={refresh} />
       ))}
+
     </div>
   );
 }
