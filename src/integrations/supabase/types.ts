@@ -91,8 +91,10 @@ export type Database = {
           category: Database["public"]["Enums"]["ml_product_category"]
           condition: string | null
           created_at: string
+          cut_type: string | null
           description: string | null
           featured_rank: number | null
+          grade_band: Database["public"]["Enums"]["ml_grade_band"]
           id: string
           image_url: string | null
           is_active: boolean
@@ -115,8 +117,10 @@ export type Database = {
           category?: Database["public"]["Enums"]["ml_product_category"]
           condition?: string | null
           created_at?: string
+          cut_type?: string | null
           description?: string | null
           featured_rank?: number | null
+          grade_band?: Database["public"]["Enums"]["ml_grade_band"]
           id?: string
           image_url?: string | null
           is_active?: boolean
@@ -139,8 +143,10 @@ export type Database = {
           category?: Database["public"]["Enums"]["ml_product_category"]
           condition?: string | null
           created_at?: string
+          cut_type?: string | null
           description?: string | null
           featured_rank?: number | null
+          grade_band?: Database["public"]["Enums"]["ml_grade_band"]
           id?: string
           image_url?: string | null
           is_active?: boolean
@@ -3523,6 +3529,11 @@ export type Database = {
         Returns: undefined
       }
       ml_expire_unpaid_orders: { Args: never; Returns: Json }
+      ml_guess_cut_type: { Args: { _name: string }; Returns: string }
+      ml_guess_grade_band: {
+        Args: { _name: string }
+        Returns: Database["public"]["Enums"]["ml_grade_band"]
+      }
       ml_has_role: {
         Args: {
           _role: Database["public"]["Enums"]["ml_role"]
@@ -3578,6 +3589,8 @@ export type Database = {
           _brands?: string[]
           _category?: Database["public"]["Enums"]["ml_product_category"]
           _conditions?: string[]
+          _cuts?: string[]
+          _grades?: string[]
           _limit?: number
           _max_price?: number
           _min_price?: number
@@ -3594,6 +3607,8 @@ export type Database = {
           brand: string
           category: Database["public"]["Enums"]["ml_product_category"]
           condition: string
+          cut_type: string
+          grade_band: string
           id: string
           image_url: string
           list_price_idr: number
@@ -3643,7 +3658,9 @@ export type Database = {
           brand: string
           category: Database["public"]["Enums"]["ml_product_category"]
           condition: string
+          cut_type: string
           description: string
+          grade_band: string
           id: string
           image_url: string
           list_price_idr: number
@@ -3831,6 +3848,13 @@ export type Database = {
         | "SIUP"
         | "OTHER"
       membership_status: "ACTIVE" | "INVITED" | "SUSPENDED" | "REMOVED"
+      ml_grade_band:
+        | "UNGRADED"
+        | "MB0_2"
+        | "MB2_4"
+        | "MB4_6"
+        | "MB6_9"
+        | "MB9_12"
       ml_order_status:
         | "PENDING"
         | "CONFIRMED"
@@ -4085,6 +4109,7 @@ export const Constants = {
         "OTHER",
       ],
       membership_status: ["ACTIVE", "INVITED", "SUSPENDED", "REMOVED"],
+      ml_grade_band: ["UNGRADED", "MB0_2", "MB2_4", "MB4_6", "MB6_9", "MB9_12"],
       ml_order_status: [
         "PENDING",
         "CONFIRMED",
