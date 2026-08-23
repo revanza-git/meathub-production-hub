@@ -304,7 +304,7 @@ function Benefits() {
       <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
         <p className="eyebrow text-crimson">KENAPA MEATLINK</p>
         <h2 className="mt-6 max-w-3xl font-display text-3xl sm:text-4xl lg:text-5xl">
-          Dibangun untuk pembelian bisnis, bukan ritel.
+          Dibangun untuk pembelian bisnis, terbuka untuk berbagai skala.
         </h2>
 
         <div className="mt-16 grid border border-white/10 sm:grid-cols-2 lg:grid-cols-3">
