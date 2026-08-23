@@ -2,20 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero, SiteLayout } from "@/components/site/site-layout";
 import { useBi } from "@/lib/i18n";
 import { GRADE_BANDS, GRADE_HINT, GRADE_LABEL, type GradeBand } from "@/lib/meatlink/catalog";
-import ungraded from "@/assets/grade/ungraded.jpg";
-import mb02 from "@/assets/grade/mb0-2.jpg";
-import mb24 from "@/assets/grade/mb2-4.jpg";
-import mb46 from "@/assets/grade/mb4-6.jpg";
-import mb69 from "@/assets/grade/mb6-9.jpg";
-import mb912 from "@/assets/grade/mb9-12.jpg";
+import { GRADE_IMAGES } from "@/lib/meatlink/featured";
 
 const SAMPLE: Record<GradeBand, string> = {
-  UNGRADED: ungraded,
-  MB0_2: mb02,
-  MB2_4: mb24,
-  MB4_6: mb46,
-  MB6_9: mb69,
-  MB9_12: mb912,
+  UNGRADED: GRADE_IMAGES.UNGRADED,
+  MB0_2: GRADE_IMAGES.MB0_2,
+  MB2_4: GRADE_IMAGES.MB2_4,
+  MB4_6: GRADE_IMAGES.MB4_6,
+  MB6_9: GRADE_IMAGES.MB6_9,
+  MB9_12: GRADE_IMAGES.MB9_12,
 };
 
 export const Route = createFileRoute("/panduan-grade")({

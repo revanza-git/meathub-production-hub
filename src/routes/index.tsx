@@ -214,7 +214,7 @@ function AvailableNow() {
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-ink/5">
                     <img
-                      src={resolveProductImage(row.image_url, row.name, row.category)}
+                      src={resolveProductImage(row.image_url, row.name, row.category, row.grade_band, row.cut_type)}
                       alt={row.name}
                       loading="lazy"
                       width={1024}
