@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useBi } from "@/lib/i18n";
 import { PageHero, SiteLayout } from "@/components/site/site-layout";
 import { RfqForm } from "@/components/site/rfq-form";
 
@@ -22,12 +23,16 @@ export const Route = createFileRoute("/request-quote")({
 });
 
 function RequestQuotePage() {
+  const bi = useBi();
   return (
     <SiteLayout>
       <PageHero
-        eyebrow="Request a quote"
-        title="Tell us what you need."
-        intro="The more detail you give, the sharper the match. Everything below takes about two minutes."
+        eyebrow={bi("Minta penawaran", "Request a quote")}
+        title={bi("Ceritakan kebutuhan Anda.", "Tell us what you need.")}
+        intro={bi(
+          "Makin detail informasinya, makin tepat penawaran yang kami cocokkan. Pengisian hanya sekitar dua menit.",
+          "The more detail you give, the sharper the match. Everything below takes about two minutes.",
+        )}
       />
       <section className="bg-bone">
         <div className="mx-auto max-w-4xl px-5 py-16 lg:px-8 lg:py-20">

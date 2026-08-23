@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useBi } from "@/lib/i18n";
 import { toast } from "sonner";
 import { CheckCircle2, Plus, Trash2 } from "lucide-react";
 import { Field, SelectInput, SubmitButton, TextArea, TextInput } from "./form-kit";
@@ -33,6 +34,7 @@ export function RfqForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState<RfqInput | null>(null);
+  const bi = useBi();
 
   function set<K extends keyof RfqInput>(key: K, value: RfqInput[K]) {
     setValues((v) => ({ ...v, [key]: value }));
@@ -63,7 +65,7 @@ export function RfqForm() {
       const next: Record<string, string> = {};
       for (const issue of parsed.error.issues) next[issue.path.join(".")] = issue.message;
       setErrors(next);
-      toast.error("Please complete the required fields.");
+      toast.error(bi("Lengkapi kolom yang wajib diisi.", "Please complete the required fields."));
       return;
     }
     setErrors({});
@@ -71,9 +73,9 @@ export function RfqForm() {
     try {
       await submitRfq(parsed.data);
       setDone(parsed.data);
-      toast.success("RFQ received. Our sourcing team will be in touch.");
+      toast.success(bi("Permintaan diterima. Tim sourcing kami akan menghubungi Anda.", "RFQ received. Our sourcing team will be in touch."));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not send your request.");
+      toast.error(err instanceof Error ? err.message : bi("Permintaan gagal dikirim.", "Could not send your request."));
     } finally {
       setPending(false);
     }
@@ -83,10 +85,9 @@ export function RfqForm() {
     return (
       <div className="border border-line bg-card p-8 text-center">
         <CheckCircle2 className="mx-auto h-10 w-10 text-crimson" aria-hidden="true" />
-        <h2 className="mt-5 font-display text-2xl">Your request is with our sourcing team</h2>
+        <h2 className="mt-5 font-display text-2xl">{bi("Permintaan Anda sudah diterima tim sourcing", "Your request is with our sourcing team")}</h2>
         <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-ash">
-          We review every RFQ manually and match it against our supplier network. Expect a response
-          within one business day.
+          {bi("Setiap permintaan kami tinjau manual dan cocokkan dengan jaringan pemasok. Balasan dalam satu hari kerja.", "We review every RFQ manually and match it against our supplier network. Expect a response within one business day.")}
         </p>
         <a
           href={waLink(rfqWhatsappMessage(done))}
@@ -94,7 +95,7 @@ export function RfqForm() {
           rel="noreferrer noopener"
           className="eyebrow mt-6 inline-flex bg-crimson px-6 py-4 text-bone transition-colors hover:bg-crimson-deep"
         >
-          Continue on WhatsApp
+          {bi("Lanjut via WhatsApp", "Continue on WhatsApp")}
         </a>
       </div>
     );
@@ -103,22 +104,22 @@ export function RfqForm() {
   return (
     <form onSubmit={onSubmit} className="border border-line bg-card p-6 sm:p-8">
       <fieldset className="grid gap-5 sm:grid-cols-2">
-        <legend className="eyebrow mb-5 text-crimson">Your business</legend>
-        <Field label="Company name" required error={errors["company_name"]}>
+        <legend className="eyebrow mb-5 text-crimson">{bi("Profil bisnis Anda", "Your business")}</legend>
+        <Field label={bi("Nama perusahaan", "Company name")} required error={errors["company_name"]}>
           <TextInput
             value={values.company_name}
             onChange={(e) => set("company_name", e.target.value)}
-            placeholder="e.g. Nusantara Dining Group"
+            placeholder={bi("mis. Nusantara Dining Group", "e.g. Nusantara Dining Group")}
           />
         </Field>
-        <Field label="Contact person" required error={errors["contact_name"]}>
+        <Field label={bi("Nama kontak", "Contact person")} required error={errors["contact_name"]}>
           <TextInput
             value={values.contact_name}
             onChange={(e) => set("contact_name", e.target.value)}
-            placeholder="Full name"
+            placeholder={bi("Nama lengkap", "Full name")}
           />
         </Field>
-        <Field label="WhatsApp number" required error={errors["whatsapp"]}>
+        <Field label={bi("Nomor WhatsApp", "WhatsApp number")} required error={errors["whatsapp"]}>
           <TextInput
             value={values.whatsapp}
             onChange={(e) => set("whatsapp", e.target.value)}
@@ -126,7 +127,7 @@ export function RfqForm() {
             inputMode="tel"
           />
         </Field>
-        <Field label="Email" error={errors["email"]}>
+        <Field label={bi("Email", "Email")} error={errors["email"]}>
           <TextInput
             type="email"
             value={values.email ?? ""}
@@ -134,18 +135,18 @@ export function RfqForm() {
             placeholder="name@company.com"
           />
         </Field>
-        <Field label="Delivery location" required error={errors["delivery_location"]}>
+        <Field label={bi("Lokasi pengiriman", "Delivery location")} required error={errors["delivery_location"]}>
           <TextInput
             value={values.delivery_location}
             onChange={(e) => set("delivery_location", e.target.value)}
-            placeholder="City / area"
+            placeholder={bi("Kota / area", "City / area")}
           />
         </Field>
-        <Field label="Payment terms preferred" error={errors["payment_terms"]}>
+        <Field label={bi("Termin pembayaran yang diinginkan", "Payment terms preferred")} error={errors["payment_terms"]}>
           <TextInput
             value={values.payment_terms ?? ""}
             onChange={(e) => set("payment_terms", e.target.value)}
-            placeholder="e.g. COD, 14 days"
+            placeholder={bi("mis. COD, 14 hari", "e.g. COD, 14 days")}
           />
         </Field>
       </fieldset>
@@ -153,14 +154,13 @@ export function RfqForm() {
       <div className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="eyebrow text-crimson">What you need</p>
+            <p className="eyebrow text-crimson">{bi("Kebutuhan Anda", "What you need")}</p>
             <p className="mt-2 text-xs text-ash">
-              Add every cut you are sourcing — one line per product. No need to send several
-              requests.
+              {bi("Tambahkan setiap potongan yang Anda cari — satu baris per produk. Tidak perlu kirim beberapa permintaan.", "Add every cut you are sourcing — one line per product. No need to send several requests.")}
             </p>
           </div>
           <span className="text-xs text-ash">
-            {values.items.length} item{values.items.length > 1 ? "s" : ""}
+            {values.items.length} {bi("item", values.items.length > 1 ? "items" : "item")}
           </span>
         </div>
 
@@ -172,83 +172,83 @@ export function RfqForm() {
           {values.items.map((item, index) => (
             <fieldset key={index} className="border border-line p-5">
               <div className="mb-5 flex items-center justify-between">
-                <legend className="eyebrow text-ash">Item {index + 1}</legend>
+                <legend className="eyebrow text-ash">{bi("Item", "Item")} {index + 1}</legend>
                 {values.items.length > 1 ? (
                   <button
                     type="button"
                     onClick={() => removeItem(index)}
                     className="inline-flex items-center gap-1.5 text-xs text-ash transition-colors hover:text-crimson"
-                    aria-label={`Remove item ${index + 1}`}
+                    aria-label={`${bi("Hapus item", "Remove item")} ${index + 1}`}
                   >
                     <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-                    Remove
+                    {bi("Hapus", "Remove")}
                   </button>
                 ) : null}
               </div>
 
               <div className="grid gap-5 sm:grid-cols-2">
-                <Field label="Category" error={errors[`items.${index}.category`]}>
+                <Field label={bi("Kategori", "Category")} error={errors[`items.${index}.category`]}>
                   <SelectInput
                     value={item.category ?? ""}
                     onChange={(e) => setItem(index, "category", e.target.value)}
                   >
-                    <option value="">Select a category</option>
+                    <option value="">{bi("Pilih kategori", "Select a category")}</option>
                     {CATEGORIES.map((c) => (
                       <option key={c.slug} value={c.name}>
                         {c.name}
                       </option>
                     ))}
-                    <option value="Other">Other</option>
+                    <option value="Other">{bi("Lainnya", "Other")}</option>
                   </SelectInput>
                 </Field>
                 <Field
-                  label="Product / cut"
+                  label={bi("Produk / potongan", "Product / cut")}
                   required
                   error={errors[`items.${index}.product_cut`]}
                 >
                   <TextInput
                     value={item.product_cut}
                     onChange={(e) => setItem(index, "product_cut", e.target.value)}
-                    placeholder="e.g. Wagyu ribeye"
+                    placeholder={bi("mis. Wagyu ribeye", "e.g. Wagyu ribeye")}
                   />
                 </Field>
-                <Field label="Origin preference" error={errors[`items.${index}.origin_preference`]}>
+                <Field label={bi("Preferensi origin", "Origin preference")} error={errors[`items.${index}.origin_preference`]}>
                   <TextInput
                     value={item.origin_preference ?? ""}
                     onChange={(e) => setItem(index, "origin_preference", e.target.value)}
-                    placeholder="e.g. Australia, USA, NZ"
+                    placeholder={bi("mis. Australia, USA, NZ", "e.g. Australia, USA, NZ")}
                   />
                 </Field>
-                <Field label="Brand preference" error={errors[`items.${index}.brand_preference`]}>
+                <Field label={bi("Preferensi brand", "Brand preference")} error={errors[`items.${index}.brand_preference`]}>
                   <TextInput
                     value={item.brand_preference ?? ""}
                     onChange={(e) => setItem(index, "brand_preference", e.target.value)}
-                    placeholder="Optional"
+                    placeholder={bi("Opsional", "Optional")}
                   />
                 </Field>
                 <Field
-                  label="Grade / marbling"
+                  label={bi("Grade / marbling", "Grade / marbling")}
                   error={errors[`items.${index}.grade`]}
-                  hint="e.g. MB6-7, Prime, Choice"
+                  hint={bi("mis. MB6-7, Prime, Choice", "e.g. MB6-7, Prime, Choice")}
                 >
                   <TextInput
                     value={item.grade ?? ""}
                     onChange={(e) => setItem(index, "grade", e.target.value)}
                   />
                 </Field>
-                <Field label="Volume required" required error={errors[`items.${index}.volume`]}>
+                <Field label={bi("Volume dibutuhkan", "Volume required")} required error={errors[`items.${index}.volume`]}>
                   <TextInput
                     value={item.volume}
                     onChange={(e) => setItem(index, "volume", e.target.value)}
-                    placeholder="e.g. 100 kg per month"
+                    placeholder={bi("mis. 100 kg per bulan", "e.g. 100 kg per month")}
                   />
                 </Field>
                 <div className="sm:col-span-2">
-                  <Field label="Item notes" error={errors[`items.${index}.notes`]}>
+                  <Field label={bi("Catatan item", "Item notes")} error={errors[`items.${index}.notes`]}>
                     <TextInput
                       value={item.notes ?? ""}
                       onChange={(e) => setItem(index, "notes", e.target.value)}
-                      placeholder="Packaging, portion size, trim spec…"
+                      placeholder={bi("Kemasan, ukuran porsi, spesifikasi trim…", "Packaging, portion size, trim spec…")}
                     />
                   </Field>
                 </div>
@@ -263,49 +263,49 @@ export function RfqForm() {
           className="eyebrow mt-5 inline-flex items-center gap-2 border border-line px-5 py-3 text-ink transition-colors hover:border-crimson hover:text-crimson"
         >
           <Plus className="h-4 w-4" aria-hidden="true" />
-          Add another item
+          {bi("Tambah item lain", "Add another item")}
         </button>
       </div>
 
       <fieldset className="mt-10 grid gap-5 sm:grid-cols-2">
-        <legend className="eyebrow mb-5 text-crimson">Order details</legend>
-        <Field label="Purchase frequency" error={errors["purchase_frequency"]}>
+        <legend className="eyebrow mb-5 text-crimson">{bi("Detail pemesanan", "Order details")}</legend>
+        <Field label={bi("Frekuensi pembelian", "Purchase frequency")} error={errors["purchase_frequency"]}>
           <SelectInput
             value={values.purchase_frequency ?? ""}
             onChange={(e) => set("purchase_frequency", e.target.value)}
           >
-            <option value="">Select frequency</option>
-            <option value="One-off">One-off</option>
-            <option value="Weekly">Weekly</option>
-            <option value="Bi-weekly">Bi-weekly</option>
-            <option value="Monthly">Monthly</option>
+            <option value="">{bi("Pilih frekuensi", "Select frequency")}</option>
+            <option value="One-off">{bi("Sekali beli", "One-off")}</option>
+            <option value="Weekly">{bi("Mingguan", "Weekly")}</option>
+            <option value="Bi-weekly">{bi("Dua mingguan", "Bi-weekly")}</option>
+            <option value="Monthly">{bi("Bulanan", "Monthly")}</option>
           </SelectInput>
         </Field>
-        <Field label="Required delivery date" required error={errors["required_delivery_date"]}>
+        <Field label={bi("Tanggal pengiriman dibutuhkan", "Required delivery date")} required error={errors["required_delivery_date"]}>
           <TextInput
             value={values.required_delivery_date}
             onChange={(e) => set("required_delivery_date", e.target.value)}
-            placeholder="e.g. 15 September or ASAP"
+            placeholder={bi("mis. 15 September atau secepatnya", "e.g. 15 September or ASAP")}
           />
         </Field>
       </fieldset>
 
       <fieldset className="mt-10 grid gap-5 sm:grid-cols-2">
-        <legend className="eyebrow mb-5 text-crimson">Current sourcing (optional)</legend>
-        <Field label="Current supplier" error={errors["current_supplier"]}>
+        <legend className="eyebrow mb-5 text-crimson">{bi("Sourcing saat ini (opsional)", "Current sourcing (optional)")}</legend>
+        <Field label={bi("Pemasok saat ini", "Current supplier")} error={errors["current_supplier"]}>
           <TextInput
             value={values.current_supplier ?? ""}
             onChange={(e) => set("current_supplier", e.target.value)}
           />
         </Field>
-        <Field label="Current price" error={errors["current_price"]}>
+        <Field label={bi("Harga saat ini", "Current price")} error={errors["current_price"]}>
           <TextInput
             value={values.current_price ?? ""}
             onChange={(e) => set("current_price", e.target.value)}
             placeholder="Rp / kg"
           />
         </Field>
-        <Field label="Target price" error={errors["target_price"]}>
+        <Field label={bi("Target harga", "Target price")} error={errors["target_price"]}>
           <TextInput
             value={values.target_price ?? ""}
             onChange={(e) => set("target_price", e.target.value)}
@@ -313,11 +313,11 @@ export function RfqForm() {
           />
         </Field>
         <div className="sm:col-span-2">
-          <Field label="Additional notes" error={errors["notes"]}>
+          <Field label={bi("Catatan tambahan", "Additional notes")} error={errors["notes"]}>
             <TextArea
               value={values.notes ?? ""}
               onChange={(e) => set("notes", e.target.value)}
-              placeholder="Certification, halal requirements, cold chain notes…"
+              placeholder={bi("Sertifikasi, kebutuhan halal, catatan rantai dingin…", "Certification, halal requirements, cold chain notes…")}
             />
           </Field>
         </div>
@@ -325,10 +325,9 @@ export function RfqForm() {
 
       <div className="mt-10 flex flex-col items-start gap-4 border-t border-line pt-8 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs leading-relaxed text-ash">
-          No account needed. We never publish your pricing or share your details beyond the
-          suppliers we shortlist for you.
+          {bi("Tanpa perlu akun. Kami tidak pernah mempublikasikan harga Anda atau membagikan data Anda di luar pemasok yang kami seleksi.", "No account needed. We never publish your pricing or share your details beyond the suppliers we shortlist for you.")}
         </p>
-        <SubmitButton pending={pending}>Submit RFQ</SubmitButton>
+        <SubmitButton pending={pending}>{bi("Kirim permintaan", "Submit RFQ")}</SubmitButton>
       </div>
     </form>
   );
