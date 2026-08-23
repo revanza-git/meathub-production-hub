@@ -27,6 +27,7 @@ export function ProductCard({ row, headingLevel = "h2" }: { row: CatalogRow; hea
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <ImageDisclaimer className="absolute bottom-2 left-2 z-10 rounded bg-background/80 px-1.5 py-1" />
+        <AvailabilityBadge value={row.availability} />
         <PromoFlag
           price={row.public_price_idr}
           listPrice={row.list_price_idr}
