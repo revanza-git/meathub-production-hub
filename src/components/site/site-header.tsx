@@ -5,16 +5,18 @@ import mark from "@/assets/meatlink-mark.png.asset.json";
 import { useCart } from "@/lib/meatlink/cart";
 import { CATEGORY_PAGES } from "@/lib/meatlink/categories";
 import { CONTACT_EMAIL, waLink } from "@/lib/meatlink/config";
+import { useLang, type TKey } from "@/lib/i18n";
+import { LanguageToggle } from "./language-toggle";
 
 const NAV = [
-  { to: "/produk", label: "Produk" },
-  { to: "/promo", label: "Promo" },
-  { to: "/request-quote", label: "Special Sourcing" },
-  { to: "/insights", label: "Market Insights" },
-  { to: "/network", label: "Buyers & Suppliers" },
-  { to: "/about", label: "About Us" },
-  { to: "/contact", label: "Contact" },
-] as const;
+  { to: "/produk", key: "nav.products" },
+  { to: "/promo", key: "nav.promo" },
+  { to: "/request-quote", key: "nav.sourcing" },
+  { to: "/insights", key: "nav.insights" },
+  { to: "/network", key: "nav.network" },
+  { to: "/about", key: "nav.about" },
+  { to: "/contact", key: "nav.contact" },
+] as const satisfies readonly { to: string; key: TKey }[];
 
 export function Wordmark({ tone = "light" }: { tone?: "light" | "dark" }) {
   return (
@@ -50,12 +52,13 @@ export function Wordmark({ tone = "light" }: { tone?: "light" | "dark" }) {
 
 /** Thin utility strip: coverage, support channels and the active service promise. */
 function UtilityBar() {
+  const { t } = useLang();
   return (
     <div className="hidden border-b border-white/10 bg-noir text-bone lg:block">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-5 py-2 text-[0.7rem] tracking-[0.12em] lg:px-8">
         <p className="inline-flex items-center gap-2 text-bone/70">
           <Truck className="h-3.5 w-3.5 text-crimson" aria-hidden="true" />
-          PENGIRIMAN KE SELURUH INDONESIA · RANTAI DINGIN TERJAGA
+          {t("header.coverage")}
         </p>
         <div className="flex items-center gap-6 text-bone/70">
           <a
@@ -70,6 +73,7 @@ function UtilityBar() {
           <a href={`mailto:${CONTACT_EMAIL}`} className="transition-colors hover:text-bone">
             {CONTACT_EMAIL.toUpperCase()}
           </a>
+          <LanguageToggle dark />
         </div>
       </div>
     </div>
@@ -78,6 +82,7 @@ function UtilityBar() {
 
 /** Category menu — the primary way into the catalog, Friboi-style. */
 function CategoryMenu({ dark }: { dark: boolean }) {
+  const { t } = useLang();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -104,7 +109,7 @@ function CategoryMenu({ dark }: { dark: boolean }) {
         }`}
       >
         <Menu className="h-4 w-4" aria-hidden="true" />
-        Kategori
+        {t("header.categories")}
         <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
       </button>
       {open ? (
@@ -126,7 +131,7 @@ function CategoryMenu({ dark }: { dark: boolean }) {
             onClick={() => setOpen(false)}
             className="eyebrow block bg-ink px-5 py-3 text-bone"
           >
-            Lihat semua produk
+            {t("header.allProducts")}
           </Link>
         </div>
       ) : null}
@@ -145,6 +150,7 @@ export function CatalogSearch({
   className?: string;
 }) {
   const navigate = useNavigate();
+  const { t } = useLang();
   const [q, setQ] = useState("");
 
   return (
@@ -168,8 +174,8 @@ export function CatalogSearch({
           type="search"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          aria-label="Cari produk daging"
-          placeholder="Cari cut, brand atau asal negara…"
+          aria-label={t("header.searchLabel")}
+          placeholder={t("header.searchPlaceholder")}
           className={`w-full border py-3 pl-11 pr-4 text-sm outline-none transition-colors ${
             dark
               ? "border-white/20 bg-white/5 text-bone placeholder:text-bone/40 focus:border-bone/60"
@@ -181,13 +187,14 @@ export function CatalogSearch({
         type="submit"
         className="eyebrow bg-crimson px-6 py-3 text-bone transition-colors hover:bg-crimson-deep"
       >
-        Cari
+        {t("header.search")}
       </button>
     </form>
   );
 }
 
 export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
+  const { t } = useLang();
   const [open, setOpen] = useState(false);
   const dark = tone === "dark";
   const { count } = useCart();
@@ -217,11 +224,11 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
               }`}
             >
               <User className="h-5 w-5" aria-hidden="true" />
-              Akun
+              {t("header.account")}
             </Link>
             <Link
               to="/keranjang"
-              aria-label={`Keranjang (${count} item)`}
+              aria-label={`${t("header.cart")} (${count})`}
               className={`eyebrow relative inline-flex items-center gap-2 px-3 py-3 transition-colors ${
                 dark ? "text-bone/80 hover:text-bone" : "text-ash hover:text-ink"
               }`}
@@ -238,7 +245,7 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            aria-label={open ? "Close menu" : "Open menu"}
+            aria-label={open ? t("header.closeMenu") : t("header.openMenu")}
             aria-expanded={open}
             className={`ml-auto lg:hidden ${dark ? "text-bone" : "text-ink"}`}
           >
@@ -261,7 +268,7 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
                 }`}
                 activeProps={{ className: dark ? "text-bone" : "text-ink" }}
               >
-                {item.label}
+                {t(item.key)}
               </Link>
             ))}
             <Link
@@ -270,7 +277,7 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
                 dark ? "text-bone/55 hover:text-bone" : "text-ash hover:text-ink"
               }`}
             >
-              Sell with Meatlink
+              {t("nav.sell")}
             </Link>
           </nav>
         </div>
@@ -280,6 +287,9 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
         <div className={`border-b lg:hidden ${dark ? "border-white/10 bg-noir" : "border-line bg-bone"}`}>
           <div className="mx-auto grid max-w-7xl gap-1 px-5 py-4">
             <CatalogSearch dark={dark} onSubmitted={() => setOpen(false)} className="mb-3" />
+            <div className="mb-3 flex justify-end">
+              <LanguageToggle dark={dark} />
+            </div>
             <nav aria-label="Mobile" className="grid gap-1">
               {NAV.map((item) => (
                 <Link
@@ -288,7 +298,7 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
                   onClick={() => setOpen(false)}
                   className={`eyebrow py-3 ${dark ? "text-bone/80" : "text-ash"}`}
                 >
-                  {item.label}
+                  {t(item.key)}
                 </Link>
               ))}
             </nav>
@@ -300,7 +310,7 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
                   dark ? "border-white/25 text-bone" : "border-ink/25 text-ink"
                 }`}
               >
-                Keranjang ({count})
+                {t("header.cart")} ({count})
               </Link>
               <Link
                 to="/auth"
@@ -309,14 +319,14 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
                   dark ? "border-white/25 text-bone" : "border-ink/25 text-ink"
                 }`}
               >
-                Akun
+                {t("header.account")}
               </Link>
               <Link
                 to="/produk"
                 onClick={() => setOpen(false)}
                 className="eyebrow bg-crimson px-5 py-3 text-center text-bone"
               >
-                Belanja Produk
+                {t("header.shopProducts")}
               </Link>
             </div>
           </div>

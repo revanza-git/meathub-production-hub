@@ -20,6 +20,7 @@ import { CATEGORY_LABEL, useCatalog } from "@/lib/meatlink/catalog";
 import { resolveFeatureImage, resolveProductImage, useFeaturedInventory } from "@/lib/meatlink/featured";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import heroImg from "@/assets/hero-wagyu.jpg";
+import { useLang, type TKey } from "@/lib/i18n";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -44,37 +45,13 @@ export const Route = createFileRoute("/")({
 });
 
 const BENEFITS = [
-  {
-    icon: BadgeCheck,
-    title: "Pasokan terverifikasi",
-    body: "Setiap importir dan pemasok diperiksa legalitas, dokumen dan konsistensinya sebelum masuk katalog.",
-  },
-  {
-    icon: Snowflake,
-    title: "Rantai dingin terjaga",
-    body: "Produk frozen dan chilled ditangani sesuai standar suhu dari gudang sampai lokasi Anda.",
-  },
-  {
-    icon: CreditCard,
-    title: "Pembayaran fleksibel",
-    body: "Transfer VA, QRIS, bayar di tempat, atau tempo (TOP) untuk perusahaan yang telah disetujui.",
-  },
-  {
-    icon: Truck,
-    title: "Pengiriman nasional",
-    body: "Jadwal kirim dan estimasi tiba tercatat pada setiap pesanan, lengkap dengan nomor resi.",
-  },
-  {
-    icon: Users,
-    title: "Cocok untuk semua skala",
-    body: "Dari resto, katering dan hotel sampai toko daging dan reseller — riwayat pesanan, pesan ulang sekali klik, dan harga kontrak untuk pembeli rutin.",
-  },
-  {
-    icon: ClipboardList,
-    title: "Special sourcing",
-    body: "Spesifikasi di luar katalog tetap kami carikan lewat jaringan pemasok Meatlink.",
-  },
-];
+  { icon: BadgeCheck, key: "verified" },
+  { icon: Snowflake, key: "cold" },
+  { icon: CreditCard, key: "payment" },
+  { icon: Truck, key: "delivery" },
+  { icon: Users, key: "scale" },
+  { icon: ClipboardList, key: "sourcing" },
+] as const;
 
 function HomePage() {
   return (
@@ -94,6 +71,7 @@ function HomePage() {
 
 /** Compact commercial hero: value proposition, working search, two CTAs. */
 function CommercialHero() {
+  const { t } = useLang();
   return (
     <section className="relative isolate overflow-hidden bg-noir text-bone">
       <img
@@ -106,16 +84,14 @@ function CommercialHero() {
       <div className="absolute inset-0 bg-gradient-to-r from-noir via-noir/85 to-noir/30" />
       <div className="relative mx-auto flex min-h-[420px] max-w-7xl flex-col justify-center px-5 py-14 lg:min-h-[480px] lg:px-8">
         <div className="max-w-2xl fade-in-up">
-          <p className="eyebrow text-crimson">Better Meat | Better Connections</p>
+          <p className="eyebrow text-crimson">{t("home.hero.eyebrow")}</p>
           <h1 className="mt-5 font-display text-4xl leading-[1.05] sm:text-5xl">
-            Daging premium untuk setiap skala usaha,
+            {t("home.hero.title1")}
             <br />
-            <span className="italic text-bone/85">siap pesan hari ini.</span>
+            <span className="italic text-bone/85">{t("home.hero.title2")}</span>
           </h1>
           <p className="mt-5 max-w-xl text-sm leading-relaxed text-bone/70">
-            Prime cut, second cut, offal dan bone dari importir terverifikasi. Harga per kilogram
-            terbuka, stok diperbarui setiap hari, pengiriman ke seluruh Indonesia — untuk resto,
-            hotel, katering, toko daging maupun reseller.
+            {t("home.hero.body")}
           </p>
 
           <CatalogSearch dark className="mt-8 max-w-xl" />
@@ -125,19 +101,19 @@ function CommercialHero() {
               to="/produk"
               className="eyebrow inline-flex items-center gap-2 bg-crimson px-7 py-4 text-bone transition-colors hover:bg-crimson-deep"
             >
-              Belanja Produk <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              {t("home.hero.shop")} <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
             <Link
               to="/produk"
               className="eyebrow inline-flex items-center border border-white/25 px-7 py-4 text-bone transition-colors hover:bg-white/10"
             >
-              Lihat Kategori
+              {t("home.hero.categories")}
             </Link>
             <Link
               to="/request-quote"
               className="eyebrow text-bone/65 underline-offset-4 transition-colors hover:text-bone hover:underline"
             >
-              Butuh spesifikasi khusus?
+              {t("home.hero.special")}
             </Link>
           </div>
         </div>
@@ -173,14 +149,15 @@ function ShelfHeading({
 }
 
 function ShopByCategory() {
+  const { t } = useLang();
   return (
     <section className="bg-bone">
       <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
         <ShelfHeading
-          eyebrow="Belanja per kategori"
-          title="Shop by Category"
+          eyebrow={t("home.category.eyebrow")}
+          title={t("home.category.title")}
           to="/produk"
-          linkLabel="Semua produk"
+          linkLabel={t("home.category.all")}
         />
         <div className="mt-10 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
           {CATEGORY_PAGES.map((c) => (
@@ -197,7 +174,7 @@ function ShopByCategory() {
                 {c.tagline}
               </p>
               <span className="eyebrow mt-6 inline-flex items-center gap-2 text-crimson">
-                Belanja <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                {t("home.category.shop")} <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </span>
             </Link>
           ))}
@@ -209,6 +186,7 @@ function ShopByCategory() {
 
 /** Available-now shelf. Grid, not a carousel — never renders empty. */
 function AvailableNow() {
+  const { t } = useLang();
   const { data, isLoading } = useCatalog({ page: 1, pageSize: 8 });
   const rows = data?.rows ?? [];
   if (!isLoading && rows.length === 0) return null;
@@ -217,10 +195,10 @@ function AvailableNow() {
     <section className="bg-sand">
       <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
         <ShelfHeading
-          eyebrow="Siap kirim"
-          title="Available Now"
+          eyebrow={t("home.available.eyebrow")}
+          title={t("home.available.title")}
           to="/produk"
-          linkLabel="Lihat semua"
+          linkLabel={t("home.available.all")}
         />
         <div className="mt-10 grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
           {isLoading
@@ -275,6 +253,7 @@ function AvailableNow() {
 
 /** Origin shelf derived from live catalog data — no hardcoded brand claims. */
 function ShopByOrigin() {
+  const { t } = useLang();
   const { data } = useCatalog({ page: 1, pageSize: 60 });
   const origins = Array.from(
     new Set((data?.rows ?? []).map((r) => r.origin).filter((o): o is string => Boolean(o))),
@@ -284,7 +263,7 @@ function ShopByOrigin() {
   return (
     <section className="bg-bone">
       <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
-        <ShelfHeading eyebrow="Asal produk" title="Shop by Origin" />
+        <ShelfHeading eyebrow={t("home.origin.eyebrow")} title={t("home.origin.title")} />
         <div className="mt-8 flex flex-wrap gap-3">
           {origins.map((origin) => (
             <Link
@@ -303,30 +282,34 @@ function ShopByOrigin() {
 }
 
 function Benefits() {
+  const { t } = useLang();
   return (
     <section className="bg-noir text-bone">
       <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
-        <p className="eyebrow text-crimson">KENAPA MEATLINK</p>
+        <p className="eyebrow text-crimson">{t("home.benefits.eyebrow")}</p>
         <h2 className="mt-6 max-w-3xl font-display text-3xl sm:text-4xl lg:text-5xl">
-          Dibangun untuk pembelian bisnis, terbuka untuk berbagai skala.
+          {t("home.benefits.title")}
         </h2>
         <p className="mt-5 max-w-2xl text-sm leading-relaxed text-bone/65">
-          Pembelian rutin dalam volume besar maupun order kecil untuk toko dan reseller berjalan di
-          alur yang sama: harga jelas, stok nyata, dokumen lengkap.
+          {t("home.benefits.body")}
         </p>
 
 
         <div className="mt-16 grid border border-white/10 sm:grid-cols-2 lg:grid-cols-3">
           {BENEFITS.map((b) => (
             <div
-              key={b.title}
+              key={b.key}
               className="group border-b border-white/10 p-8 last:border-b-0 sm:[&:nth-child(odd)]:border-r lg:[&:nth-child(odd)]:border-r-0 lg:[&:not(:nth-child(3n))]:border-r"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-full border border-crimson/40 text-crimson">
                 <b.icon className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
               </div>
-              <h3 className="mt-6 font-display text-xl">{b.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-bone/65">{b.body}</p>
+              <h3 className="mt-6 font-display text-xl">
+                {t(`home.benefit.${b.key}.title` as TKey)}
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-bone/65">
+                {t(`home.benefit.${b.key}.body` as TKey)}
+              </p>
             </div>
           ))}
         </div>
@@ -337,24 +320,24 @@ function Benefits() {
 
 
 function SpecialSourcingCta() {
+  const { t } = useLang();
   return (
     <section className="bg-sand">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6 px-5 py-12 lg:px-8">
         <div className="max-w-2xl">
-          <p className="eyebrow text-crimson">Special sourcing</p>
+          <p className="eyebrow text-crimson">{t("home.cta.eyebrow")}</p>
           <h2 className="mt-4 font-display text-2xl sm:text-3xl">
-            Tidak menemukan spesifikasi yang Anda cari?
+            {t("home.cta.title")}
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-ash">
-            Kirim kebutuhan cut, grade, volume dan tanggal kirim. Tim kami mencarikannya lewat
-            jaringan importir dan pemasok Meatlink.
+            {t("home.cta.body")}
           </p>
         </div>
         <Link
           to="/request-quote"
           className="eyebrow inline-flex items-center gap-2 border border-ink px-7 py-4 text-ink transition-colors hover:bg-ink hover:text-bone"
         >
-          Kirim permintaan khusus <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          {t("home.cta.button")} <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>
       </div>
     </section>
@@ -362,60 +345,31 @@ function SpecialSourcingCta() {
 }
 
 function Faq() {
+  const { t } = useLang();
   const [open, setOpen] = useState<string>("scale");
 
   const toggle = (key: string) => setOpen((current) => (current === key ? "" : key));
 
-  const items = [
-    {
-      key: "scale",
-      question: "Apakah Meatlink hanya melayani pembeli B2B?",
-      answer:
-        "Tidak. Meski dirancang untuk kebutuhan bisnis — restoran, hotel, katering, dan toko daging — kami juga membuka order untuk reseller maupun pembeli ritel yang membutuhkan daging premium dalam jumlah kecil. Alur, harga, dan pengiriman tetap transparan di setiap skala.",
-    },
-    {
-      key: "minimum",
-      question: "Berapa minimum jumlah pembelian?",
-      answer:
-        "Tidak ada minimum order yang rumit. Beberapa produk tersedia per kilogram atau per pack kecil, sehingga toko daging, katering kecil, dan pembeli pribadi bisa mulai berbelanja tanpa harus mengambil volume besar.",
-    },
-    {
-      key: "coverage",
-      question: "Jangkauan pengiriman sampai ke mana?",
-      answer:
-        "Pengiriman kami menjangkau seluruh Indonesia. Produk frozen dan chilled dikemas sesuai standar rantai dingin, dengan jadwal kirim dan nomor resi yang tercatap di setiap pesanan.",
-    },
-    {
-      key: "price",
-      question: "Apakah harga berbeda untuk order kecil dan besar?",
-      answer:
-        "Harga yang tertera terbuka per kilogram. Pembeli volume rutin — restoran, hotel, katering, dan toko daging — bisa mendapatkan harga kontrak atau TOP (tempo) setelah disetujui. Pembeli kecil tetap menikmati harga katalog yang sama tanpa syarat tambahan.",
-    },
-    {
-      key: "top",
-      question: "Apakah tersedia pembayaran tempo (TOP)?",
-      answer:
-        "Ya, untuk pembeli bisnis dengan histori atau kontrak rutin. Pengajuan TOP diverifikasi tim kami dalam 1–2 hari kerja. Sementara itu, pembeli lain tetap bisa memilih transfer VA, QRIS, atau bayar di tempat.",
-    },
-    {
-      key: "sourcing",
-      question: "Bisa request produk yang belum ada di katalog?",
-      answer:
-        "Bisa. Gunakan fitur Special Sourcing atau kirimkan kebutuhan spesifik Anda — cut, grade, brand, volume, dan tujuan. Tim Meatlink akan mencarikannya lewat jaringan importir dan pemasok terverifikasi.",
-    },
-  ];
+  const items = (["scale", "minimum", "coverage", "price", "top", "sourcing"] as const).map(
+    (key) => ({
+      key,
+      question: t(`home.faq.${key}.q` as TKey),
+      answer: t(`home.faq.${key}.a` as TKey),
+    }),
+  );
+
+
 
   return (
     <section className="bg-bone">
       <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
         <div className="max-w-3xl">
-          <p className="eyebrow text-crimson">TANYA JAWAB</p>
+          <p className="eyebrow text-crimson">{t("home.faq.eyebrow")}</p>
           <h2 className="mt-6 font-display text-3xl sm:text-4xl">
-            Jangkauan layanan untuk berbagai skala pembeli
+            {t("home.faq.title")}
           </h2>
           <p className="mt-4 text-sm leading-relaxed text-ash">
-            Dari bisnis besar sampai pembeli pribadi — semua mendapat katalog, harga, dan layanan
-            yang sama-sama transparan.
+            {t("home.faq.body")}
           </p>
         </div>
         <div className="mt-12 grid gap-3 lg:grid-cols-2">
@@ -453,16 +407,17 @@ function Faq() {
 }
 
 function MarketInsights() {
+  const { t } = useLang();
   const { data: items = [] } = useFeaturedInventory(3);
   if (items.length === 0) return null;
   return (
     <section className="bg-bone">
       <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
         <ShelfHeading
-          eyebrow="Market insights"
-          title="Recently sourced"
+          eyebrow={t("home.insights.eyebrow")}
+          title={t("home.insights.title")}
           to="/insights"
-          linkLabel="Semua insight"
+          linkLabel={t("home.insights.all")}
         />
         <div className="mt-10 grid gap-px border border-line bg-line lg:grid-cols-3">
           {items.map((item) => (
@@ -480,15 +435,15 @@ function MarketInsights() {
                 <h3 className="mt-4 font-display text-2xl leading-snug">{item.name}</h3>
                 <dl className="mt-6 space-y-2 text-xs text-ash">
                   <div className="flex justify-between border-b border-line pb-2">
-                    <dt>Brand</dt>
+                    <dt>{t("home.insights.brand")}</dt>
                     <dd className="text-ink">{item.brand || "Meatlink select"}</dd>
                   </div>
                   <div className="flex justify-between border-b border-line pb-2">
-                    <dt>Average weight</dt>
-                    <dd className="text-ink">{item.avg_weight_text ?? "On request"}</dd>
+                    <dt>{t("home.insights.avgWeight")}</dt>
+                    <dd className="text-ink">{item.avg_weight_text ?? t("home.insights.onRequest")}</dd>
                   </div>
                   <div className="flex justify-between pt-1">
-                    <dt>Indicative price</dt>
+                    <dt>{t("home.insights.indicative")}</dt>
                     <dd className="text-crimson">
                       {Number(item.list_price_idr) > Number(item.public_price_idr) ? (
                         <span className="mr-2 text-ash line-through">

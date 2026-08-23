@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { registerServiceWorker } from "@/lib/pwa-register";
 import { ConsentBanner } from "@/components/site/consent-banner";
+import { LanguageProvider } from "@/lib/i18n";
 import { trackPageView } from "@/lib/analytics";
 
 
@@ -189,9 +190,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
-      <Toaster richColors position="top-center" />
-      <ConsentBanner />
+      <LanguageProvider>
+        <Outlet />
+        <Toaster richColors position="top-center" />
+        <ConsentBanner />
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }
