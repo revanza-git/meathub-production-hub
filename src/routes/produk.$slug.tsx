@@ -5,7 +5,11 @@ import { AddToCart } from "@/components/site/add-to-cart";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
 import { PriceTag, PromoFlag } from "@/components/site/price-tag";
 import { WHATSAPP_NUMBER } from "@/lib/meatlink/config";
-import { formatIdr } from "@/lib/meatlink/inventory";
+import {
+  formatIdr,
+  unitPriceFromPublic,
+  type PurchaseUnit,
+} from "@/lib/meatlink/inventory";
 import { resolveProductImage } from "@/lib/meatlink/featured";
 import {
   AVAILABILITY_LABEL,
@@ -182,10 +186,10 @@ function ProductPage() {
  * level; larger units are cheaper per kg. Internal margin structure is never shown.
  */
 const UNIT_TIERS = [
-  { label: "Loaf / ritel", note: "Per loaf atau satuan", cut: 0 },
-  { label: "Karton", note: "Kelipatan karton utuh", cut: 15_000 },
-  { label: "Ton", note: "Mulai 1.000 kg", cut: 20_000 },
-] as const;
+  { unit: "loaf", label: "Loaf / ritel", note: "Per loaf atau satuan" },
+  { unit: "carton", label: "Karton", note: "Kelipatan karton utuh" },
+  { unit: "ton", label: "Ton", note: "Mulai 1.000 kg" },
+] as const satisfies readonly { unit: PurchaseUnit; label: string; note: string }[];
 
 function VolumeTiers({ price }: { price: number }) {
   if (!Number.isFinite(price) || price <= 0) return null;
@@ -194,13 +198,13 @@ function VolumeTiers({ price }: { price: number }) {
       <p className="eyebrow border-b border-line px-4 py-3 text-ash">Indikasi harga per satuan beli</p>
       <ul className="divide-y divide-line text-sm">
         {UNIT_TIERS.map((t) => (
-          <li key={t.label} className="flex items-center justify-between gap-4 px-4 py-2.5">
+          <li key={t.unit} className="flex items-center justify-between gap-4 px-4 py-2.5">
             <span className="text-ash">
               {t.label}
               <span className="block text-xs text-ash/70">{t.note}</span>
             </span>
             <span className="whitespace-nowrap text-ink">
-              {formatIdr(Math.max(0, price - t.cut))} /kg
+              {formatIdr(unitPriceFromPublic(price, t.unit))} /kg
             </span>
           </li>
         ))}
