@@ -34,7 +34,7 @@ function AdminCommercePage() {
       intro="Kode promo checkout, harga kontrak per pembeli, dan limit pembayaran tempo."
     >
       <RoleGate allow="admin">
-        <div className="grid gap-6">
+        <div className="space-y-12">
           <Coupons />
           <CreditAccounts />
           <BuyerPrices />
@@ -44,7 +44,25 @@ function AdminCommercePage() {
   );
 }
 
-const inputClass = "w-full rounded border bg-background px-3 py-2 text-sm";
+const labelClass = "block text-[10px] font-semibold uppercase tracking-tighter text-ash mb-1";
+const inputClass = "w-full bg-transparent border-b border-line py-2 text-sm text-ink outline-none focus:border-crimson transition-colors placeholder:text-ash/50";
+const buttonPrimary = "bg-ink text-bone text-[10px] font-semibold uppercase tracking-[0.2em] px-6 py-3 hover:bg-crimson transition-colors";
+const buttonSecondary = "border border-line bg-card text-ink text-[10px] font-semibold uppercase tracking-[0.15em] px-4 py-2 hover:bg-sand transition-colors";
+
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="p-4">
+      <label className={labelClass}>{label}</label>
+      {children}
+    </div>
+  );
+}
 
 function Coupons() {
   const qc = useQueryClient();
@@ -116,86 +134,115 @@ function Coupons() {
   }
 
   return (
-    <Panel>
-      <h2 className="text-base font-semibold">Kode promo</h2>
-      <div className="mt-4 grid gap-2 md:grid-cols-4">
-        <input
-          className={inputClass}
-          placeholder="KODE"
-          value={form.code}
-          onChange={(e) => setForm((f) => ({ ...f, code: e.target.value.toUpperCase() }))}
-        />
-        <select
-          className={inputClass}
-          value={form.discount_type}
-          onChange={(e) => setForm((f) => ({ ...f, discount_type: e.target.value }))}
-        >
-          <option value="PERCENT">Persen (%)</option>
-          <option value="AMOUNT">Nominal (Rp)</option>
-        </select>
-        <input
-          className={inputClass}
-          type="number"
-          placeholder="Nilai diskon"
-          value={form.discount_value}
-          onChange={(e) => setForm((f) => ({ ...f, discount_value: e.target.value }))}
-        />
-        <input
-          className={inputClass}
-          type="number"
-          placeholder="Min. belanja"
-          value={form.min_subtotal_idr}
-          onChange={(e) => setForm((f) => ({ ...f, min_subtotal_idr: e.target.value }))}
-        />
-        <input
-          className={inputClass}
-          type="number"
-          placeholder="Maks. diskon"
-          value={form.max_discount_idr}
-          onChange={(e) => setForm((f) => ({ ...f, max_discount_idr: e.target.value }))}
-        />
-        <input
-          className={inputClass}
-          type="date"
-          value={form.ends_at}
-          onChange={(e) => setForm((f) => ({ ...f, ends_at: e.target.value }))}
-        />
-        <input
-          className={inputClass}
-          type="number"
-          placeholder="Kuota pemakaian"
-          value={form.usage_limit}
-          onChange={(e) => setForm((f) => ({ ...f, usage_limit: e.target.value }))}
-        />
-        <input
-          className={inputClass}
-          placeholder="Keterangan"
-          value={form.description}
-          onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-        />
+    <section className="space-y-6">
+      <div className="flex items-baseline justify-between">
+        <h2 className="font-display text-xl text-ink">Kode promo</h2>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-ash">Formulir baru</span>
       </div>
-      <button
-        type="button"
-        onClick={() => void create()}
-        className="mt-3 rounded border px-3 py-2 text-xs uppercase tracking-wide"
-      >
-        Tambah kode
-      </button>
 
-      {isLoading ? (
-        <p className="mt-4 text-sm text-muted-foreground">Memuat…</p>
-      ) : (
-        <ul className="mt-4 divide-y text-sm">
+      <Panel className="overflow-hidden shadow-sm">
+        <div className="grid grid-cols-1 border-b border-line md:grid-cols-4">
+          <Field label="Kode">
+            <input
+              type="text"
+              className={`${inputClass} uppercase`}
+              placeholder="KODE"
+              value={form.code}
+              onChange={(e) => setForm((f) => ({ ...f, code: e.target.value.toUpperCase() }))}
+            />
+          </Field>
+          <Field label="Tipe">
+            <select
+              className={inputClass}
+              value={form.discount_type}
+              onChange={(e) => setForm((f) => ({ ...f, discount_type: e.target.value }))}
+            >
+              <option value="PERCENT">Persen (%)</option>
+              <option value="AMOUNT">Nominal (Rp)</option>
+            </select>
+          </Field>
+          <Field label="Nilai diskon">
+            <input
+              type="number"
+              className={inputClass}
+              placeholder="0"
+              value={form.discount_value}
+              onChange={(e) => setForm((f) => ({ ...f, discount_value: e.target.value }))}
+            />
+          </Field>
+          <Field label="Min. belanja">
+            <input
+              type="number"
+              className={inputClass}
+              placeholder="0"
+              value={form.min_subtotal_idr}
+              onChange={(e) => setForm((f) => ({ ...f, min_subtotal_idr: e.target.value }))}
+            />
+          </Field>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-4">
+          <Field label="Maks. diskon">
+            <input
+              type="number"
+              className={inputClass}
+              placeholder="0"
+              value={form.max_discount_idr}
+              onChange={(e) => setForm((f) => ({ ...f, max_discount_idr: e.target.value }))}
+            />
+          </Field>
+          <Field label="Berlaku sampai">
+            <input
+              type="date"
+              className={inputClass}
+              value={form.ends_at}
+              onChange={(e) => setForm((f) => ({ ...f, ends_at: e.target.value }))}
+            />
+          </Field>
+          <Field label="Kuota">
+            <input
+              type="number"
+              className={inputClass}
+              placeholder="0"
+              value={form.usage_limit}
+              onChange={(e) => setForm((f) => ({ ...f, usage_limit: e.target.value }))}
+            />
+          </Field>
+          <Field label="Keterangan">
+            <input
+              type="text"
+              className={inputClass}
+              placeholder="-"
+              value={form.description}
+              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+            />
+          </Field>
+        </div>
+        <div className="flex items-center justify-between border-t border-line bg-sand/50 px-6 py-4">
+          {isLoading ? (
+            <p className="text-xs text-ash">Memuat…</p>
+          ) : (data ?? []).length === 0 ? (
+            <p className="font-display text-xs italic text-ash">Belum ada kode promo aktif.</p>
+          ) : (
+            <p className="text-xs text-ash">{(data ?? []).length} kode promo tersedia.</p>
+          )}
+          <button type="button" onClick={() => void create()} className={buttonPrimary}>
+            Tambah kode
+          </button>
+        </div>
+      </Panel>
+
+      {!isLoading && (data ?? []).length > 0 && (
+        <ul className="border border-line bg-card text-sm">
           {(data ?? []).map((c) => (
-            <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+            <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-6 py-4 last:border-b-0">
               <div>
-                <p className="font-medium">
+                <p className="font-medium text-ink">
                   {c.code} ·{" "}
                   {c.discount_type === "PERCENT"
                     ? `${Number(c.discount_value)}%`
                     : formatIdr(Number(c.discount_value))}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-ash">
                   Min {formatIdr(Number(c.min_subtotal_idr))} · dipakai {c.used_count}
                   {c.usage_limit ? `/${c.usage_limit}` : ""}
                   {c.ends_at ? ` · s/d ${new Date(c.ends_at).toLocaleDateString("id-ID")}` : ""}
@@ -204,18 +251,15 @@ function Coupons() {
               <button
                 type="button"
                 onClick={() => void toggle(c.id, !c.is_active)}
-                className="rounded border px-3 py-1 text-xs uppercase tracking-wide"
+                className={buttonSecondary}
               >
                 {c.is_active ? "Nonaktifkan" : "Aktifkan"}
               </button>
             </li>
           ))}
-          {(data ?? []).length === 0 ? (
-            <li className="py-3 text-sm text-muted-foreground">Belum ada kode promo.</li>
-          ) : null}
         </ul>
       )}
-    </Panel>
+    </section>
   );
 }
 
@@ -254,39 +298,48 @@ function CreditAccounts() {
   }
 
   return (
-    <Panel>
-      <h2 className="text-base font-semibold">Limit pembayaran tempo (TOP)</h2>
+    <section className="space-y-6">
+      <h2 className="font-display text-xl text-ink">Limit pembayaran tempo (TOP)</h2>
+
       {isLoading ? (
-        <p className="mt-4 text-sm text-muted-foreground">Memuat…</p>
+        <Panel className="p-8">
+          <p className="text-sm text-ash">Memuat…</p>
+        </Panel>
       ) : (data ?? []).length === 0 ? (
-        <p className="mt-4 text-sm text-muted-foreground">
-          Belum ada pengajuan limit tempo dari pembeli.
-        </p>
+        <div className="border border-dashed border-line bg-card/50 py-12 text-center">
+          <p className="text-xs font-semibold uppercase tracking-widest text-ash">
+            Belum ada pengajuan limit tempo dari pembeli.
+          </p>
+        </div>
       ) : (
-        <ul className="mt-4 divide-y text-sm">
+        <ul className="border border-line bg-card text-sm">
           {(data ?? []).map((a) => {
             const d = draft[a.id] ?? {
               limit: String(Number(a.limit_idr)),
               term: String(a.term_days),
             };
             return (
-              <li key={a.id} className="grid gap-2 py-3 md:grid-cols-[1.4fr_auto_auto_auto]">
+              <li key={a.id} className="grid items-center gap-4 border-b border-line px-6 py-4 last:border-b-0 md:grid-cols-[1.4fr_auto_auto_auto]">
                 <div>
-                  <p className="font-mono text-xs">{a.user_id}</p>
-                  <p className="text-xs text-muted-foreground">Status: {a.status}</p>
+                  <p className="font-mono text-xs text-ash">{a.user_id}</p>
+                  <p className="text-xs text-ash">Status: {a.status}</p>
                 </div>
-                <input
-                  className={`${inputClass} md:w-40`}
-                  type="number"
-                  value={d.limit}
-                  onChange={(e) => setDraft((p) => ({ ...p, [a.id]: { ...d, limit: e.target.value } }))}
-                />
-                <input
-                  className={`${inputClass} md:w-24`}
-                  type="number"
-                  value={d.term}
-                  onChange={(e) => setDraft((p) => ({ ...p, [a.id]: { ...d, term: e.target.value } }))}
-                />
+                <Field label="Limit">
+                  <input
+                    type="number"
+                    className={`${inputClass} md:w-40`}
+                    value={d.limit}
+                    onChange={(e) => setDraft((p) => ({ ...p, [a.id]: { ...d, limit: e.target.value } }))}
+                  />
+                </Field>
+                <Field label="Hari">
+                  <input
+                    type="number"
+                    className={`${inputClass} md:w-24`}
+                    value={d.term}
+                    onChange={(e) => setDraft((p) => ({ ...p, [a.id]: { ...d, term: e.target.value } }))}
+                  />
+                </Field>
                 <div className="flex gap-2">
                   <button
                     type="button"
@@ -296,7 +349,7 @@ function CreditAccounts() {
                         term_days: a.term_days,
                       })
                     }
-                    className="rounded border px-3 py-1 text-xs uppercase tracking-wide"
+                    className={buttonSecondary}
                   >
                     Setujui
                   </button>
@@ -308,7 +361,7 @@ function CreditAccounts() {
                         term_days: a.term_days,
                       })
                     }
-                    className="rounded border px-3 py-1 text-xs uppercase tracking-wide"
+                    className={buttonSecondary}
                   >
                     Bekukan
                   </button>
@@ -318,7 +371,7 @@ function CreditAccounts() {
           })}
         </ul>
       )}
-    </Panel>
+    </section>
   );
 }
 
@@ -377,69 +430,78 @@ function BuyerPrices() {
   }
 
   return (
-    <Panel>
-      <h2 className="text-base font-semibold">Harga kontrak pembeli</h2>
-      <div className="mt-4 grid gap-2 md:grid-cols-4">
-        <input
-          className={inputClass}
-          placeholder="User ID pembeli"
-          value={form.user_id}
-          onChange={(e) => setForm((f) => ({ ...f, user_id: e.target.value }))}
-        />
-        <input
-          className={inputClass}
-          placeholder="Slug produk"
-          value={form.slug}
-          onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
-        />
-        <input
-          className={inputClass}
-          type="number"
-          placeholder="Harga /kg"
-          value={form.price}
-          onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
-        />
-        <input
-          className={inputClass}
-          type="date"
-          value={form.valid_until}
-          onChange={(e) => setForm((f) => ({ ...f, valid_until: e.target.value }))}
-        />
-      </div>
-      <button
-        type="button"
-        onClick={() => void add()}
-        className="mt-3 rounded border px-3 py-2 text-xs uppercase tracking-wide"
-      >
-        Simpan harga
-      </button>
+    <section className="space-y-6">
+      <h2 className="font-display text-xl text-ink">Harga kontrak pembeli</h2>
 
-      <ul className="mt-4 divide-y text-sm">
-        {(data ?? []).map((p) => (
-          <li key={p.id} className="flex items-center justify-between gap-3 py-3">
-            <div>
-              <p>
-                {(p as { admin_inventory?: { name?: string } }).admin_inventory?.name ?? "Produk"} —{" "}
-                {formatIdr(Number(p.price_idr))}/kg
-              </p>
-              <p className="font-mono text-xs text-muted-foreground">
-                {p.user_id}
-                {p.valid_until ? ` · s/d ${p.valid_until}` : ""}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => void remove(p.id)}
-              className="rounded border px-3 py-1 text-xs uppercase tracking-wide"
-            >
-              Hapus
-            </button>
-          </li>
-        ))}
-        {(data ?? []).length === 0 ? (
-          <li className="py-3 text-sm text-muted-foreground">Belum ada harga kontrak.</li>
-        ) : null}
-      </ul>
-    </Panel>
+      <Panel className="overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-4">
+          <Field label="User ID pembeli">
+            <input
+              type="text"
+              className={inputClass}
+              placeholder="Cari user…"
+              value={form.user_id}
+              onChange={(e) => setForm((f) => ({ ...f, user_id: e.target.value }))}
+            />
+          </Field>
+          <Field label="Slug produk">
+            <input
+              type="text"
+              className={inputClass}
+              placeholder="daging-sapi-prime"
+              value={form.slug}
+              onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
+            />
+          </Field>
+          <Field label="Harga /kg">
+            <input
+              type="number"
+              className={inputClass}
+              placeholder="0"
+              value={form.price}
+              onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
+            />
+          </Field>
+          <Field label="Berlaku sampai">
+            <input
+              type="date"
+              className={inputClass}
+              value={form.valid_until}
+              onChange={(e) => setForm((f) => ({ ...f, valid_until: e.target.value }))}
+            />
+          </Field>
+        </div>
+        <div className="flex items-center justify-between border-t border-line bg-sand/50 px-6 py-4">
+          <p className="font-display text-xs italic text-ash">
+            {(data ?? []).length === 0 ? "Belum ada harga kontrak yang tercatat." : `${(data ?? []).length} harga kontrak tercatat.`}
+          </p>
+          <button type="button" onClick={() => void add()} className={buttonPrimary}>
+            Simpan harga
+          </button>
+        </div>
+      </Panel>
+
+      {(data ?? []).length > 0 && (
+        <ul className="border border-line bg-card text-sm">
+          {(data ?? []).map((p) => (
+            <li key={p.id} className="flex items-center justify-between gap-3 border-b border-line px-6 py-4 last:border-b-0">
+              <div>
+                <p className="text-ink">
+                  {(p as { admin_inventory?: { name?: string } }).admin_inventory?.name ?? "Produk"} —{" "}
+                  {formatIdr(Number(p.price_idr))}/kg
+                </p>
+                <p className="font-mono text-xs text-ash">
+                  {p.user_id}
+                  {p.valid_until ? ` · s/d ${p.valid_until}` : ""}
+                </p>
+              </div>
+              <button type="button" onClick={() => void remove(p.id)} className={buttonSecondary}>
+                Hapus
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }
