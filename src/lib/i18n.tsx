@@ -226,7 +226,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
+      const cookie = document.cookie
+        .split("; ")
+        .find((c) => c.startsWith(`${STORAGE_KEY}=`))
+        ?.split("=")[1];
+      const stored = window.localStorage.getItem(STORAGE_KEY) ?? cookie;
       if (stored === "en" || stored === "id") setLangState(stored);
     } catch {
       /* storage unavailable */
@@ -241,6 +245,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLangState(next);
     try {
       window.localStorage.setItem(STORAGE_KEY, next);
+      document.cookie = `${STORAGE_KEY}=${next}; path=/; max-age=31536000; samesite=lax`;
     } catch {
       /* storage unavailable */
     }

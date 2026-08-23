@@ -39,7 +39,6 @@ function AdminReportsPage() {
   const bi = useBi();
   const fmt = useFormat();
   const { lang } = useLang();
-  const locale = lang === "en" ? "en-GB" : "id-ID";
   const today = new Date();
   const monthAgo = new Date(today.getTime() - 29 * 86400000);
   const [from, setFrom] = useState(isoDate(monthAgo));
