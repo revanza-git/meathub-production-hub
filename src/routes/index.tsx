@@ -64,8 +64,8 @@ const BENEFITS = [
   },
   {
     icon: Users,
-    title: "Pemesanan untuk bisnis",
-    body: "Riwayat pesanan, pesan ulang sekali klik, dan harga kontrak untuk pembeli rutin.",
+    title: "Cocok untuk semua skala",
+    body: "Dari resto, katering dan hotel sampai toko daging dan reseller — riwayat pesanan, pesan ulang sekali klik, dan harga kontrak untuk pembeli rutin.",
   },
   {
     icon: ClipboardList,
