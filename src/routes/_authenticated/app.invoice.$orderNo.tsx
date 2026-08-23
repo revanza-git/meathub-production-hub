@@ -4,7 +4,8 @@ import { Printer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { formatDate } from "@/lib/meatlink/orders";
-import { ORDER_STATUS_LABEL, PAY_METHOD_LABEL, type PayMethod } from "@/lib/meatlink/cart";
+import { type PayMethod } from "@/lib/meatlink/cart";
+import { ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N, useBi, useLabel } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/app/invoice/$orderNo")({
   component: InvoicePage,
@@ -42,6 +43,8 @@ type OrderRow = {
 
 function InvoicePage() {
   const { orderNo } = Route.useParams();
+  const bi = useBi();
+  const label = useLabel();
 
   const { data, isLoading } = useQuery({
     queryKey: ["buyer-invoice", orderNo],
@@ -58,13 +61,13 @@ function InvoicePage() {
     },
   });
 
-  if (isLoading) return <p className="p-10 text-sm text-ash">Memuat faktur…</p>;
+  if (isLoading) return <p className="p-10 text-sm text-ash">{bi("Memuat faktur…", "Loading invoice…")}</p>;
   if (!data)
     return (
       <div className="p-10">
-        <p className="text-sm text-ash">Faktur tidak ditemukan untuk akun ini.</p>
+        <p className="text-sm text-ash">{bi("Faktur tidak ditemukan untuk akun ini.", "No invoice found for this account.")}</p>
         <Link to="/app/pesanan" className="eyebrow mt-4 inline-flex border border-ink/25 px-5 py-3 text-ink">
-          Kembali ke pesanan
+          {bi("Kembali ke pesanan", "Back to orders")}
         </Link>
       </div>
     );
@@ -76,34 +79,34 @@ function InvoicePage() {
     <main className="mx-auto max-w-3xl bg-background px-6 py-10 text-ink">
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <Link to="/app/pesanan" className="eyebrow border border-ink/25 px-5 py-3 text-ink">
-          Kembali
+          {bi("Kembali", "Back")}
         </Link>
         <button
           type="button"
           onClick={() => window.print()}
           className="eyebrow inline-flex items-center gap-2 bg-crimson px-5 py-3 text-bone"
         >
-          <Printer className="h-4 w-4" /> Cetak / simpan PDF
+          <Printer className="h-4 w-4" /> {bi("Cetak / simpan PDF", "Print / save PDF")}
         </button>
       </div>
 
       <header className="mt-8 flex flex-wrap items-start justify-between gap-4 border-b border-line pb-6">
         <div>
           <p className="font-display text-2xl">Meatlink.id</p>
-          <p className="mt-1 text-xs text-ash">Pasokan daging premium B2B · Seluruh Indonesia</p>
+          <p className="mt-1 text-xs text-ash">{bi("Pasokan daging premium B2B · Seluruh Indonesia", "Premium B2B meat supply · Across Indonesia")}</p>
         </div>
         <div className="text-right">
           <h1 className="font-display text-xl">
-            {completed ? "Tanda Terima" : "Faktur"} {data.order_no}
+            {completed ? bi("Tanda Terima", "Receipt") : bi("Faktur", "Invoice")} {data.order_no}
           </h1>
-          <p className="mt-1 text-xs text-ash">Tanggal {formatDate(data.created_at)}</p>
-          <p className="text-xs text-ash">Status: {ORDER_STATUS_LABEL[data.status] ?? data.status}</p>
+          <p className="mt-1 text-xs text-ash">{bi("Tanggal", "Date")} {formatDate(data.created_at)}</p>
+          <p className="text-xs text-ash">Status: {label(ORDER_STATUS_LABEL_I18N, data.status)}</p>
         </div>
       </header>
 
       <section className="mt-6 grid gap-6 sm:grid-cols-2">
         <div>
-          <h2 className="eyebrow text-ash">Ditagihkan kepada</h2>
+          <h2 className="eyebrow text-ash">{bi("Ditagihkan kepada", "Billed to")}</h2>
           <p className="mt-2 text-sm">{data.buyer_name}</p>
           {data.company ? <p className="text-sm">{data.company}</p> : null}
           <p className="text-xs text-ash">
@@ -116,19 +119,19 @@ function InvoicePage() {
           </p>
         </div>
         <div className="sm:text-right">
-          <h2 className="eyebrow text-ash">Pembayaran</h2>
-          <p className="mt-2 text-sm">{PAY_METHOD_LABEL[data.payment_method]}</p>
+          <h2 className="eyebrow text-ash">{bi("Pembayaran", "Payment")}</h2>
+          <p className="mt-2 text-sm">{label(PAY_METHOD_LABEL_I18N, data.payment_method)}</p>
           {data.credit_term_days ? (
             <p className="text-xs text-ash">
-              TOP {data.credit_term_days} hari · jatuh tempo{" "}
+              TOP {data.credit_term_days} {bi("hari · jatuh tempo", "days · due")}{" "}
               {data.due_date ? formatDate(data.due_date) : "-"}
             </p>
           ) : null}
           <p className="text-xs text-ash">
-            {data.paid_at ? `Lunas ${formatDate(data.paid_at)}` : "Belum lunas"}
+            {data.paid_at ? `${bi("Lunas", "Paid")} ${formatDate(data.paid_at)}` : bi("Belum lunas", "Unpaid")}
           </p>
           {data.delivered_at ? (
-            <p className="text-xs text-ash">Diterima {formatDate(data.delivered_at)}</p>
+            <p className="text-xs text-ash">{bi("Diterima", "Delivered")} {formatDate(data.delivered_at)}</p>
           ) : null}
         </div>
       </section>
@@ -136,10 +139,10 @@ function InvoicePage() {
       <table className="mt-8 w-full border-collapse text-sm">
         <thead>
           <tr className="border-y border-line text-left text-xs uppercase tracking-wide text-ash">
-            <th className="py-3">Produk</th>
+            <th className="py-3">{bi("Produk", "Product")}</th>
             <th className="py-3 text-right">Qty (kg)</th>
-            <th className="py-3 text-right">Harga/kg</th>
-            <th className="py-3 text-right">Jumlah</th>
+            <th className="py-3 text-right">{bi("Harga/kg", "Price/kg")}</th>
+            <th className="py-3 text-right">{bi("Jumlah", "Amount")}</th>
           </tr>
         </thead>
         <tbody>
@@ -161,7 +164,7 @@ function InvoicePage() {
         </div>
         {discount > 0 ? (
           <div className="flex justify-between py-1">
-            <span className="text-ash">Diskon {data.coupon_code ?? ""}</span>
+            <span className="text-ash">{bi("Diskon", "Discount")} {data.coupon_code ?? ""}</span>
             <span className="text-crimson">-{formatIdr(discount)}</span>
           </div>
         ) : null}
@@ -173,8 +176,14 @@ function InvoicePage() {
 
       <footer className="mt-10 border-t border-line pt-6 text-xs text-ash">
         {completed
-          ? `Pesanan dikonfirmasi diterima pembeli pada ${formatDate(data.buyer_confirmed_at as string)}. Dokumen ini berlaku sebagai tanda terima.`
-          : "Dokumen ini dihasilkan otomatis dan sah tanpa tanda tangan. Ongkos kirim dikonfirmasi terpisah oleh tim Meatlink."}
+          ? bi(
+              `Pesanan dikonfirmasi diterima pembeli pada ${formatDate(data.buyer_confirmed_at as string)}. Dokumen ini berlaku sebagai tanda terima.`,
+              `Order confirmed as received by the buyer on ${formatDate(data.buyer_confirmed_at as string)}. This document serves as a receipt.`,
+            )
+          : bi(
+              "Dokumen ini dihasilkan otomatis dan sah tanpa tanda tangan. Ongkos kirim dikonfirmasi terpisah oleh tim Meatlink.",
+              "This document is generated automatically and valid without a signature. Shipping costs are confirmed separately by the Meatlink team.",
+            )}
       </footer>
     </main>
   );

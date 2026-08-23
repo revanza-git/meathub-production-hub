@@ -6,7 +6,7 @@ import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { downloadCsv, toCsv } from "@/lib/meatlink/csv";
-import { useBi } from "@/lib/i18n";
+import { useBi, useLang } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/reports")({
   head: () => ({
@@ -37,6 +37,8 @@ const REVENUE_STATUSES = ["PAID", "PROCESSING", "SHIPPED", "DELIVERED", "COMPLET
 
 function AdminReportsPage() {
   const bi = useBi();
+  const { lang } = useLang();
+  const locale = lang === "en" ? "en-GB" : "id-ID";
   const today = new Date();
   const monthAgo = new Date(today.getTime() - 29 * 86400000);
   const [from, setFrom] = useState(isoDate(monthAgo));
@@ -124,26 +126,26 @@ function AdminReportsPage() {
   function exportSales() {
     if (!guard(orders)) return;
     downloadCsv(
-      `meatlink-penjualan-${from}-${to}.csv`,
+      `meatlink-${bi("penjualan", "sales")}-${from}-${to}.csv`,
       toCsv(
         orders.map((o) => ({
-          order_no: o.order_no,
-          tanggal: new Date(o.created_at).toLocaleString("id-ID"),
-          status: o.status,
-          metode: o.payment_method,
-          pembeli: o.buyer_name,
-          perusahaan: o.company ?? "",
-          kota: o.city ?? "",
-          telepon: o.phone,
-          email: o.email ?? "",
-          subtotal_idr: Number(o.subtotal_idr),
-          diskon_idr: Number(o.discount_idr ?? 0),
-          kode_promo: o.coupon_code ?? "",
-          total_idr: Number(o.total_idr),
-          kurir: o.courier_name ?? "",
-          resi: o.tracking_no ?? "",
-          diterima: o.buyer_confirmed_at
-            ? new Date(o.buyer_confirmed_at).toLocaleString("id-ID")
+          [bi("order_no", "Order No")]: o.order_no,
+          [bi("tanggal", "Date")]: new Date(o.created_at).toLocaleString(locale),
+          [bi("status", "Status")]: o.status,
+          [bi("metode", "Method")]: o.payment_method,
+          [bi("pembeli", "Buyer")]: o.buyer_name,
+          [bi("perusahaan", "Company")]: o.company ?? "",
+          [bi("kota", "City")]: o.city ?? "",
+          [bi("telepon", "Phone")]: o.phone,
+          [bi("email", "Email")]: o.email ?? "",
+          [bi("subtotal_idr", "Subtotal (IDR)")]: Number(o.subtotal_idr),
+          [bi("diskon_idr", "Discount (IDR)")]: Number(o.discount_idr ?? 0),
+          [bi("kode_promo", "Coupon Code")]: o.coupon_code ?? "",
+          [bi("total_idr", "Total (IDR)")]: Number(o.total_idr),
+          [bi("kurir", "Courier")]: o.courier_name ?? "",
+          [bi("resi", "Tracking No")]: o.tracking_no ?? "",
+          [bi("diterima", "Received")]: o.buyer_confirmed_at
+            ? new Date(o.buyer_confirmed_at).toLocaleString(locale)
             : "",
         })),
       ),
@@ -154,21 +156,21 @@ function AdminReportsPage() {
     const rows = itemsQuery.data ?? [];
     if (!guard(rows)) return;
     downloadCsv(
-      `meatlink-pergerakan-produk-${from}-${to}.csv`,
+      `meatlink-${bi("pergerakan-produk", "product-movement")}-${from}-${to}.csv`,
       toCsv(
         rows.map((r) => {
           const parent = (r as { storefront_orders?: { order_no?: string; status?: string } })
             .storefront_orders;
           return {
-            order_no: parent?.order_no ?? "",
-            status_order: parent?.status ?? "",
-            tanggal: new Date(r.created_at).toLocaleString("id-ID"),
-            produk: r.product_name,
-            slug: r.slug ?? "",
-            kategori: r.category ?? "",
-            qty_kg: Number(r.qty_kg),
-            harga_per_kg: Number(r.unit_price_idr),
-            total_idr: Number(r.line_total_idr),
+            [bi("order_no", "Order No")]: parent?.order_no ?? "",
+            [bi("status_order", "Order Status")]: parent?.status ?? "",
+            [bi("tanggal", "Date")]: new Date(r.created_at).toLocaleString(locale),
+            [bi("produk", "Product")]: r.product_name,
+            [bi("slug", "Slug")]: r.slug ?? "",
+            [bi("kategori", "Category")]: r.category ?? "",
+            [bi("qty_kg", "Qty (kg)")]: Number(r.qty_kg),
+            [bi("harga_per_kg", "Price per kg")]: Number(r.unit_price_idr),
+            [bi("total_idr", "Total (IDR)")]: Number(r.line_total_idr),
           };
         }),
       ),
@@ -179,16 +181,16 @@ function AdminReportsPage() {
     const rows = orders.filter((o) => o.paid_at);
     if (!guard(rows)) return;
     downloadCsv(
-      `meatlink-pembayaran-${from}-${to}.csv`,
+      `meatlink-${bi("pembayaran", "payments")}-${from}-${to}.csv`,
       toCsv(
         rows.map((o) => ({
-          order_no: o.order_no,
-          dibayar_pada: new Date(o.paid_at as string).toLocaleString("id-ID"),
-          metode: o.payment_method,
-          kanal: o.payment_channel ?? "",
-          referensi: o.payment_ref ?? "",
-          pembeli: o.buyer_name,
-          total_idr: Number(o.total_idr),
+          [bi("order_no", "Order No")]: o.order_no,
+          [bi("dibayar_pada", "Paid At")]: new Date(o.paid_at as string).toLocaleString(locale),
+          [bi("metode", "Method")]: o.payment_method,
+          [bi("kanal", "Channel")]: o.payment_channel ?? "",
+          [bi("referensi", "Reference")]: o.payment_ref ?? "",
+          [bi("pembeli", "Buyer")]: o.buyer_name,
+          [bi("total_idr", "Total (IDR)")]: Number(o.total_idr),
         })),
       ),
     );
@@ -198,23 +200,23 @@ function AdminReportsPage() {
     const rows = inventoryQuery.data ?? [];
     if (!guard(rows)) return;
     downloadCsv(
-      `meatlink-stok-${isoDate(new Date())}.csv`,
+      `meatlink-${bi("stok", "stock")}-${isoDate(new Date())}.csv`,
       toCsv(
         rows.map((i) => ({
-          produk: i.name,
-          slug: i.slug ?? "",
-          brand: i.brand,
-          origin: i.origin,
-          kategori: i.category,
-          kondisi: i.condition ?? "",
-          qty_on_hand_kg: Number(i.qty_on_hand_kg),
-          harga_pokok_idr: Number(i.sale_price_idr),
-          markup_idr: Number(i.markup_idr),
-          harga_publik_idr: Number(i.sale_price_idr) + Number(i.markup_idr),
+          [bi("produk", "Product")]: i.name,
+          [bi("slug", "Slug")]: i.slug ?? "",
+          [bi("brand", "Brand")]: i.brand,
+          [bi("origin", "Origin")]: i.origin,
+          [bi("kategori", "Category")]: i.category,
+          [bi("kondisi", "Condition")]: i.condition ?? "",
+          [bi("qty_on_hand_kg", "Qty On Hand (kg)")]: Number(i.qty_on_hand_kg),
+          [bi("harga_pokok_idr", "Cost Price (IDR)")]: Number(i.sale_price_idr),
+          [bi("markup_idr", "Markup (IDR)")]: Number(i.markup_idr),
+          [bi("harga_publik_idr", "Public Price (IDR)")]: Number(i.sale_price_idr) + Number(i.markup_idr),
           nilai_stok_idr:
             Number(i.qty_on_hand_kg) * (Number(i.sale_price_idr) + Number(i.markup_idr)),
-          aktif: i.is_active ? "ya" : "tidak",
-          tayang: i.is_published ? "ya" : "tidak",
+          [bi("aktif", "Active")]: i.is_active ? bi("ya", "yes") : bi("tidak", "no"),
+          [bi("tayang", "Published")]: i.is_published ? bi("ya", "yes") : bi("tidak", "no"),
         })),
       ),
     );
@@ -223,23 +225,23 @@ function AdminReportsPage() {
   function exportReceivables() {
     if (!guard(receivables)) return;
     downloadCsv(
-      `meatlink-piutang-tempo-${from}-${to}.csv`,
+      `meatlink-${bi("piutang-tempo", "receivables")}-${from}-${to}.csv`,
       toCsv(
         receivables.map((o) => {
           const days = o.due_date
             ? Math.floor((Date.now() - new Date(o.due_date).getTime()) / 86400000)
             : 0;
           return {
-            order_no: o.order_no,
-            pembeli: o.buyer_name,
-            perusahaan: o.company ?? "",
-            tanggal_order: new Date(o.created_at).toLocaleDateString("id-ID"),
-            tempo_hari: o.credit_term_days ?? "",
-            jatuh_tempo: o.due_date ?? "",
-            umur_hari: days > 0 ? days : 0,
+            [bi("order_no", "Order No")]: o.order_no,
+            [bi("pembeli", "Buyer")]: o.buyer_name,
+            [bi("perusahaan", "Company")]: o.company ?? "",
+            [bi("tanggal_order", "Order Date")]: new Date(o.created_at).toLocaleDateString(locale),
+            [bi("tempo_hari", "Term (days)")]: o.credit_term_days ?? "",
+            [bi("jatuh_tempo", "Due Date")]: o.due_date ?? "",
+            [bi("umur_hari", "Age (days)")]: days > 0 ? days : 0,
             bucket:
-              days <= 0 ? "belum jatuh tempo" : days <= 30 ? "1-30" : days <= 60 ? "31-60" : "60+",
-            outstanding_idr: Number(o.total_idr),
+              days <= 0 ? bi("belum jatuh tempo", "not yet due") : days <= 30 ? "1-30" : days <= 60 ? "31-60" : "60+",
+            [bi("outstanding_idr", "Outstanding (IDR)")]: Number(o.total_idr),
           };
         }),
       ),

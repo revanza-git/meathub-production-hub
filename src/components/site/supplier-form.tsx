@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useBi } from "@/lib/i18n";
+import { useBi, useErr } from "@/lib/i18n";
 import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 import { Field, SubmitButton, TextArea, TextInput } from "./form-kit";
@@ -31,6 +31,7 @@ export function SupplierForm() {
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState<SupplierInput | null>(null);
   const bi = useBi();
+  const err = useErr();
 
   function set<K extends keyof SupplierInput>(key: K, value: SupplierInput[K]) {
     setValues((v) => ({ ...v, [key]: value }));
@@ -41,7 +42,7 @@ export function SupplierForm() {
     const parsed = supplierSchema.safeParse(values);
     if (!parsed.success) {
       const next: Record<string, string> = {};
-      for (const issue of parsed.error.issues) next[String(issue.path[0])] = issue.message;
+      for (const issue of parsed.error.issues) next[String(issue.path[0])] = err(issue.message);
       setErrors(next);
       toast.error(bi("Lengkapi kolom yang wajib diisi.", "Please complete the required fields."));
       return;
