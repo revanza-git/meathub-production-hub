@@ -105,13 +105,14 @@ function CommercialHero() {
         <div className="max-w-2xl fade-in-up">
           <p className="eyebrow text-crimson">Better Meat | Better Connections</p>
           <h1 className="mt-5 font-display text-4xl leading-[1.05] sm:text-5xl">
-            Daging premium untuk bisnis Anda,
+            Daging premium untuk setiap skala usaha,
             <br />
             <span className="italic text-bone/85">siap pesan hari ini.</span>
           </h1>
           <p className="mt-5 max-w-xl text-sm leading-relaxed text-bone/70">
             Prime cut, second cut, offal dan bone dari importir terverifikasi. Harga per kilogram
-            ditampilkan terbuka, stok diperbarui setiap hari, pengiriman ke seluruh Indonesia.
+            terbuka, stok diperbarui setiap hari, pengiriman ke seluruh Indonesia — untuk resto,
+            hotel, katering, toko daging maupun reseller.
           </p>
 
           <CatalogSearch dark className="mt-8 max-w-xl" />
