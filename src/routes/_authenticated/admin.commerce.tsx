@@ -34,7 +34,7 @@ function AdminCommercePage() {
       intro="Kode promo checkout, harga kontrak per pembeli, dan limit pembayaran tempo."
     >
       <RoleGate allow="admin">
-        <div className="space-y-12">
+        <div className="space-y-10 sm:space-y-12">
           <Coupons />
           <CreditAccounts />
           <BuyerPrices />
@@ -44,25 +44,85 @@ function AdminCommercePage() {
   );
 }
 
-const labelClass = "block text-[10px] font-semibold uppercase tracking-tighter text-ash mb-1";
-const inputClass = "w-full bg-transparent border-b border-line py-2 text-sm text-ink outline-none focus:border-crimson transition-colors placeholder:text-ash/50";
-const buttonPrimary = "bg-ink text-bone text-[10px] font-semibold uppercase tracking-[0.2em] px-6 py-3 hover:bg-crimson transition-colors";
-const buttonSecondary = "border border-line bg-card text-ink text-[10px] font-semibold uppercase tracking-[0.15em] px-4 py-2 hover:bg-sand transition-colors";
+/* ---------- shared styles ---------- */
 
-function Field({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
+const labelClass =
+  "block text-[10px] font-semibold uppercase tracking-[0.14em] text-ash mb-1.5 leading-none";
+const inputClass =
+  "h-10 w-full rounded-none border-b border-line bg-transparent text-sm text-ink outline-none transition-colors focus:border-crimson placeholder:text-ash/50";
+const buttonPrimary =
+  "w-full sm:w-auto shrink-0 bg-ink text-bone text-[10px] font-semibold uppercase tracking-[0.2em] px-6 py-3 transition-colors hover:bg-crimson focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crimson";
+const buttonSecondary =
+  "shrink-0 border border-line bg-card text-ink text-[10px] font-semibold uppercase tracking-[0.15em] px-4 py-2 transition-colors hover:bg-sand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-crimson";
+const formGrid =
+  "grid grid-cols-1 gap-px bg-line sm:grid-cols-2 xl:grid-cols-4";
+const actionBar =
+  "flex flex-col gap-3 border-t border-line bg-sand/50 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6";
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="p-4">
+    <div className="min-w-0 bg-card px-4 py-4 sm:px-5">
       <label className={labelClass}>{label}</label>
       {children}
     </div>
   );
 }
+
+function SectionHeader({ title, hint }: { title: string; hint?: string }) {
+  return (
+    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-3 border-b border-line pb-3">
+      <h2 className="truncate font-display text-lg text-ink sm:text-xl">{title}</h2>
+      {hint ? (
+        <span className="hidden text-[10px] font-semibold uppercase tracking-[0.2em] text-ash sm:block">
+          {hint}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+function ListSkeleton({ rows = 3 }: { rows?: number }) {
+  return (
+    <ul className="border border-line bg-card" aria-hidden="true">
+      {Array.from({ length: rows }).map((_, i) => (
+        <li
+          key={i}
+          className="flex flex-col gap-3 border-b border-line px-4 py-4 last:border-b-0 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+        >
+          <div className="w-full space-y-2">
+            <div className="h-3.5 w-2/5 animate-pulse bg-sand" />
+            <div className="h-3 w-3/5 animate-pulse bg-sand/70" />
+          </div>
+          <div className="h-8 w-28 shrink-0 animate-pulse bg-sand" />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function EmptyState({
+  title,
+  description,
+  hint,
+}: {
+  title: string;
+  description: string;
+  hint?: string;
+}) {
+  return (
+    <div className="border border-dashed border-line bg-card/50 px-6 py-10 text-center sm:py-14">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-crimson">
+        {title}
+      </p>
+      <p className="mx-auto mt-3 max-w-md font-display text-base italic text-ink sm:text-lg">
+        {description}
+      </p>
+      {hint ? <p className="mx-auto mt-2 max-w-md text-xs text-ash">{hint}</p> : null}
+    </div>
+  );
+}
+
+/* ---------- coupons ---------- */
 
 function Coupons() {
   const qc = useQueryClient();
@@ -88,6 +148,8 @@ function Coupons() {
       return data ?? [];
     },
   });
+
+  const rows = data ?? [];
 
   async function create() {
     const code = form.code.trim().toUpperCase();
@@ -134,14 +196,11 @@ function Coupons() {
   }
 
   return (
-    <section className="space-y-6">
-      <div className="flex items-baseline justify-between">
-        <h2 className="font-display text-xl text-ink">Kode promo</h2>
-        <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-ash">Formulir baru</span>
-      </div>
+    <section className="space-y-5 sm:space-y-6">
+      <SectionHeader title="Kode promo" hint="Formulir baru" />
 
-      <Panel className="overflow-hidden shadow-sm">
-        <div className="grid grid-cols-1 border-b border-line md:grid-cols-4">
+      <Panel className="overflow-hidden p-0 shadow-sm">
+        <div className={formGrid}>
           <Field label="Kode">
             <input
               type="text"
@@ -164,6 +223,7 @@ function Coupons() {
           <Field label="Nilai diskon">
             <input
               type="number"
+              inputMode="numeric"
               className={inputClass}
               placeholder="0"
               value={form.discount_value}
@@ -173,17 +233,17 @@ function Coupons() {
           <Field label="Min. belanja">
             <input
               type="number"
+              inputMode="numeric"
               className={inputClass}
               placeholder="0"
               value={form.min_subtotal_idr}
               onChange={(e) => setForm((f) => ({ ...f, min_subtotal_idr: e.target.value }))}
             />
           </Field>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-4">
           <Field label="Maks. diskon">
             <input
               type="number"
+              inputMode="numeric"
               className={inputClass}
               placeholder="0"
               value={form.max_discount_idr}
@@ -201,6 +261,7 @@ function Coupons() {
           <Field label="Kuota">
             <input
               type="number"
+              inputMode="numeric"
               className={inputClass}
               placeholder="0"
               value={form.usage_limit}
@@ -217,32 +278,43 @@ function Coupons() {
             />
           </Field>
         </div>
-        <div className="flex items-center justify-between border-t border-line bg-sand/50 px-6 py-4">
-          {isLoading ? (
-            <p className="text-xs text-ash">Memuat…</p>
-          ) : (data ?? []).length === 0 ? (
-            <p className="font-display text-xs italic text-ash">Belum ada kode promo aktif.</p>
-          ) : (
-            <p className="text-xs text-ash">{(data ?? []).length} kode promo tersedia.</p>
-          )}
+        <div className={actionBar}>
+          <p className="min-w-0 text-xs text-ash">
+            {isLoading
+              ? "Memuat kode promo…"
+              : rows.length === 0
+                ? "Belum ada kode promo."
+                : `${rows.length} kode promo tersimpan.`}
+          </p>
           <button type="button" onClick={() => void create()} className={buttonPrimary}>
             Tambah kode
           </button>
         </div>
       </Panel>
 
-      {!isLoading && (data ?? []).length > 0 && (
+      {isLoading ? (
+        <ListSkeleton rows={3} />
+      ) : rows.length === 0 ? (
+        <EmptyState
+          title="Belum ada promo"
+          description="Kode promo pertama Anda akan tampil di sini."
+          hint="Isi kode, tipe diskon, dan nilainya pada formulir di atas, lalu tekan “Tambah kode”."
+        />
+      ) : (
         <ul className="border border-line bg-card text-sm">
-          {(data ?? []).map((c) => (
-            <li key={c.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-6 py-4 last:border-b-0">
-              <div>
-                <p className="font-medium text-ink">
+          {rows.map((c) => (
+            <li
+              key={c.id}
+              className="flex flex-col gap-3 border-b border-line px-4 py-4 last:border-b-0 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+            >
+              <div className="min-w-0">
+                <p className="truncate font-medium text-ink">
                   {c.code} ·{" "}
                   {c.discount_type === "PERCENT"
                     ? `${Number(c.discount_value)}%`
                     : formatIdr(Number(c.discount_value))}
                 </p>
-                <p className="text-xs text-ash">
+                <p className="mt-1 text-xs text-ash">
                   Min {formatIdr(Number(c.min_subtotal_idr))} · dipakai {c.used_count}
                   {c.usage_limit ? `/${c.usage_limit}` : ""}
                   {c.ends_at ? ` · s/d ${new Date(c.ends_at).toLocaleDateString("id-ID")}` : ""}
@@ -263,6 +335,8 @@ function Coupons() {
   );
 }
 
+/* ---------- credit accounts ---------- */
+
 function CreditAccounts() {
   const qc = useQueryClient();
   const { data, isLoading } = useQuery({
@@ -277,6 +351,7 @@ function CreditAccounts() {
     },
   });
   const [draft, setDraft] = useState<Record<string, { limit: string; term: string }>>({});
+  const rows = data ?? [];
 
   async function save(id: string, status: string, current: { limit_idr: number; term_days: number }) {
     const d = draft[id];
@@ -298,49 +373,54 @@ function CreditAccounts() {
   }
 
   return (
-    <section className="space-y-6">
-      <h2 className="font-display text-xl text-ink">Limit pembayaran tempo (TOP)</h2>
+    <section className="space-y-5 sm:space-y-6">
+      <SectionHeader title="Limit pembayaran tempo (TOP)" hint="Persetujuan" />
 
       {isLoading ? (
-        <Panel className="p-8">
-          <p className="text-sm text-ash">Memuat…</p>
-        </Panel>
-      ) : (data ?? []).length === 0 ? (
-        <div className="border border-dashed border-line bg-card/50 py-12 text-center">
-          <p className="text-xs font-semibold uppercase tracking-widest text-ash">
-            Belum ada pengajuan limit tempo dari pembeli.
-          </p>
-        </div>
+        <ListSkeleton rows={2} />
+      ) : rows.length === 0 ? (
+        <EmptyState
+          title="Belum ada pengajuan"
+          description="Belum ada pembeli yang mengajukan limit pembayaran tempo."
+          hint="Pengajuan dari halaman akun pembeli akan otomatis muncul di sini untuk disetujui atau dibekukan."
+        />
       ) : (
         <ul className="border border-line bg-card text-sm">
-          {(data ?? []).map((a) => {
+          {rows.map((a) => {
             const d = draft[a.id] ?? {
               limit: String(Number(a.limit_idr)),
               term: String(a.term_days),
             };
             return (
-              <li key={a.id} className="grid items-center gap-4 border-b border-line px-6 py-4 last:border-b-0 md:grid-cols-[1.4fr_auto_auto_auto]">
-                <div>
-                  <p className="font-mono text-xs text-ash">{a.user_id}</p>
-                  <p className="text-xs text-ash">Status: {a.status}</p>
+              <li
+                key={a.id}
+                className="grid gap-4 border-b border-line px-4 py-5 last:border-b-0 sm:px-6 lg:grid-cols-[minmax(0,1.4fr)_10rem_7rem_auto] lg:items-end"
+              >
+                <div className="min-w-0">
+                  <p className="truncate font-mono text-xs text-ash">{a.user_id}</p>
+                  <p className="mt-1 text-xs text-ash">Status: {a.status}</p>
                 </div>
-                <Field label="Limit">
+                <div className="min-w-0">
+                  <label className={labelClass}>Limit</label>
                   <input
                     type="number"
-                    className={`${inputClass} md:w-40`}
+                    inputMode="numeric"
+                    className={inputClass}
                     value={d.limit}
                     onChange={(e) => setDraft((p) => ({ ...p, [a.id]: { ...d, limit: e.target.value } }))}
                   />
-                </Field>
-                <Field label="Hari">
+                </div>
+                <div className="min-w-0">
+                  <label className={labelClass}>Hari</label>
                   <input
                     type="number"
-                    className={`${inputClass} md:w-24`}
+                    inputMode="numeric"
+                    className={inputClass}
                     value={d.term}
                     onChange={(e) => setDraft((p) => ({ ...p, [a.id]: { ...d, term: e.target.value } }))}
                   />
-                </Field>
-                <div className="flex gap-2">
+                </div>
+                <div className="flex flex-wrap gap-2 pb-0.5">
                   <button
                     type="button"
                     onClick={() =>
@@ -375,11 +455,13 @@ function CreditAccounts() {
   );
 }
 
+/* ---------- buyer contract prices ---------- */
+
 function BuyerPrices() {
   const qc = useQueryClient();
   const [form, setForm] = useState({ user_id: "", slug: "", price: "", valid_until: "" });
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["admin-buyer-prices"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -391,6 +473,8 @@ function BuyerPrices() {
       return data ?? [];
     },
   });
+
+  const rows = data ?? [];
 
   async function add() {
     const { data: inv, error: invError } = await supabase
@@ -430,11 +514,11 @@ function BuyerPrices() {
   }
 
   return (
-    <section className="space-y-6">
-      <h2 className="font-display text-xl text-ink">Harga kontrak pembeli</h2>
+    <section className="space-y-5 sm:space-y-6">
+      <SectionHeader title="Harga kontrak pembeli" hint="Formulir baru" />
 
-      <Panel className="overflow-hidden">
-        <div className="grid grid-cols-1 md:grid-cols-4">
+      <Panel className="overflow-hidden p-0 shadow-sm">
+        <div className={formGrid}>
           <Field label="User ID pembeli">
             <input
               type="text"
@@ -456,6 +540,7 @@ function BuyerPrices() {
           <Field label="Harga /kg">
             <input
               type="number"
+              inputMode="numeric"
               className={inputClass}
               placeholder="0"
               value={form.price}
@@ -471,9 +556,13 @@ function BuyerPrices() {
             />
           </Field>
         </div>
-        <div className="flex items-center justify-between border-t border-line bg-sand/50 px-6 py-4">
-          <p className="font-display text-xs italic text-ash">
-            {(data ?? []).length === 0 ? "Belum ada harga kontrak yang tercatat." : `${(data ?? []).length} harga kontrak tercatat.`}
+        <div className={actionBar}>
+          <p className="min-w-0 text-xs text-ash">
+            {isLoading
+              ? "Memuat harga kontrak…"
+              : rows.length === 0
+                ? "Belum ada harga kontrak."
+                : `${rows.length} harga kontrak tercatat.`}
           </p>
           <button type="button" onClick={() => void add()} className={buttonPrimary}>
             Simpan harga
@@ -481,16 +570,27 @@ function BuyerPrices() {
         </div>
       </Panel>
 
-      {(data ?? []).length > 0 && (
+      {isLoading ? (
+        <ListSkeleton rows={2} />
+      ) : rows.length === 0 ? (
+        <EmptyState
+          title="Belum ada kontrak"
+          description="Harga khusus per pembeli belum ditetapkan."
+          hint="Masukkan User ID pembeli dan slug produk untuk mengunci harga kontrak pada periode tertentu."
+        />
+      ) : (
         <ul className="border border-line bg-card text-sm">
-          {(data ?? []).map((p) => (
-            <li key={p.id} className="flex items-center justify-between gap-3 border-b border-line px-6 py-4 last:border-b-0">
-              <div>
-                <p className="text-ink">
+          {rows.map((p) => (
+            <li
+              key={p.id}
+              className="flex flex-col gap-3 border-b border-line px-4 py-4 last:border-b-0 sm:flex-row sm:items-center sm:justify-between sm:px-6"
+            >
+              <div className="min-w-0">
+                <p className="truncate text-ink">
                   {(p as { admin_inventory?: { name?: string } }).admin_inventory?.name ?? "Produk"} —{" "}
                   {formatIdr(Number(p.price_idr))}/kg
                 </p>
-                <p className="font-mono text-xs text-ash">
+                <p className="mt-1 truncate font-mono text-xs text-ash">
                   {p.user_id}
                   {p.valid_until ? ` · s/d ${p.valid_until}` : ""}
                 </p>
