@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Printer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { type PayMethod } from "@/lib/meatlink/cart";
-import { ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N, useBi, useLabel } from "@/lib/i18n";
+import { ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N, useBi, useFormat, useLabel } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/app/invoice/$orderNo")({
   component: InvoicePage,
@@ -42,6 +42,7 @@ type OrderRow = {
 function InvoicePage() {
   const { orderNo } = Route.useParams();
   const bi = useBi();
+  const fmt = useFormat();
   const label = useLabel();
 
   const { data, isLoading } = useQuery({

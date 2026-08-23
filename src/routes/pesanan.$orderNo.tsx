@@ -5,7 +5,7 @@ import { SiteLayout } from "@/components/site/site-layout";
 import { supabase } from "@/integrations/supabase/client";
 
 import { type PayMethod } from "@/lib/meatlink/cart";
-import { useBi, useLabel, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
+import { useBi, useLabel, useFormat, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
 import { WHATSAPP_NUMBER } from "@/lib/meatlink/config";
 import { PaymentPanel } from "@/components/meatlink/payment-panel";
 import { PaymentProofUpload } from "@/components/meatlink/payment-proof";
@@ -68,6 +68,7 @@ export const Route = createFileRoute("/pesanan/$orderNo")({
 
 function OrderPage() {
   const bi = useBi();
+  const fmt = useFormat();
   const label = useLabel();
   const { orderNo } = Route.useParams();
   const { t } = Route.useSearch();

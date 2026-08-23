@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { SiteLayout, PageHero } from "@/components/site/site-layout";
 
 import { PAY_METHODS, useCart, type PayMethod } from "@/lib/meatlink/cart";
-import { useBi, useLabel, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
+import { useBi, useLabel, useFormat, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyOrderEventPublic } from "@/lib/meatlink/notify.functions";
 import { listAddresses, saveAddress, type BuyerAddress } from "@/lib/meatlink/addresses";
@@ -49,6 +49,7 @@ export const Route = createFileRoute("/keranjang")({
 
 function CartPage() {
   const bi = useBi();
+  const fmt = useFormat();
   const label = useLabel();
   const { lines, setQty, remove, clear, subtotal } = useCart();
   const navigate = useNavigate();
