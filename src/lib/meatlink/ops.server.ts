@@ -10,7 +10,7 @@
  * does not re-send an email. Never import from client code.
  */
 
-import { sendTemplateEmail } from "@/lib/email-templates/send-email";
+import { sendOpsAlert } from "./ops-notify.server";
 
 const SITE = "https://meatlink.id";
 
@@ -91,7 +91,6 @@ export async function lowStockAlert() {
   const db = await admin();
   const cfg = await settings(db);
   if (!cfg.lowStockEnabled) return { sent: false, reason: "disabled" as const };
-  if (!cfg.alertEmail) return { sent: false, reason: "no_alert_email" as const };
 
   const { data, error } = await db
     .from("admin_inventory")
@@ -113,9 +112,8 @@ export async function lowStockAlert() {
     return { sent: false, reason: "already_sent" as const };
   }
 
-  await sendTemplateEmail("ops-alert", cfg.alertEmail, {
-    idempotencyKey: `low-stock-${runKey}`,
-    templateData: {
+  await sendOpsAlert(
+    {
       subject: `Stok menipis: ${items.length} item — Meatlink`,
       heading: "Stok menipis",
       intro: `${items.length} produk aktif berada pada atau di bawah ambang ${cfg.lowStockKg} kg.`,
@@ -128,7 +126,8 @@ export async function lowStockAlert() {
       ctaUrl: `${SITE}/admin/inventory`,
       ctaLabel: "Buka inventory",
     },
-  });
+    `low-stock-${runKey}`,
+  );
 
   return { sent: true, count: items.length };
 }
@@ -137,7 +136,6 @@ export async function dailyDigest(day?: string) {
   const db = await admin();
   const cfg = await settings(db);
   if (!cfg.digestEnabled) return { sent: false, reason: "disabled" as const };
-  if (!cfg.alertEmail) return { sent: false, reason: "no_alert_email" as const };
 
   const target = day ?? jakartaYesterday();
   if (!(await claim(db, "daily-digest", target, {}))) {
@@ -156,9 +154,8 @@ export async function dailyDigest(day?: string) {
     low_stock_threshold_kg?: number;
   };
 
-  await sendTemplateEmail("ops-alert", cfg.alertEmail, {
-    idempotencyKey: `daily-digest-${target}`,
-    templateData: {
+  await sendOpsAlert(
+    {
       subject: `Ringkasan harian Meatlink — ${dayLabel(target)}`,
       heading: "Ringkasan harian",
       intro: `Aktivitas toko untuk ${dayLabel(target)}.`,
@@ -177,7 +174,8 @@ export async function dailyDigest(day?: string) {
       ctaUrl: `${SITE}/admin`,
       ctaLabel: "Buka dashboard",
     },
-  });
+    `daily-digest-${target}`,
+  );
 
   return { sent: true, day: target };
 }
