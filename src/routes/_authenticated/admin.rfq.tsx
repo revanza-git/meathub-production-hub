@@ -124,6 +124,7 @@ function RfqBody() {
 
 function useStatusUpdater(table: "quote_requests" | "supplier_applications", key: string) {
   const qc = useQueryClient();
+  const bi = useBi();
   return async (id: string, status: string) => {
     const { error } = await supabase.from(table).update({ status }).eq("id", id);
     if (error) {
