@@ -7,6 +7,7 @@ import { Field, TextInput } from "@/components/site/form-kit";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { LOW_STOCK_KEY, DEFAULT_LOW_STOCK_KG } from "@/lib/meatlink/inventory";
+import { useBi } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/settings")({
   component: AdminSettingsPage,
@@ -22,8 +23,15 @@ export const Route = createFileRoute("/_authenticated/admin/settings")({
 });
 
 function AdminSettingsPage() {
+  const bi = useBi();
   return (
-    <AppShell title="Settings" intro="Workspace preferences for the Meatlink admin team.">
+    <AppShell
+      title={bi("Pengaturan", "Settings")}
+      intro={bi(
+        "Preferensi workspace untuk tim admin Meatlink.",
+        "Workspace preferences for the Meatlink admin team.",
+      )}
+    >
       <RoleGate allow="admin">
         <SettingsBody />
       </RoleGate>
@@ -42,6 +50,7 @@ const KEYS = {
 } as const;
 
 function SettingsBody() {
+  const bi = useBi();
   const qc = useQueryClient();
   const { user } = useAuth();
   const [lowStock, setLowStock] = useState("");
@@ -75,10 +84,10 @@ function SettingsBody() {
     e.preventDefault();
     const n = Number(lowStock);
     if (!Number.isFinite(n) || n < 0) {
-      toast.error("Enter a valid quantity in kg.");
+      toast.error(bi("Masukkan jumlah kg yang valid.", "Enter a valid quantity in kg."));
       return;
     }
-    await persist([{ key: KEYS.lowStock, value: n }], "Threshold saved.");
+    await persist([{ key: KEYS.lowStock, value: n }], bi("Ambang batas disimpan.", "Threshold saved."));
     void qc.invalidateQueries({ queryKey: ["admin-inventory"] });
   }
 
@@ -86,12 +95,17 @@ function SettingsBody() {
     e.preventDefault();
     const hours = Number(expiryHours);
     if (!Number.isFinite(hours) || hours < 0) {
-      toast.error("Enter a valid number of hours (0 disables auto-cancel).");
+      toast.error(
+        bi(
+          "Masukkan jumlah jam yang valid (0 menonaktifkan auto-cancel).",
+          "Enter a valid number of hours (0 disables auto-cancel).",
+        ),
+      );
       return;
     }
     const email = alertEmail.trim();
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast.error("Enter a valid alert email address.");
+      toast.error(bi("Masukkan alamat email peringatan yang valid.", "Enter a valid alert email address."));
       return;
     }
     await persist(
@@ -101,7 +115,7 @@ function SettingsBody() {
         { key: KEYS.lowStockAlert, value: lowStockAlert },
         { key: KEYS.dailyDigest, value: dailyDigest },
       ],
-      "Ops automation saved.",
+      bi("Otomasi operasional disimpan.", "Ops automation saved."),
     );
   }
 
@@ -125,20 +139,23 @@ function SettingsBody() {
   return (
     <div className="grid gap-6 lg:max-w-2xl">
       <Panel className="p-6">
-        <p className="eyebrow text-ash">Signed in as</p>
+        <p className="eyebrow text-ash">{bi("Masuk sebagai", "Signed in as")}</p>
         <p className="mt-2 font-display text-xl text-ink">{user?.email}</p>
       </Panel>
 
       <Panel className="p-6">
-        <h2 className="font-display text-xl text-ink">Inventory early warning</h2>
+        <h2 className="font-display text-xl text-ink">{bi("Peringatan stok dini", "Inventory early warning")}</h2>
         <p className="mt-2 text-sm text-ash">
-          Items with stock on hand at or below this level are flagged as “Restock” in the inventory table.
+          {bi(
+            "Item dengan stok pada atau di bawah level ini ditandai “Restock” pada tabel inventaris.",
+            "Items with stock on hand at or below this level are flagged as “Restock” in the inventory table.",
+          )}
         </p>
         {isLoading ? (
-          <p className="mt-4 text-sm text-ash">Loading…</p>
+          <p className="mt-4 text-sm text-ash">{bi("Memuat…", "Loading…")}</p>
         ) : (
           <form onSubmit={saveLowStock} className="mt-5 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
-            <Field label="Low stock threshold (kg)" required>
+            <Field label={bi("Ambang batas stok menipis (kg)", "Low stock threshold (kg)")} required>
               <TextInput
                 inputMode="decimal"
                 value={lowStock}
@@ -151,24 +168,29 @@ function SettingsBody() {
               disabled={pending}
               className="eyebrow bg-crimson px-6 py-4 text-bone disabled:opacity-60"
             >
-              {pending ? "Saving…" : "Save"}
+              {pending ? bi("Menyimpan…", "Saving…") : bi("Simpan", "Save")}
             </button>
           </form>
         )}
       </Panel>
 
       <Panel className="p-6">
-        <h2 className="font-display text-xl text-ink">Ops automation</h2>
+        <h2 className="font-display text-xl text-ink">{bi("Otomasi operasional", "Ops automation")}</h2>
         <p className="mt-2 text-sm text-ash">
-          Unpaid orders are cancelled automatically once they pass the window below (credit/tempo orders and orders
-          with an uploaded payment proof are never auto-cancelled). Alerts and the daily summary are emailed to the
-          address below.
+          {bi(
+            "Pesanan yang belum dibayar otomatis dibatalkan setelah melewati jendela waktu di bawah (pesanan kredit/tempo dan pesanan dengan bukti pembayaran yang diunggah tidak pernah dibatalkan otomatis). Peringatan dan ringkasan harian dikirim ke alamat email di bawah.",
+            "Unpaid orders are cancelled automatically once they pass the window below (credit/tempo orders and orders with an uploaded payment proof are never auto-cancelled). Alerts and the daily summary are emailed to the address below.",
+          )}
         </p>
         {isLoading ? (
-          <p className="mt-4 text-sm text-ash">Loading…</p>
+          <p className="mt-4 text-sm text-ash">{bi("Memuat…", "Loading…")}</p>
         ) : (
           <form onSubmit={saveOps} className="mt-5 grid gap-4">
-            <Field label="Auto-cancel unpaid orders after (hours)" hint="Set 0 to disable auto-cancel." required>
+            <Field
+              label={bi("Auto-cancel pesanan belum dibayar setelah (jam)", "Auto-cancel unpaid orders after (hours)")}
+              hint={bi("Isi 0 untuk menonaktifkan auto-cancel.", "Set 0 to disable auto-cancel.")}
+              required
+            >
               <TextInput
                 inputMode="numeric"
                 value={expiryHours}
@@ -176,7 +198,13 @@ function SettingsBody() {
                 required
               />
             </Field>
-            <Field label="Ops alert email" hint="Leave empty to turn off all automated ops emails.">
+            <Field
+              label={bi("Email peringatan operasional", "Ops alert email")}
+              hint={bi(
+                "Kosongkan untuk mematikan semua email otomatis operasional.",
+                "Leave empty to turn off all automated ops emails.",
+              )}
+            >
               <TextInput
                 type="email"
                 value={alertEmail}
@@ -191,7 +219,7 @@ function SettingsBody() {
                 onChange={(e) => setLowStockAlert(e.target.checked)}
                 className="size-4 accent-crimson"
               />
-              Send low-stock alerts
+              {bi("Kirim peringatan stok menipis", "Send low-stock alerts")}
             </label>
             <label className="flex items-center gap-3 text-sm text-ink">
               <input
@@ -200,7 +228,7 @@ function SettingsBody() {
                 onChange={(e) => setDailyDigest(e.target.checked)}
                 className="size-4 accent-crimson"
               />
-              Send daily sales digest (Jakarta time)
+              {bi("Kirim ringkasan penjualan harian (waktu Jakarta)", "Send daily sales digest (Jakarta time)")}
             </label>
             <div>
               <button
@@ -208,7 +236,7 @@ function SettingsBody() {
                 disabled={pending}
                 className="eyebrow bg-crimson px-6 py-4 text-bone disabled:opacity-60"
               >
-                {pending ? "Saving…" : "Save automation"}
+                {pending ? bi("Menyimpan…", "Saving…") : bi("Simpan otomasi", "Save automation")}
               </button>
             </div>
           </form>

@@ -6,6 +6,7 @@ import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { downloadCsv, toCsv } from "@/lib/meatlink/csv";
+import { useBi } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/reports")({
   head: () => ({
@@ -35,6 +36,7 @@ function isoDate(d: Date) {
 const REVENUE_STATUSES = ["PAID", "PROCESSING", "SHIPPED", "DELIVERED", "COMPLETED"];
 
 function AdminReportsPage() {
+  const bi = useBi();
   const today = new Date();
   const monthAgo = new Date(today.getTime() - 29 * 86400000);
   const [from, setFrom] = useState(isoDate(monthAgo));
@@ -113,7 +115,7 @@ function AdminReportsPage() {
 
   function guard(rows: unknown[]) {
     if (rows.length === 0) {
-      toast.error("Tidak ada data pada rentang tanggal ini.");
+      toast.error(bi("Tidak ada data pada rentang tanggal ini.", "No data in this date range."));
       return false;
     }
     return true;
@@ -248,35 +250,40 @@ function AdminReportsPage() {
 
   return (
     <AppShell
-      title="Laporan & ekspor"
-      intro="Ringkasan penjualan, pembayaran, nilai stok, dan piutang tempo — siap diunduh sebagai CSV."
+      title={bi("Laporan & ekspor", "Reports & exports")}
+      intro={bi(
+        "Ringkasan penjualan, pembayaran, nilai stok, dan piutang tempo — siap diunduh sebagai CSV.",
+        "A summary of sales, payments, stock value and receivables — ready to download as CSV.",
+      )}
     >
       <RoleGate allow="admin">
         <div className="grid gap-8">
           <Panel className="p-6 lg:p-8">
             <div className="grid gap-6 lg:grid-cols-[minmax(0,auto)_minmax(0,1fr)] lg:items-end">
               <div className="flex flex-wrap items-end gap-4">
-                <Field label="Dari" value={from} onChange={setFrom} />
-                <Field label="Sampai" value={to} onChange={setTo} />
+                <Field label={bi("Dari", "From")} value={from} onChange={setFrom} />
+                <Field label={bi("Sampai", "To")} value={to} onChange={setTo} />
               </div>
               <p className="text-xs text-ash lg:text-right">
-                {loading ? "Memuat data…" : `${orders.length} pesanan pada rentang terpilih`}
+                {loading
+                  ? bi("Memuat data…", "Loading data…")
+                  : bi(`${orders.length} pesanan pada rentang terpilih`, `${orders.length} orders in the selected range`)}
               </p>
             </div>
 
             <div className="mt-8 grid gap-px border border-line bg-line sm:grid-cols-2 xl:grid-cols-3">
-              <Stat label="Pesanan" value={String(orders.length)} />
-              <Stat label="Omzet terbayar" value={formatIdr(revenue)} accent />
-              <Stat label="Total diskon" value={formatIdr(discounts)} />
-              <Stat label="Nilai stok (publik)" value={formatIdr(stockValue)} />
+              <Stat label={bi("Pesanan", "Orders")} value={String(orders.length)} />
+              <Stat label={bi("Omzet terbayar", "Paid revenue")} value={formatIdr(revenue)} accent />
+              <Stat label={bi("Total diskon", "Total discounts")} value={formatIdr(discounts)} />
+              <Stat label={bi("Nilai stok (publik)", "Stock value (public)")} value={formatIdr(stockValue)} />
               <Stat
-                label="Piutang tempo"
+                label={bi("Piutang tempo", "Receivables (TOP)")}
                 value={formatIdr(receivableTotal)}
-                hint={`${receivables.length} order`}
+                hint={bi(`${receivables.length} order`, `${receivables.length} orders`)}
               />
               <Stat
-                label="Jatuh tempo lewat"
-                value={`${overdue.length} order`}
+                label={bi("Jatuh tempo lewat", "Overdue")}
+                value={bi(`${overdue.length} order`, `${overdue.length} orders`)}
                 accent={overdue.length > 0}
               />
             </div>
@@ -284,26 +291,35 @@ function AdminReportsPage() {
 
           <Panel className="p-6 lg:p-8">
             <SectionHead
-              title="Unduh CSV"
-              note="Semua ekspor mengikuti rentang tanggal di atas, kecuali laporan stok yang selalu memakai posisi terkini."
+              title={bi("Unduh CSV", "Download CSV")}
+              note={bi(
+                "Semua ekspor mengikuti rentang tanggal di atas, kecuali laporan stok yang selalu memakai posisi terkini.",
+                "All exports follow the date range above, except the stock report which always uses the current position.",
+              )}
             />
             <div className="mt-6 flex flex-wrap gap-3">
-              <ExportButton label="Penjualan" onClick={exportSales} />
-              <ExportButton label="Pergerakan produk" onClick={exportItems} />
-              <ExportButton label="Pembayaran" onClick={exportPayments} />
-              <ExportButton label="Stok & nilai" onClick={exportStock} />
-              <ExportButton label="Piutang tempo (aging)" onClick={exportReceivables} />
+              <ExportButton label={bi("Penjualan", "Sales")} onClick={exportSales} />
+              <ExportButton label={bi("Pergerakan produk", "Product movement")} onClick={exportItems} />
+              <ExportButton label={bi("Pembayaran", "Payments")} onClick={exportPayments} />
+              <ExportButton label={bi("Stok & nilai", "Stock & value")} onClick={exportStock} />
+              <ExportButton label={bi("Piutang tempo (aging)", "Receivables aging")} onClick={exportReceivables} />
             </div>
           </Panel>
 
           <Panel className="p-6 lg:p-8">
             <SectionHead
-              title="Piutang tempo"
-              note="Tagihan TOP yang belum terbayar, diurutkan dari pesanan terbaru."
+              title={bi("Piutang tempo", "Receivables")}
+              note={bi(
+                "Tagihan TOP yang belum terbayar, diurutkan dari pesanan terbaru.",
+                "Unpaid TOP invoices, sorted by most recent order.",
+              )}
             />
             {receivables.length === 0 ? (
               <p className="mt-6 border border-dashed border-line px-5 py-8 text-center text-sm text-ash">
-                Tidak ada tagihan tempo yang belum dibayar pada rentang ini.
+                {bi(
+                  "Tidak ada tagihan tempo yang belum dibayar pada rentang ini.",
+                  "No unpaid terms invoices in this range.",
+                )}
               </p>
             ) : (
               <ul className="mt-6 divide-y divide-line border-t border-line text-sm">
@@ -319,9 +335,9 @@ function AdminReportsPage() {
                           {o.order_no} · {o.buyer_name}
                         </p>
                         <p className="mt-1 text-xs text-ash">
-                          Jatuh tempo {o.due_date ?? "—"}
+                          {bi("Jatuh tempo", "Due")} {o.due_date ?? "—"}
                           {late ? (
-                            <span className="ml-2 eyebrow text-crimson">terlambat</span>
+                            <span className="ml-2 eyebrow text-crimson">{bi("terlambat", "overdue")}</span>
                           ) : null}
                         </p>
                       </div>

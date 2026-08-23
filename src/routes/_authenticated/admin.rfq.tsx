@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "@/lib/meatlink/orders";
+import { useBi } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/rfq")({
   component: AdminRfqPage,
@@ -73,10 +74,14 @@ const RFQ_STATUSES = ["new", "in_review", "quoted", "won", "lost"] as const;
 const SUPPLIER_STATUSES = ["new", "in_review", "approved", "rejected"] as const;
 
 function AdminRfqPage() {
+  const bi = useBi();
   return (
     <AppShell
-      title="RFQ inbox"
-      intro="Quote requests and supplier applications submitted from the public website."
+      title={bi("Kotak masuk RFQ", "RFQ inbox")}
+      intro={bi(
+        "Permintaan penawaran dan aplikasi pemasok yang dikirim dari situs publik.",
+        "Quote requests and supplier applications submitted from the public website.",
+      )}
     >
       <RoleGate allow="admin">
         <RfqBody />
@@ -86,6 +91,7 @@ function AdminRfqPage() {
 }
 
 function RfqBody() {
+  const bi = useBi();
   const [tab, setTab] = useState<"rfq" | "suppliers">("rfq");
 
   return (
@@ -93,8 +99,8 @@ function RfqBody() {
       <div className="flex gap-3">
         {(
           [
-            ["rfq", "Quote requests"],
-            ["suppliers", "Supplier applications"],
+            ["rfq", bi("Permintaan penawaran", "Quote requests")],
+            ["suppliers", bi("Aplikasi pemasok", "Supplier applications")],
           ] as const
         ).map(([key, label]) => (
           <button

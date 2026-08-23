@@ -18,19 +18,24 @@ import {
   type OrderStatus,
   type TopDecision,
 } from "@/lib/meatlink/orders";
+import { useBi } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/orders/$id")({
   component: AdminOrderDetailPage,
 });
 
 function AdminOrderDetailPage() {
+  const bi = useBi();
   return (
     <AppShell
-      title="Order detail"
-      intro="Match a supplier, set the payment decision, and move the order forward."
+      title={bi("Detail pesanan", "Order detail")}
+      intro={bi(
+        "Cocokkan dengan pemasok, tentukan keputusan pembayaran, dan lanjutkan pesanan.",
+        "Match a supplier, set the payment decision, and move the order forward.",
+      )}
       actions={
         <Link to="/admin/orders" className="eyebrow border border-ink/25 px-5 py-3 text-ink">
-          Back to console
+          {bi("Kembali ke konsol", "Back to console")}
         </Link>
       }
     >
@@ -44,6 +49,7 @@ function AdminOrderDetailPage() {
 type VendorOption = { id: string; vendor_user_id: string; name: string; qty_kg: number };
 
 function DetailBody() {
+  const bi = useBi();
   const { id } = Route.useParams();
   const qc = useQueryClient();
   const [status, setStatus] = useState<OrderStatus>("PENDING");
@@ -98,13 +104,13 @@ function DetailBody() {
       toast.error(error.message);
       return;
     }
-    toast.success("Order updated.");
+    toast.success(bi("Pesanan diperbarui.", "Order updated."));
     void qc.invalidateQueries({ queryKey: ["admin-order", id] });
     void qc.invalidateQueries({ queryKey: ["admin-orders"] });
   }
 
-  if (isLoading) return <p className="text-sm text-ash">Loading…</p>;
-  if (!data) return <Panel className="p-8 text-sm text-ash">Order not found.</Panel>;
+  if (isLoading) return <p className="text-sm text-ash">{bi("Memuat…", "Loading…")}</p>;
+  if (!data) return <Panel className="p-8 text-sm text-ash">{bi("Pesanan tidak ditemukan.", "Order not found.")}</Panel>;
 
   const matches = (vendors ?? []).filter((v) =>
     v.name.toLowerCase().includes(data.product_text.toLowerCase().split(" ")[0] ?? ""),
@@ -122,31 +128,31 @@ function DetailBody() {
         </div>
 
         <dl className="mt-6 grid gap-5 sm:grid-cols-2">
-          <Detail label="Buyer" value={data.buyer_name} />
-          <Detail label="Product" value={data.product_text} />
-          <Detail label="Quantity" value={formatKg(data.qty_kg)} />
-          <Detail label="Payment system" value={TERM_LABEL[data.payment_term]} />
-          <Detail label="Delivery location" value={data.delivery_location ?? "—"} />
-          <Detail label="Needed by" value={data.needed_by ?? "—"} />
-          <Detail label="Submitted" value={formatDate(data.created_at)} />
+          <Detail label={bi("Pembeli", "Buyer")} value={data.buyer_name} />
+          <Detail label={bi("Produk", "Product")} value={data.product_text} />
+          <Detail label={bi("Jumlah", "Quantity")} value={formatKg(data.qty_kg)} />
+          <Detail label={bi("Sistem pembayaran", "Payment system")} value={TERM_LABEL[data.payment_term]} />
+          <Detail label={bi("Lokasi pengiriman", "Delivery location")} value={data.delivery_location ?? "—"} />
+          <Detail label={bi("Dibutuhkan sebelum", "Needed by")} value={data.needed_by ?? "—"} />
+          <Detail label={bi("Dikirim", "Submitted")} value={formatDate(data.created_at)} />
           <Detail
-            label="Current decision"
+            label={bi("Keputusan saat ini", "Current decision")}
             value={data.top_decision ? TOP_DECISION_LABEL[data.top_decision] : "—"}
           />
         </dl>
 
         {data.buyer_notes ? (
           <div className="mt-6 border-t border-line pt-5">
-            <p className="eyebrow text-ash">Buyer notes</p>
+            <p className="eyebrow text-ash">{bi("Catatan pembeli", "Buyer notes")}</p>
             <p className="mt-2 whitespace-pre-line text-sm text-ink">{data.buyer_notes}</p>
           </div>
         ) : null}
       </Panel>
 
       <Panel className="p-6">
-        <p className="eyebrow text-ash">Admin actions</p>
+        <p className="eyebrow text-ash">{bi("Tindakan admin", "Admin actions")}</p>
         <div className="mt-4 grid gap-4">
-          <Field label="Status">
+          <Field label={bi("Status", "Status")}>
             <SelectInput value={status} onChange={(e) => setStatus(e.target.value as OrderStatus)}>
               {ORDER_STATUSES.map((s) => (
                 <option key={s} value={s}>
@@ -156,9 +162,9 @@ function DetailBody() {
             </SelectInput>
           </Field>
 
-          <Field label="Matched supplier stock" hint="Buyers never see supplier identities.">
+          <Field label={bi("Stok pemasok yang cocok", "Matched supplier stock")} hint={bi("Pembeli tidak pernah melihat identitas pemasok.", "Buyers never see supplier identities.")}>
             <SelectInput value={vendorUserId} onChange={(e) => setVendorUserId(e.target.value)}>
-              <option value="">Not matched</option>
+              <option value="">{bi("Belum cocok", "Not matched")}</option>
               {vendorList.map((v) => (
                 <option key={v.id} value={v.vendor_user_id}>
                   {v.name} — {formatKg(v.qty_kg)}
@@ -168,12 +174,12 @@ function DetailBody() {
           </Field>
 
           {isTop(data.payment_term) ? (
-            <Field label="TOP decision" hint="Required for credit-term orders.">
+            <Field label={bi("Keputusan TOP", "TOP decision")} hint={bi("Wajib diisi untuk pesanan dengan termin kredit.", "Required for credit-term orders.")}>
               <SelectInput
                 value={topDecision}
                 onChange={(e) => setTopDecision(e.target.value as "" | TopDecision)}
               >
-                <option value="">Undecided</option>
+                <option value="">{bi("Belum diputuskan", "Undecided")}</option>
                 {(Object.keys(TOP_DECISION_LABEL) as TopDecision[]).map((d) => (
                   <option key={d} value={d}>
                     {TOP_DECISION_LABEL[d]}
@@ -183,7 +189,7 @@ function DetailBody() {
             </Field>
           ) : null}
 
-          <Field label="Internal notes">
+          <Field label={bi("Catatan internal", "Internal notes")}>
             <TextArea rows={4} value={adminNotes} onChange={(e) => setAdminNotes(e.target.value)} />
           </Field>
 
@@ -193,7 +199,7 @@ function DetailBody() {
             disabled={pending}
             className="eyebrow bg-crimson px-6 py-4 text-bone disabled:opacity-60"
           >
-            {pending ? "Saving…" : "Save changes"}
+            {pending ? bi("Menyimpan…", "Saving…") : bi("Simpan perubahan", "Save changes")}
           </button>
         </div>
       </Panel>

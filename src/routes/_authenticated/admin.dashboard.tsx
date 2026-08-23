@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { formatIdr, formatQty, DEFAULT_LOW_STOCK_KG } from "@/lib/meatlink/inventory";
-import { ORDER_STATUS_LABEL } from "@/lib/meatlink/cart";
+import { useBi, useLabel, ORDER_STATUS_LABEL_I18N } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/dashboard")({
   head: () => ({
@@ -26,10 +26,14 @@ export const Route = createFileRoute("/_authenticated/admin/dashboard")({
 });
 
 function AdminDashboardPage() {
+  const bi = useBi();
   return (
     <AppShell
-      title="Operations dashboard"
-      intro="Sales, order pipeline and stock that needs attention — refreshed on every visit."
+      title={bi("Dasbor operasional", "Operations dashboard")}
+      intro={bi(
+        "Penjualan, alur pesanan, dan stok yang perlu perhatian — diperbarui setiap kunjungan.",
+        "Sales, order pipeline and stock that needs attention — refreshed on every visit.",
+      )}
     >
       <RoleGate allow="admin">
         <DashboardBody />
@@ -46,6 +50,8 @@ function daysAgo(n: number) {
 }
 
 function DashboardBody() {
+  const bi = useBi();
+  const label = useLabel();
   const { data, isLoading } = useQuery({
     queryKey: ["admin-dashboard"],
     queryFn: async () => {
@@ -69,7 +75,7 @@ function DashboardBody() {
     },
   });
 
-  if (isLoading) return <Panel className="p-6 text-sm text-ash">Loading dashboard…</Panel>;
+  if (isLoading) return <Panel className="p-6 text-sm text-ash">{bi("Memuat dasbor…", "Loading dashboard…")}</Panel>;
 
   const orders = data?.orders ?? [];
   const paid = orders.filter((o) => o.paid_at || ["PAID", "PROCESSING", "SHIPPED", "COMPLETED"].includes(o.status));
@@ -77,13 +83,25 @@ function DashboardBody() {
   const since = (iso: string, list: typeof orders) => list.filter((o) => o.created_at >= iso);
 
   const cards = [
-    { label: "Sales today", value: formatIdr(sum(since(daysAgo(0), paid))), sub: `${since(daysAgo(0), paid).length} paid orders` },
-    { label: "Last 7 days", value: formatIdr(sum(since(daysAgo(7), paid))), sub: `${since(daysAgo(7), paid).length} paid orders` },
-    { label: "Last 30 days", value: formatIdr(sum(paid)), sub: `${paid.length} paid orders` },
     {
-      label: "Awaiting action",
+      label: bi("Penjualan hari ini", "Sales today"),
+      value: formatIdr(sum(since(daysAgo(0), paid))),
+      sub: bi(`${since(daysAgo(0), paid).length} pesanan lunas`, `${since(daysAgo(0), paid).length} paid orders`),
+    },
+    {
+      label: bi("7 hari terakhir", "Last 7 days"),
+      value: formatIdr(sum(since(daysAgo(7), paid))),
+      sub: bi(`${since(daysAgo(7), paid).length} pesanan lunas`, `${since(daysAgo(7), paid).length} paid orders`),
+    },
+    {
+      label: bi("30 hari terakhir", "Last 30 days"),
+      value: formatIdr(sum(paid)),
+      sub: bi(`${paid.length} pesanan lunas`, `${paid.length} paid orders`),
+    },
+    {
+      label: bi("Menunggu tindakan", "Awaiting action"),
       value: String(orders.filter((o) => ["NEW", "AWAITING_PAYMENT", "PAID", "PROCESSING"].includes(o.status)).length),
-      sub: "orders open in the pipeline",
+      sub: bi("pesanan masih berjalan di alur", "orders open in the pipeline"),
     },
   ];
 
@@ -103,13 +121,13 @@ function DashboardBody() {
 
       <Panel className="p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-display text-xl text-ink">Payment proofs to verify</h2>
+          <h2 className="font-display text-xl text-ink">{bi("Bukti pembayaran untuk diverifikasi", "Payment proofs to verify")}</h2>
           <Link to="/admin/storefront-orders" className="eyebrow text-ink hover:text-crimson">
-            Open storefront orders
+            {bi("Buka pesanan toko online", "Open storefront orders")}
           </Link>
         </div>
         {proofs.length === 0 ? (
-          <p className="mt-3 text-sm text-ash">No unverified payment proofs.</p>
+          <p className="mt-3 text-sm text-ash">{bi("Tidak ada bukti pembayaran yang belum diverifikasi.", "No unverified payment proofs.")}</p>
         ) : (
           <ul className="mt-4 divide-y divide-line text-sm">
             {proofs.map((o) => (
@@ -118,7 +136,7 @@ function DashboardBody() {
                   {o.order_no} · {o.buyer_name}
                 </span>
                 <span className="text-ash">
-                  {ORDER_STATUS_LABEL[o.status] ?? o.status} · {formatIdr(Number(o.total_idr))}
+                  {label(ORDER_STATUS_LABEL_I18N, o.status)} · {formatIdr(Number(o.total_idr))}
                 </span>
               </li>
             ))}
@@ -128,13 +146,15 @@ function DashboardBody() {
 
       <Panel className="p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-display text-xl text-ink">Low stock ({DEFAULT_LOW_STOCK_KG} kg or less)</h2>
+          <h2 className="font-display text-xl text-ink">
+            {bi(`Stok menipis (${DEFAULT_LOW_STOCK_KG} kg atau kurang)`, `Low stock (${DEFAULT_LOW_STOCK_KG} kg or less)`)}
+          </h2>
           <Link to="/admin/inventory" className="eyebrow text-ink hover:text-crimson">
-            Manage inventory
+            {bi("Kelola inventaris", "Manage inventory")}
           </Link>
         </div>
         {(data?.lowStock ?? []).length === 0 ? (
-          <p className="mt-3 text-sm text-ash">Every active item is above the low-stock threshold.</p>
+          <p className="mt-3 text-sm text-ash">{bi("Semua item aktif berada di atas ambang stok menipis.", "Every active item is above the low-stock threshold.")}</p>
         ) : (
           <ul className="mt-4 divide-y divide-line text-sm">
             {(data?.lowStock ?? []).map((i) => (

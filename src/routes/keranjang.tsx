@@ -5,9 +5,18 @@ import { toast } from "sonner";
 import { SiteLayout, PageHero } from "@/components/site/site-layout";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { PAY_METHODS, useCart, type PayMethod } from "@/lib/meatlink/cart";
+import { useBi, useLabel, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyOrderEventPublic } from "@/lib/meatlink/notify.functions";
 import { listAddresses, saveAddress, type BuyerAddress } from "@/lib/meatlink/addresses";
+
+const PAY_METHOD_HINT_EN: Record<string, string> = {
+  BANK_TRANSFER: "VA instructions are sent after the order is placed.",
+  QRIS: "Pay by scanning the QR from any app.",
+  WHATSAPP: "Our team will contact you to finalize the order.",
+  CBD: "Pay in cash before the goods are delivered.",
+  TOP: "Pay according to your credit limit due date.",
+};
 
 type CreditSummary = {
   status: string;
@@ -39,6 +48,8 @@ export const Route = createFileRoute("/keranjang")({
 });
 
 function CartPage() {
+  const bi = useBi();
+  const label = useLabel();
   const { lines, setQty, remove, clear, subtotal } = useCart();
   const navigate = useNavigate();
   const [pending, setPending] = useState(false);
@@ -145,25 +156,25 @@ function CartPage() {
       | { valid: boolean; reason?: string; code?: string; discount_idr?: number }
       | null;
     if (error || !res) {
-      toast.error(error?.message ?? "Kode promo tidak dapat diperiksa.");
+      toast.error(error?.message ?? bi("Kode promo tidak dapat diperiksa.", "The promo code could not be checked."));
       return;
     }
     if (!res.valid) {
       setApplied(null);
-      toast.error(res.reason ?? "Kode promo tidak berlaku.");
+      toast.error(res.reason ?? bi("Kode promo tidak berlaku.", "This promo code is not valid."));
       return;
     }
     setApplied({ code: res.code ?? code, discount: Number(res.discount_idr ?? 0) });
-    toast.success("Kode promo diterapkan.");
+    toast.success(bi("Kode promo diterapkan.", "Promo code applied."));
   }
 
   async function requestCredit() {
     const { data: auth } = await supabase.auth.getUser();
     if (!auth.user) {
-      toast.error("Masuk terlebih dahulu untuk mengajukan pembayaran tempo.");
+      toast.error(bi("Masuk terlebih dahulu untuk mengajukan pembayaran tempo.", "Sign in first to request payment terms."));
       return;
     }
-    const raw = window.prompt("Berapa limit tempo yang Anda ajukan (Rp)?", "50000000");
+    const raw = window.prompt(bi("Berapa limit tempo yang Anda ajukan (Rp)?", "What credit limit are you requesting (IDR)?"), "50000000");
     const limit = Number((raw ?? "").replace(/\D/g, ""));
     if (!limit) return;
     const { error } = await supabase.rpc("ml_request_credit", { _limit: limit });
@@ -171,7 +182,7 @@ function CartPage() {
       toast.error(error.message);
       return;
     }
-    toast.success("Pengajuan limit tempo terkirim.");
+    toast.success(bi("Pengajuan limit tempo terkirim.", "Credit limit request submitted."));
     const { data: creditRow } = await supabase.rpc("ml_my_credit");
     if (creditRow) setCredit(creditRow as unknown as CreditSummary);
   }
@@ -179,7 +190,7 @@ function CartPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (lines.length === 0) {
-      toast.error("Keranjang masih kosong.");
+      toast.error(bi("Keranjang masih kosong.", "Your cart is still empty."));
       return;
     }
     setPending(true);
@@ -192,12 +203,12 @@ function CartPage() {
       });
       if (error) throw error;
       const row = (data ?? [])[0];
-      if (!row) throw new Error("Pesanan gagal dibuat");
+      if (!row) throw new Error(bi("Pesanan gagal dibuat", "Order could not be created"));
       clear();
       if (signedIn && saveNewAddress) {
         await saveAddress(
           {
-            label: form.company?.trim() || form.city?.trim() || "Alamat pengiriman",
+            label: form.company?.trim() || form.city?.trim() || bi("Alamat pengiriman", "Shipping address"),
             buyer_name: form.buyer_name,
             company: form.company,
             phone: form.phone,
@@ -208,7 +219,7 @@ function CartPage() {
           },
         ).catch(() => undefined);
       }
-      toast.success(`Pesanan ${row.order_no} berhasil dibuat.`);
+      toast.success(bi(`Pesanan ${row.order_no} berhasil dibuat.`, `Order ${row.order_no} created successfully.`));
       void notifyOrderEventPublic({
         data: { orderNo: row.order_no, token: row.access_token, event: "placed" },
       }).catch(() => undefined);
@@ -218,7 +229,7 @@ function CartPage() {
         search: { t: row.access_token },
       });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Pesanan gagal dibuat.");
+      toast.error(err instanceof Error ? err.message : bi("Pesanan gagal dibuat.", "Order could not be created."));
     } finally {
       setPending(false);
     }
@@ -227,24 +238,27 @@ function CartPage() {
   return (
     <SiteLayout>
       <PageHero
-        eyebrow="Keranjang"
-        title="Selesaikan pesanan Anda"
-        intro="Harga final mengikuti volume dan lokasi pengiriman. Tim kami mengonfirmasi setiap pesanan sebelum diproses."
+        eyebrow={bi("Keranjang", "Cart")}
+        title={bi("Selesaikan pesanan Anda", "Complete your order")}
+        intro={bi(
+          "Harga final mengikuti volume dan lokasi pengiriman. Tim kami mengonfirmasi setiap pesanan sebelum diproses.",
+          "Final pricing follows volume and delivery location. Our team confirms every order before processing.",
+        )}
       />
 
       <section className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
         {lines.length === 0 ? (
           <p className="text-sm text-ash">
-            Keranjang masih kosong.{" "}
+            {bi("Keranjang masih kosong.", "Your cart is still empty.")}{" "}
             <Link to="/produk" className="underline">
-              Lihat katalog
+              {bi("Lihat katalog", "View catalog")}
             </Link>
             .
           </p>
         ) : (
           <form onSubmit={submit} className="grid gap-12 lg:grid-cols-[1.3fr_1fr]">
             <div>
-              <h2 className="font-display text-2xl text-ink">Item pesanan</h2>
+              <h2 className="font-display text-2xl text-ink">{bi("Item pesanan", "Order items")}</h2>
               <ul className="mt-6 divide-y divide-line border-y border-line">
                 {lines.map((l) => (
                   <li key={l.slug} className="flex flex-wrap items-center gap-4 py-5">
@@ -258,11 +272,11 @@ function CartPage() {
                         min="0"
                         step="0.5"
                         value={l.qty}
-                        aria-label={`Jumlah kg untuk ${l.name}`}
+                        aria-label={bi(`Jumlah kg untuk ${l.name}`, `Quantity in kg for ${l.name}`)}
                         onChange={(e) => setQty(l.slug, Number(e.target.value))}
                         className="w-24 bg-background px-3 py-2 text-sm text-ink outline-none"
                       />
-                      <span className="px-3 text-xs text-ash">kg</span>
+                      <span className="px-3 text-xs text-ash">{bi("kg", "kg")}</span>
                     </div>
                     <p className="w-32 text-right text-sm text-ink">
                       {formatIdr(l.price * l.qty)}
@@ -270,7 +284,7 @@ function CartPage() {
                     <button
                       type="button"
                       onClick={() => remove(l.slug)}
-                      aria-label={`Hapus ${l.name}`}
+                      aria-label={bi(`Hapus ${l.name}`, `Remove ${l.name}`)}
                       className="text-ash hover:text-crimson"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -279,14 +293,14 @@ function CartPage() {
                 ))}
               </ul>
 
-              <h2 className="mt-12 font-display text-2xl text-ink">Data pengiriman</h2>
+              <h2 className="mt-12 font-display text-2xl text-ink">{bi("Data pengiriman", "Shipping details")}</h2>
 
               {signedIn && addresses.length > 0 ? (
                 <div className="mt-6 border border-line p-5">
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <h3 className="eyebrow text-ash">Alamat tersimpan</h3>
+                    <h3 className="eyebrow text-ash">{bi("Alamat tersimpan", "Saved addresses")}</h3>
                     <Link to="/app/alamat" className="text-xs text-ash underline">
-                      Kelola alamat
+                      {bi("Kelola alamat", "Manage addresses")}
                     </Link>
                   </div>
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -317,17 +331,17 @@ function CartPage() {
               ) : null}
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <Input label="Nama pemesan" required value={form.buyer_name} onChange={(v) => set("buyer_name", v)} />
-                <Input label="Perusahaan" value={form.company} onChange={(v) => set("company", v)} />
-                <Input label="Nomor WhatsApp" required value={form.phone} onChange={(v) => set("phone", v)} />
-                <Input label="Email" type="email" value={form.email} onChange={(v) => set("email", v)} />
-                <Input label="Kota" value={form.city} onChange={(v) => set("city", v)} />
+                <Input label={bi("Nama pemesan", "Buyer name")} required value={form.buyer_name} onChange={(v) => set("buyer_name", v)} />
+                <Input label={bi("Perusahaan", "Company")} value={form.company} onChange={(v) => set("company", v)} />
+                <Input label={bi("Nomor WhatsApp", "WhatsApp number")} required value={form.phone} onChange={(v) => set("phone", v)} />
+                <Input label={bi("Email", "Email")} type="email" value={form.email} onChange={(v) => set("email", v)} />
+                <Input label={bi("Kota", "City")} value={form.city} onChange={(v) => set("city", v)} />
                 <div className="sm:col-span-2">
-                  <Input label="Alamat pengiriman" required value={form.address} onChange={(v) => set("address", v)} />
+                  <Input label={bi("Alamat pengiriman", "Shipping address")} required value={form.address} onChange={(v) => set("address", v)} />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="eyebrow text-ash" htmlFor="notes">
-                    Catatan
+                    {bi("Catatan", "Notes")}
                   </label>
                   <textarea
                     id="notes"
@@ -345,7 +359,7 @@ function CartPage() {
                       onChange={(e) => setSaveNewAddress(e.target.checked)}
                       className="h-4 w-4"
                     />
-                    Simpan alamat ini ke buku alamat saya
+                    {bi("Simpan alamat ini ke buku alamat saya", "Save this address to my address book")}
                   </label>
                 ) : null}
               </div>
@@ -353,19 +367,19 @@ function CartPage() {
 
 
             <aside className="h-fit border border-line bg-background p-8 lg:sticky lg:top-28">
-              <h2 className="eyebrow text-ash">Ringkasan</h2>
+              <h2 className="eyebrow text-ash">{bi("Ringkasan", "Summary")}</h2>
               <div className="mt-4 flex items-baseline justify-between">
-                <span className="text-sm text-ash">Subtotal</span>
+                <span className="text-sm text-ash">{bi("Subtotal", "Subtotal")}</span>
                 <span className="font-display text-3xl text-ink">{formatIdr(subtotal)}</span>
               </div>
               {applied ? (
                 <>
                   <div className="mt-3 flex items-baseline justify-between text-sm">
-                    <span className="text-ash">Promo {applied.code}</span>
+                    <span className="text-ash">{bi("Promo", "Promo")} {applied.code}</span>
                     <span className="text-crimson">-{formatIdr(applied.discount)}</span>
                   </div>
                   <div className="mt-3 flex items-baseline justify-between border-t border-line pt-3">
-                    <span className="text-sm text-ash">Total</span>
+                    <span className="text-sm text-ash">{bi("Total", "Total")}</span>
                     <span className="font-display text-2xl text-ink">
                       {formatIdr(Math.max(subtotal - applied.discount, 0))}
                     </span>
@@ -373,12 +387,15 @@ function CartPage() {
                 </>
               ) : null}
               <p className="mt-2 text-xs text-ash">
-                Belum termasuk ongkos kirim. Tim kami mengonfirmasi total akhir.
+                {bi(
+                  "Belum termasuk ongkos kirim. Tim kami mengonfirmasi total akhir.",
+                  "Excludes shipping cost. Our team confirms the final total.",
+                )}
               </p>
 
               <div className="mt-6">
                 <label htmlFor="coupon" className="eyebrow text-ash">
-                  Kode promo
+                  {bi("Kode promo", "Promo code")}
                 </label>
                 <div className="mt-2 flex gap-2">
                   <input
@@ -394,15 +411,17 @@ function CartPage() {
                     disabled={checkingCoupon || !coupon.trim()}
                     className="eyebrow border border-ink px-4 text-ink disabled:opacity-50"
                   >
-                    {checkingCoupon ? "…" : "Pakai"}
+                    {checkingCoupon ? "…" : bi("Pakai", "Apply")}
                   </button>
                 </div>
               </div>
 
               {credit && credit.status !== "APPROVED" ? (
                 <p className="mt-4 border border-line p-4 text-xs text-ash">
-                  Pengajuan limit tempo Anda berstatus {credit.status.toLowerCase()}. Tim kami akan
-                  mengabari setelah ditinjau.
+                  {bi(
+                    `Pengajuan limit tempo Anda berstatus ${credit.status.toLowerCase()}. Tim kami akan mengabari setelah ditinjau.`,
+                    `Your credit limit request is ${credit.status.toLowerCase()}. Our team will notify you once reviewed.`,
+                  )}
                 </p>
               ) : null}
 
@@ -412,19 +431,21 @@ function CartPage() {
                   onClick={() => void requestCredit()}
                   className="eyebrow mt-4 w-full border border-ink px-4 py-3 text-ink"
                 >
-                  Ajukan pembayaran tempo
+                  {bi("Ajukan pembayaran tempo", "Request payment terms")}
                 </button>
               ) : null}
 
               {credit?.status === "APPROVED" ? (
                 <p className="mt-4 border border-line bg-ink/[0.03] p-4 text-xs text-ash">
-                  Limit tempo tersedia {formatIdr(Number(credit.available_idr))} dari{" "}
-                  {formatIdr(Number(credit.limit_idr))} · jatuh tempo {credit.term_days} hari.
+                  {bi(
+                    `Limit tempo tersedia ${formatIdr(Number(credit.available_idr))} dari ${formatIdr(Number(credit.limit_idr))} · jatuh tempo ${credit.term_days} hari.`,
+                    `Available credit ${formatIdr(Number(credit.available_idr))} of ${formatIdr(Number(credit.limit_idr))} · due in ${credit.term_days} days.`,
+                  )}
                 </p>
               ) : null}
 
               <fieldset className="mt-8">
-                <legend className="eyebrow text-ash">Metode pembayaran</legend>
+                <legend className="eyebrow text-ash">{bi("Metode pembayaran", "Payment method")}</legend>
                 <div className="mt-4 grid gap-2">
                   {PAY_METHODS.filter(
                     (m) => !m.requiresCredit || credit?.status === "APPROVED",
@@ -444,8 +465,10 @@ function CartPage() {
                         className="mt-1"
                       />
                       <span>
-                        <span className="block text-ink">{m.label}</span>
-                        <span className="mt-1 block text-xs text-ash">{m.hint}</span>
+                        <span className="block text-ink">{label(PAY_METHOD_LABEL_I18N, m.value)}</span>
+                        <span className="mt-1 block text-xs text-ash">
+                          {bi(m.hint, PAY_METHOD_HINT_EN[m.value] ?? m.hint)}
+                        </span>
                       </span>
                     </label>
                   ))}
@@ -457,7 +480,7 @@ function CartPage() {
                 disabled={pending}
                 className="eyebrow mt-8 w-full bg-crimson px-6 py-4 text-bone transition-colors hover:bg-crimson-deep disabled:opacity-60"
               >
-                {pending ? "Memproses…" : "Buat pesanan"}
+                {pending ? bi("Memproses…", "Processing…") : bi("Buat pesanan", "Place order")}
               </button>
             </aside>
           </form>

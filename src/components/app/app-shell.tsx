@@ -1,45 +1,47 @@
 import type { ReactNode } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Wordmark } from "@/components/site/site-header";
+import { LanguageToggle } from "@/components/site/language-toggle";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { useBi } from "@/lib/i18n";
 import type { MlRole } from "@/lib/meatlink/orders";
 
-type NavItem = { to: string; label: string };
+type NavItem = { to: string; label: { id: string; en: string } };
 
 const NAV: Record<MlRole, NavItem[]> = {
   buyer: [
-    { to: "/app/pesanan", label: "Pesanan Toko" },
-    { to: "/app/alamat", label: "Alamat Kirim" },
-    { to: "/app/orders", label: "My Orders" },
-    { to: "/app/orders/new", label: "New Order" },
-    { to: "/app/rfq", label: "My RFQs" },
-    { to: "/app/stock", label: "Available Stock" },
+    { to: "/app/pesanan", label: { id: "Pesanan Toko", en: "Store Orders" } },
+    { to: "/app/alamat", label: { id: "Alamat Kirim", en: "Delivery Addresses" } },
+    { to: "/app/orders", label: { id: "Pesanan Saya", en: "My Orders" } },
+    { to: "/app/orders/new", label: { id: "Pesanan Baru", en: "New Order" } },
+    { to: "/app/rfq", label: { id: "RFQ Saya", en: "My RFQs" } },
+    { to: "/app/stock", label: { id: "Stok Tersedia", en: "Available Stock" } },
   ],
   vendor: [
-    { to: "/vendor/catalog", label: "Catalogue & Stock" },
-    { to: "/vendor/import", label: "Bulk Import" },
+    { to: "/vendor/catalog", label: { id: "Katalog & Stok", en: "Catalogue & Stock" } },
+    { to: "/vendor/import", label: { id: "Impor Massal", en: "Bulk Import" } },
   ],
   admin: [
-    { to: "/admin/dashboard", label: "Dashboard" },
-    { to: "/admin/orders", label: "Orders" },
-    { to: "/admin/rfq", label: "RFQ Inbox" },
-    { to: "/admin/storefront-orders", label: "Storefront Orders" },
-    { to: "/admin/inventory", label: "Inventory" },
-    { to: "/admin/commerce", label: "Promo & Credit" },
-    { to: "/admin/reports", label: "Reports" },
-    { to: "/admin/insights", label: "Insights" },
-    { to: "/admin/users", label: "Users" },
-    { to: "/admin/settings", label: "Settings" },
+    { to: "/admin/dashboard", label: { id: "Dasbor", en: "Dashboard" } },
+    { to: "/admin/orders", label: { id: "Pesanan", en: "Orders" } },
+    { to: "/admin/rfq", label: { id: "Kotak Masuk RFQ", en: "RFQ Inbox" } },
+    { to: "/admin/storefront-orders", label: { id: "Pesanan Toko Online", en: "Storefront Orders" } },
+    { to: "/admin/inventory", label: { id: "Inventaris", en: "Inventory" } },
+    { to: "/admin/commerce", label: { id: "Promo & Kredit", en: "Promo & Credit" } },
+    { to: "/admin/reports", label: { id: "Laporan", en: "Reports" } },
+    { to: "/admin/insights", label: { id: "Insight", en: "Insights" } },
+    { to: "/admin/users", label: { id: "Pengguna", en: "Users" } },
+    { to: "/admin/settings", label: { id: "Pengaturan", en: "Settings" } },
 
   ],
 
 };
 
-const ROLE_LABEL: Record<MlRole, string> = {
-  buyer: "Buyer workspace",
-  vendor: "Vendor workspace",
-  admin: "Admin console",
+const ROLE_LABEL: Record<MlRole, { id: string; en: string }> = {
+  buyer: { id: "Ruang kerja Pembeli", en: "Buyer workspace" },
+  vendor: { id: "Ruang kerja Pemasok", en: "Vendor workspace" },
+  admin: { id: "Konsol Admin", en: "Admin console" },
 };
 
 export function AppShell({
@@ -55,6 +57,7 @@ export function AppShell({
 }) {
   const { role, user, loading } = useAuth();
   const navigate = useNavigate();
+  const bi = useBi();
   const items = role ? NAV[role] : [];
 
   async function signOut() {
@@ -69,12 +72,13 @@ export function AppShell({
           <Wordmark tone="dark" />
           <div className="flex items-center gap-4">
             <span className="hidden text-xs text-bone/55 sm:block">{user?.email}</span>
+            <LanguageToggle dark />
             <button
               type="button"
               onClick={() => void signOut()}
               className="eyebrow border border-white/25 px-4 py-2 text-bone transition-colors hover:bg-white/10"
             >
-              Sign out
+              {bi("Keluar", "Sign out")}
             </button>
           </div>
         </div>
@@ -83,7 +87,9 @@ export function AppShell({
             aria-label="Workspace"
             className="mx-auto flex max-w-7xl flex-wrap items-center gap-5 px-5 py-3 lg:px-8"
           >
-            <span className="eyebrow text-crimson">{role ? ROLE_LABEL[role] : "Workspace"}</span>
+            <span className="eyebrow text-crimson">
+              {role ? bi(ROLE_LABEL[role].id, ROLE_LABEL[role].en) : bi("Ruang Kerja", "Workspace")}
+            </span>
             {items.map((item) => (
               <Link
                 key={item.to}
@@ -92,7 +98,7 @@ export function AppShell({
                 activeProps={{ className: "text-bone" }}
                 activeOptions={{ exact: item.to === "/app/orders" }}
               >
-                {item.label}
+                {bi(item.label.id, item.label.en)}
               </Link>
             ))}
           </nav>
@@ -107,7 +113,9 @@ export function AppShell({
           </div>
           {actions}
         </div>
-        <div className="mt-8">{loading ? <p className="text-sm text-ash">Loading…</p> : children}</div>
+        <div className="mt-8">
+          {loading ? <p className="text-sm text-ash">{bi("Memuat…", "Loading…")}</p> : children}
+        </div>
       </main>
     </div>
   );
@@ -115,13 +123,19 @@ export function AppShell({
 
 export function RoleGate({ allow, children }: { allow: MlRole; children: ReactNode }) {
   const { role, loading } = useAuth();
-  if (loading) return <p className="text-sm text-ash">Loading…</p>;
+  const bi = useBi();
+  if (loading) return <p className="text-sm text-ash">{bi("Memuat…", "Loading…")}</p>;
   if (role !== allow) {
     return (
       <div className="border border-line bg-card p-8">
-        <h2 className="font-display text-xl text-ink">Not available for your account</h2>
+        <h2 className="font-display text-xl text-ink">
+          {bi("Tidak tersedia untuk akun Anda", "Not available for your account")}
+        </h2>
         <p className="mt-2 text-sm text-ash">
-          This area is limited to {allow} accounts. Contact Meatlink if you believe this is wrong.
+          {bi(
+            `Area ini hanya untuk akun ${allow}. Hubungi Meatlink jika menurut Anda ini keliru.`,
+            `This area is limited to ${allow} accounts. Contact Meatlink if you believe this is wrong.`,
+          )}
         </p>
       </div>
     );

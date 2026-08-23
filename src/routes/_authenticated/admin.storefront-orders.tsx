@@ -6,7 +6,8 @@ import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "@/lib/meatlink/orders";
 import { formatIdr } from "@/lib/meatlink/inventory";
-import { ORDER_STATUS_LABEL, PAY_METHOD_LABEL, type PayMethod } from "@/lib/meatlink/cart";
+import { type PayMethod } from "@/lib/meatlink/cart";
+import { useBi, useLabel, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
 import { notifyOrderEventAdmin } from "@/lib/meatlink/notify.functions";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -43,10 +44,14 @@ export const Route = createFileRoute("/_authenticated/admin/storefront-orders")(
 });
 
 function AdminStorefrontOrdersPage() {
+  const bi = useBi();
   return (
     <AppShell
-      title="Storefront orders"
-      intro="Orders placed straight from the public catalog. Update status as payment and delivery progress."
+      title={bi("Pesanan toko online", "Storefront orders")}
+      intro={bi(
+        "Pesanan yang masuk langsung dari katalog publik. Perbarui status seiring pembayaran dan pengiriman berjalan.",
+        "Orders placed straight from the public catalog. Update status as payment and delivery progress.",
+      )}
     >
       <RoleGate allow="admin">
         <OrdersTable />
@@ -56,7 +61,7 @@ function AdminStorefrontOrdersPage() {
 }
 
 /** Payment proofs live in a private bucket — open them through a short-lived signed URL. */
-async function openProof(path: string) {
+async function openProof(path: string, bi: (id: string, en: string) => string) {
   if (/^https?:\/\//i.test(path)) {
     window.open(path, "_blank", "noopener");
     return;
@@ -65,13 +70,15 @@ async function openProof(path: string) {
     .from("payment-proofs")
     .createSignedUrl(path, 300);
   if (error || !data?.signedUrl) {
-    toast.error(error?.message ?? "Bukti pembayaran tidak dapat dibuka.");
+    toast.error(error?.message ?? bi("Bukti pembayaran tidak dapat dibuka.", "Payment proof could not be opened."));
     return;
   }
   window.open(data.signedUrl, "_blank", "noopener");
 }
 
 function OrdersTable() {
+  const bi = useBi();
+  const label = useLabel();
   const qc = useQueryClient();
   const [draft, setDraft] = useState<Record<string, { ref: string; note: string }>>({});
   const [ship, setShip] = useState<
@@ -117,8 +124,8 @@ function OrdersTable() {
     }
     toast.success(
       status === "SHIPPED" || status === "COMPLETED"
-        ? "Status updated and stock deducted."
-        : "Status updated.",
+        ? bi("Status diperbarui dan stok telah dikurangi.", "Status updated and stock deducted.")
+        : bi("Status diperbarui.", "Status updated."),
     );
     if (status === "PAID" || status === "SHIPPED" || status === "COMPLETED") {
       const targetOrder = orders.find((o) => o.id === id);
@@ -145,15 +152,19 @@ function OrdersTable() {
       toast.error(error.message);
       return;
     }
-    toast.success("Delivery details saved.");
+    toast.success(bi("Detail pengiriman disimpan.", "Delivery details saved."));
     qc.invalidateQueries({ queryKey: ["admin-storefront-orders"] });
   }
 
-  if (isLoading) return <Panel>Loading orders…</Panel>;
+  if (isLoading) return <Panel>{bi("Memuat pesanan…", "Loading orders…")}</Panel>;
 
   const orders = data?.orders ?? [];
   if (orders.length === 0) {
-    return <Panel>Catalog orders will appear here as soon as buyers check out.</Panel>;
+    return (
+      <Panel>
+        {bi("Pesanan katalog akan muncul di sini setelah pembeli checkout.", "Catalog orders will appear here as soon as buyers check out.")}
+      </Panel>
+    );
   }
 
   return (
@@ -170,7 +181,7 @@ function OrdersTable() {
           };
         const waText = encodeURIComponent(
           `Halo ${o.buyer_name}, update pesanan Meatlink ${o.order_no}: status ${
-            ORDER_STATUS_LABEL[o.status as StoreStatus] ?? o.status
+            label(ORDER_STATUS_LABEL_I18N, o.status)
           }. Total ${formatIdr(Number(o.total_idr))}.`,
         );
         const waHref = `https://wa.me/${o.phone.replace(/\D/g, "").replace(/^0/, "62")}?text=${waText}`;
@@ -200,7 +211,7 @@ function OrdersTable() {
                   <ol className="mt-4 space-y-1 text-xs text-muted-foreground">
                     {events.map((e) => (
                       <li key={e.id}>
-                        {formatDate(e.created_at)} — {ORDER_STATUS_LABEL[e.to_status as StoreStatus] ?? e.to_status}
+                        {formatDate(e.created_at)} — {label(ORDER_STATUS_LABEL_I18N, e.to_status)}
                         {e.note ? ` · ${e.note}` : ""}
                       </li>
                     ))}
@@ -210,35 +221,35 @@ function OrdersTable() {
               <div className="text-sm">
                 <p className="text-muted-foreground">{formatDate(o.created_at)}</p>
                 <p className="mt-1">
-                  Payment: {PAY_METHOD_LABEL[o.payment_method as PayMethod] ?? o.payment_method}
+                  {bi("Pembayaran", "Payment")}: {label(PAY_METHOD_LABEL_I18N, o.payment_method)}
                 </p>
-                {o.payment_ref ? <p className="mt-1 text-xs">Ref: {o.payment_ref}</p> : null}
+                {o.payment_ref ? <p className="mt-1 text-xs">{bi("Ref", "Ref")}: {o.payment_ref}</p> : null}
                 {o.payment_proof_url ? (
                   <button
                     type="button"
-                    onClick={() => void openProof(o.payment_proof_url!)}
+                    onClick={() => void openProof(o.payment_proof_url!, bi)}
                     className="mt-2 text-xs underline"
                   >
-                    Lihat bukti pembayaran
+                    {bi("Lihat bukti pembayaran", "View payment proof")}
                   </button>
                 ) : null}
                 <p className="mt-1 text-lg font-semibold">{formatIdr(Number(o.total_idr))}</p>
                 {o.stock_deducted_at ? (
-                  <p className="mt-1 text-xs text-muted-foreground">Stock deducted</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{bi("Stok telah dikurangi", "Stock deducted")}</p>
                 ) : null}
                 <label className="mt-4 block text-xs uppercase tracking-wide text-muted-foreground">
-                  Payment reference
+                  {bi("Referensi pembayaran", "Payment reference")}
                   <input
                     value={d.ref}
                     onChange={(e) =>
                       setDraft((p) => ({ ...p, [o.id]: { ...d, ref: e.target.value } }))
                     }
-                    placeholder="No. transaksi / bukti transfer"
+                    placeholder={bi("No. transaksi / bukti transfer", "Transaction no. / transfer proof")}
                     className="mt-1 w-full rounded border bg-background px-3 py-2 text-sm"
                   />
                 </label>
                 <label className="mt-3 block text-xs uppercase tracking-wide text-muted-foreground">
-                  Internal note
+                  {bi("Catatan internal", "Internal note")}
                   <input
                     value={d.note}
                     onChange={(e) =>
@@ -248,7 +259,7 @@ function OrdersTable() {
                   />
                 </label>
                 <label className="mt-3 block text-xs uppercase tracking-wide text-muted-foreground">
-                  Status
+                  {bi("Status", "Status")}
                   <select
                     value={o.status}
                     onChange={(e) => updateStatus(o.id, e.target.value as StoreStatus)}
@@ -256,21 +267,21 @@ function OrdersTable() {
                   >
                     {STATUSES.map((s) => (
                       <option key={s} value={s}>
-                        {ORDER_STATUS_LABEL[s] ?? s}
+                        {label(ORDER_STATUS_LABEL_I18N, s)}
                       </option>
                     ))}
                   </select>
                 </label>
                 <fieldset className="mt-4 border-t pt-4">
                   <legend className="text-xs uppercase tracking-wide text-muted-foreground">
-                    Delivery
+                    {bi("Pengiriman", "Delivery")}
                   </legend>
                   <input
                     value={sh.courier}
                     onChange={(e) =>
                       setShip((p) => ({ ...p, [o.id]: { ...sh, courier: e.target.value } }))
                     }
-                    placeholder="Kurir / armada"
+                    placeholder={bi("Kurir / armada", "Courier / fleet")}
                     className="mt-2 w-full rounded border bg-background px-3 py-2 text-sm"
                   />
                   <input
@@ -278,7 +289,7 @@ function OrdersTable() {
                     onChange={(e) =>
                       setShip((p) => ({ ...p, [o.id]: { ...sh, tracking: e.target.value } }))
                     }
-                    placeholder="No. resi"
+                    placeholder={bi("No. resi", "Tracking no.")}
                     className="mt-2 w-full rounded border bg-background px-3 py-2 text-sm"
                   />
                   <input
@@ -294,11 +305,11 @@ function OrdersTable() {
                     onClick={() => void saveDelivery(o.id)}
                     className="mt-2 rounded border px-3 py-2 text-xs uppercase tracking-wide"
                   >
-                    Save delivery
+                    {bi("Simpan pengiriman", "Save delivery")}
                   </button>
                   {o.buyer_confirmed_at ? (
                     <p className="mt-2 text-xs text-muted-foreground">
-                      Buyer confirmed receipt {formatDate(o.buyer_confirmed_at)}
+                      {bi("Pembeli mengonfirmasi penerimaan", "Buyer confirmed receipt")} {formatDate(o.buyer_confirmed_at)}
                     </p>
                   ) : null}
                 </fieldset>
@@ -308,7 +319,7 @@ function OrdersTable() {
                   rel="noreferrer"
                   className="mt-3 inline-block rounded border px-3 py-2 text-xs uppercase tracking-wide"
                 >
-                  Notify buyer on WhatsApp
+                  {bi("Beri tahu pembeli via WhatsApp", "Notify buyer on WhatsApp")}
                 </a>
               </div>
             </div>

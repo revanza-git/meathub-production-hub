@@ -257,8 +257,61 @@ export function useLang() {
   return useContext(LangContext);
 }
 
+/**
+ * Inline bilingual helper for page-local copy that does not belong in DICT.
+ * Usage: const bi = useBi(); bi("Kembali", "Back")
+ */
+export function useBi() {
+  const { lang } = useContext(LangContext);
+  return useCallback((id: string, en: string) => (lang === "en" ? en : id), [lang]);
+}
+
 /** Pick the right field from bilingual content (e.g. insights title/title_en). */
 export function pickLocale(lang: Lang, id: string | null | undefined, en: string | null | undefined) {
   if (lang === "en") return en?.trim() || id || "";
   return id || en || "";
 }
+
+// --- shared domain label maps ------------------------------------------------
+
+export const CATEGORY_LABEL_I18N: Record<string, Record<Lang, string>> = {
+  PRIME_CUT: { id: "Prime Cut", en: "Prime Cut" },
+  SECOND_CUT: { id: "Second Cut", en: "Second Cut" },
+  OFFAL: { id: "Offal", en: "Offal" },
+  BONE: { id: "Bone", en: "Bone" },
+};
+
+export const AVAILABILITY_LABEL_I18N: Record<string, Record<Lang, string>> = {
+  IN_STOCK: { id: "Ready stok", en: "In stock" },
+  LIMITED: { id: "Stok terbatas", en: "Limited stock" },
+  PRE_ORDER: { id: "Pre-order", en: "Pre-order" },
+};
+
+export const ORDER_STATUS_LABEL_I18N: Record<string, Record<Lang, string>> = {
+  NEW: { id: "Pesanan diterima", en: "Order received" },
+  AWAITING_PAYMENT: { id: "Menunggu pembayaran", en: "Awaiting payment" },
+  PAID: { id: "Pembayaran diterima", en: "Payment received" },
+  PROCESSING: { id: "Sedang diproses", en: "Processing" },
+  SHIPPED: { id: "Dalam pengiriman", en: "Shipped" },
+  COMPLETED: { id: "Selesai", en: "Completed" },
+  CANCELLED: { id: "Dibatalkan", en: "Cancelled" },
+};
+
+export const PAY_METHOD_LABEL_I18N: Record<string, Record<Lang, string>> = {
+  BANK_TRANSFER: { id: "Transfer bank / VA", en: "Bank transfer / VA" },
+  QRIS: { id: "QRIS", en: "QRIS" },
+  WHATSAPP: { id: "WhatsApp", en: "WhatsApp" },
+  CBD: { id: "Cash Before Delivery", en: "Cash before delivery" },
+  TOP: { id: "Tempo (TOP)", en: "Terms (TOP)" },
+};
+
+/** Localised label lookup with graceful fallback to the raw code. */
+export function useLabel() {
+  const { lang } = useContext(LangContext);
+  return useCallback(
+    (map: Record<string, Record<Lang, string>>, code: string | null | undefined) =>
+      (code && map[code]?.[lang]) || code || "—",
+    [lang],
+  );
+}
+

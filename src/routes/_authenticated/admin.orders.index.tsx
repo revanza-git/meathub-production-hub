@@ -13,16 +13,21 @@ import {
   type BuyerOrder,
   type OrderStatus,
 } from "@/lib/meatlink/orders";
+import { useBi } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/orders/")({
   component: AdminOrdersPage,
 });
 
 function AdminOrdersPage() {
+  const bi = useBi();
   return (
     <AppShell
-      title="Order console"
-      intro="Every incoming order, its payment system, and where it stands."
+      title={bi("Konsol pesanan", "Order console")}
+      intro={bi(
+        "Setiap pesanan masuk, sistem pembayarannya, dan posisinya saat ini.",
+        "Every incoming order, its payment system, and where it stands.",
+      )}
     >
       <RoleGate allow="admin">
         <AdminOrdersBody />
@@ -32,6 +37,7 @@ function AdminOrdersPage() {
 }
 
 function AdminOrdersBody() {
+  const bi = useBi();
   const [status, setStatus] = useState<"" | OrderStatus>("");
   const [query, setQuery] = useState("");
 
@@ -73,7 +79,7 @@ function AdminOrdersBody() {
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search order, buyer, product"
+          placeholder={bi("Cari pesanan, pembeli, produk", "Search order, buyer, product")}
           className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
         />
         <select
@@ -81,7 +87,7 @@ function AdminOrdersBody() {
           onChange={(e) => setStatus(e.target.value as "" | OrderStatus)}
           className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
         >
-          <option value="">All statuses</option>
+          <option value="">{bi("Semua status", "All statuses")}</option>
           {ORDER_STATUSES.map((s) => (
             <option key={s} value={s}>
               {STATUS_LABEL[s]}
@@ -91,21 +97,21 @@ function AdminOrdersBody() {
       </div>
 
       {isLoading ? (
-        <p className="text-sm text-ash">Loading orders…</p>
+        <p className="text-sm text-ash">{bi("Memuat pesanan…", "Loading orders…")}</p>
       ) : rows.length === 0 ? (
-        <Panel className="p-10 text-center text-sm text-ash">No orders match your filters.</Panel>
+        <Panel className="p-10 text-center text-sm text-ash">{bi("Tidak ada pesanan yang cocok dengan filter Anda.", "No orders match your filters.")}</Panel>
       ) : (
         <Panel className="overflow-x-auto">
           <table className="w-full min-w-[820px] text-left text-sm">
             <thead className="border-b border-line text-xs uppercase tracking-[0.16em] text-ash">
               <tr>
-                <th className="px-4 py-3">Order</th>
-                <th className="px-4 py-3">Buyer</th>
-                <th className="px-4 py-3">Product</th>
-                <th className="px-4 py-3">Qty</th>
-                <th className="px-4 py-3">Terms</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Submitted</th>
+                <th className="px-4 py-3">{bi("Pesanan", "Order")}</th>
+                <th className="px-4 py-3">{bi("Pembeli", "Buyer")}</th>
+                <th className="px-4 py-3">{bi("Produk", "Product")}</th>
+                <th className="px-4 py-3">{bi("Jumlah", "Qty")}</th>
+                <th className="px-4 py-3">{bi("Termin", "Terms")}</th>
+                <th className="px-4 py-3">{bi("Status", "Status")}</th>
+                <th className="px-4 py-3">{bi("Dikirim", "Submitted")}</th>
               </tr>
             </thead>
             <tbody>

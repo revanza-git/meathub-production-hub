@@ -5,15 +5,16 @@ import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { formatDate, type MlRole } from "@/lib/meatlink/orders";
+import { useBi } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/users")({
   component: AdminUsersPage,
 });
 
-const ROLE_LABEL: Record<MlRole, string> = {
-  buyer: "Buyer",
-  vendor: "Supplier",
-  admin: "Admin",
+const ROLE_LABEL: Record<MlRole, { id: string; en: string }> = {
+  buyer: { id: "Pembeli", en: "Buyer" },
+  vendor: { id: "Pemasok", en: "Supplier" },
+  admin: { id: "Admin", en: "Admin" },
 };
 
 type RoleRow = { id: string; user_id: string; role: MlRole; created_at: string };
@@ -29,8 +30,15 @@ type AuditRow = {
 };
 
 function AdminUsersPage() {
+  const bi = useBi();
   return (
-    <AppShell title="Users" intro="Accounts registered on the Meatlink workspace and their roles.">
+    <AppShell
+      title={bi("Pengguna", "Users")}
+      intro={bi(
+        "Akun yang terdaftar di ruang kerja Meatlink beserta perannya.",
+        "Accounts registered on the Meatlink workspace and their roles.",
+      )}
+    >
       <RoleGate allow="admin">
         <UsersBody />
       </RoleGate>
@@ -39,6 +47,8 @@ function AdminUsersPage() {
 }
 
 function UsersBody() {
+  const bi = useBi();
+  const roleLabel = (role: MlRole) => bi(ROLE_LABEL[role].id, ROLE_LABEL[role].en);
   const { user } = useAuth();
   const qc = useQueryClient();
 
@@ -73,18 +83,18 @@ function UsersBody() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success("Role updated.");
+      toast.success(bi("Peran diperbarui.", "Role updated."));
       void qc.invalidateQueries({ queryKey: ["admin-users"] });
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Could not update role"),
+    onError: (e) => toast.error(e instanceof Error ? e.message : bi("Gagal memperbarui peran", "Could not update role")),
   });
 
   const byId = new Map((data?.profiles ?? []).map((p) => [p.id, p]));
   const rows = (data?.roles ?? []).slice().sort((a, b) => a.role.localeCompare(b.role));
 
-  if (isLoading) return <p className="text-sm text-ash">Loading users…</p>;
+  if (isLoading) return <p className="text-sm text-ash">{bi("Memuat pengguna…", "Loading users…")}</p>;
   if (rows.length === 0)
-    return <Panel className="p-10 text-center text-sm text-ash">No accounts yet.</Panel>;
+    return <Panel className="p-10 text-center text-sm text-ash">{bi("Belum ada akun.", "No accounts yet.")}</Panel>;
 
   return (
     <div className="grid gap-8">
@@ -92,11 +102,11 @@ function UsersBody() {
         <table className="w-full min-w-[760px] text-left text-sm">
           <thead className="border-b border-line text-xs uppercase tracking-[0.16em] text-ash">
             <tr>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Email</th>
-              <th className="px-4 py-3">Phone</th>
-              <th className="px-4 py-3">Role</th>
-              <th className="px-4 py-3">Joined</th>
+              <th className="px-4 py-3">{bi("Nama", "Name")}</th>
+              <th className="px-4 py-3">{bi("Email", "Email")}</th>
+              <th className="px-4 py-3">{bi("Telepon", "Phone")}</th>
+              <th className="px-4 py-3">{bi("Peran", "Role")}</th>
+              <th className="px-4 py-3">{bi("Bergabung", "Joined")}</th>
             </tr>
           </thead>
           <tbody>
@@ -120,12 +130,12 @@ function UsersBody() {
                     >
                       {(Object.keys(ROLE_LABEL) as MlRole[]).map((role) => (
                         <option key={role} value={role}>
-                          {ROLE_LABEL[role]}
+                          {roleLabel(role)}
                         </option>
                       ))}
                     </select>
                     {isSelf && r.role === "admin" ? (
-                      <span className="ml-2 text-xs text-ash">(you)</span>
+                      <span className="ml-2 text-xs text-ash">{bi("(Anda)", "(you)")}</span>
                     ) : null}
                   </td>
                   <td className="px-4 py-3 text-xs text-ash">{formatDate(r.created_at)}</td>
@@ -137,19 +147,19 @@ function UsersBody() {
       </Panel>
 
       <section>
-        <h2 className="font-display text-xl text-ink">Role change history</h2>
+        <h2 className="font-display text-xl text-ink">{bi("Riwayat perubahan peran", "Role change history")}</h2>
         <Panel className="mt-3 divide-y divide-line/60">
           {(data?.audit ?? []).length === 0 ? (
-            <p className="p-6 text-sm text-ash">No role changes recorded yet.</p>
+            <p className="p-6 text-sm text-ash">{bi("Belum ada perubahan peran yang tercatat.", "No role changes recorded yet.")}</p>
           ) : (
             (data?.audit ?? []).map((a) => (
               <div key={a.id} className="flex flex-wrap justify-between gap-2 px-4 py-3 text-sm">
                 <span className="text-ink">
                   {byId.get(a.target_user_id)?.email ?? a.target_user_id.slice(0, 8)} —{" "}
-                  {a.from_role ? ROLE_LABEL[a.from_role] : "none"} → {ROLE_LABEL[a.to_role]}
+                  {a.from_role ? roleLabel(a.from_role) : bi("tidak ada", "none")} → {roleLabel(a.to_role)}
                 </span>
                 <span className="text-xs text-ash">
-                  by {a.actor_user_id ? (byId.get(a.actor_user_id)?.email ?? "admin") : "system"} ·{" "}
+                  {bi("oleh", "by")} {a.actor_user_id ? (byId.get(a.actor_user_id)?.email ?? bi("admin", "admin")) : bi("sistem", "system")} ·{" "}
                   {formatDate(a.created_at)}
                 </span>
               </div>
@@ -160,4 +170,3 @@ function UsersBody() {
     </div>
   );
 }
-
