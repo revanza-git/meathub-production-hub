@@ -315,3 +315,54 @@ export function useLabel() {
   );
 }
 
+
+// --- form validation messages -----------------------------------------------
+
+/**
+ * Validation messages are stored in schemas as language-neutral codes
+ * (`err:required`, `err:max:160`, …) and localised at render time.
+ */
+export const VErr = {
+  required: "err:required",
+  max: (n: number) => `err:max:${n}`,
+  email: "err:email",
+  phone: "err:phone",
+  minItems: "err:min_items",
+  maxItems: (n: number) => `err:max_items:${n}`,
+  fileSize: (mb: number) => `err:file_size:${mb}`,
+  fileType: "err:file_type",
+} as const;
+
+export function formatValidationError(lang: Lang, message: string): string {
+  if (!message.startsWith("err:")) return message;
+  const [, code, arg] = message.split(":");
+  const en = lang === "en";
+  switch (code) {
+    case "required":
+      return en ? "This field is required" : "Kolom ini wajib diisi";
+    case "max":
+      return en ? `Maximum ${arg} characters` : `Maksimal ${arg} karakter`;
+    case "email":
+      return en ? "Enter a valid email address" : "Masukkan alamat email yang valid";
+    case "phone":
+      return en ? "Enter a valid phone number" : "Masukkan nomor telepon yang valid";
+    case "min_items":
+      return en ? "Add at least one item" : "Tambahkan minimal satu item";
+    case "max_items":
+      return en ? `Maximum ${arg} items per request` : `Maksimal ${arg} item per permintaan`;
+    case "file_size":
+      return en ? `Maximum file size is ${arg} MB` : `Ukuran file maksimal ${arg} MB`;
+    case "file_type":
+      return en
+        ? "File must be JPG, PNG, WEBP, or PDF"
+        : "Format file harus JPG, PNG, WEBP, atau PDF";
+    default:
+      return message;
+  }
+}
+
+/** Localise a validation message code produced by a zod schema. */
+export function useErr() {
+  const { lang } = useContext(LangContext);
+  return useCallback((message: string) => formatValidationError(lang, message), [lang]);
+}

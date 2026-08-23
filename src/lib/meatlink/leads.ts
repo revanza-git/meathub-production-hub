@@ -1,13 +1,14 @@
 import { z } from "zod";
+import { VErr } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 
-const text = (max: number) => z.string().trim().max(max);
-const required = (label: string, max = 160) =>
+const text = (max: number) => z.string().trim().max(max, { message: VErr.max(max) });
+const required = (_label: string, max = 160) =>
   z
     .string()
     .trim()
-    .min(1, { message: `${label} is required` })
-    .max(max, { message: `${label} must be under ${max} characters` });
+    .min(1, { message: VErr.required })
+    .max(max, { message: VErr.max(max) });
 
 export const rfqItemSchema = z.object({
   category: text(60).optional().or(z.literal("")),
@@ -35,12 +36,12 @@ export const rfqSchema = z.object({
   company_name: required("Company name"),
   contact_name: required("Contact name"),
   whatsapp: required("WhatsApp number", 32),
-  email: text(255).email({ message: "Enter a valid email" }).optional().or(z.literal("")),
+  email: text(255).email({ message: VErr.email }).optional().or(z.literal("")),
   delivery_location: required("Delivery location"),
   items: z
     .array(rfqItemSchema)
-    .min(1, { message: "Add at least one item" })
-    .max(30, { message: "Maximum 30 items per request" }),
+    .min(1, { message: VErr.minItems })
+    .max(30, { message: VErr.maxItems(30) }),
   purchase_frequency: text(120).optional().or(z.literal("")),
   current_supplier: text(160).optional().or(z.literal("")),
   current_price: text(80).optional().or(z.literal("")),
@@ -56,7 +57,7 @@ export const supplierSchema = z.object({
   company_name: required("Company name"),
   contact_name: required("Contact name"),
   whatsapp: required("WhatsApp number", 32),
-  email: text(255).email({ message: "Enter a valid email" }).optional().or(z.literal("")),
+  email: text(255).email({ message: VErr.email }).optional().or(z.literal("")),
   brands_represented: text(500).optional().or(z.literal("")),
   origins: text(300).optional().or(z.literal("")),
   product_categories: text(300).optional().or(z.literal("")),
