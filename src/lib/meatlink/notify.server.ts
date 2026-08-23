@@ -127,7 +127,6 @@ export async function sendOrderEmail(orderNo: string, event: OrderEvent) {
   if (!order.email) return { sent: false, reason: "no_email" };
 
   const result = await sendTemplateEmail("order-status", row.email!, {
-
     idempotencyKey: `order-status-${row.id}-${event}`,
     templateData: {
       subject,
@@ -137,13 +136,10 @@ export async function sendOrderEmail(orderNo: string, event: OrderEvent) {
       orderNo: row.order_no,
       totalText: idr(Number(row.total_idr)),
       trackUrl,
-      items: ((items ?? []) as ItemRow[]).map((i) => ({
-        name: i.product_name,
-        qty: String(Number(i.qty_kg)),
-        amount: idr(Number(i.line_total_idr)),
-      })),
+      items: lines,
     },
   });
+
 
   return result.sent ? { sent: true } : { sent: false, reason: result.reason };
 }
