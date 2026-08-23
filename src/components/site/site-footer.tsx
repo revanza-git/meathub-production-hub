@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, Mail } from "lucide-react";
 import { CONTACT_EMAIL, waLink } from "@/lib/meatlink/config";
 import { Wordmark } from "./site-header";
+import { useLang } from "@/lib/i18n";
 
 export function SiteFooter() {
+  const { t } = useLang();
   return (
     <footer className="bg-noir text-bone">
       <div className="border-b border-white/10">
@@ -11,9 +13,9 @@ export function SiteFooter() {
           <div className="flex items-start gap-4">
             <Mail className="mt-1 h-6 w-6 text-crimson" aria-hidden="true" />
             <div>
-              <p className="font-display text-xl">Can't find what you're looking for?</p>
+              <p className="font-display text-xl">{t("footer.helpTitle")}</p>
               <p className="mt-1 text-sm text-bone/60">
-                Our team is ready to help you source the exact meat you need.
+                {t("footer.helpBody")}
               </p>
             </div>
           </div>
@@ -21,7 +23,7 @@ export function SiteFooter() {
             to="/request-quote"
             className="eyebrow inline-flex items-center justify-center gap-2 bg-crimson px-6 py-4 text-bone transition-colors hover:bg-crimson-deep"
           >
-            Request a Quote <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            {t("footer.requestQuote")} <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </Link>
         </div>
       </div>
@@ -30,55 +32,54 @@ export function SiteFooter() {
         <div>
           <Wordmark tone="dark" />
           <p className="mt-5 max-w-xs text-sm leading-relaxed text-bone/60">
-            A B2B meat sourcing network connecting restaurants, hotels, caterers and retailers with
-            trusted importers and premium suppliers.
+{t("footer.about")}
           </p>
         </div>
 
         <div>
-          <h2 className="eyebrow text-crimson">Buyers</h2>
+          <h2 className="eyebrow text-crimson">{t("footer.buyers")}</h2>
           <ul className="mt-4 space-y-2 text-sm text-bone/70">
             <li>
               <Link to="/network" hash="buyers" className="hover:text-bone">
-                How sourcing works
+                {t("footer.howSourcing")}
               </Link>
             </li>
             <li>
               <Link to="/request-quote" className="hover:text-bone">
-                Request a quote
+                {t("footer.requestQuoteLink")}
               </Link>
             </li>
             <li>
               <Link to="/insights" className="hover:text-bone">
-                Market insights
+                {t("footer.marketInsights")}
               </Link>
             </li>
           </ul>
         </div>
 
         <div>
-          <h2 className="eyebrow text-crimson">Suppliers</h2>
+          <h2 className="eyebrow text-crimson">{t("footer.suppliers")}</h2>
           <ul className="mt-4 space-y-2 text-sm text-bone/70">
             <li>
               <Link to="/network" hash="suppliers" className="hover:text-bone">
-                Why supply through Meatlink
+                {t("footer.whySupply")}
               </Link>
             </li>
             <li>
               <Link to="/supply" className="hover:text-bone">
-                Supply through Meatlink
+                {t("footer.supply")}
               </Link>
             </li>
             <li>
               <Link to="/about" className="hover:text-bone">
-                About us
+                {t("footer.aboutUs")}
               </Link>
             </li>
           </ul>
         </div>
 
         <div>
-          <h2 className="eyebrow text-crimson">Contact</h2>
+          <h2 className="eyebrow text-crimson">{t("footer.contact")}</h2>
           <ul className="mt-4 space-y-2 text-sm text-bone/70">
             <li>{CONTACT_EMAIL}</li>
             <li>
@@ -99,7 +100,7 @@ export function SiteFooter() {
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-6 text-xs text-bone/40 lg:px-8">
           <span>© 2026 Meatlink.id — Better Meat | Better Connections</span>
-          <span>Terms · Privacy</span>
+          <span>{t("footer.legal")}</span>
         </div>
       </div>
     </footer>
