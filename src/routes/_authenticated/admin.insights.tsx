@@ -187,9 +187,23 @@ function InsightsBody() {
         </Panel>
       ) : null}
 
+      {!isLoading && rows.length > 0
+        ? (() => {
+            const pending = rows.filter((r) => !r.title_en?.trim() || !r.body_en?.trim()).length;
+            return (
+              <p className="text-xs text-ash">
+                {pending === 0
+                  ? `All ${rows.length} notes have Bahasa Indonesia and English versions.`
+                  : `${pending} of ${rows.length} notes still need an English version.`}
+              </p>
+            );
+          })()
+        : null}
+
       {rows.map((row) => (
         <InsightCard key={row.id} row={row} onChanged={refresh} />
       ))}
+
     </div>
   );
 }
@@ -306,10 +320,23 @@ function InsightCard({ row, onChanged }: { row: MarketInsight; onChanged: () => 
           <p className="mt-3 whitespace-pre-line text-sm text-ash">{row.body_en}</p>
         </div>
       ) : (
-        <p className="mt-4 border-t border-line pt-4 text-xs text-crimson">
-          English translation missing — add it before publishing this legacy note.
-        </p>
+        <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-line pt-4">
+          <span className="eyebrow border border-line bg-sand px-3 py-2 text-ash">
+            Legacy — EN pending
+          </span>
+          <p className="min-w-0 text-xs text-ash">
+            This note has no English version yet. Add it before publishing.
+          </p>
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="eyebrow border border-crimson bg-crimson px-3 py-2 text-bone hover:bg-crimson-deep"
+          >
+            Add translation
+          </button>
+        </div>
       )}
+
 
       {editing ? (
         <form
