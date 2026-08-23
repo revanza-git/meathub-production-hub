@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useBi } from "@/lib/i18n";
 import { PageHero, SiteLayout } from "@/components/site/site-layout";
 import { SupplierForm } from "@/components/site/supplier-form";
 
@@ -22,12 +23,16 @@ export const Route = createFileRoute("/supply")({
 });
 
 function SupplyPage() {
+  const bi = useBi();
   return (
     <SiteLayout>
       <PageHero
-        eyebrow="Supply through Meatlink"
-        title="Join the supplier network."
-        intro="Tell us what you carry and where you deliver. We'll verify your profile and start matching you against live buyer demand."
+        eyebrow={bi("Jadi pemasok Meatlink", "Supply through Meatlink")}
+        title={bi("Gabung ke jaringan pemasok.", "Join the supplier network.")}
+        intro={bi(
+          "Beri tahu produk yang Anda bawa dan area pengiriman Anda. Kami verifikasi profil Anda lalu mencocokkannya dengan permintaan pembeli yang aktif.",
+          "Tell us what you carry and where you deliver. We'll verify your profile and start matching you against live buyer demand.",
+        )}
       />
       <section className="bg-bone">
         <div className="mx-auto max-w-4xl px-5 py-16 lg:px-8 lg:py-20">

@@ -1,3 +1,4 @@
+import { useBi } from "@/lib/i18n";
 import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes, TextareaHTMLAttributes } from "react";
 
 const base =
@@ -42,13 +43,14 @@ export function SelectInput(props: SelectHTMLAttributes<HTMLSelectElement>) {
 }
 
 export function SubmitButton({ pending, children }: { pending: boolean; children: ReactNode }) {
+  const bi = useBi();
   return (
     <button
       type="submit"
       disabled={pending}
       className="eyebrow w-full bg-crimson px-6 py-4 text-bone transition-colors hover:bg-crimson-deep disabled:opacity-60 sm:w-auto"
     >
-      {pending ? "Sending…" : children}
+      {pending ? bi("Mengirim…", "Sending…") : children}
     </button>
   );
 }
