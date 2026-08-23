@@ -1259,6 +1259,7 @@ export type Database = {
       market_insights: {
         Row: {
           body: string
+          body_en: string | null
           category: string
           confidence: string
           created_at: string
@@ -1271,10 +1272,12 @@ export type Database = {
           source: string
           status: string
           title: string
+          title_en: string | null
           updated_at: string
         }
         Insert: {
           body: string
+          body_en?: string | null
           category?: string
           confidence?: string
           created_at?: string
@@ -1287,10 +1290,12 @@ export type Database = {
           source?: string
           status?: string
           title: string
+          title_en?: string | null
           updated_at?: string
         }
         Update: {
           body?: string
+          body_en?: string | null
           category?: string
           confidence?: string
           created_at?: string
@@ -1303,6 +1308,7 @@ export type Database = {
           source?: string
           status?: string
           title?: string
+          title_en?: string | null
           updated_at?: string
         }
         Relationships: []

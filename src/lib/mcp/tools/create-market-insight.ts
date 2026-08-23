@@ -11,10 +11,30 @@ export default defineTool({
   name: "create_market_insight",
   title: "Create market insight",
   description:
-    "Write a current, actionable Indonesian beef sourcing note. Always saved as a draft. Requires recent official public Indonesian market observations plus cited structural data; never use Meatlink internal marketplace data.",
+    "Write a current, actionable Indonesian beef sourcing note in both Bahasa Indonesia and English. Always saved as a draft. Requires recent official public Indonesian market observations plus cited structural data; never use Meatlink internal marketplace data.",
   inputSchema: {
-    title: z.string().trim().min(1).max(160).describe("Short headline for the note."),
-    body: z.string().trim().min(1).describe("The analysis, 2-5 sentences, concrete and practical."),
+    title_id: z
+      .string()
+      .trim()
+      .min(1)
+      .max(160)
+      .describe("Short Bahasa Indonesia headline for the note."),
+    body_id: z
+      .string()
+      .trim()
+      .min(1)
+      .describe("Bahasa Indonesia analysis, 2-5 sentences, concrete and practical."),
+    title_en: z
+      .string()
+      .trim()
+      .min(1)
+      .max(160)
+      .describe("Faithful English translation of title_id."),
+    body_en: z
+      .string()
+      .trim()
+      .min(1)
+      .describe("Faithful English translation of body_id, preserving all figures and caveats."),
     category: z
       .enum(["demand", "pricing", "supply", "logistics", "regulation"])
       .optional()
@@ -57,7 +77,7 @@ export default defineTool({
     }
     const userId = ctx.getUserId();
     const supabase = supabaseForUser(ctx);
-    const privacyText = `${input.title}\n${input.body}\n${JSON.stringify(input.data_refs ?? {})}`;
+    const privacyText = `${input.title_id}\n${input.body_id}\n${input.title_en}\n${input.body_en}\n${JSON.stringify(input.data_refs ?? {})}`;
     if (containsInternalMarketData(privacyText)) {
       return {
         content: [
@@ -113,8 +133,10 @@ export default defineTool({
     const { data, error } = await supabase
       .from("market_insights")
       .insert({
-        title: input.title,
-        body: input.body,
+        title: input.title_id,
+        body: input.body_id,
+        title_en: input.title_en,
+        body_en: input.body_en,
         category: input.category ?? "demand",
         region: input.region || "Nasional",
         period_label: input.period_label ?? null,
@@ -124,7 +146,7 @@ export default defineTool({
         status: "draft",
         created_by: userId ?? null,
       })
-      .select("id,title,status,created_at")
+      .select("id,title,title_en,status,created_at")
       .single();
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
     return {
