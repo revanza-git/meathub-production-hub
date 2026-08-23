@@ -10,6 +10,8 @@ export type InventoryDraft = {
   avg_weight_text: string | null;
   avg_weight_kg: number | null;
   category: "PRIME_CUT" | "SECOND_CUT" | "OFFAL" | "BONE";
+  grade_band: "UNGRADED" | "MB0_2" | "MB2_4" | "MB4_6" | "MB6_9" | "MB9_12";
+  cut_type: string;
   sale_price_idr: number;
   markup_idr: number;
   promo_price_idr: number | null;
@@ -35,6 +37,70 @@ export function guessCategory(name: string): InventoryDraft["category"] {
   if (PRIME_CUT_PATTERN.test(n)) return "PRIME_CUT";
   if (/(bone|tulang|marrow|sumsum)/.test(n)) return "BONE";
   return "SECOND_CUT";
+}
+
+export const GRADE_BAND_VALUES = [
+  "UNGRADED",
+  "MB0_2",
+  "MB2_4",
+  "MB4_6",
+  "MB6_9",
+  "MB9_12",
+] as const;
+export type GradeBandValue = (typeof GRADE_BAND_VALUES)[number];
+
+/** Marbling band parsed from the supplier product name (MB7, MB9+, A5 …). */
+export function guessGradeBand(name: string): GradeBandValue {
+  const n = (name || "").toLowerCase();
+  const m = /mb\s*(\d{1,2})/.exec(n);
+  if (m) {
+    const v = Number(m[1]);
+    if (v >= 9) return "MB9_12";
+    if (v >= 6) return "MB6_9";
+    if (v >= 4) return "MB4_6";
+    if (v >= 2) return "MB2_4";
+    return "MB0_2";
+  }
+  if (/a5\b/.test(n)) return "MB9_12";
+  if (/a4\b/.test(n)) return "MB6_9";
+  if (/a3\b/.test(n)) return "MB4_6";
+  return "UNGRADED";
+}
+
+const CUT_RULES: [RegExp, string][] = [
+  [/tomahawk/, "Tomahawk"],
+  [/(op ribs|op rib|ribeye b\/in|rib eye bone)/, "OP Ribs"],
+  [/(tenderloin|tndrloin|tender loin|fillet mignon|filet mignon|chateaubriand)/, "Tenderloin"],
+  [/(striploin|strip loin|ny strip|sirloin|contra fil)/, "Striploin / Sirloin"],
+  [/(ribeye|rib eye|rib-eye|cuberoll|cube roll|bife ancho)/, "Ribeye / Cuberoll"],
+  [/(shortloin|short loin|t-bone|tbone|t bone|porterhouse)/, "Shortloin"],
+  [/(flat iron|flatiron)/, "Flat Iron"],
+  [/(oyster bl|misuji)/, "Oyster Blade"],
+  [/(chk eye roll|chuck eye roll)/, "Chuck Eye Roll"],
+  [/(flap tail|chuck flap)/, "Chuck Flap Tail"],
+  [/(chk roll|chuck roll|chk crest|chuck)/, "Chuck"],
+  [/(short rib|s-rib|chk ribs|rib finger|intercostal)/, "Short Ribs"],
+  [/(short plate|s-plate|plate)/, "Short Plate"],
+  [/brisket/, "Brisket"],
+  [/(picanha|rump cap|d-rump|rump)/, "Rump / Picanha"],
+  [/knuckle/, "Knuckle"],
+  [/(topside|inside)/, "Topside"],
+  [/(silverside|outside|eye round)/, "Silverside"],
+  [/(bolar|blade)/, "Blade / Bolar"],
+  [/(shank|shin|sengkel)/, "Shank"],
+  [/(skirt|hanger|onglet)/, "Skirt"],
+  [/flank/, "Flank"],
+  [/(minced|mince|ground|cl ?\d|trim|patty|burger|slice|shabu|yakiniku)/, "Minced / Prepared"],
+  [/(fat|abura|tallow|suet)/, "Fat"],
+  [/(tongue|lidah|liver|hati|tripe|babat|heart|jantung|kidney|usus|oxtail|buntut|offal)/, "Offal"],
+  [/(bone|tulang|marrow|sumsum)/, "Bone"],
+];
+
+/** Specific cut derived from the product name; mirrors ml_guess_cut_type in SQL. */
+export function guessCutType(name: string): string {
+  const n = (name || "").toLowerCase();
+  for (const [re, label] of CUT_RULES) if (re.test(n)) return label;
+  return "Lainnya";
 }
 
 
@@ -148,6 +214,8 @@ export const IMPORT_COLUMNS = [
   "name",
   "condition",
   "category",
+  "grade_band",
+  "cut_type",
   "avg_weight",
   "sale_price_idr",
   "markup_idr",
@@ -157,9 +225,9 @@ export const IMPORT_COLUMNS = [
 ] as const;
 
 export const IMPORT_SAMPLE_ROWS = [
-  ["Australia", "AACO - DARLING DOWNS", "CHK FLAP TAIL WGY MB7", "FRZ", "PRIME_CUT", "2KG", 1000000, 60000, "", "", 417.17],
-  ["Japan", "KIWAMI", "BOLAR BLD WGY A5", "FRZ", "PRIME_CUT", "5KG", 990000, 150000, 1050000, "2026-12-31", 44.1],
-  ["USA", "SWIFT", "S-PLATE CHO AGS", "", "SECOND_CUT", "5KG", 160000, 60000, "", "", 46651.3],
+  ["Australia", "AACO - DARLING DOWNS", "CHK FLAP TAIL WGY MB7", "FRZ", "PRIME_CUT", "MB6_9", "Chuck Flap Tail", "2KG", 1000000, 60000, "", "", 417.17],
+  ["Japan", "KIWAMI", "BOLAR BLD WGY A5", "FRZ", "PRIME_CUT", "MB9_12", "Blade / Bolar", "5KG", 990000, 150000, 1050000, "2026-12-31", 44.1],
+  ["USA", "SWIFT", "S-PLATE CHO AGS", "", "SECOND_CUT", "UNGRADED", "Short Plate", "5KG", 160000, 60000, "", "", 46651.3],
 ];
 
 
@@ -227,6 +295,11 @@ export function normaliseRow(
     ? (categoryRaw as InventoryDraft["category"])
     : guessCategory(name);
   const weightText = get("avg_weight") || null;
+  const gradeRaw = get("grade_band").toUpperCase().replace(/[\s.\-]+/g, "_");
+  const gradeBand = (GRADE_BAND_VALUES as readonly string[]).includes(gradeRaw)
+    ? (gradeRaw as InventoryDraft["grade_band"])
+    : guessGradeBand(name);
+  const cutType = get("cut_type") || guessCutType(name);
 
   return {
     row: rowNumber,
@@ -236,6 +309,8 @@ export function normaliseRow(
       name,
       condition,
       category,
+      grade_band: gradeBand,
+      cut_type: cutType,
       avg_weight_text: weightText,
       avg_weight_kg: weightToKg(weightText),
       sale_price_idr: price,

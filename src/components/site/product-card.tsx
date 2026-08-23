@@ -3,12 +3,13 @@ import { ArrowRight } from "lucide-react";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
 import { PriceTag, PromoFlag } from "@/components/site/price-tag";
 import { resolveProductImage } from "@/lib/meatlink/featured";
-import { CATEGORY_LABEL, type CatalogRow } from "@/lib/meatlink/catalog";
+import { CATEGORY_LABEL, gradeLabel, type CatalogRow } from "@/lib/meatlink/catalog";
 
 /** Commerce product card — image, category, spec line and public price per kg. */
 export function ProductCard({ row, headingLevel = "h2" }: { row: CatalogRow; headingLevel?: "h2" | "h3" }) {
   const Heading = headingLevel;
   const specs = [row.brand, row.origin, row.condition].filter(Boolean).join(" · ");
+  const grade = gradeLabel(row.grade_band);
   return (
     <Link
       to="/produk/$slug"
@@ -33,7 +34,17 @@ export function ProductCard({ row, headingLevel = "h2" }: { row: CatalogRow; hea
       </div>
       <div className="flex flex-1 flex-col justify-between p-6">
         <div>
-          <p className="eyebrow text-crimson">{CATEGORY_LABEL[row.category]}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="eyebrow text-crimson">{CATEGORY_LABEL[row.category]}</p>
+            {row.cut_type && row.cut_type !== "Lainnya" ? (
+              <span className="text-xs uppercase tracking-[0.14em] text-ash">· {row.cut_type}</span>
+            ) : null}
+          </div>
+          {grade ? (
+            <span className="mt-3 inline-block border border-line px-2 py-0.5 text-[11px] uppercase tracking-[0.14em] text-ink">
+              {grade}
+            </span>
+          ) : null}
           <Heading className="mt-3 font-display text-xl leading-snug text-ink">{row.name}</Heading>
           {specs ? <p className="mt-2 text-sm text-ash">{specs}</p> : null}
           {row.avg_weight_text && row.avg_weight_text.toUpperCase() !== "N/A" ? (

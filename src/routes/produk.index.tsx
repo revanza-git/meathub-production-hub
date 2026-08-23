@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import type React from "react";
 import { useEffect, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { SiteLayout, PageHero } from "@/components/site/site-layout";
@@ -14,7 +15,11 @@ import {
   type CatalogSort,
   type FacetValue,
   type ProductCategory,
+  GRADE_BANDS,
+  gradeLabel,
 } from "@/lib/meatlink/catalog";
+
+const GRADE_ORDER = GRADE_BANDS as readonly string[];
 
 type CatalogSearchParams = {
   q?: string;
@@ -23,6 +28,8 @@ type CatalogSearchParams = {
   brand?: string[];
   condition?: string[];
   avail?: string[];
+  grade?: string[];
+  cut?: string[];
   min?: number;
   max?: number;
   sort?: CatalogSort;
@@ -56,6 +63,8 @@ export const Route = createFileRoute("/produk/")({
       ...(toStringArray(search.brand) ? { brand: toStringArray(search.brand) } : {}),
       ...(toStringArray(search.condition) ? { condition: toStringArray(search.condition) } : {}),
       ...(toStringArray(search.avail) ? { avail: toStringArray(search.avail) } : {}),
+      ...(toStringArray(search.grade) ? { grade: toStringArray(search.grade) } : {}),
+      ...(toStringArray(search.cut) ? { cut: toStringArray(search.cut) } : {}),
       ...(toNumber(search.min) ? { min: toNumber(search.min) } : {}),
       ...(toNumber(search.max) ? { max: toNumber(search.max) } : {}),
       ...(sort ? { sort } : {}),
@@ -120,7 +129,10 @@ function CatalogPage() {
     });
   };
 
-  const toggleValue = (key: "origin" | "brand" | "condition" | "avail", value: string) => {
+  const toggleValue = (
+    key: "origin" | "brand" | "condition" | "avail" | "grade" | "cut",
+    value: string,
+  ) => {
     const current = params[key] ?? [];
     const next = current.includes(value)
       ? current.filter((v) => v !== value)
@@ -143,6 +155,8 @@ function CatalogPage() {
     brands: params.brand ?? [],
     conditions: params.condition ?? [],
     availability: params.avail ?? [],
+    grades: params.grade ?? [],
+    cuts: params.cut ?? [],
     minPrice: params.min ?? null,
     maxPrice: params.max ?? null,
     sort,
@@ -174,6 +188,11 @@ function CatalogPage() {
       label: AVAILABILITY_LABEL[v as Availability] ?? v,
       onRemove: () => toggleValue("avail", v),
     })),
+    ...(params.grade ?? []).map((v) => ({
+      label: gradeLabel(v) ?? v,
+      onRemove: () => toggleValue("grade", v),
+    })),
+    ...(params.cut ?? []).map((v) => ({ label: v, onRemove: () => toggleValue("cut", v) })),
     ...(params.min || params.max
       ? [
           {
@@ -280,6 +299,26 @@ function CatalogPage() {
                 onToggle={(v) => toggleValue("condition", v)}
               />
               <FacetGroup
+                title="Grade marbling"
+                options={(facets?.grades ?? [])
+                  .map((f) => ({ ...f, label: gradeLabel(f.value) ?? f.value }))
+                  .sort((a, b) => GRADE_ORDER.indexOf(a.value) - GRADE_ORDER.indexOf(b.value))}
+                selected={params.grade ?? []}
+                onToggle={(v) => toggleValue("grade", v)}
+                hint={
+                  <Link to="/panduan-grade" className="underline hover:text-ink">
+                    Lihat sampel marbling
+                  </Link>
+                }
+              />
+              <FacetGroup
+                title="Cut"
+                options={facets?.cuts ?? []}
+                selected={params.cut ?? []}
+                onToggle={(v) => toggleValue("cut", v)}
+                collapsibleAfter={8}
+              />
+              <FacetGroup
                 title="Asal negara"
                 options={facets?.origins ?? []}
                 selected={params.origin ?? []}
@@ -350,6 +389,8 @@ function CatalogPage() {
                       brand: undefined,
                       condition: undefined,
                       avail: undefined,
+                      grade: undefined,
+                      cut: undefined,
                       min: undefined,
                       max: undefined,
                     })
@@ -422,12 +463,14 @@ function FacetGroup({
   selected,
   onToggle,
   collapsibleAfter,
+  hint,
 }: {
   title: string;
   options: (FacetValue & { label?: string })[];
   selected: string[];
   onToggle: (value: string) => void;
   collapsibleAfter?: number;
+  hint?: React.ReactNode;
 }) {
   const [expanded, setExpanded] = useState(false);
   if (options.length === 0) return null;
@@ -437,6 +480,7 @@ function FacetGroup({
   return (
     <fieldset>
       <legend className="eyebrow mb-3 text-ink">{title}</legend>
+      {hint ? <p className="-mt-1 mb-3 text-xs text-ash">{hint}</p> : null}
       <div className="space-y-2">
         {visible.map((opt) => (
           <label key={opt.value} className="flex cursor-pointer items-center gap-2 text-sm text-ash">

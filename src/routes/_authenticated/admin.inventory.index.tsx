@@ -18,8 +18,12 @@ import {
   defaultMarkup,
   weightToKg,
   type InventoryItem,
+  GRADE_BAND_VALUES,
+  guessGradeBand,
+  guessCutType,
+  type GradeBandValue,
 } from "@/lib/meatlink/inventory";
-import { CATEGORIES, type ProductCategory } from "@/lib/meatlink/catalog";
+import { CATEGORIES, GRADE_LABEL, type ProductCategory } from "@/lib/meatlink/catalog";
 import { useBi } from "@/lib/i18n";
 
 
@@ -64,6 +68,8 @@ const EMPTY_FORM = {
   name: "",
   condition: "FRZ",
   category: "PRIME_CUT",
+  grade_band: "",
+  cut_type: "",
   avg_weight_text: "",
   sale_price_idr: "",
   markup_idr: "",
@@ -200,6 +206,8 @@ function InventoryBody() {
       name: form.name.trim(),
       condition: form.condition || null,
       category: form.category as ProductCategory,
+      grade_band: (form.grade_band || guessGradeBand(form.name)) as GradeBandValue,
+      cut_type: form.cut_type.trim() || guessCutType(form.name),
       avg_weight_text: form.avg_weight_text.trim() || null,
       avg_weight_kg: weightToKg(form.avg_weight_text),
       sale_price_idr: Number(form.sale_price_idr || 0),
@@ -379,6 +387,31 @@ function InventoryBody() {
                 ))}
               </SelectInput>
             </Field>
+            <Field
+              label={bi("Grade marbling", "Marbling grade")}
+              hint={bi("kosongkan untuk deteksi otomatis dari nama", "leave blank to auto-detect from the name")}
+            >
+              <SelectInput
+                value={form.grade_band}
+                onChange={(e) => setForm({ ...form, grade_band: e.target.value })}
+              >
+                <option value="">{bi("Otomatis", "Auto")}</option>
+                {GRADE_BAND_VALUES.map((g) => (
+                  <option key={g} value={g}>
+                    {GRADE_LABEL[g]}
+                  </option>
+                ))}
+              </SelectInput>
+            </Field>
+            <Field
+              label={bi("Cut", "Cut")}
+              hint={bi("kosongkan untuk deteksi otomatis", "leave blank to auto-detect")}
+            >
+              <TextInput
+                value={form.cut_type}
+                onChange={(e) => setForm({ ...form, cut_type: e.target.value })}
+              />
+            </Field>
             <Field label={bi("Berat rata-rata", "Average weight")} hint={bi("contoh: 8KG atau 250GR", "e.g. 8KG or 250GR")}>
               <TextInput
                 value={form.avg_weight_text}
@@ -426,7 +459,7 @@ function InventoryBody() {
         <Panel className="p-10 text-center text-sm text-ash">{bi("Tidak ada inventaris yang cocok dengan filter ini.", "No inventory matches these filters.")}</Panel>
       ) : (
         <Panel className="overflow-x-auto">
-          <table className="w-full min-w-[1460px] text-left text-sm">
+          <table className="w-full min-w-[1720px] text-left text-sm">
             <thead className="border-b border-line text-xs uppercase tracking-[0.16em] text-ash">
               <tr>
                 <th className="px-4 py-3">{bi("Produk", "Product")}</th>
@@ -434,6 +467,8 @@ function InventoryBody() {
                 <th className="px-4 py-3">{bi("Merek", "Brand")}</th>
                 <th className="px-4 py-3">{bi("Kondisi", "Cond.")}</th>
                 <th className="px-4 py-3">{bi("Kategori", "Category")}</th>
+                <th className="px-4 py-3">{bi("Grade", "Grade")}</th>
+                <th className="px-4 py-3">{bi("Cut", "Cut")}</th>
                 <th className="px-4 py-3">{bi("Berat rata-rata", "Avg wt")}</th>
                 <th className="px-4 py-3">{bi("Harga / kg", "Price / kg")}</th>
                 <th className="px-4 py-3">{bi("Markup / kg", "Markup / kg")}</th>
@@ -475,6 +510,33 @@ function InventoryBody() {
                         </option>
                       ))}
                     </select>
+                  </td>
+                  <td className="px-4 py-3">
+                    <select
+                      className="border border-line bg-transparent px-2 py-1 text-xs text-ink"
+                      aria-label={`Grade for ${item.name}`}
+                      value={item.grade_band}
+                      onChange={(e) =>
+                        void patch(item.id, { grade_band: e.target.value as GradeBandValue })
+                      }
+                    >
+                      {GRADE_BAND_VALUES.map((g) => (
+                        <option key={g} value={g}>
+                          {GRADE_LABEL[g]}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      defaultValue={item.cut_type ?? ""}
+                      aria-label={`Cut for ${item.name}`}
+                      onBlur={(e) => {
+                        const v = e.target.value.trim();
+                        if (v !== (item.cut_type ?? "")) void patch(item.id, { cut_type: v || null });
+                      }}
+                      className="w-36 border border-line bg-bone px-2 py-1 text-xs text-ink outline-none focus:border-crimson"
+                    />
                   </td>
                   <td className="px-4 py-3 text-xs text-ash">{item.avg_weight_text ?? "—"}</td>
                   <td className="px-4 py-3">
