@@ -204,7 +204,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <Outlet />
-        <Toaster richColors position="top-center" />
+        <Toaster richColors closeButton position="bottom-center" duration={2000} />
         <ConsentBanner />
       </LanguageProvider>
     </QueryClientProvider>

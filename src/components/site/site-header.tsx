@@ -242,15 +242,32 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
             </Link>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            aria-label={open ? t("header.closeMenu") : t("header.openMenu")}
-            aria-expanded={open}
-            className={`ml-auto lg:hidden ${dark ? "text-bone" : "text-ink"}`}
-          >
-            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+          <div className="ml-auto flex items-center gap-1 lg:hidden">
+            <Link
+              to="/keranjang"
+              aria-label={`${t("header.cart")} (${count})`}
+              className={`relative inline-flex h-11 w-11 items-center justify-center ${
+                dark ? "text-bone" : "text-ink"
+              }`}
+            >
+              <ShoppingCart className="h-6 w-6" aria-hidden="true" />
+              {count > 0 ? (
+                <span className="absolute right-1 top-1 min-w-4 bg-crimson px-1 text-center text-[0.6rem] leading-4 text-bone">
+                  {count}
+                </span>
+              ) : null}
+            </Link>
+            <button
+              type="button"
+              onClick={() => setOpen((v) => !v)}
+              aria-label={open ? t("header.closeMenu") : t("header.openMenu")}
+              aria-expanded={open}
+              className={`inline-flex h-11 w-11 items-center justify-center ${dark ? "text-bone" : "text-ink"}`}
+            >
+              {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
+
         </div>
 
         {/* Secondary navigation row */}
