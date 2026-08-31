@@ -47,7 +47,53 @@ export const Route = createFileRoute("/keranjang")({
   component: CartPage,
 });
 
+/** Quantity field that tolerates a temporarily empty value without dropping the line. */
+function QtyInput({
+  qty,
+  label,
+  onCommit,
+}: {
+  qty: number;
+  label: string;
+  onCommit: (n: number) => void;
+}) {
+  const [draft, setDraft] = useState(String(qty));
+
+  useEffect(() => {
+    setDraft(String(qty));
+  }, [qty]);
+
+  return (
+    <div className="flex items-center border border-line">
+      <input
+        type="number"
+        min="1"
+        step="0.5"
+        inputMode="decimal"
+        value={draft}
+        aria-label={label}
+        onChange={(e) => {
+          const v = e.target.value;
+          setDraft(v);
+          const n = Number(v);
+          if (v.trim() !== "" && Number.isFinite(n) && n >= 1) onCommit(n);
+        }}
+        onBlur={() => {
+          const n = Number(draft);
+          if (draft.trim() === "" || !Number.isFinite(n) || n < 1) {
+            setDraft(String(qty >= 1 ? qty : 1));
+            if (qty < 1) onCommit(1);
+          }
+        }}
+        className="w-24 bg-background px-3 py-2 text-sm text-ink outline-none"
+      />
+      <span className="px-3 text-xs text-ash">kg</span>
+    </div>
+  );
+}
+
 function CartPage() {
+
   const bi = useBi();
   const fmt = useFormat();
   const label = useLabel();
