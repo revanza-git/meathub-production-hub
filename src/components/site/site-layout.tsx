@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
+import { WhatsAppFab } from "./whatsapp-fab";
+
 
 export function SiteLayout({
   children,
@@ -22,6 +24,8 @@ export function SiteLayout({
         {children}
       </main>
       <SiteFooter />
+      <WhatsAppFab />
+
     </div>
   );
 }
