@@ -267,18 +267,12 @@ function CartPage() {
                       <p className="truncate text-sm font-medium text-ink">{l.name}</p>
                       <p className="mt-1 text-xs text-ash">{fmt.money(l.price)} /kg</p>
                     </div>
-                    <div className="flex items-center border border-line">
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.5"
-                        value={l.qty}
-                        aria-label={bi(`Jumlah kg untuk ${l.name}`, `Quantity in kg for ${l.name}`)}
-                        onChange={(e) => setQty(l.slug, Number(e.target.value))}
-                        className="w-24 bg-background px-3 py-2 text-sm text-ink outline-none"
-                      />
-                      <span className="px-3 text-xs text-ash">{bi("kg", "kg")}</span>
-                    </div>
+                    <QtyInput
+                      qty={l.qty}
+                      label={bi(`Jumlah kg untuk ${l.name}`, `Quantity in kg for ${l.name}`)}
+                      onCommit={(n) => setQty(l.slug, n)}
+                    />
+
                     <p className="w-32 text-right text-sm text-ink">
                       {fmt.money(l.price * l.qty)}
                     </p>
