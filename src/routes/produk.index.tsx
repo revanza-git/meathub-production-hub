@@ -259,6 +259,29 @@ function CatalogPage() {
           </button>
         </form>
 
+        <div className="mt-6 flex flex-wrap items-center gap-2">
+          <span className="eyebrow mr-1 text-ash">Cara beli</span>
+          {MODE_TABS.map((tab) => (
+            <FilterChip
+              key={tab.id}
+              active={modeTabId === tab.id}
+              onClick={() => {
+                setSearchParams({ unit: tab.units.length ? [...tab.units] : undefined });
+                if (tab.mode) setShopMode(tab.mode);
+              }}
+            >
+              {tab.label}
+            </FilterChip>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-ash">
+          {modeTabId === "retail"
+            ? "Produk yang tersedia dalam kemasan kecil untuk pembelian pribadi atau sampel."
+            : modeTabId === "bulk"
+              ? "Produk untuk pembelian bisnis: loaf, karton hingga tonase."
+              : "Semua produk ditampilkan — pilih Ritel atau Grosir untuk menyaring sesuai kebutuhan."}
+        </p>
+
         <div className="mt-6 flex flex-wrap gap-2">
           <FilterChip active={category === null} onClick={() => setSearchParams({ category: undefined })}>
             Semua
