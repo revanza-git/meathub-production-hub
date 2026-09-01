@@ -21,9 +21,11 @@ import {
   GRADE_BAND_VALUES,
   guessGradeBand,
   guessCutType,
+  DEFAULT_SALE_CHANNELS,
   type GradeBandValue,
 } from "@/lib/meatlink/inventory";
 import { CATEGORIES, GRADE_LABEL, type ProductCategory } from "@/lib/meatlink/catalog";
+import { SALE_UNITS, UNIT_LABEL } from "@/lib/meatlink/shop-mode";
 import { useBi } from "@/lib/i18n";
 
 
@@ -74,6 +76,9 @@ const EMPTY_FORM = {
   sale_price_idr: "",
   markup_idr: "",
   qty_on_hand_kg: "",
+  channels: [...DEFAULT_SALE_CHANNELS] as string[],
+  retail_price_idr: "",
+  retail_pack_text: "",
 };
 
 function InventoryBody() {
@@ -213,6 +218,11 @@ function InventoryBody() {
       sale_price_idr: Number(form.sale_price_idr || 0),
       markup_idr: form.markup_idr === "" ? defaultMarkup(form.name, form.brand) : Number(form.markup_idr),
       qty_on_hand_kg: Number(form.qty_on_hand_kg || 0),
+      sale_channels: form.channels.length > 0 ? form.channels : DEFAULT_SALE_CHANNELS,
+      retail_price_idr: form.retail_price_idr.trim()
+        ? Number(form.retail_price_idr.replace(/[^\d.]/g, "")) || null
+        : null,
+      retail_pack_text: form.retail_pack_text.trim() || null,
     });
     setPending(false);
     if (error) {
@@ -440,6 +450,57 @@ function InventoryBody() {
                 onChange={(e) => setForm({ ...form, qty_on_hand_kg: e.target.value })}
               />
             </Field>
+            <Field
+              label={bi("Kanal penjualan", "Sale channels")}
+              hint={bi("pilih minimal satu satuan yang boleh dijual", "select at least one sellable unit")}
+            >
+              <div className="flex flex-wrap gap-2 pt-1.5">
+                {SALE_UNITS.map((u) => {
+                  const active = form.channels.includes(u);
+                  return (
+                    <button
+                      key={u}
+                      type="button"
+                      aria-pressed={active}
+                      onClick={() =>
+                        setForm((f) => {
+                          const next = active
+                            ? f.channels.filter((c) => c !== u)
+                            : [...f.channels, u];
+                          return { ...f, channels: next.length > 0 ? next : f.channels };
+                        })
+                      }
+                      className={`eyebrow border px-3 py-2 transition-colors ${
+                        active
+                          ? "border-crimson bg-crimson/10 text-crimson"
+                          : "border-line text-ash hover:border-ink/40"
+                      }`}
+                    >
+                      {bi(UNIT_LABEL[u].id, UNIT_LABEL[u].en)}
+                    </button>
+                  );
+                })}
+              </div>
+            </Field>
+            <Field
+              label={bi("Harga ritel (IDR / kg)", "Retail price (IDR / kg)")}
+              hint={bi("opsional — kosong berarti ikut harga loaf", "optional — blank follows the loaf price")}
+            >
+              <TextInput
+                inputMode="numeric"
+                value={form.retail_price_idr}
+                onChange={(e) => setForm({ ...form, retail_price_idr: e.target.value })}
+              />
+            </Field>
+            <Field
+              label={bi("Kemasan ritel", "Retail pack")}
+              hint={bi("contoh: ±500 g/pack", "e.g. ±500 g/pack")}
+            >
+              <TextInput
+                value={form.retail_pack_text}
+                onChange={(e) => setForm({ ...form, retail_pack_text: e.target.value })}
+              />
+            </Field>
             <div className="flex items-end">
               <button
                 type="submit"
@@ -469,6 +530,7 @@ function InventoryBody() {
                 <th className="px-4 py-3">{bi("Kategori", "Category")}</th>
                 <th className="px-4 py-3">{bi("Grade", "Grade")}</th>
                 <th className="px-4 py-3">{bi("Cut", "Cut")}</th>
+                <th className="px-4 py-3">{bi("Kanal", "Channels")}</th>
                 <th className="px-4 py-3">{bi("Berat rata-rata", "Avg wt")}</th>
                 <th className="px-4 py-3">{bi("Harga / kg", "Price / kg")}</th>
                 <th className="px-4 py-3">{bi("Markup / kg", "Markup / kg")}</th>
