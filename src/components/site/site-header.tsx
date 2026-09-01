@@ -300,13 +300,13 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
         <div className={`hidden border-t lg:block ${dark ? "border-white/10" : "border-line"}`}>
           <nav
             aria-label="Main"
-            className="mx-auto flex max-w-7xl items-center gap-7 px-5 py-3 lg:px-8"
+            className="mx-auto flex max-w-7xl items-center gap-6 overflow-x-auto px-5 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:px-8"
           >
             {NAV.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
-                className={`eyebrow whitespace-nowrap transition-colors ${
+                className={`eyebrow shrink-0 whitespace-nowrap transition-colors ${
                   dark ? "text-bone/75 hover:text-bone" : "text-ash hover:text-ink"
                 }`}
                 activeProps={{ className: dark ? "text-bone" : "text-ink" }}
@@ -314,7 +314,7 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
                 {t(item.key)}
               </Link>
             ))}
-            <span className="ml-auto flex items-center gap-3">
+            <span className="ml-auto flex shrink-0 items-center gap-3">
               <ModeChip dark={dark} />
               <Link
                 to="/supply"

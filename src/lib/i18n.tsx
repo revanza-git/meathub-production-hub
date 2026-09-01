@@ -17,9 +17,9 @@ export const DICT = {
   // --- header / utility bar -------------------------------------------------
   "nav.products": { id: "Produk", en: "Products" },
   "nav.promo": { id: "Promo", en: "Deals" },
-  "nav.sourcing": { id: "Special Sourcing", en: "Special Sourcing" },
-  "nav.insights": { id: "Market Insights", en: "Market Insights" },
-  "nav.network": { id: "Buyers & Suppliers", en: "Buyers & Suppliers" },
+  "nav.sourcing": { id: "Sourcing", en: "Sourcing" },
+  "nav.insights": { id: "Insights", en: "Insights" },
+  "nav.network": { id: "Network", en: "Network" },
   "nav.about": { id: "Tentang Kami", en: "About Us" },
   "nav.contact": { id: "Kontak", en: "Contact" },
   "nav.sell": { id: "Jual lewat Meatlink", en: "Sell with Meatlink" },
