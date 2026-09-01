@@ -17,7 +17,36 @@ export type InventoryDraft = {
   promo_price_idr: number | null;
   promo_until: string | null;
   qty_on_hand_kg: number;
+  sale_channels: string[];
+  retail_price_idr: number | null;
+  retail_pack_text: string | null;
 };
+
+export const DEFAULT_SALE_CHANNELS = ["LOAF", "CTN", "TON"];
+
+const CHANNEL_ALIASES: Record<string, string> = {
+  RITEL: "RETAIL",
+  ECERAN: "RETAIL",
+  B2C: "RETAIL",
+  KARTON: "CTN",
+  CARTON: "CTN",
+  TONASE: "TON",
+  B2B: "LOAF,CTN,TON",
+};
+
+/** Parses a sheet cell like "RITEL, LOAF" into canonical sale-channel codes. */
+export function parseSaleChannels(text: string): string[] {
+  const out = new Set<string>();
+  for (const raw of text.split(/[,;|/]+/)) {
+    const token = raw.trim().toUpperCase();
+    if (!token) continue;
+    const mapped = CHANNEL_ALIASES[token] ?? token;
+    for (const part of mapped.split(",")) {
+      if (["RETAIL", "LOAF", "CTN", "TON"].includes(part)) out.add(part);
+    }
+  }
+  return [...out];
+}
 
 
 export const CATEGORY_VALUES = ["PRIME_CUT", "SECOND_CUT", "OFFAL", "BONE"] as const;
@@ -222,12 +251,15 @@ export const IMPORT_COLUMNS = [
   "promo_price_idr",
   "promo_until",
   "qty_on_hand_kg",
+  "sale_channels",
+  "retail_price_idr",
+  "retail_pack_text",
 ] as const;
 
 export const IMPORT_SAMPLE_ROWS = [
-  ["Australia", "AACO - DARLING DOWNS", "CHK FLAP TAIL WGY MB7", "FRZ", "PRIME_CUT", "MB6_9", "Chuck Flap Tail", "2KG", 1000000, 60000, "", "", 417.17],
-  ["Japan", "KIWAMI", "BOLAR BLD WGY A5", "FRZ", "PRIME_CUT", "MB9_12", "Blade / Bolar", "5KG", 990000, 150000, 1050000, "2026-12-31", 44.1],
-  ["USA", "SWIFT", "S-PLATE CHO AGS", "", "SECOND_CUT", "UNGRADED", "Short Plate", "5KG", 160000, 60000, "", "", 46651.3],
+  ["Australia", "AACO - DARLING DOWNS", "CHK FLAP TAIL WGY MB7", "FRZ", "PRIME_CUT", "MB6_9", "Chuck Flap Tail", "2KG", 1000000, 60000, "", "", 417.17, "LOAF,CTN,TON", "", ""],
+  ["Japan", "KIWAMI", "BOLAR BLD WGY A5", "FRZ", "PRIME_CUT", "MB9_12", "Blade / Bolar", "5KG", 990000, 150000, 1050000, "2026-12-31", 44.1, "CTN,TON", "", ""],
+  ["USA", "SWIFT", "S-PLATE CHO AGS", "", "SECOND_CUT", "UNGRADED", "Short Plate", "5KG", 160000, 60000, "", "", 46651.3, "RETAIL,LOAF,CTN,TON", 240000, "±1 kg/pack"],
 ];
 
 
@@ -321,6 +353,13 @@ export function normaliseRow(
     ? (gradeRaw as InventoryDraft["grade_band"])
     : guessGradeBand(name);
   const cutType = get("cut_type") || guessCutType(name);
+  const channels = parseSaleChannels(get("sale_channels"));
+  const retailRaw = get("retail_price_idr").replace(/[^\d.-]/g, "");
+  const retailPrice = retailRaw === "" ? null : Number(retailRaw);
+  if (retailPrice !== null && (!Number.isFinite(retailPrice) || retailPrice <= 0)) {
+    errors.push(`Row ${rowNumber}: invalid retail price`);
+    return null;
+  }
 
   return {
     row: rowNumber,
@@ -339,6 +378,9 @@ export function normaliseRow(
       promo_price_idr: promo,
       promo_until: promoUntil,
       qty_on_hand_kg: qty,
+      sale_channels: channels.length > 0 ? channels : DEFAULT_SALE_CHANNELS,
+      retail_price_idr: retailPrice,
+      retail_pack_text: get("retail_pack_text") || null,
     },
   };
 

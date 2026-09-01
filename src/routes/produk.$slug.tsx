@@ -182,7 +182,12 @@ function ProductPage() {
                 )}
               </p>
 
-              <VolumeTiers price={Number(product.public_price_idr)} />
+              <VolumeTiers
+                price={Number(product.public_price_idr)}
+                channels={product.sale_channels}
+                retailPrice={product.retail_price_idr}
+                retailPack={product.retail_pack_text}
+              />
 
               <ul className="mt-7 space-y-3 text-sm text-ink/80">
                 {[
