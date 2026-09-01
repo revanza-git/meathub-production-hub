@@ -18,6 +18,7 @@ import {
   GRADE_BANDS,
   gradeLabel,
 } from "@/lib/meatlink/catalog";
+import { SALE_UNITS, UNIT_LABEL, type SaleUnit } from "@/lib/meatlink/shop-mode";
 
 const GRADE_ORDER = GRADE_BANDS as readonly string[];
 
@@ -30,6 +31,7 @@ type CatalogSearchParams = {
   avail?: string[];
   grade?: string[];
   cut?: string[];
+  unit?: string[];
   min?: number;
   max?: number;
   sort?: CatalogSort;
@@ -65,6 +67,12 @@ export const Route = createFileRoute("/produk/")({
       ...(toStringArray(search.avail) ? { avail: toStringArray(search.avail) } : {}),
       ...(toStringArray(search.grade) ? { grade: toStringArray(search.grade) } : {}),
       ...(toStringArray(search.cut) ? { cut: toStringArray(search.cut) } : {}),
+      ...(() => {
+        const units = (toStringArray(search.unit) ?? []).filter((u) =>
+          (SALE_UNITS as readonly string[]).includes(u.toUpperCase()),
+        ).map((u) => u.toUpperCase());
+        return units.length ? { unit: units } : {};
+      })(),
       ...(toNumber(search.min) ? { min: toNumber(search.min) } : {}),
       ...(toNumber(search.max) ? { max: toNumber(search.max) } : {}),
       ...(sort ? { sort } : {}),
@@ -130,7 +138,7 @@ function CatalogPage() {
   };
 
   const toggleValue = (
-    key: "origin" | "brand" | "condition" | "avail" | "grade" | "cut",
+    key: "origin" | "brand" | "condition" | "avail" | "grade" | "cut" | "unit",
     value: string,
   ) => {
     const current = params[key] ?? [];
@@ -157,6 +165,7 @@ function CatalogPage() {
     availability: params.avail ?? [],
     grades: params.grade ?? [],
     cuts: params.cut ?? [],
+    units: params.unit ?? [],
     minPrice: params.min ?? null,
     maxPrice: params.max ?? null,
     sort,
@@ -193,6 +202,10 @@ function CatalogPage() {
       onRemove: () => toggleValue("grade", v),
     })),
     ...(params.cut ?? []).map((v) => ({ label: v, onRemove: () => toggleValue("cut", v) })),
+    ...(params.unit ?? []).map((v) => ({
+      label: UNIT_LABEL[v as SaleUnit]?.id ?? v,
+      onRemove: () => toggleValue("unit", v),
+    })),
     ...(params.min || params.max
       ? [
           {
@@ -300,6 +313,18 @@ function CatalogPage() {
                 onToggle={(v) => toggleValue("condition", v)}
               />
               <FacetGroup
+                title="Cara beli"
+                options={(facets?.units ?? [])
+                  .map((f) => ({ ...f, label: UNIT_LABEL[f.value as SaleUnit]?.id ?? f.value }))
+                  .sort(
+                    (a, b) =>
+                      SALE_UNITS.indexOf(a.value as SaleUnit) -
+                      SALE_UNITS.indexOf(b.value as SaleUnit),
+                  )}
+                selected={params.unit ?? []}
+                onToggle={(v) => toggleValue("unit", v)}
+              />
+              <FacetGroup
                 title="Grade marbling"
                 options={(facets?.grades ?? [])
                   .map((f) => ({ ...f, label: gradeLabel(f.value) ?? f.value }))
@@ -392,6 +417,7 @@ function CatalogPage() {
                       avail: undefined,
                       grade: undefined,
                       cut: undefined,
+                      unit: undefined,
                       min: undefined,
                       max: undefined,
                     })
