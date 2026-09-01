@@ -18,7 +18,7 @@ import {
   GRADE_BANDS,
   gradeLabel,
 } from "@/lib/meatlink/catalog";
-import { SALE_UNITS, UNIT_LABEL, type SaleUnit } from "@/lib/meatlink/shop-mode";
+import { SALE_UNITS, UNIT_LABEL, setShopMode, type SaleUnit, type ShopMode } from "@/lib/meatlink/shop-mode";
 
 const GRADE_ORDER = GRADE_BANDS as readonly string[];
 
@@ -103,6 +103,12 @@ export const Route = createFileRoute("/produk/")({
 
 const PAGE_SIZE = 24;
 
+const MODE_TABS: { id: "all" | "retail" | "bulk"; label: string; units: SaleUnit[]; mode?: ShopMode }[] = [
+  { id: "all", label: "Semua", units: [] },
+  { id: "retail", label: "Ritel", units: ["RETAIL"], mode: "retail" },
+  { id: "bulk", label: "Grosir / B2B", units: ["LOAF", "CTN", "TON"], mode: "bulk" },
+];
+
 const CONDITION_LABEL: Record<string, string> = { FRZ: "Frozen (FRZ)", CHL: "Chilled (CHL)" };
 
 const rupiah = (n: number) => new Intl.NumberFormat("id-ID").format(Math.round(n));
@@ -120,6 +126,15 @@ function CatalogPage() {
   const page = params.page ?? 1;
   const sort = params.sort ?? "featured";
   const category = params.category ?? null;
+  const selectedUnits = params.unit ?? [];
+  const modeTabId: "all" | "retail" | "bulk" =
+    selectedUnits.length === 0
+      ? "all"
+      : selectedUnits.every((u) => u === "RETAIL")
+        ? "retail"
+        : selectedUnits.every((u) => u !== "RETAIL")
+          ? "bulk"
+          : "all";
 
   const setSearchParams = (patch: Partial<CatalogSearchParams>, resetPage = true) => {
     void navigate({
