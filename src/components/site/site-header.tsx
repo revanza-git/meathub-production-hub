@@ -21,7 +21,8 @@ function ModeChip({ dark, onNavigate }: { dark: boolean; onNavigate?: () => void
         : bi("Pilih mode belanja", "Choose shopping mode");
   return (
     <Link
-      to="/belanja"
+      to="/produk"
+      search={mode === "retail" ? { unit: ["RETAIL"] } : mode === "bulk" ? { unit: ["LOAF", "CTN", "TON"] } : {}}
       onClick={onNavigate}
       className={`eyebrow inline-flex items-center gap-2 whitespace-nowrap border px-3 py-1.5 transition-colors ${
         dark
