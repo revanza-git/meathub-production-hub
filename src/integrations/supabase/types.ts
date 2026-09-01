@@ -106,6 +106,9 @@ export type Database = {
           promo_price_idr: number | null
           promo_until: string | null
           qty_on_hand_kg: number
+          retail_pack_text: string | null
+          retail_price_idr: number | null
+          sale_channels: string[]
           sale_price_idr: number
           slug: string | null
           updated_at: string
@@ -132,6 +135,9 @@ export type Database = {
           promo_price_idr?: number | null
           promo_until?: string | null
           qty_on_hand_kg?: number
+          retail_pack_text?: string | null
+          retail_price_idr?: number | null
+          sale_channels?: string[]
           sale_price_idr?: number
           slug?: string | null
           updated_at?: string
@@ -158,6 +164,9 @@ export type Database = {
           promo_price_idr?: number | null
           promo_until?: string | null
           qty_on_hand_kg?: number
+          retail_pack_text?: string | null
+          retail_price_idr?: number | null
+          sale_channels?: string[]
           sale_price_idr?: number
           slug?: string | null
           updated_at?: string
@@ -3600,6 +3609,7 @@ export type Database = {
           _promo_only?: boolean
           _search?: string
           _sort?: string
+          _units?: string[]
         }
         Returns: {
           availability: string
@@ -3616,6 +3626,7 @@ export type Database = {
           origin: string
           promo_until: string
           public_price_idr: number
+          sale_channels: string[]
           slug: string
           total_count: number
         }[]
@@ -3668,6 +3679,9 @@ export type Database = {
           origin: string
           promo_until: string
           public_price_idr: number
+          retail_pack_text: string
+          retail_price_idr: number
+          sale_channels: string[]
           slug: string
         }[]
       }

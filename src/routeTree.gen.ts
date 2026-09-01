@@ -22,6 +22,7 @@ import { Route as KeranjangRouteImport } from './routes/keranjang'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as BuyersRouteImport } from './routes/buyers'
+import { Route as BelanjaRouteImport } from './routes/belanja'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -125,6 +126,11 @@ const ContactRoute = ContactRouteImport.update({
 const BuyersRoute = BuyersRouteImport.update({
   id: '/buyers',
   path: '/buyers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BelanjaRoute = BelanjaRouteImport.update({
+  id: '/belanja',
+  path: '/belanja',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -347,6 +353,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/belanja': typeof BelanjaRoute
   '/buyers': typeof BuyersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
@@ -400,6 +407,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/belanja': typeof BelanjaRoute
   '/buyers': typeof BuyersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
@@ -455,6 +463,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/belanja': typeof BelanjaRoute
   '/buyers': typeof BuyersRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
@@ -510,6 +519,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/belanja'
     | '/buyers'
     | '/contact'
     | '/insights'
@@ -563,6 +573,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/auth'
+    | '/belanja'
     | '/buyers'
     | '/contact'
     | '/insights'
@@ -617,6 +628,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/about'
     | '/auth'
+    | '/belanja'
     | '/buyers'
     | '/contact'
     | '/insights'
@@ -672,6 +684,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
+  BelanjaRoute: typeof BelanjaRoute
   BuyersRoute: typeof BuyersRoute
   ContactRoute: typeof ContactRoute
   InsightsRoute: typeof InsightsRoute
@@ -790,6 +803,13 @@ declare module '@tanstack/react-router' {
       path: '/buyers'
       fullPath: '/buyers'
       preLoaderRoute: typeof BuyersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/belanja': {
+      id: '/belanja'
+      path: '/belanja'
+      fullPath: '/belanja'
+      preLoaderRoute: typeof BelanjaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -1130,6 +1150,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
+  BelanjaRoute: BelanjaRoute,
   BuyersRoute: BuyersRoute,
   ContactRoute: ContactRoute,
   InsightsRoute: InsightsRoute,

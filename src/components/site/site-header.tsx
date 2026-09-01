@@ -5,8 +5,34 @@ import mark from "@/assets/meatlink-mark.png.asset.json";
 import { useCart } from "@/lib/meatlink/cart";
 import { CATEGORY_PAGES } from "@/lib/meatlink/categories";
 import { CONTACT_EMAIL, waLink } from "@/lib/meatlink/config";
-import { useLang, type TKey } from "@/lib/i18n";
+import { useShopMode } from "@/lib/meatlink/shop-mode";
+import { useBi, useLang, type TKey } from "@/lib/i18n";
 import { LanguageToggle } from "./language-toggle";
+
+/** Compact link showing the active shopping mode; opens the mode picker. */
+function ModeChip({ dark, onNavigate }: { dark: boolean; onNavigate?: () => void }) {
+  const [mode] = useShopMode();
+  const bi = useBi();
+  const label =
+    mode === "retail"
+      ? bi("Mode: Ritel", "Mode: Retail")
+      : mode === "bulk"
+        ? bi("Mode: Bulk", "Mode: Bulk")
+        : bi("Pilih mode belanja", "Choose shopping mode");
+  return (
+    <Link
+      to="/belanja"
+      onClick={onNavigate}
+      className={`eyebrow inline-flex items-center gap-2 whitespace-nowrap border px-3 py-1.5 transition-colors ${
+        dark
+          ? "border-white/20 text-bone/80 hover:border-bone/50 hover:text-bone"
+          : "border-line text-ash hover:border-ink hover:text-ink"
+      }`}
+    >
+      {label}
+    </Link>
+  );
+}
 
 const NAV = [
   { to: "/produk", key: "nav.products" },
@@ -288,14 +314,17 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
                 {t(item.key)}
               </Link>
             ))}
-            <Link
-              to="/supply"
-              className={`eyebrow ml-auto whitespace-nowrap transition-colors ${
-                dark ? "text-bone/55 hover:text-bone" : "text-ash hover:text-ink"
-              }`}
-            >
-              {t("nav.sell")}
-            </Link>
+            <span className="ml-auto flex items-center gap-3">
+              <ModeChip dark={dark} />
+              <Link
+                to="/supply"
+                className={`eyebrow whitespace-nowrap transition-colors ${
+                  dark ? "text-bone/55 hover:text-bone" : "text-ash hover:text-ink"
+                }`}
+              >
+                {t("nav.sell")}
+              </Link>
+            </span>
           </nav>
         </div>
       </div>
@@ -320,6 +349,7 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
               ))}
             </nav>
             <div className="mt-3 grid gap-2">
+              <ModeChip dark={dark} onNavigate={() => setOpen(false)} />
               <Link
                 to="/keranjang"
                 onClick={() => setOpen(false)}
