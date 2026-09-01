@@ -1,12 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "@/lib/meatlink/orders";
 import { formatIdr } from "@/lib/meatlink/inventory";
-import { type PayMethod } from "@/lib/meatlink/cart";
 import { useBi, useLabel, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
 import { notifyOrderEventAdmin } from "@/lib/meatlink/notify.functions";
 import type { Database } from "@/integrations/supabase/types";
@@ -22,6 +21,16 @@ const STATUSES: StoreStatus[] = [
   "COMPLETED",
   "CANCELLED",
 ];
+
+const STATUS_TONE: Record<StoreStatus, string> = {
+  NEW: "border-ink/25 bg-ink/5 text-ink",
+  AWAITING_PAYMENT: "border-amber-400/50 bg-amber-100/60 text-amber-900",
+  PAID: "border-emerald-500/40 bg-emerald-100/60 text-emerald-900",
+  PROCESSING: "border-sky-500/40 bg-sky-100/60 text-sky-900",
+  SHIPPED: "border-indigo-500/40 bg-indigo-100/60 text-indigo-900",
+  COMPLETED: "border-emerald-700/40 bg-emerald-700/10 text-emerald-900",
+  CANCELLED: "border-crimson/40 bg-crimson/10 text-crimson",
+};
 
 export const Route = createFileRoute("/_authenticated/admin/storefront-orders")({
   head: () => ({
@@ -76,6 +85,19 @@ async function openProof(path: string, bi: (id: string, en: string) => string) {
   window.open(data.signedUrl, "_blank", "noopener");
 }
 
+const inputClass =
+  "w-full border border-line bg-card px-3 py-2 text-sm text-ink outline-none transition-colors focus:border-crimson";
+const btnClass =
+  "eyebrow border border-line px-3 py-2 text-ink transition-colors hover:border-crimson hover:text-crimson";
+
+function StatusPill({ status, label }: { status: StoreStatus; label: string }) {
+  return (
+    <span className={`inline-flex border px-2 py-1 text-[11px] uppercase tracking-[0.12em] ${STATUS_TONE[status]}`}>
+      {label}
+    </span>
+  );
+}
+
 function OrdersTable() {
   const bi = useBi();
   const label = useLabel();
@@ -84,6 +106,9 @@ function OrdersTable() {
   const [ship, setShip] = useState<
     Record<string, { courier: string; tracking: string; eta: string }>
   >({});
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<"" | StoreStatus>("");
+  const [open, setOpen] = useState<Record<string, boolean>>({});
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-storefront-orders"],
@@ -109,6 +134,8 @@ function OrdersTable() {
       return { orders: orders ?? [], items: items ?? [], events: events ?? [] };
     },
   });
+
+  const orders = data?.orders ?? [];
 
   async function updateStatus(id: string, status: StoreStatus) {
     const d = draft[id];
@@ -156,23 +183,109 @@ function OrdersTable() {
     qc.invalidateQueries({ queryKey: ["admin-storefront-orders"] });
   }
 
-  if (isLoading) return <Panel>{bi("Memuat pesanan…", "Loading orders…")}</Panel>;
+  const counts = useMemo(() => {
+    const map = new Map<StoreStatus, number>();
+    for (const o of orders) map.set(o.status, (map.get(o.status) ?? 0) + 1);
+    return map;
+  }, [orders]);
 
-  const orders = data?.orders ?? [];
+  const openValue = useMemo(
+    () =>
+      orders
+        .filter((o) => o.status !== "CANCELLED" && o.status !== "COMPLETED")
+        .reduce((sum, o) => sum + Number(o.total_idr), 0),
+    [orders],
+  );
+
+  const rows = orders.filter((o) => {
+    if (filter && o.status !== filter) return false;
+    if (!query.trim()) return true;
+    const q = query.toLowerCase();
+    return `${o.order_no} ${o.buyer_name} ${o.company ?? ""} ${o.phone} ${o.email ?? ""} ${o.city ?? ""}`
+      .toLowerCase()
+      .includes(q);
+  });
+
+  if (isLoading) return <Panel className="p-6 text-sm text-ash">{bi("Memuat pesanan…", "Loading orders…")}</Panel>;
+
   if (orders.length === 0) {
     return (
-      <Panel>
+      <Panel className="p-10 text-center text-sm text-ash">
         {bi("Pesanan katalog akan muncul di sini setelah pembeli checkout.", "Catalog orders will appear here as soon as buyers check out.")}
       </Panel>
     );
   }
 
   return (
-    <div className="grid gap-4">
-      {orders.map((o) => {
+    <div className="grid gap-6">
+      {/* Summary */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Panel className="p-4">
+          <p className="eyebrow text-ash">{bi("Total pesanan", "Total orders")}</p>
+          <p className="mt-1 font-display text-2xl text-ink">{orders.length}</p>
+        </Panel>
+        <Panel className="p-4">
+          <p className="eyebrow text-ash">{bi("Menunggu pembayaran", "Awaiting payment")}</p>
+          <p className="mt-1 font-display text-2xl text-ink">
+            {(counts.get("NEW") ?? 0) + (counts.get("AWAITING_PAYMENT") ?? 0)}
+          </p>
+        </Panel>
+        <Panel className="p-4">
+          <p className="eyebrow text-ash">{bi("Sedang diproses", "In progress")}</p>
+          <p className="mt-1 font-display text-2xl text-ink">
+            {(counts.get("PAID") ?? 0) + (counts.get("PROCESSING") ?? 0) + (counts.get("SHIPPED") ?? 0)}
+          </p>
+        </Panel>
+        <Panel className="p-4">
+          <p className="eyebrow text-ash">{bi("Nilai berjalan", "Open value")}</p>
+          <p className="mt-1 font-display text-2xl text-ink">{formatIdr(openValue)}</p>
+        </Panel>
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-2">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={bi("Cari no. pesanan, pembeli, kota", "Search order no., buyer, city")}
+          className={`${inputClass} sm:max-w-xs`}
+        />
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setFilter("")}
+            className={`eyebrow border px-3 py-2 transition-colors ${
+              filter === "" ? "border-crimson bg-crimson/5 text-crimson" : "border-line text-ash hover:text-ink"
+            }`}
+          >
+            {bi("Semua", "All")} · {orders.length}
+          </button>
+          {STATUSES.filter((s) => counts.get(s)).map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => setFilter(filter === s ? "" : s)}
+              className={`eyebrow border px-3 py-2 transition-colors ${
+                filter === s ? "border-crimson bg-crimson/5 text-crimson" : "border-line text-ash hover:text-ink"
+              }`}
+            >
+              {label(ORDER_STATUS_LABEL_I18N, s)} · {counts.get(s)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {rows.length === 0 ? (
+        <Panel className="p-10 text-center text-sm text-ash">
+          {bi("Tidak ada pesanan yang cocok dengan filter.", "No orders match your filters.")}
+        </Panel>
+      ) : null}
+
+      {rows.map((o) => {
         const lines = (data?.items ?? []).filter((i) => i.order_id === o.id);
         const events = (data?.events ?? []).filter((e) => e.order_id === o.id);
         const d = draft[o.id] ?? { ref: "", note: "" };
+        const isOpen = open[o.id] ?? false;
         const sh =
           ship[o.id] ?? {
             courier: o.courier_name ?? "",
@@ -187,146 +300,180 @@ function OrdersTable() {
         const waHref = `https://wa.me/${o.phone.replace(/\D/g, "").replace(/^0/, "62")}?text=${waText}`;
         return (
           <Panel key={o.id}>
-            <h2 className="text-base font-semibold">{o.order_no} · {o.buyer_name}</h2>
-            <div className="grid gap-4 md:grid-cols-[1.4fr_1fr]">
-              <div>
-                <p className="text-sm text-muted-foreground">
-                  {[o.company, o.phone, o.email].filter(Boolean).join(" · ")}
+            {/* Row header */}
+            <button
+              type="button"
+              onClick={() => setOpen((p) => ({ ...p, [o.id]: !isOpen }))}
+              aria-expanded={isOpen}
+              className="flex w-full flex-wrap items-center justify-between gap-3 px-5 py-4 text-left transition-colors hover:bg-ink/[0.03]"
+            >
+              <div className="min-w-0">
+                <p className="font-display text-base text-ink">
+                  {o.order_no} <span className="text-ash">·</span> {o.buyer_name}
                 </p>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {[o.address, o.city].filter(Boolean).join(", ")}
+                <p className="mt-0.5 truncate text-xs text-ash">
+                  {[o.company, o.city, formatDate(o.created_at)].filter(Boolean).join(" · ")}
                 </p>
-                {o.notes ? <p className="mt-2 text-sm italic">{o.notes}</p> : null}
-                <ul className="mt-4 divide-y text-sm">
-                  {lines.map((i) => (
-                    <li key={i.id} className="flex justify-between gap-4 py-2">
-                      <span>
-                        {i.product_name} — {Number(i.qty_kg)} kg
-                      </span>
-                      <span>{formatIdr(Number(i.line_total_idr))}</span>
-                    </li>
-                  ))}
-                </ul>
-                {events.length ? (
-                  <ol className="mt-4 space-y-1 text-xs text-muted-foreground">
-                    {events.map((e) => (
-                      <li key={e.id}>
-                        {formatDate(e.created_at)} — {label(ORDER_STATUS_LABEL_I18N, e.to_status)}
-                        {e.note ? ` · ${e.note}` : ""}
-                      </li>
-                    ))}
-                  </ol>
-                ) : null}
               </div>
-              <div className="text-sm">
-                <p className="text-muted-foreground">{formatDate(o.created_at)}</p>
-                <p className="mt-1">
-                  {bi("Pembayaran", "Payment")}: {label(PAY_METHOD_LABEL_I18N, o.payment_method)}
-                </p>
-                {o.payment_ref ? <p className="mt-1 text-xs">{bi("Ref", "Ref")}: {o.payment_ref}</p> : null}
-                {o.payment_proof_url ? (
-                  <button
-                    type="button"
-                    onClick={() => void openProof(o.payment_proof_url!, bi)}
-                    className="mt-2 text-xs underline"
-                  >
-                    {bi("Lihat bukti pembayaran", "View payment proof")}
-                  </button>
-                ) : null}
-                <p className="mt-1 text-lg font-semibold">{formatIdr(Number(o.total_idr))}</p>
-                {o.stock_deducted_at ? (
-                  <p className="mt-1 text-xs text-muted-foreground">{bi("Stok telah dikurangi", "Stock deducted")}</p>
-                ) : null}
-                <label className="mt-4 block text-xs uppercase tracking-wide text-muted-foreground">
-                  {bi("Referensi pembayaran", "Payment reference")}
-                  <input
-                    value={d.ref}
-                    onChange={(e) =>
-                      setDraft((p) => ({ ...p, [o.id]: { ...d, ref: e.target.value } }))
-                    }
-                    placeholder={bi("No. transaksi / bukti transfer", "Transaction no. / transfer proof")}
-                    className="mt-1 w-full rounded border bg-background px-3 py-2 text-sm"
-                  />
-                </label>
-                <label className="mt-3 block text-xs uppercase tracking-wide text-muted-foreground">
-                  {bi("Catatan internal", "Internal note")}
-                  <input
-                    value={d.note}
-                    onChange={(e) =>
-                      setDraft((p) => ({ ...p, [o.id]: { ...d, note: e.target.value } }))
-                    }
-                    className="mt-1 w-full rounded border bg-background px-3 py-2 text-sm"
-                  />
-                </label>
-                <label className="mt-3 block text-xs uppercase tracking-wide text-muted-foreground">
-                  {bi("Status", "Status")}
-                  <select
-                    value={o.status}
-                    onChange={(e) => updateStatus(o.id, e.target.value as StoreStatus)}
-                    className="mt-1 w-full rounded border bg-background px-3 py-2 text-sm"
-                  >
-                    {STATUSES.map((s) => (
-                      <option key={s} value={s}>
-                        {label(ORDER_STATUS_LABEL_I18N, s)}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <fieldset className="mt-4 border-t pt-4">
-                  <legend className="text-xs uppercase tracking-wide text-muted-foreground">
-                    {bi("Pengiriman", "Delivery")}
-                  </legend>
-                  <input
-                    value={sh.courier}
-                    onChange={(e) =>
-                      setShip((p) => ({ ...p, [o.id]: { ...sh, courier: e.target.value } }))
-                    }
-                    placeholder={bi("Kurir / armada", "Courier / fleet")}
-                    className="mt-2 w-full rounded border bg-background px-3 py-2 text-sm"
-                  />
-                  <input
-                    value={sh.tracking}
-                    onChange={(e) =>
-                      setShip((p) => ({ ...p, [o.id]: { ...sh, tracking: e.target.value } }))
-                    }
-                    placeholder={bi("No. resi", "Tracking no.")}
-                    className="mt-2 w-full rounded border bg-background px-3 py-2 text-sm"
-                  />
-                  <input
-                    type="date"
-                    value={sh.eta}
-                    onChange={(e) =>
-                      setShip((p) => ({ ...p, [o.id]: { ...sh, eta: e.target.value } }))
-                    }
-                    className="mt-2 w-full rounded border bg-background px-3 py-2 text-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => void saveDelivery(o.id)}
-                    className="mt-2 rounded border px-3 py-2 text-xs uppercase tracking-wide"
-                  >
-                    {bi("Simpan pengiriman", "Save delivery")}
-                  </button>
-                  {o.buyer_confirmed_at ? (
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      {bi("Pembeli mengonfirmasi penerimaan", "Buyer confirmed receipt")} {formatDate(o.buyer_confirmed_at)}
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-ash">{lines.length} {bi("item", "items")}</span>
+                <span className="font-display text-lg text-ink">{formatIdr(Number(o.total_idr))}</span>
+                <StatusPill status={o.status} label={label(ORDER_STATUS_LABEL_I18N, o.status)} />
+                <span className="eyebrow text-ash">{isOpen ? bi("Tutup", "Close") : bi("Detail", "Detail")}</span>
+              </div>
+            </button>
+
+            {isOpen ? (
+              <div className="grid gap-6 border-t border-line px-5 py-5 lg:grid-cols-[1.3fr_1fr]">
+                {/* Left: buyer + lines + timeline */}
+                <div className="grid gap-5">
+                  <div>
+                    <p className="eyebrow text-ash">{bi("Kontak & alamat", "Contact & address")}</p>
+                    <p className="mt-2 text-sm text-ink">
+                      {[o.company, o.phone, o.email].filter(Boolean).join(" · ")}
                     </p>
+                    <p className="mt-1 text-sm text-ash">{[o.address, o.city].filter(Boolean).join(", ")}</p>
+                    {o.notes ? <p className="mt-2 text-sm italic text-ash">{o.notes}</p> : null}
+                    <a href={waHref} target="_blank" rel="noreferrer" className={`${btnClass} mt-3 inline-block`}>
+                      {bi("Beri tahu via WhatsApp", "Notify on WhatsApp")}
+                    </a>
+                  </div>
+
+                  <div>
+                    <p className="eyebrow text-ash">{bi("Rincian pesanan", "Order lines")}</p>
+                    <ul className="mt-2 divide-y divide-line text-sm">
+                      {lines.map((i) => (
+                        <li key={i.id} className="flex justify-between gap-4 py-2">
+                          <span className="text-ink">
+                            {i.product_name} <span className="text-ash">— {Number(i.qty_kg)} kg</span>
+                          </span>
+                          <span className="text-ink">{formatIdr(Number(i.line_total_idr))}</span>
+                        </li>
+                      ))}
+                      <li className="flex justify-between gap-4 py-2 font-display text-base text-ink">
+                        <span>{bi("Total", "Total")}</span>
+                        <span>{formatIdr(Number(o.total_idr))}</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {events.length ? (
+                    <div>
+                      <p className="eyebrow text-ash">{bi("Riwayat status", "Status history")}</p>
+                      <ol className="mt-2 space-y-1.5 border-l border-line pl-4 text-xs text-ash">
+                        {events.map((e) => (
+                          <li key={e.id} className="relative">
+                            <span className="absolute -left-[21px] top-1.5 h-1.5 w-1.5 rounded-full bg-crimson" />
+                            <span className="text-ink">{label(ORDER_STATUS_LABEL_I18N, e.to_status)}</span>{" "}
+                            · {formatDate(e.created_at)}
+                            {e.note ? ` · ${e.note}` : ""}
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
                   ) : null}
-                </fieldset>
-                <a
-                  href={waHref}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-3 inline-block rounded border px-3 py-2 text-xs uppercase tracking-wide"
-                >
-                  {bi("Beri tahu pembeli via WhatsApp", "Notify buyer on WhatsApp")}
-                </a>
+                </div>
+
+                {/* Right: payment + status + delivery */}
+                <div className="grid gap-5 lg:border-l lg:border-line lg:pl-6">
+                  <div>
+                    <p className="eyebrow text-ash">{bi("Pembayaran", "Payment")}</p>
+                    <p className="mt-2 text-sm text-ink">{label(PAY_METHOD_LABEL_I18N, o.payment_method)}</p>
+                    {o.payment_ref ? (
+                      <p className="mt-1 text-xs text-ash">{bi("Ref", "Ref")}: {o.payment_ref}</p>
+                    ) : null}
+                    {o.stock_deducted_at ? (
+                      <p className="mt-1 text-xs text-ash">{bi("Stok telah dikurangi", "Stock deducted")}</p>
+                    ) : null}
+                    {o.payment_proof_url ? (
+                      <button
+                        type="button"
+                        onClick={() => void openProof(o.payment_proof_url!, bi)}
+                        className={`${btnClass} mt-3`}
+                      >
+                        {bi("Lihat bukti bayar", "View payment proof")}
+                      </button>
+                    ) : null}
+                  </div>
+
+                  <div className="grid gap-3">
+                    <label className="block">
+                      <span className="eyebrow text-ash">{bi("Referensi pembayaran", "Payment reference")}</span>
+                      <input
+                        value={d.ref}
+                        onChange={(e) => setDraft((p) => ({ ...p, [o.id]: { ...d, ref: e.target.value } }))}
+                        placeholder={bi("No. transaksi / bukti transfer", "Transaction no. / transfer proof")}
+                        className={`${inputClass} mt-1.5`}
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="eyebrow text-ash">{bi("Catatan internal", "Internal note")}</span>
+                      <input
+                        value={d.note}
+                        onChange={(e) => setDraft((p) => ({ ...p, [o.id]: { ...d, note: e.target.value } }))}
+                        className={`${inputClass} mt-1.5`}
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="eyebrow text-ash">{bi("Status", "Status")}</span>
+                      <select
+                        value={o.status}
+                        onChange={(e) => updateStatus(o.id, e.target.value as StoreStatus)}
+                        className={`${inputClass} mt-1.5`}
+                      >
+                        {STATUSES.map((s) => (
+                          <option key={s} value={s}>
+                            {label(ORDER_STATUS_LABEL_I18N, s)}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <p className="text-[11px] text-ash">
+                      {bi(
+                        "Referensi & catatan ikut tersimpan saat status diubah.",
+                        "Reference & note are saved together with the status change.",
+                      )}
+                    </p>
+                  </div>
+
+                  <div className="border-t border-line pt-4">
+                    <p className="eyebrow text-ash">{bi("Pengiriman", "Delivery")}</p>
+                    <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                      <input
+                        value={sh.courier}
+                        onChange={(e) => setShip((p) => ({ ...p, [o.id]: { ...sh, courier: e.target.value } }))}
+                        placeholder={bi("Kurir / armada", "Courier / fleet")}
+                        className={inputClass}
+                      />
+                      <input
+                        value={sh.tracking}
+                        onChange={(e) => setShip((p) => ({ ...p, [o.id]: { ...sh, tracking: e.target.value } }))}
+                        placeholder={bi("No. resi", "Tracking no.")}
+                        className={inputClass}
+                      />
+                      <input
+                        type="date"
+                        value={sh.eta}
+                        onChange={(e) => setShip((p) => ({ ...p, [o.id]: { ...sh, eta: e.target.value } }))}
+                        className={inputClass}
+                      />
+                      <button type="button" onClick={() => void saveDelivery(o.id)} className={btnClass}>
+                        {bi("Simpan pengiriman", "Save delivery")}
+                      </button>
+                    </div>
+                    {o.buyer_confirmed_at ? (
+                      <p className="mt-2 text-xs text-ash">
+                        {bi("Pembeli mengonfirmasi penerimaan", "Buyer confirmed receipt")}{" "}
+                        {formatDate(o.buyer_confirmed_at)}
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
               </div>
-            </div>
+            ) : null}
           </Panel>
         );
       })}
-
     </div>
   );
 }
