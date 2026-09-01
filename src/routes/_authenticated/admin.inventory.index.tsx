@@ -600,6 +600,39 @@ function InventoryBody() {
                       className="w-36 border border-line bg-bone px-2 py-1 text-xs text-ink outline-none focus:border-crimson"
                     />
                   </td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-1" aria-label={`Kanal penjualan untuk ${item.name}`}>
+                      {SALE_UNITS.map((u) => {
+                        const channels =
+                          item.sale_channels && item.sale_channels.length > 0
+                            ? item.sale_channels
+                            : DEFAULT_SALE_CHANNELS;
+                        const active = channels.includes(u);
+                        return (
+                          <button
+                            key={u}
+                            type="button"
+                            title={UNIT_LABEL[u].id}
+                            aria-pressed={active}
+                            onClick={() => {
+                              const next = active
+                                ? channels.filter((c) => c !== u)
+                                : [...channels, u];
+                              if (next.length > 0) void patch(item.id, { sale_channels: next });
+                              else toast.error(bi("Minimal satu kanal harus aktif.", "At least one channel must stay active."));
+                            }}
+                            className={`border px-1.5 py-0.5 text-[10px] font-medium ${
+                              active
+                                ? "border-crimson bg-crimson/10 text-crimson"
+                                : "border-line text-ash/50 hover:border-ink/40"
+                            }`}
+                          >
+                            {u === "RETAIL" ? "R" : u === "LOAF" ? "L" : u === "CTN" ? "C" : "T"}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </td>
                   <td className="px-4 py-3 text-xs text-ash">{item.avg_weight_text ?? "—"}</td>
                   <td className="px-4 py-3">
                     <input
