@@ -257,16 +257,51 @@ const UNIT_TIERS = [
   note: { id: string; en: string };
 }[];
 
-function VolumeTiers({ price }: { price: number }) {
+const UNIT_CHANNEL: Record<PurchaseUnit, string> = {
+  loaf: "LOAF",
+  carton: "CTN",
+  ton: "TON",
+};
+
+function VolumeTiers({
+  price,
+  channels,
+  retailPrice,
+  retailPack,
+}: {
+  price: number;
+  channels?: string[] | null;
+  retailPrice?: number | null;
+  retailPack?: string | null;
+}) {
   const bi = useBi();
   if (!Number.isFinite(price) || price <= 0) return null;
+  const set = new Set(
+    channels && channels.length > 0 ? channels.map((c) => c.toUpperCase()) : ["LOAF", "CTN", "TON"],
+  );
+  const tiers = UNIT_TIERS.filter((t) => set.has(UNIT_CHANNEL[t.unit]));
+  const showRetail = set.has("RETAIL");
+  const retailPerKg =
+    retailPrice && Number(retailPrice) > 0 ? Number(retailPrice) : unitPriceFromPublic(price, "loaf");
+  if (!showRetail && tiers.length === 0) return null;
   return (
     <div className="mt-6 border border-line">
       <p className="eyebrow border-b border-line px-4 py-3 text-ash">
         {bi("Indikasi harga per satuan beli", "Indicative price per purchase unit")}
       </p>
       <ul className="divide-y divide-line text-sm">
-        {UNIT_TIERS.map((t) => (
+        {showRetail ? (
+          <li className="flex items-center justify-between gap-4 px-4 py-2.5">
+            <span className="text-ash">
+              {bi("Ritel (eceran)", "Retail pack")}
+              <span className="block text-xs text-ash/70">
+                {retailPack?.trim() || bi("Kemasan ritel ±1 kg", "Retail pack ~1 kg")}
+              </span>
+            </span>
+            <span className="whitespace-nowrap text-ink">{formatIdr(retailPerKg)} /kg</span>
+          </li>
+        ) : null}
+        {tiers.map((t) => (
           <li key={t.unit} className="flex items-center justify-between gap-4 px-4 py-2.5">
             <span className="text-ash">
               {bi(t.label.id, t.label.en)}

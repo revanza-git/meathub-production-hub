@@ -5,6 +5,7 @@ import { PriceTag, PromoFlag } from "@/components/site/price-tag";
 import { ImageDisclaimer } from "@/components/site/image-disclaimer";
 import { resolveProductImage } from "@/lib/meatlink/featured";
 import { CATEGORY_LABEL, gradeLabel, type CatalogRow } from "@/lib/meatlink/catalog";
+import { channelsBadge } from "@/lib/meatlink/shop-mode";
 
 /** Commerce product card — image, category, spec line and public price per kg. */
 export function ProductCard({ row, headingLevel = "h2" }: { row: CatalogRow; headingLevel?: "h2" | "h3" }) {
@@ -54,6 +55,9 @@ export function ProductCard({ row, headingLevel = "h2" }: { row: CatalogRow; hea
               Berat rata-rata {row.avg_weight_text}
             </p>
           ) : null}
+          <p className="mt-1.5 text-[10px] font-medium uppercase tracking-[0.16em] text-ash/80">
+            {channelsBadge(row.sale_channels).id}
+          </p>
         </div>
         <div className="mt-6 flex items-end justify-between gap-4">
           <PriceTag price={row.public_price_idr} listPrice={row.list_price_idr} />
