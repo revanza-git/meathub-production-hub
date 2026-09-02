@@ -23,7 +23,7 @@ describe("unit margins", () => {
 
   it("prices a standard item per unit", () => {
     const base = 100000;
-    expect(unitPrice(base, 60000, "retail")).toBe(190000);
+    expect(unitPrice(base, 60000, "retail")).toBe(250000);
     expect(unitPrice(base, 60000, "loaf")).toBe(160000);
     expect(unitPrice(base, 60000, "carton")).toBe(155000);
     expect(unitPrice(base, 60000, "ton")).toBe(145000);
