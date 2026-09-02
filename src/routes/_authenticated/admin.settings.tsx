@@ -6,7 +6,14 @@ import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { Field, TextInput } from "@/components/site/form-kit";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
-import { LOW_STOCK_KEY, DEFAULT_LOW_STOCK_KG } from "@/lib/meatlink/inventory";
+import {
+  LOW_STOCK_KEY,
+  DEFAULT_LOW_STOCK_KG,
+  UNIT_MARGIN_KEY,
+  UNIT_MARGIN_IDR,
+  parseUnitMargins,
+} from "@/lib/meatlink/inventory";
+import { UNIT_MARGINS_QUERY_KEY } from "@/lib/meatlink/unit-margins";
 import { useBi } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/settings")({
@@ -47,7 +54,15 @@ const KEYS = {
   alertEmail: "ops_alert_email",
   lowStockAlert: "ops_low_stock_alert_enabled",
   dailyDigest: "ops_daily_digest_enabled",
+  unitMargin: UNIT_MARGIN_KEY,
 } as const;
+
+const MARGIN_FIELDS = [
+  { key: "retail", id: "Ritel (eceran)", en: "Retail" },
+  { key: "loaf", id: "Loaf", en: "Loaf" },
+  { key: "carton", id: "Karton", en: "Carton" },
+  { key: "ton", id: "Tonase", en: "Ton" },
+] as const;
 
 function SettingsBody() {
   const bi = useBi();
@@ -59,6 +74,12 @@ function SettingsBody() {
   const [lowStockAlert, setLowStockAlert] = useState(true);
   const [dailyDigest, setDailyDigest] = useState(true);
   const [pending, setPending] = useState(false);
+  const [margins, setMargins] = useState<Record<string, string>>({
+    retail: String(UNIT_MARGIN_IDR.retail),
+    loaf: String(UNIT_MARGIN_IDR.loaf),
+    carton: String(UNIT_MARGIN_IDR.carton),
+    ton: String(UNIT_MARGIN_IDR.ton),
+  });
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-settings"],
@@ -78,7 +99,33 @@ function SettingsBody() {
     setAlertEmail(typeof data[KEYS.alertEmail] === "string" ? (data[KEYS.alertEmail] as string) : "");
     setLowStockAlert(data[KEYS.lowStockAlert] !== false);
     setDailyDigest(data[KEYS.dailyDigest] !== false);
+    const m = parseUnitMargins(data[KEYS.unitMargin]);
+    setMargins({
+      retail: String(m.retail),
+      loaf: String(m.loaf),
+      carton: String(m.carton),
+      ton: String(m.ton),
+    });
   }, [data]);
+
+  async function saveMargins(e: React.FormEvent) {
+    e.preventDefault();
+    const parsed: Record<string, number> = {};
+    for (const f of MARGIN_FIELDS) {
+      const n = Number(margins[f.key]);
+      if (!Number.isFinite(n) || n < 0) {
+        toast.error(bi("Masukkan nominal margin yang valid.", "Enter a valid margin amount."));
+        return;
+      }
+      parsed[f.key] = n;
+    }
+    await persist(
+      [{ key: KEYS.unitMargin, value: { ...parsed, ctn: parsed.carton } }],
+      bi("Margin per satuan disimpan.", "Per-unit margins saved."),
+    );
+    void qc.invalidateQueries({ queryKey: UNIT_MARGINS_QUERY_KEY });
+    void qc.invalidateQueries({ queryKey: ["admin-inventory"] });
+  }
 
   async function saveLowStock(e: React.FormEvent) {
     e.preventDefault();
@@ -170,6 +217,43 @@ function SettingsBody() {
             >
               {pending ? bi("Menyimpan…", "Saving…") : bi("Simpan", "Save")}
             </button>
+          </form>
+        )}
+      </Panel>
+
+      <Panel className="p-6">
+        <h2 className="font-display text-xl text-ink">{bi("Margin per satuan beli", "Margin per purchase unit")}</h2>
+        <p className="mt-2 text-sm text-ash">
+          {bi(
+            "Margin internal per kg untuk tiap satuan beli. Loaf adalah acuan harga publik; satuan lain dihitung dari selisih terhadap loaf, sehingga item dengan markup khusus (mis. A5) tetap menjaga preminya.",
+            "Internal margin per kg for each purchase unit. Loaf is the public price reference; other units are derived from the spread against loaf, so items with a custom markup (e.g. A5) keep their premium.",
+          )}
+        </p>
+        {isLoading ? (
+          <p className="mt-4 text-sm text-ash">{bi("Memuat…", "Loading…")}</p>
+        ) : (
+          <form onSubmit={saveMargins} className="mt-5 grid gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {MARGIN_FIELDS.map((f) => (
+                <Field key={f.key} label={`${bi(f.id, f.en)} (Rp/kg)`} required>
+                  <TextInput
+                    inputMode="numeric"
+                    value={margins[f.key] ?? ""}
+                    onChange={(e) => setMargins((prev) => ({ ...prev, [f.key]: e.target.value }))}
+                    required
+                  />
+                </Field>
+              ))}
+            </div>
+            <div>
+              <button
+                type="submit"
+                disabled={pending}
+                className="eyebrow bg-crimson px-6 py-4 text-bone disabled:opacity-60"
+              >
+                {pending ? bi("Menyimpan…", "Saving…") : bi("Simpan margin", "Save margins")}
+              </button>
+            </div>
           </form>
         )}
       </Panel>

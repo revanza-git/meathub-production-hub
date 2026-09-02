@@ -15,6 +15,7 @@ import {
   PAGE_SIZES,
   formatIdr,
   publicPrice,
+  unitPrice,
   defaultMarkup,
   weightToKg,
   type InventoryItem,
@@ -26,6 +27,7 @@ import {
 } from "@/lib/meatlink/inventory";
 import { CATEGORIES, GRADE_LABEL, type ProductCategory } from "@/lib/meatlink/catalog";
 import { SALE_UNITS, UNIT_LABEL } from "@/lib/meatlink/shop-mode";
+import { useUnitMargins } from "@/lib/meatlink/unit-margins";
 import { useBi } from "@/lib/i18n";
 
 
@@ -82,6 +84,7 @@ const EMPTY_FORM = {
 };
 
 function InventoryBody() {
+  const margins = useUnitMargins();
   const bi = useBi();
   const qc = useQueryClient();
   const [query, setQuery] = useState("");
@@ -668,7 +671,14 @@ function InventoryBody() {
                   </td>
                   <td className="px-4 py-3 text-xs text-crimson">
                     {formatIdr(publicPrice(item.sale_price_idr, item.markup_idr))}
+                    <span className="mt-1 block text-[10px] leading-tight text-ash">
+                      R {formatIdr(unitPrice(item.sale_price_idr, item.markup_idr, "retail", margins))}
+                      {" · "}L {formatIdr(unitPrice(item.sale_price_idr, item.markup_idr, "loaf", margins))}
+                      <br />C {formatIdr(unitPrice(item.sale_price_idr, item.markup_idr, "carton", margins))}
+                      {" · "}T {formatIdr(unitPrice(item.sale_price_idr, item.markup_idr, "ton", margins))}
+                    </span>
                   </td>
+
                   <td className="px-4 py-3">
                     <input
                       type="number"
