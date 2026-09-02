@@ -1,52 +1,51 @@
-# Mode Belanja: Bulk (B2B) vs Ritel (B2C)
+# Markup per satuan: Ritel 150rb / Loaf 60rb / Ctn 55rb / Tonase 45rb
 
-Tujuan: pembeli memilih cara belanja di awal, katalog & satuan menyesuaikan, dan admin bisa menandai barang mana yang boleh dijual ritel. Semua stok yang ada sekarang tetap B2B.
+## Kondisi sekarang
+- Harga publik = `sale_price_idr + markup_idr` (markup per item, default 60rb, A5 150rb).
+- Margin per satuan masih hardcode di `src/lib/meatlink/inventory.ts`: ton 40rb, carton 45rb, loaf 60rb — belum ada ritel.
+- Harga ritel hanya lewat kolom manual `retail_price_idr`; kalau kosong ikut harga loaf.
+- Tidak ada tempat di `/admin/settings` untuk mengatur angka margin ini.
 
-## 1. Data & admin
+## Target
+Satu sumber kebenaran margin per satuan, bisa diubah admin, dipakai konsisten di katalog, detail produk, keranjang, checkout, dan laporan.
 
-Tambah kolom di inventaris:
-- `sale_channels` — daftar satuan yang tersedia per produk: `RETAIL`, `LOAF`, `CTN`, `TON`.
-  Default untuk seluruh baris yang ada: `LOAF, CTN, TON` (B2B penuh), jadi tidak ada barang ritel sampai admin menandainya.
-- `retail_min_kg` / `retail_pack_text` — ukuran jual ritel (mis. "±500 g/pack"), opsional.
-- `retail_price_idr` — harga khusus ritel per kg (opsional; kalau kosong pakai harga loaf).
+## 1. Konfigurasi (database)
+- Simpan di `admin_settings` dengan key `unit_margin_idr`:
+  `{"retail":150000,"loaf":60000,"ctn":55000,"ton":45000}`.
+- Tambah RPC `ml_unit_margins()` (security definer, read-only, boleh diakses anon) supaya halaman publik bisa membaca nilai ini tanpa membuka tabel setting ke publik.
+- Nilai default tetap ada di kode sebagai fallback bila RPC gagal.
 
-Aturan yang didukung otomatis:
-- Produk B2B umum: loaf → ctn → ton.
-- Produk B2B yang minimal karton: cukup centang `CTN, TON` saja.
-- Produk ritel: centang `RETAIL` (boleh digabung dengan satuan bulk).
+## 2. Logika harga
+Loaf tetap jadi acuan harga yang ditampilkan (harga publik = base + markup item).
+Satuan lain dihitung dari selisih terhadap loaf, sehingga item premium (mis. A5 dengan markup 150rb) tetap menjaga premi-nya:
 
-Di `/admin/inventory`: kolom + editor centang satuan, field harga/pack ritel, filter "ritel saja", dan dukungan kolom baru di importer Excel (default aman kalau kolom tidak ada).
+```
+harga(unit) = harga_loaf - (margin_loaf - margin_unit)
+ritel       = harga_loaf + (150.000 - 60.000)
+ctn         = harga_loaf - 5.000
+tonase      = harga_loaf - 15.000
+```
 
-## 2. Halaman pilih mode
+- `retail_price_idr` yang diisi manual tetap menang sebagai override per item.
+- Update `UNIT_MARGIN_IDR`, `unitMargin`, `unitPrice`, `unitPriceFromPublic` agar menerima konfigurasi (bukan konstanta mati) dan menambah unit `retail`.
 
-Route baru `/belanja` sesuai mockup: dua kartu (Beli Bulk / Beli Ritel) dengan warna emas vs terracotta, tag satuan, dan preview filter. Pilihan disimpan di cookie `meatlink.mode` (persist, bisa diganti kapan saja).
+## 3. Penerapan ke seluruh inventaris
+- Tidak perlu ubah data per baris: margin satuan berlaku global, `markup_idr` per item tetap dipakai untuk premi khusus (A5 dll).
+- Migrasi kecil: seed baris konfigurasi + normalisasi `markup_idr` yang bernilai 0/null ke 60rb agar tidak ada item tanpa margin.
+- Import Excel & form admin tetap memakai `defaultMarkup` (60rb / 150rb A5).
 
-Perilaku:
-- Pengunjung baru yang membuka beranda melihat pilihan mode sekali (banner/interstitial ringan, bukan blocking hard redirect agar SEO beranda tetap aman).
-- Header menampilkan indikator mode aktif + tombol "Ganti" yang kembali ke `/belanja`.
+## 4. UI Admin
+- `/admin/settings`: panel baru "Margin per satuan" dengan 4 input (Ritel, Loaf, Karton, Tonase), validasi angka ≥ 0, simpan ke `admin_settings`.
+- `/admin/inventory`: kolom pratinjau harga menampilkan estimasi harga tiap satuan berdasarkan konfigurasi.
 
-## 3. Katalog & filter
+## 5. UI Publik
+- Tabel satuan di halaman produk memakai margin konfigurasi (termasuk baris Ritel).
+- Kartu produk & mode belanja Ritel/Grosir memakai harga hasil konfigurasi yang sama.
 
-- `/produk` menerima param `mode=bulk|ritel` dan `unit=retail|loaf|ctn|ton`.
-- RPC katalog publik ditambah filter satuan + facet baru "Satuan / Cara beli", jadi ini benar-benar filter (bukan katalog terpisah), sesuai maunya: satu daftar, disaring.
-- Mode ritel = filter `RETAIL`; mode bulk = filter loaf/ctn/ton, plus chip satuan.
-- Kartu produk menampilkan badge satuan yang tersedia ("Ritel", "Ctn/Ton saja", dst.).
+## 6. Verifikasi
+- Unit test kecil untuk fungsi harga per satuan (termasuk kasus A5 dan override ritel).
+- Cek `/produk`, `/produk/$slug`, dan `/admin/settings` di preview.
 
-## 4. Halaman produk & keranjang
-
-- Pemilih satuan hanya menampilkan satuan yang diizinkan produk tersebut; harga per kg mengikuti margin satuan yang sudah ada (ton 40k / ctn 45k / loaf 60k) dan margin ritel = margin loaf (atau `retail_price_idr` bila diisi).
-- Minimum order per satuan divalidasi di keranjang (ritel bisa pecahan pack, bulk mengikuti kelipatan loaf/ctn).
-- Copy tetap dua bahasa (ID/EN).
-
-## 5. Urutan pengerjaan
-
-1. Migrasi kolom + backfill semua produk lama sebagai B2B.
-2. UI admin (centang satuan, harga ritel, importer).
-3. RPC katalog + facet satuan.
-4. Halaman `/belanja` + indikator mode di header.
-5. Filter di `/produk`, badge kartu, pemilih satuan di detail & validasi keranjang.
-
-## Perlu keputusan Anda
-
-- Harga ritel: pakai harga loaf apa adanya, atau ada markup ritel tersendiri (mis. +Rp20k/kg)?
-- Barang ritel dari Anda & Om Alex: mau saya siapkan form/kolom saja dulu, atau sekalian masukkan daftar produknya kalau datanya sudah ada?
+## Keputusan yang perlu konfirmasi
+1. Apakah item A5 (markup 150rb) harga ritelnya menjadi 240rb (mempertahankan premi), atau dipatok rata 150rb untuk semua item?
+2. Apakah harga yang ditampilkan default di katalog tetap harga Loaf?
