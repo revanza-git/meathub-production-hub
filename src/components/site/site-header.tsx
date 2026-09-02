@@ -5,35 +5,9 @@ import mark from "@/assets/meatlink-mark.png.asset.json";
 import { useCart } from "@/lib/meatlink/cart";
 import { CATEGORY_PAGES } from "@/lib/meatlink/categories";
 import { CONTACT_EMAIL, waLink } from "@/lib/meatlink/config";
-import { useShopMode } from "@/lib/meatlink/shop-mode";
-import { useBi, useLang, type TKey } from "@/lib/i18n";
+import { useLang, type TKey } from "@/lib/i18n";
 import { LanguageToggle } from "./language-toggle";
 
-/** Compact link showing the active shopping mode; opens the mode picker. */
-function ModeChip({ dark, onNavigate }: { dark: boolean; onNavigate?: () => void }) {
-  const [mode] = useShopMode();
-  const bi = useBi();
-  const label =
-    mode === "retail"
-      ? bi("Mode: Ritel", "Mode: Retail")
-      : mode === "bulk"
-        ? bi("Mode: Bulk", "Mode: Bulk")
-        : bi("Pilih mode belanja", "Choose shopping mode");
-  return (
-    <Link
-      to="/produk"
-      search={mode === "retail" ? { unit: ["RETAIL"] } : mode === "bulk" ? { unit: ["LOAF", "CTN", "TON"] } : {}}
-      onClick={onNavigate}
-      className={`eyebrow inline-flex items-center gap-2 whitespace-nowrap border px-3 py-1.5 transition-colors ${
-        dark
-          ? "border-white/20 text-bone/80 hover:border-bone/50 hover:text-bone"
-          : "border-line text-ash hover:border-ink hover:text-ink"
-      }`}
-    >
-      {label}
-    </Link>
-  );
-}
 
 const NAV = [
   { to: "/produk", key: "nav.products" },
