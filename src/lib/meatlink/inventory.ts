@@ -177,17 +177,39 @@ export function publicPrice(
 }
 
 /**
- * Internal margin per kg by purchase unit. Loaf/retail is the reference level used
- * for the listed public price; ton and carton carry a thinner margin.
+ * Internal margin per kg by purchase unit. Loaf is the reference level used for the
+ * listed public price; carton and ton carry a thinner margin, retail a fatter one.
  * These numbers are internal — never render them to buyers.
  */
 export const UNIT_MARGIN_IDR = {
-  ton: 40000,
-  carton: 45000,
+  retail: 150000,
   loaf: 60000,
+  carton: 55000,
+  ton: 45000,
 } as const;
 
 export type PurchaseUnit = keyof typeof UNIT_MARGIN_IDR;
+export type UnitMargins = Record<PurchaseUnit, number>;
+
+export const UNIT_MARGIN_KEY = "unit_margin_idr";
+
+/** Normalises the stored admin_settings payload into a complete margin map. */
+export function parseUnitMargins(raw: unknown): UnitMargins {
+  const source = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const pick = (keys: string[], fallback: number) => {
+    for (const k of keys) {
+      const n = Number(source[k]);
+      if (Number.isFinite(n) && n >= 0) return n;
+    }
+    return fallback;
+  };
+  return {
+    retail: pick(["retail", "RETAIL", "ritel"], UNIT_MARGIN_IDR.retail),
+    loaf: pick(["loaf", "LOAF"], UNIT_MARGIN_IDR.loaf),
+    carton: pick(["carton", "ctn", "CTN"], UNIT_MARGIN_IDR.carton),
+    ton: pick(["ton", "TON", "tonase"], UNIT_MARGIN_IDR.ton),
+  };
+}
 
 /**
  * Margin actually applied for a unit. Products with a custom markup (e.g. A5 at 150k)
@@ -196,10 +218,11 @@ export type PurchaseUnit = keyof typeof UNIT_MARGIN_IDR;
 export function unitMargin(
   markup: number | string | null | undefined,
   unit: PurchaseUnit,
+  margins: UnitMargins = UNIT_MARGIN_IDR,
 ): number {
-  const m = Number(markup ?? UNIT_MARGIN_IDR.loaf);
-  const loaf = Number.isFinite(m) && m > 0 ? m : UNIT_MARGIN_IDR.loaf;
-  const spread = UNIT_MARGIN_IDR.loaf - UNIT_MARGIN_IDR[unit];
+  const m = Number(markup ?? margins.loaf);
+  const loaf = Number.isFinite(m) && m > 0 ? m : margins.loaf;
+  const spread = margins.loaf - margins[unit];
   return Math.max(0, loaf - spread);
 }
 
@@ -208,10 +231,11 @@ export function unitPrice(
   base: number | string,
   markup: number | string | null | undefined,
   unit: PurchaseUnit,
+  margins: UnitMargins = UNIT_MARGIN_IDR,
 ): number {
   const b = Number(base);
   if (!Number.isFinite(b) || b <= 0) return 0;
-  return b + unitMargin(markup, unit);
+  return b + unitMargin(markup, unit, margins);
 }
 
 /**
@@ -221,11 +245,13 @@ export function unitPrice(
 export function unitPriceFromPublic(
   publicPriceIdr: number | string,
   unit: PurchaseUnit,
+  margins: UnitMargins = UNIT_MARGIN_IDR,
 ): number {
   const p = Number(publicPriceIdr);
   if (!Number.isFinite(p) || p <= 0) return 0;
-  return Math.max(0, p - (UNIT_MARGIN_IDR.loaf - UNIT_MARGIN_IDR[unit]));
+  return Math.max(0, p - (margins.loaf - margins[unit]));
 }
+
 
 /** Turns "8KG" / "250GR" / "4KG UP" into kilograms, or null when unparseable. */
 export function weightToKg(text: string | null | undefined): number | null {
