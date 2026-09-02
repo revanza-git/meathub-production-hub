@@ -11,6 +11,7 @@ import {
   unitPriceFromPublic,
   type PurchaseUnit,
 } from "@/lib/meatlink/inventory";
+import { useUnitMargins } from "@/lib/meatlink/unit-margins";
 import { resolveProductImage } from "@/lib/meatlink/featured";
 import {
   useBi,
@@ -318,7 +319,7 @@ function VolumeTiers({
               <span className="block text-xs text-ash/70">{bi(t.note.id, t.note.en)}</span>
             </span>
             <span className="whitespace-nowrap text-ink">
-              {formatIdr(unitPriceFromPublic(price, t.unit))} /kg
+              {formatIdr(unitPriceFromPublic(price, t.unit, margins))} /kg
             </span>
           </li>
         ))}
