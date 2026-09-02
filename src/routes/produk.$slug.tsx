@@ -243,7 +243,7 @@ function ProductPage() {
 const UNIT_TIERS = [
   {
     unit: "loaf",
-    label: { id: "Loaf / ritel", en: "Loaf / retail" },
+    label: { id: "Loaf", en: "Loaf" },
     note: { id: "Per loaf atau satuan", en: "Per loaf or single unit" },
   },
   {
@@ -263,6 +263,7 @@ const UNIT_TIERS = [
 }[];
 
 const UNIT_CHANNEL: Record<PurchaseUnit, string> = {
+  retail: "RETAIL",
   loaf: "LOAF",
   carton: "CTN",
   ton: "TON",
@@ -280,6 +281,7 @@ function VolumeTiers({
   retailPack?: string | null;
 }) {
   const bi = useBi();
+  const margins = useUnitMargins();
   if (!Number.isFinite(price) || price <= 0) return null;
   const set = new Set(
     channels && channels.length > 0 ? channels.map((c) => c.toUpperCase()) : ["LOAF", "CTN", "TON"],
@@ -287,8 +289,11 @@ function VolumeTiers({
   const tiers = UNIT_TIERS.filter((t) => set.has(UNIT_CHANNEL[t.unit]));
   const showRetail = set.has("RETAIL");
   const retailPerKg =
-    retailPrice && Number(retailPrice) > 0 ? Number(retailPrice) : unitPriceFromPublic(price, "loaf");
+    retailPrice && Number(retailPrice) > 0
+      ? Number(retailPrice)
+      : unitPriceFromPublic(price, "retail", margins);
   if (!showRetail && tiers.length === 0) return null;
+
   return (
     <div className="mt-6 border border-line">
       <p className="eyebrow border-b border-line px-4 py-3 text-ash">
