@@ -15,6 +15,7 @@ import {
   PAGE_SIZES,
   formatIdr,
   publicPrice,
+  unitPrice,
   defaultMarkup,
   weightToKg,
   type InventoryItem,
@@ -26,6 +27,7 @@ import {
 } from "@/lib/meatlink/inventory";
 import { CATEGORIES, GRADE_LABEL, type ProductCategory } from "@/lib/meatlink/catalog";
 import { SALE_UNITS, UNIT_LABEL } from "@/lib/meatlink/shop-mode";
+import { useUnitMargins } from "@/lib/meatlink/unit-margins";
 import { useBi } from "@/lib/i18n";
 
 
@@ -82,6 +84,7 @@ const EMPTY_FORM = {
 };
 
 function InventoryBody() {
+  const margins = useUnitMargins();
   const bi = useBi();
   const qc = useQueryClient();
   const [query, setQuery] = useState("");
