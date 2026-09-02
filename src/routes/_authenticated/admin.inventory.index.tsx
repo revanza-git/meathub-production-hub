@@ -668,7 +668,14 @@ function InventoryBody() {
                   </td>
                   <td className="px-4 py-3 text-xs text-crimson">
                     {formatIdr(publicPrice(item.sale_price_idr, item.markup_idr))}
+                    <span className="mt-1 block text-[10px] leading-tight text-ash">
+                      R {formatIdr(unitPrice(item.sale_price_idr, item.markup_idr, "retail", margins))}
+                      {" · "}L {formatIdr(unitPrice(item.sale_price_idr, item.markup_idr, "loaf", margins))}
+                      <br />C {formatIdr(unitPrice(item.sale_price_idr, item.markup_idr, "carton", margins))}
+                      {" · "}T {formatIdr(unitPrice(item.sale_price_idr, item.markup_idr, "ton", margins))}
+                    </span>
                   </td>
+
                   <td className="px-4 py-3">
                     <input
                       type="number"
