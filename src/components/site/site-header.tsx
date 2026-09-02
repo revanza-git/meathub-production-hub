@@ -290,7 +290,6 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
               </Link>
             ))}
             <span className="ml-auto flex shrink-0 items-center gap-3">
-              <ModeChip dark={dark} />
               <Link
                 to="/supply"
                 className={`eyebrow whitespace-nowrap transition-colors ${
@@ -324,7 +323,6 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
               ))}
             </nav>
             <div className="mt-3 grid gap-2">
-              <ModeChip dark={dark} onNavigate={() => setOpen(false)} />
               <Link
                 to="/keranjang"
                 onClick={() => setOpen(false)}
