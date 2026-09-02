@@ -3721,6 +3721,7 @@ export type Database = {
         Args: { _order_no: string; _token: string }
         Returns: Json
       }
+      ml_unit_margins: { Args: never; Returns: Json }
       ml_update_store_order: {
         Args: {
           _note?: string
