@@ -1,11 +1,12 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useServerFn } from "@tanstack/react-router";
 import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { Field, SelectInput, TextInput } from "@/components/site/form-kit";
 import { supabase } from "@/integrations/supabase/client";
-import { FEATURED_RANKS, FEATURE_IMAGES } from "@/lib/meatlink/featured";
+import { FEATURED_RANKS, FEATURE_IMAGES, resolveFeatureImage } from "@/lib/meatlink/featured";
+import { uploadInventoryImage } from "@/lib/meatlink/inventory-image.functions";
 import {
   CONDITIONS,
   CONDITION_LABEL,
