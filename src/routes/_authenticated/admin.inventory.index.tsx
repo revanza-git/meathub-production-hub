@@ -131,12 +131,13 @@ function InventoryBody() {
   });
 
   const { data: result, isLoading } = useQuery({
-    queryKey: ["admin-inventory", { search, origin, condition, featuredFilter, page, pageSize }],
+    queryKey: ["admin-inventory", { search, origin, condition, channel, featuredFilter, page, pageSize }],
     placeholderData: keepPreviousData,
     queryFn: async () => {
       let q = supabase.from("admin_inventory").select("*", { count: "exact" });
       if (origin) q = q.eq("origin", origin);
       if (condition) q = q.eq("condition", condition);
+      if (channel) q = q.contains("sale_channels", [channel]);
       if (featuredFilter === "featured") q = q.not("featured_rank", "is", null);
       if (featuredFilter === "not-featured") q = q.is("featured_rank", null);
       if (search) {
