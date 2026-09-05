@@ -853,6 +853,9 @@ function InventoryBody() {
                           onChange={(e) => void patch(item.id, { image_url: e.target.value })}
                           className="border border-line bg-bone px-2 py-1 text-xs text-ink outline-none focus:border-crimson"
                         >
+                          {item.image_url && !FEATURE_IMAGES.some((img) => img.key === item.image_url) ? (
+                            <option value={item.image_url}>{bi("Foto kustom", "Custom photo")}</option>
+                          ) : null}
                           {FEATURE_IMAGES.map((img) => (
                             <option key={img.key} value={img.key}>
                               {img.label}
@@ -860,6 +863,16 @@ function InventoryBody() {
                           ))}
                         </select>
                       ) : null}
+                      <button
+                        type="button"
+                        disabled={uploadingId === item.id}
+                        onClick={() => pickPhoto(item.id)}
+                        className="text-xs text-ash underline underline-offset-4 disabled:opacity-40"
+                      >
+                        {uploadingId === item.id
+                          ? bi("Mengunggah…", "Uploading…")
+                          : bi("Ganti foto", "Change photo")}
+                      </button>
                     </div>
                   </td>
 
