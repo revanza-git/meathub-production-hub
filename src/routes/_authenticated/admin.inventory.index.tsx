@@ -90,6 +90,7 @@ function InventoryBody() {
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
   const [origin, setOrigin] = useState("");
+  const [brand, setBrand] = useState("");
   const [condition, setCondition] = useState("");
   const [channel, setChannel] = useState<string>("");
   const [featuredFilter, setFeaturedFilter] = useState<"all" | "featured" | "not-featured">("all");
@@ -106,7 +107,7 @@ function InventoryBody() {
 
   useEffect(() => {
     setPage(1);
-  }, [search, origin, condition, channel, featuredFilter, pageSize]);
+  }, [search, origin, brand, condition, channel, featuredFilter, pageSize]);
 
   const { data: threshold = DEFAULT_LOW_STOCK_KG } = useQuery({
     queryKey: ["admin-settings", LOW_STOCK_KEY],
@@ -130,12 +131,25 @@ function InventoryBody() {
     },
   });
 
+  const { data: brands } = useQuery({
+    queryKey: ["admin-inventory-brands"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("admin_inventory")
+        .select("brand")
+        .not("brand", "is", null);
+      if (error) throw error;
+      return [...new Set((data ?? []).map((d) => d.brand as string).filter(Boolean))].sort();
+    },
+  });
+
   const { data: result, isLoading } = useQuery({
-    queryKey: ["admin-inventory", { search, origin, condition, channel, featuredFilter, page, pageSize }],
+    queryKey: ["admin-inventory", { search, origin, brand, condition, channel, featuredFilter, page, pageSize }],
     placeholderData: keepPreviousData,
     queryFn: async () => {
       let q = supabase.from("admin_inventory").select("*", { count: "exact" });
       if (origin) q = q.eq("origin", origin);
+      if (brand) q = q.eq("brand", brand);
       if (condition) q = q.eq("condition", condition);
       if (channel) q = q.contains("sale_channels", [channel]);
       if (featuredFilter === "featured") q = q.not("featured_rank", "is", null);
@@ -308,7 +322,19 @@ function InventoryBody() {
           ))}
         </select>
         <select
-          value={condition}
+          value={brand}
+          onChange={(e) => setBrand(e.target.value)}
+          aria-label={bi("Filter berdasarkan merek", "Filter by brand")}
+          className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
+        >
+          <option value="">{bi("Semua merek", "All brands")}</option>
+          {(brands ?? []).map((b) => (
+            <option key={b} value={b}>
+              {b}
+            </option>
+          ))}
+        </select>
+        <select
           onChange={(e) => setCondition(e.target.value)}
           aria-label={bi("Filter berdasarkan kondisi", "Filter by condition")}
           className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
