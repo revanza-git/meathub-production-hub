@@ -91,6 +91,7 @@ function InventoryBody() {
   const [search, setSearch] = useState("");
   const [origin, setOrigin] = useState("");
   const [condition, setCondition] = useState("");
+  const [channel, setChannel] = useState<string>("");
   const [featuredFilter, setFeaturedFilter] = useState<"all" | "featured" | "not-featured">("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(10);
@@ -105,7 +106,7 @@ function InventoryBody() {
 
   useEffect(() => {
     setPage(1);
-  }, [search, origin, condition, featuredFilter, pageSize]);
+  }, [search, origin, condition, channel, featuredFilter, pageSize]);
 
   const { data: threshold = DEFAULT_LOW_STOCK_KG } = useQuery({
     queryKey: ["admin-settings", LOW_STOCK_KEY],
@@ -130,12 +131,13 @@ function InventoryBody() {
   });
 
   const { data: result, isLoading } = useQuery({
-    queryKey: ["admin-inventory", { search, origin, condition, featuredFilter, page, pageSize }],
+    queryKey: ["admin-inventory", { search, origin, condition, channel, featuredFilter, page, pageSize }],
     placeholderData: keepPreviousData,
     queryFn: async () => {
       let q = supabase.from("admin_inventory").select("*", { count: "exact" });
       if (origin) q = q.eq("origin", origin);
       if (condition) q = q.eq("condition", condition);
+      if (channel) q = q.contains("sale_channels", [channel]);
       if (featuredFilter === "featured") q = q.not("featured_rank", "is", null);
       if (featuredFilter === "not-featured") q = q.is("featured_rank", null);
       if (search) {
@@ -315,6 +317,19 @@ function InventoryBody() {
           {CONDITIONS.map((c) => (
             <option key={c} value={c}>
               {CONDITION_LABEL[c]}
+            </option>
+          ))}
+        </select>
+        <select
+          value={channel}
+          onChange={(e) => setChannel(e.target.value)}
+          aria-label={bi("Filter berdasarkan kanal", "Filter by channel")}
+          className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
+        >
+          <option value="">{bi("Semua kanal", "All channels")}</option>
+          {SALE_UNITS.map((u) => (
+            <option key={u} value={u}>
+              {bi(UNIT_LABEL[u].id, UNIT_LABEL[u].en)}
             </option>
           ))}
         </select>
