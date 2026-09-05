@@ -504,7 +504,7 @@ function CatalogPage() {
                 <button
                   type="button"
                   disabled={page <= 1}
-                  onClick={() => setSearchParams({ page: Math.max(1, page - 1) }, false)}
+                  onClick={() => setSearchParams({ page: Math.max(1, page - 1) }, false, true)}
                   className="eyebrow border border-line px-5 py-3 text-ink disabled:opacity-40"
                 >
                   Sebelumnya
@@ -515,7 +515,7 @@ function CatalogPage() {
                 <button
                   type="button"
                   disabled={page >= pages}
-                  onClick={() => setSearchParams({ page: Math.min(pages, page + 1) }, false)}
+                  onClick={() => setSearchParams({ page: Math.min(pages, page + 1) }, false, true)}
                   className="eyebrow border border-line px-5 py-3 text-ink disabled:opacity-40"
                 >
                   Berikutnya
