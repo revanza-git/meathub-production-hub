@@ -22,8 +22,6 @@ import tenderloinImg from "@/assets/photo/tenderloin.jpg.asset.json";
 import tomahawkImg from "@/assets/photo/tomahawk.jpg.asset.json";
 import bone2Img from "@/assets/photo/bone-2.jpg.asset.json";
 import bone3Img from "@/assets/photo/bone-3.jpg.asset.json";
-import brisket2Img from "@/assets/photo/brisket-2.jpg.asset.json";
-import chuck2Img from "@/assets/photo/chuck-2.jpg.asset.json";
 import knuckle2Img from "@/assets/photo/knuckle-2.jpg.asset.json";
 import knuckle3Img from "@/assets/photo/knuckle-3.jpg.asset.json";
 import lambRack2Img from "@/assets/photo/lamb-rack-2.jpg.asset.json";
@@ -38,7 +36,6 @@ import shortRib2Img from "@/assets/photo/short-rib-2.jpg.asset.json";
 import shortRib3Img from "@/assets/photo/short-rib-3.jpg.asset.json";
 import slice2Img from "@/assets/photo/slice-2.jpg.asset.json";
 import slice3Img from "@/assets/photo/slice-3.jpg.asset.json";
-import striploin2Img from "@/assets/photo/striploin-2.jpg.asset.json";
 import striploin3Img from "@/assets/photo/striploin-3.jpg.asset.json";
 import tbone2Img from "@/assets/photo/tbone-2.jpg.asset.json";
 import tbone3Img from "@/assets/photo/tbone-3.jpg.asset.json";
@@ -98,13 +95,13 @@ export function resolveFeatureImage(value: string | null | undefined): string {
 const CUT_VARIANTS: Record<string, readonly string[]> = {
   ribeye: [ribeyeImg.url, ribeye2Img.url, ribeye3Img.url],
   tenderloin: [tenderloinImg.url, tenderloin2Img.url],
-  striploin: [striploinImg.url, striploin2Img.url, striploin3Img.url],
+  striploin: [striploinImg.url, striploin3Img.url],
   tomahawk: [tomahawkImg.url, tomahawk2Img.url, tomahawk3Img.url],
   tbone: [tboneImg.url, tbone2Img.url, tbone3Img.url],
   "op-ribs": [opRibsImg.url, opRibs2Img.url, opRibs3Img.url],
   "short-rib": [shortRibImg.url, shortRib2Img.url, shortRib3Img.url],
-  chuck: [chuckImg.url, chuck2Img.url],
-  brisket: [brisketImg.url, brisket2Img.url],
+  chuck: [chuckImg.url],
+  brisket: [brisketImg.url],
   knuckle: [knuckleImg.url, knuckle2Img.url, knuckle3Img.url],
   slice: [sliceImg.url, slice2Img.url, slice3Img.url],
   "lamb-rack": [lambRackImg.url, lambRack2Img.url, lambRack3Img.url],
