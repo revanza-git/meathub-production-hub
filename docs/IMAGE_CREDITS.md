@@ -51,7 +51,7 @@ File di-host di CDN Lovable melalui pointer `src/assets/photo/*.asset.json`.
 | `short-rib-2.jpg` | Kalbi Beef Ribs - close-up, raw - Win Sam Butcher AUD8.99 pe | avlxyz | [by-sa](https://creativecommons.org/licenses/by-sa/2.0/) | [sumber](https://www.flickr.com/photos/10559879@N00/5095924981) |
 | `short-rib-3.jpg` | Kalbi Beef Ribs - raw - Win Sam Butcher AUD8.99 per kg | avlxyz | [by-sa](https://creativecommons.org/licenses/by-sa/2.0/) | [sumber](https://www.flickr.com/photos/10559879@N00/5095925101) |
 | `slice-2.jpg` | SHABU-WAY | whologwhy | [by](https://creativecommons.org/licenses/by/2.0/) | [sumber](https://www.flickr.com/photos/60417477@N00/4778058143) |
-| `slice-3.jpg` | SHABU-WAY | whologwhy | [by](https://creativecommons.org/licenses/by/2.0/) | [sumber](https://www.flickr.com/photos/60417477@N00/4778690292) |
+| `slice-3.jpg` | Assorted Raw Beef Slices for Yakiniku | Hajime NAKANO | [BY-SA](https://creativecommons.org/licenses/by-sa/2.0/) | [sumber](https://commons.wikimedia.org/wiki/File:Assorted_Raw_Beef_Slices_for_Yakiniku.jpg) |
 | `striploin-3.jpg` | -2020-11-20 Sirloin steak, Trimingham, Norfolk (2).JPG | <table style="margin: 1.5em auto; width:60%; background-color:#CCCCCC; border:2p | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [sumber](https://commons.wikimedia.org/wiki/File:-2020-11-20_Sirloin_steak,_Trimingham,_Norfolk_(2).JPG) |
 | `tbone-2.jpg` | Sous Vide FAIL - the cow | In Memoriam: chrisbulle | [by](https://creativecommons.org/licenses/by/2.0/) | [sumber](https://www.flickr.com/photos/67726656@N00/4638829299) |
 | `tbone-3.jpg` | T-bone-raw-MCB | MCB at English Wikipedia | [by-sa](https://creativecommons.org/licenses/by-sa/2.5/) | [sumber](https://commons.wikimedia.org/w/index.php?curid=25331286) |
