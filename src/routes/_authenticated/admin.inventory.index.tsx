@@ -131,6 +131,18 @@ function InventoryBody() {
     },
   });
 
+  const { data: brands } = useQuery({
+    queryKey: ["admin-inventory-brands"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("admin_inventory")
+        .select("brand")
+        .not("brand", "is", null);
+      if (error) throw error;
+      return [...new Set((data ?? []).map((d) => d.brand as string).filter(Boolean))].sort();
+    },
+  });
+
   const { data: result, isLoading } = useQuery({
     queryKey: ["admin-inventory", { search, origin, condition, channel, featuredFilter, page, pageSize }],
     placeholderData: keepPreviousData,
