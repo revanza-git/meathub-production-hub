@@ -136,11 +136,16 @@ function CatalogPage() {
           ? "bulk"
           : "all";
 
-  const setSearchParams = (patch: Partial<CatalogSearchParams>, resetPage = true) => {
+  const setSearchParams = (
+    patch: Partial<CatalogSearchParams>,
+    resetPage = true,
+    scrollToTop = false,
+  ) => {
     void navigate({
       // Filtering must not yank the page back to the top — the shopper is
       // usually below the filter bar when toggling chips on mobile.
-      resetScroll: false,
+      // Pagination is the exception: jumping pages returns to the grid top.
+      resetScroll: scrollToTop,
       search: (prev) => {
         const next = { ...prev, ...patch } as CatalogSearchParams;
         if (resetPage) delete next.page;
