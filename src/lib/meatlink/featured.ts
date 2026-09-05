@@ -123,10 +123,13 @@ function seedIndex(seed: string, length: number): number {
   return Math.abs(h) % length;
 }
 
-/** Picks one of the real photos for a cut, varied deterministically by item. */
-export function pickCutPhoto(key: string, seed: string): string {
-  const pool = CUT_VARIANTS[key];
-  if (!pool || pool.length === 0) return resolveFeatureImage(key);
+/** Picks one of the real photos for a cut, varied deterministically by item.
+ *  When a cut has few photos, the matching marbling shot widens the pool. */
+export function pickCutPhoto(key: string, seed: string, gradeBand?: string | null): string {
+  const base = CUT_VARIANTS[key];
+  if (!base || base.length === 0) return resolveFeatureImage(key);
+  const gradeShot = gradeBand ? GRADE_IMAGES[gradeBand] : undefined;
+  const pool = base.length < 3 && gradeShot ? [...base, gradeShot] : base;
   return pool[seedIndex(seed, pool.length)];
 }
 
