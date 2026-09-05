@@ -31,6 +31,34 @@ File di-host di CDN Lovable melalui pointer `src/assets/photo/*.asset.json`.
 <tbody><tr>
 <td align="center" | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [wikimedia](https://commons.wikimedia.org/wiki/File:-2021-10-31_Rib_of_Beef,_Trimingham,_Norfolk.JPG) |
 
+
+## Varian foto tambahan per cut (agar katalog tidak terlihat duplikat)
+
+| Aset | Judul | Kreator | Lisensi | Sumber |
+|---|---|---|---|---|
+| `bone-2.jpg` | Celebrating Valentine's Day with a freezer full of raw beef  | lizasperling | [by](https://creativecommons.org/licenses/by/2.0/) | [sumber](https://www.flickr.com/photos/38987905@N08/16518483241) |
+| `bone-3.jpg` | Marrow Bones | Secretly Ironic | [by](https://creativecommons.org/licenses/by/2.0/) | [sumber](https://www.flickr.com/photos/41894141375@N01/2242090896) |
+| `knuckle-2.jpg` | Round Steak - Little Creek Cattle Company | avlxyz | [by-sa](https://creativecommons.org/licenses/by-sa/2.0/) | [sumber](https://www.flickr.com/photos/10559879@N00/4702604301) |
+| `knuckle-3.jpg` | Round Steak - close-up - Little Creek Cattle Company | avlxyz | [by-sa](https://creativecommons.org/licenses/by-sa/2.0/) | [sumber](https://www.flickr.com/photos/10559879@N00/4703241290) |
+| `lamb-rack-2.jpg` | 100_7193.JPG | smith_cl9 | [by-sa](https://creativecommons.org/licenses/by-sa/2.0/) | [sumber](https://www.flickr.com/photos/24415055@N00/5361171351) |
+| `lamb-rack-3.jpg` | 100_7191.JPG | smith_cl9 | [by-sa](https://creativecommons.org/licenses/by-sa/2.0/) | [sumber](https://www.flickr.com/photos/24415055@N00/5361170575) |
+| `offal-2.jpg` | Boqueria,trippa.jpg | K.Weise | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [sumber](https://commons.wikimedia.org/wiki/File:Boqueria,trippa.jpg) |
+| `offal-3.jpg` | Australian oxtail (1).jpg | Fumikas Sagisavas | [CC0](http://creativecommons.org/publicdomain/zero/1.0/deed.en) | [sumber](https://commons.wikimedia.org/wiki/File:Australian_oxtail_(1).jpg) |
+| `op-ribs-2.jpg` | 20170311_154327 | Wilson Hui | [by](https://creativecommons.org/licenses/by/2.0/) | [sumber](https://www.flickr.com/photos/51942038@N04/33376944276) |
+| `op-ribs-3.jpg` | Four Bones, Eight Pounds | BrownGuacamole | [by-nd](https://creativecommons.org/licenses/by-nd/2.0/) | [sumber](https://www.flickr.com/photos/20688578@N00/4144663693) |
+| `ribeye-2.jpg` | pic 6236 | BrownGuacamole | [by-nd](https://creativecommons.org/licenses/by-nd/2.0/) | [sumber](https://www.flickr.com/photos/20688578@N00/2813931819) |
+| `ribeye-3.jpg` | Lee Family House - Dinner | BrownGuacamole | [by-nd](https://creativecommons.org/licenses/by-nd/2.0/) | [sumber](https://www.flickr.com/photos/20688578@N00/2115792734) |
+| `short-rib-2.jpg` | Kalbi Beef Ribs - close-up, raw - Win Sam Butcher AUD8.99 pe | avlxyz | [by-sa](https://creativecommons.org/licenses/by-sa/2.0/) | [sumber](https://www.flickr.com/photos/10559879@N00/5095924981) |
+| `short-rib-3.jpg` | Kalbi Beef Ribs - raw - Win Sam Butcher AUD8.99 per kg | avlxyz | [by-sa](https://creativecommons.org/licenses/by-sa/2.0/) | [sumber](https://www.flickr.com/photos/10559879@N00/5095925101) |
+| `slice-2.jpg` | SHABU-WAY | whologwhy | [by](https://creativecommons.org/licenses/by/2.0/) | [sumber](https://www.flickr.com/photos/60417477@N00/4778058143) |
+| `slice-3.jpg` | SHABU-WAY | whologwhy | [by](https://creativecommons.org/licenses/by/2.0/) | [sumber](https://www.flickr.com/photos/60417477@N00/4778690292) |
+| `striploin-3.jpg` | -2020-11-20 Sirloin steak, Trimingham, Norfolk (2).JPG | <table style="margin: 1.5em auto; width:60%; background-color:#CCCCCC; border:2p | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [sumber](https://commons.wikimedia.org/wiki/File:-2020-11-20_Sirloin_steak,_Trimingham,_Norfolk_(2).JPG) |
+| `tbone-2.jpg` | Sous Vide FAIL - the cow | In Memoriam: chrisbulle | [by](https://creativecommons.org/licenses/by/2.0/) | [sumber](https://www.flickr.com/photos/67726656@N00/4638829299) |
+| `tbone-3.jpg` | T-bone-raw-MCB | MCB at English Wikipedia | [by-sa](https://creativecommons.org/licenses/by-sa/2.5/) | [sumber](https://commons.wikimedia.org/w/index.php?curid=25331286) |
+| `tenderloin-2.jpg` | 2021-12-23 18 29 37 Cuts of filet mignon being seasoned in A | Famartin | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [sumber](https://commons.wikimedia.org/wiki/File:2021-12-23_18_29_37_Cuts_of_filet_mignon_being_seasoned_in_Ashburn,_Loudoun_County,_Virginia.jpg) |
+| `tomahawk-2.jpg` | -2021-10-31 Rib of Beef, Trimingham, Norfolk.JPG | <table style="margin: 1.5em auto; width:60%; background-color:#CCCCCC; border:2p | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [sumber](https://commons.wikimedia.org/wiki/File:-2021-10-31_Rib_of_Beef,_Trimingham,_Norfolk.JPG) |
+| `tomahawk-3.jpg` | -2022-07-24 Tomahawk Rib eye steak, Trimingham, Norfolk.JPG | <table style="margin: 1.5em auto; width:60%; background-color:#CCCCCC; border:2p | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [sumber](https://commons.wikimedia.org/wiki/File:-2022-07-24_Tomahawk_Rib_eye_steak,_Trimingham,_Norfolk.JPG) |
+
 ## Catatan
 - Foto CC-BY / CC-BY-SA wajib mencantumkan kreator; halaman ini adalah atribusinya.
 - Foto bersifat ilustratif per cut/grade; produk aktual dapat berbeda per brand dan batch.

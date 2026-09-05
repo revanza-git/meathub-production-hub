@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { Bot, ChevronLeft, ChevronRight } from "lucide-react";
 import { PageHero, SiteLayout } from "@/components/site/site-layout";
 import { ImageDisclaimer } from "@/components/site/image-disclaimer";
-import { resolveFeatureImage, useFeaturedInventory } from "@/lib/meatlink/featured";
+import { resolveProductImage, useFeaturedInventory } from "@/lib/meatlink/featured";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { FALLBACK_NOTES, usePublishedInsights } from "@/lib/meatlink/insights";
 import { pickLocale, useBi, useLang } from "@/lib/i18n";
@@ -177,7 +177,7 @@ function InsightsPage() {
                 >
                   <div className="relative">
                     <img
-                      src={resolveFeatureImage(item.image_url)}
+                      src={resolveProductImage(item.image_url, item.name, null, null, null, item.id)}
                       alt={item.name}
                       loading="lazy"
                       width={1200}
