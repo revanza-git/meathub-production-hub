@@ -38,8 +38,6 @@ File di-host di CDN Lovable melalui pointer `src/assets/photo/*.asset.json`.
 |---|---|---|---|---|
 | `bone-2.jpg` | Celebrating Valentine's Day with a freezer full of raw beef  | lizasperling | [by](https://creativecommons.org/licenses/by/2.0/) | [sumber](https://www.flickr.com/photos/38987905@N08/16518483241) |
 | `bone-3.jpg` | Marrow Bones | Secretly Ironic | [by](https://creativecommons.org/licenses/by/2.0/) | [sumber](https://www.flickr.com/photos/41894141375@N01/2242090896) |
-| `brisket-2.jpg` | Wagyu brisket and kalbi - Maedaya | avlxyz | [by-sa](https://creativecommons.org/licenses/by-sa/2.0/) | [sumber](https://www.flickr.com/photos/10559879@N00/2522810505) |
-| `chuck-2.jpg` |  | petrr | [by](https://creativecommons.org/licenses/by/2.0/) | [sumber](https://www.flickr.com/photos/10357368@N00/2489881784) |
 | `knuckle-2.jpg` | Round Steak - Little Creek Cattle Company | avlxyz | [by-sa](https://creativecommons.org/licenses/by-sa/2.0/) | [sumber](https://www.flickr.com/photos/10559879@N00/4702604301) |
 | `knuckle-3.jpg` | Round Steak - close-up - Little Creek Cattle Company | avlxyz | [by-sa](https://creativecommons.org/licenses/by-sa/2.0/) | [sumber](https://www.flickr.com/photos/10559879@N00/4703241290) |
 | `lamb-rack-2.jpg` | 100_7193.JPG | smith_cl9 | [by-sa](https://creativecommons.org/licenses/by-sa/2.0/) | [sumber](https://www.flickr.com/photos/24415055@N00/5361171351) |
@@ -54,7 +52,6 @@ File di-host di CDN Lovable melalui pointer `src/assets/photo/*.asset.json`.
 | `short-rib-3.jpg` | Kalbi Beef Ribs - raw - Win Sam Butcher AUD8.99 per kg | avlxyz | [by-sa](https://creativecommons.org/licenses/by-sa/2.0/) | [sumber](https://www.flickr.com/photos/10559879@N00/5095925101) |
 | `slice-2.jpg` | SHABU-WAY | whologwhy | [by](https://creativecommons.org/licenses/by/2.0/) | [sumber](https://www.flickr.com/photos/60417477@N00/4778058143) |
 | `slice-3.jpg` | SHABU-WAY | whologwhy | [by](https://creativecommons.org/licenses/by/2.0/) | [sumber](https://www.flickr.com/photos/60417477@N00/4778690292) |
-| `striploin-2.jpg` | Irish Beach - Dinner | BrownGuacamole | [by-nd](https://creativecommons.org/licenses/by-nd/2.0/) | [sumber](https://www.flickr.com/photos/20688578@N00/2215654512) |
 | `striploin-3.jpg` | -2020-11-20 Sirloin steak, Trimingham, Norfolk (2).JPG | <table style="margin: 1.5em auto; width:60%; background-color:#CCCCCC; border:2p | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) | [sumber](https://commons.wikimedia.org/wiki/File:-2020-11-20_Sirloin_steak,_Trimingham,_Norfolk_(2).JPG) |
 | `tbone-2.jpg` | Sous Vide FAIL - the cow | In Memoriam: chrisbulle | [by](https://creativecommons.org/licenses/by/2.0/) | [sumber](https://www.flickr.com/photos/67726656@N00/4638829299) |
 | `tbone-3.jpg` | T-bone-raw-MCB | MCB at English Wikipedia | [by-sa](https://creativecommons.org/licenses/by-sa/2.5/) | [sumber](https://commons.wikimedia.org/w/index.php?curid=25331286) |
