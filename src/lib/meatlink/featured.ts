@@ -203,7 +203,14 @@ export function resolveProductImage(
   cutType?: string | null,
   seed?: string | null,
 ): string {
-  if (imageUrl) return resolveFeatureImage(imageUrl);
+  const variantSeed0 = `${seed ?? ""}|${name ?? ""}|${gradeBand ?? ""}`;
+  if (imageUrl) {
+    // A real uploaded photo always wins; a preset key still gets cut variety.
+    const isUrl =
+      /^https?:\/\//i.test(imageUrl) || imageUrl.startsWith("/__l5e/") || imageUrl.startsWith("/");
+    if (isUrl) return imageUrl;
+    return pickCutPhoto(IMAGE_ALIASES[imageUrl] ?? imageUrl, variantSeed0);
+  }
   const variantSeed = `${seed ?? ""}|${name ?? ""}|${gradeBand ?? ""}`;
   const byCut = matchCut(cutType ?? "") ?? matchCut(name ?? "");
   if (byCut) return pickCutPhoto(byCut, variantSeed);
