@@ -322,7 +322,19 @@ function InventoryBody() {
           ))}
         </select>
         <select
-          value={condition}
+          value={brand}
+          onChange={(e) => setBrand(e.target.value)}
+          aria-label={bi("Filter berdasarkan merek", "Filter by brand")}
+          className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
+        >
+          <option value="">{bi("Semua merek", "All brands")}</option>
+          {(brands ?? []).map((b) => (
+            <option key={b} value={b}>
+              {b}
+            </option>
+          ))}
+        </select>
+        <select
           onChange={(e) => setCondition(e.target.value)}
           aria-label={bi("Filter berdasarkan kondisi", "Filter by condition")}
           className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
