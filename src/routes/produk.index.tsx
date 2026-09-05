@@ -138,6 +138,9 @@ function CatalogPage() {
 
   const setSearchParams = (patch: Partial<CatalogSearchParams>, resetPage = true) => {
     void navigate({
+      // Filtering must not yank the page back to the top — the shopper is
+      // usually below the filter bar when toggling chips on mobile.
+      resetScroll: false,
       search: (prev) => {
         const next = { ...prev, ...patch } as CatalogSearchParams;
         if (resetPage) delete next.page;
