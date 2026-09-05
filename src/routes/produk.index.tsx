@@ -136,8 +136,16 @@ function CatalogPage() {
           ? "bulk"
           : "all";
 
-  const setSearchParams = (patch: Partial<CatalogSearchParams>, resetPage = true) => {
+  const setSearchParams = (
+    patch: Partial<CatalogSearchParams>,
+    resetPage = true,
+    scrollToTop = false,
+  ) => {
     void navigate({
+      // Filtering must not yank the page back to the top — the shopper is
+      // usually below the filter bar when toggling chips on mobile.
+      // Pagination is the exception: jumping pages returns to the grid top.
+      resetScroll: scrollToTop,
       search: (prev) => {
         const next = { ...prev, ...patch } as CatalogSearchParams;
         if (resetPage) delete next.page;
@@ -496,7 +504,7 @@ function CatalogPage() {
                 <button
                   type="button"
                   disabled={page <= 1}
-                  onClick={() => setSearchParams({ page: Math.max(1, page - 1) }, false)}
+                  onClick={() => setSearchParams({ page: Math.max(1, page - 1) }, false, true)}
                   className="eyebrow border border-line px-5 py-3 text-ink disabled:opacity-40"
                 >
                   Sebelumnya
@@ -507,7 +515,7 @@ function CatalogPage() {
                 <button
                   type="button"
                   disabled={page >= pages}
-                  onClick={() => setSearchParams({ page: Math.min(pages, page + 1) }, false)}
+                  onClick={() => setSearchParams({ page: Math.min(pages, page + 1) }, false, true)}
                   className="eyebrow border border-line px-5 py-3 text-ink disabled:opacity-40"
                 >
                   Berikutnya
