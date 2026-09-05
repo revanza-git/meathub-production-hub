@@ -220,15 +220,15 @@ export function resolveProductImage(
     const isUrl =
       /^https?:\/\//i.test(imageUrl) || imageUrl.startsWith("/__l5e/") || imageUrl.startsWith("/");
     if (isUrl) return imageUrl;
-    return pickCutPhoto(IMAGE_ALIASES[imageUrl] ?? imageUrl, variantSeed0);
+    return pickCutPhoto(IMAGE_ALIASES[imageUrl] ?? imageUrl, variantSeed0, gradeBand);
   }
   const variantSeed = variantSeed0;
   const byCut = matchCut(cutType ?? "") ?? matchCut(name ?? "");
-  if (byCut) return pickCutPhoto(byCut, variantSeed);
+  if (byCut) return pickCutPhoto(byCut, variantSeed, gradeBand);
   if (category === "OFFAL") return pickCutPhoto("offal", variantSeed);
   if (category === "BONE") return pickCutPhoto("bone", variantSeed);
   if (gradeBand && GRADE_IMAGES[gradeBand]) return GRADE_IMAGES[gradeBand];
-  if (category === "SECOND_CUT") return pickCutPhoto("chuck", variantSeed);
+  if (category === "SECOND_CUT") return pickCutPhoto("chuck", variantSeed, gradeBand);
   return pickCutPhoto("striploin", variantSeed);
 }
 
