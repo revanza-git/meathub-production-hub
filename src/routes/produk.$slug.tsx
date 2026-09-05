@@ -91,7 +91,7 @@ function ProductPage() {
             <div>
               <div className="relative mb-3 aspect-[16/10] overflow-hidden bg-ink/5">
                 <img
-                  src={resolveProductImage(product.image_url, product.name, product.category, product.grade_band, product.cut_type)}
+                  src={resolveProductImage(product.image_url, product.name, product.category, product.grade_band, product.cut_type, product.slug ?? product.id)}
                   alt={product.name}
                   width={1024}
                   height={768}
@@ -405,7 +405,7 @@ function RelatedProducts({ category, slug }: { category: ProductCategory; slug: 
           >
             <div className="relative aspect-[4/3] overflow-hidden bg-ink/5">
               <img
-                src={resolveProductImage(row.image_url, row.name, row.category, row.grade_band, row.cut_type)}
+                src={resolveProductImage(row.image_url, row.name, row.category, row.grade_band, row.cut_type, row.slug ?? row.id)}
                 alt={row.name}
                 loading="lazy"
                 width={1024}

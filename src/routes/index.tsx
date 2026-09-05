@@ -232,7 +232,7 @@ function AvailableNow() {
                 >
                   <div className="relative aspect-[4/3] overflow-hidden bg-ink/5">
                     <img
-                      src={resolveProductImage(row.image_url, row.name, row.category, row.grade_band, row.cut_type)}
+                      src={resolveProductImage(row.image_url, row.name, row.category, row.grade_band, row.cut_type, row.slug ?? row.id)}
                       alt={row.name}
                       loading="lazy"
                       width={1024}
@@ -443,7 +443,7 @@ function MarketInsights() {
             <article key={item.id} className="bg-card">
               <div className="relative">
                 <img
-                  src={resolveFeatureImage(item.image_url)}
+                  src={resolveProductImage(item.image_url, item.name, null, null, null, item.id)}
                   alt={item.name}
                   loading="lazy"
                   width={1200}
