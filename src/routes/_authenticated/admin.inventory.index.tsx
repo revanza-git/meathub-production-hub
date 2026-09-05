@@ -321,6 +321,19 @@ function InventoryBody() {
           ))}
         </select>
         <select
+          value={channel}
+          onChange={(e) => setChannel(e.target.value)}
+          aria-label={bi("Filter berdasarkan kanal", "Filter by channel")}
+          className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
+        >
+          <option value="">{bi("Semua kanal", "All channels")}</option>
+          {SALE_UNITS.map((u) => (
+            <option key={u} value={u}>
+              {bi(UNIT_LABEL[u].id, UNIT_LABEL[u].en)}
+            </option>
+          ))}
+        </select>
+        <select
           value={featuredFilter}
           onChange={(e) => setFeaturedFilter(e.target.value as typeof featuredFilter)}
           aria-label={bi("Filter berdasarkan status unggulan", "Filter by featured status")}
