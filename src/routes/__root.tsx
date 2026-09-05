@@ -100,6 +100,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Meatlink.id connects Indonesian restaurants, hotels and retailers with trusted meat importers and suppliers. Send one RFQ, get matched quotes.",
       },
       { name: "author", content: "Meatlink.id" },
+      {
+        name: "google-site-verification",
+        content: "uMDzlbny2GI5KwNjQ75iVmynKRTObyFegOEcrf8J7E0",
+      },
+
       { name: "theme-color", content: "#0D0D0D" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-title", content: "Meatlink.id" },
