@@ -9,6 +9,7 @@ type UploadInput = {
 };
 
 const MAX_BYTES = 5 * 1024 * 1024;
+const BUCKET = "inventory-photos";
 const ALLOWED = new Set(["image/jpeg", "image/png", "image/webp"]);
 const EXT_BY_TYPE: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -16,15 +17,12 @@ const EXT_BY_TYPE: Record<string, string> = {
   "image/webp": "webp",
 };
 
-export const IMAGE_PROXY_PREFIX = "/api/public/img/";
-
 /**
  * Uploads a product photo for an admin_inventory row.
  *
- * The bucket is private: only platform admins can upload (checked via
- * ml_has_role), and public reads are served through the /api/public/img proxy
- * route. The stored image_url is the proxy path, which resolveFeatureImage
- * already passes through as-is.
+ * The bucket is public (read), but uploads are restricted to platform admins
+ * via ml_has_role. The stored image_url is the bucket's public URL, which
+ * resolveFeatureImage / resolveProductImage pass through as-is.
  */
 export const uploadInventoryImage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -66,11 +64,13 @@ export const uploadInventoryImage = createServerFn({ method: "POST" })
     const path = `items/${item.id}/${Date.now()}-${rand}.${ext}`;
 
     const { error: upErr } = await supabaseAdmin.storage
-      .from("admin-inventory")
+      .from(BUCKET)
       .upload(path, bytes, { contentType: data.contentType, upsert: false });
     if (upErr) throw new Error("Gagal mengunggah gambar.");
 
-    const url = `${IMAGE_PROXY_PREFIX}${path}`;
+    const { data: pub } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(path);
+    const url = pub.publicUrl;
+
     const { error: linkErr } = await supabaseAdmin
       .from("admin_inventory")
       .update({ image_url: url })

@@ -1,4 +1,5 @@
-import { createFileRoute, Link, useServerFn } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -216,6 +217,48 @@ function InventoryBody() {
     void qc.invalidateQueries({ queryKey: ["featured-inventory"] });
   }
 
+  const uploadImage = useServerFn(uploadInventoryImage);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadTargetRef = useRef<string | null>(null);
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+
+  function pickPhoto(itemId: string) {
+    uploadTargetRef.current = itemId;
+    fileInputRef.current?.click();
+  }
+
+  async function onPhotoChosen(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    const itemId = uploadTargetRef.current;
+    uploadTargetRef.current = null;
+    if (!file || !itemId) return;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      toast.error(bi("Format gambar harus JPG, PNG, atau WEBP.", "Image must be JPG, PNG, or WEBP."));
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(bi("Ukuran gambar maksimal 5 MB.", "Image must be 5 MB or smaller."));
+      return;
+    }
+    setUploadingId(itemId);
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "");
+        reader.onerror = () => reject(new Error("read failed"));
+        reader.readAsDataURL(file);
+      });
+      await uploadImage({ data: { itemId, contentType: file.type, data: base64 } });
+      toast.success(bi("Foto produk diperbarui.", "Product photo updated."));
+      refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : bi("Gagal mengunggah foto.", "Upload failed."));
+    } finally {
+      setUploadingId(null);
+    }
+  }
+
 
 
   async function addItem(e: React.FormEvent) {
@@ -293,6 +336,14 @@ function InventoryBody() {
 
   return (
     <div className="grid gap-6">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        aria-hidden="true"
+        onChange={(e) => void onPhotoChosen(e)}
+      />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label={bi("SKU (difilter)", "SKUs (filtered)")} value={String(total)} />
         <Stat label={bi(`Perlu restock (≤ ${threshold} kg)`, `Needs restock (≤ ${threshold} kg)`)} value={String(lowCount)} />
@@ -803,6 +854,9 @@ function InventoryBody() {
                           onChange={(e) => void patch(item.id, { image_url: e.target.value })}
                           className="border border-line bg-bone px-2 py-1 text-xs text-ink outline-none focus:border-crimson"
                         >
+                          {item.image_url && !FEATURE_IMAGES.some((img) => img.key === item.image_url) ? (
+                            <option value={item.image_url}>{bi("Foto kustom", "Custom photo")}</option>
+                          ) : null}
                           {FEATURE_IMAGES.map((img) => (
                             <option key={img.key} value={img.key}>
                               {img.label}
@@ -810,6 +864,16 @@ function InventoryBody() {
                           ))}
                         </select>
                       ) : null}
+                      <button
+                        type="button"
+                        disabled={uploadingId === item.id}
+                        onClick={() => pickPhoto(item.id)}
+                        className="text-xs text-ash underline underline-offset-4 disabled:opacity-40"
+                      >
+                        {uploadingId === item.id
+                          ? bi("Mengunggah…", "Uploading…")
+                          : bi("Ganti foto", "Change photo")}
+                      </button>
                     </div>
                   </td>
 
