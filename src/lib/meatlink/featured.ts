@@ -20,6 +20,31 @@ import striploinImg from "@/assets/photo/striploin.jpg.asset.json";
 import tboneImg from "@/assets/photo/tbone.jpg.asset.json";
 import tenderloinImg from "@/assets/photo/tenderloin.jpg.asset.json";
 import tomahawkImg from "@/assets/photo/tomahawk.jpg.asset.json";
+import bone2Img from "@/assets/photo/bone-2.jpg.asset.json";
+import bone3Img from "@/assets/photo/bone-3.jpg.asset.json";
+import brisket2Img from "@/assets/photo/brisket-2.jpg.asset.json";
+import chuck2Img from "@/assets/photo/chuck-2.jpg.asset.json";
+import knuckle2Img from "@/assets/photo/knuckle-2.jpg.asset.json";
+import knuckle3Img from "@/assets/photo/knuckle-3.jpg.asset.json";
+import lambRack2Img from "@/assets/photo/lamb-rack-2.jpg.asset.json";
+import lambRack3Img from "@/assets/photo/lamb-rack-3.jpg.asset.json";
+import offal2Img from "@/assets/photo/offal-2.jpg.asset.json";
+import offal3Img from "@/assets/photo/offal-3.jpg.asset.json";
+import opRibs2Img from "@/assets/photo/op-ribs-2.jpg.asset.json";
+import opRibs3Img from "@/assets/photo/op-ribs-3.jpg.asset.json";
+import ribeye2Img from "@/assets/photo/ribeye-2.jpg.asset.json";
+import ribeye3Img from "@/assets/photo/ribeye-3.jpg.asset.json";
+import shortRib2Img from "@/assets/photo/short-rib-2.jpg.asset.json";
+import shortRib3Img from "@/assets/photo/short-rib-3.jpg.asset.json";
+import slice2Img from "@/assets/photo/slice-2.jpg.asset.json";
+import slice3Img from "@/assets/photo/slice-3.jpg.asset.json";
+import striploin2Img from "@/assets/photo/striploin-2.jpg.asset.json";
+import striploin3Img from "@/assets/photo/striploin-3.jpg.asset.json";
+import tbone2Img from "@/assets/photo/tbone-2.jpg.asset.json";
+import tbone3Img from "@/assets/photo/tbone-3.jpg.asset.json";
+import tenderloin2Img from "@/assets/photo/tenderloin-2.jpg.asset.json";
+import tomahawk2Img from "@/assets/photo/tomahawk-2.jpg.asset.json";
+import tomahawk3Img from "@/assets/photo/tomahawk-3.jpg.asset.json";
 import type { InventoryItem } from "./inventory";
 
 /** Real (non-AI) reference photography, licensed CC0/CC-BY — see docs/IMAGE_CREDITS.md. */
@@ -66,6 +91,43 @@ export function resolveFeatureImage(value: string | null | undefined): string {
     return value;
   const key = IMAGE_ALIASES[value] ?? value;
   return FEATURE_IMAGES.find((i) => i.key === key)?.src ?? FEATURE_IMAGES[0].src;
+}
+
+
+/** Additional real photos per cut so repeated cuts don't all show the same picture. */
+const CUT_VARIANTS: Record<string, readonly string[]> = {
+  ribeye: [ribeyeImg.url, ribeye2Img.url, ribeye3Img.url],
+  tenderloin: [tenderloinImg.url, tenderloin2Img.url],
+  striploin: [striploinImg.url, striploin2Img.url, striploin3Img.url],
+  tomahawk: [tomahawkImg.url, tomahawk2Img.url, tomahawk3Img.url],
+  tbone: [tboneImg.url, tbone2Img.url, tbone3Img.url],
+  "op-ribs": [opRibsImg.url, opRibs2Img.url, opRibs3Img.url],
+  "short-rib": [shortRibImg.url, shortRib2Img.url, shortRib3Img.url],
+  chuck: [chuckImg.url, chuck2Img.url],
+  brisket: [brisketImg.url, brisket2Img.url],
+  knuckle: [knuckleImg.url, knuckle2Img.url, knuckle3Img.url],
+  slice: [sliceImg.url, slice2Img.url, slice3Img.url],
+  "lamb-rack": [lambRackImg.url, lambRack2Img.url, lambRack3Img.url],
+  offal: [offalImg.url, offal2Img.url, offal3Img.url],
+  bone: [boneImg.url, bone2Img.url, bone3Img.url],
+};
+
+/** Stable hash so an item always keeps the same photo across renders and sessions. */
+function seedIndex(seed: string, length: number): number {
+  if (length <= 1) return 0;
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return Math.abs(h) % length;
+}
+
+/** Picks one of the real photos for a cut, varied deterministically by item. */
+export function pickCutPhoto(key: string, seed: string): string {
+  const pool = CUT_VARIANTS[key];
+  if (!pool || pool.length === 0) return resolveFeatureImage(key);
+  return pool[seedIndex(seed, pool.length)];
 }
 
 /** Cut keywords → photo key, most specific first. */
@@ -139,15 +201,17 @@ export function resolveProductImage(
   category: string | null | undefined,
   gradeBand?: string | null,
   cutType?: string | null,
+  seed?: string | null,
 ): string {
   if (imageUrl) return resolveFeatureImage(imageUrl);
+  const variantSeed = `${seed ?? ""}|${name ?? ""}|${gradeBand ?? ""}`;
   const byCut = matchCut(cutType ?? "") ?? matchCut(name ?? "");
-  if (byCut) return resolveFeatureImage(byCut);
-  if (category === "OFFAL") return resolveFeatureImage("offal");
-  if (category === "BONE") return resolveFeatureImage("bone");
+  if (byCut) return pickCutPhoto(byCut, variantSeed);
+  if (category === "OFFAL") return pickCutPhoto("offal", variantSeed);
+  if (category === "BONE") return pickCutPhoto("bone", variantSeed);
   if (gradeBand && GRADE_IMAGES[gradeBand]) return GRADE_IMAGES[gradeBand];
-  if (category === "SECOND_CUT") return resolveFeatureImage("chuck");
-  return resolveFeatureImage("striploin");
+  if (category === "SECOND_CUT") return pickCutPhoto("chuck", variantSeed);
+  return pickCutPhoto("striploin", variantSeed);
 }
 
 
