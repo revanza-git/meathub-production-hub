@@ -160,9 +160,17 @@ const CUT_MATCHES: readonly (readonly [string, string])[] = [
   ["ny strip", "striploin"],
   ["sirloin", "striploin"],
   ["contra file", "striploin"],
+  ["flank", "brisket"],
+  ["skirt", "brisket"],
+  ["plate", "brisket"],
   ["brisket", "brisket"],
   ["sandung", "brisket"],
   ["chuck", "chuck"],
+  ["zabuton", "chuck"],
+  ["shin", "chuck"],
+  ["shank", "chuck"],
+  [" vl", "chuck"],
+  ["trimming", "chuck"],
   ["blade", "chuck"],
   ["knuckle", "knuckle"],
   ["round", "knuckle"],
@@ -211,7 +219,7 @@ export function resolveProductImage(
     if (isUrl) return imageUrl;
     return pickCutPhoto(IMAGE_ALIASES[imageUrl] ?? imageUrl, variantSeed0);
   }
-  const variantSeed = `${seed ?? ""}|${name ?? ""}|${gradeBand ?? ""}`;
+  const variantSeed = variantSeed0;
   const byCut = matchCut(cutType ?? "") ?? matchCut(name ?? "");
   if (byCut) return pickCutPhoto(byCut, variantSeed);
   if (category === "OFFAL") return pickCutPhoto("offal", variantSeed);
