@@ -57,7 +57,6 @@ import { Route as AuthenticatedAppOrdersIndexRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminOrdersIndexRouteImport } from './routes/_authenticated/admin.orders.index'
 import { Route as AuthenticatedAdminInventoryIndexRouteImport } from './routes/_authenticated/admin.inventory.index'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
-import { Route as ApiPublicImgSplatRouteImport } from './routes/api/public/img/$'
 import { Route as AuthenticatedAppOrdersNewRouteImport } from './routes/_authenticated/app.orders.new'
 import { Route as AuthenticatedAppOrdersIdRouteImport } from './routes/_authenticated/app.orders.$id'
 import { Route as AuthenticatedAppInvoiceOrderNoRouteImport } from './routes/_authenticated/app.invoice.$orderNo'
@@ -319,11 +318,6 @@ const LovableEmailTransactionalPreviewRoute =
     path: '/lovable/email/transactional/preview',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicImgSplatRoute = ApiPublicImgSplatRouteImport.update({
-  id: '/api/public/img/$',
-  path: '/api/public/img/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedAppOrdersNewRoute =
   AuthenticatedAppOrdersNewRouteImport.update({
     id: '/app/orders/new',
@@ -404,7 +398,6 @@ export interface FileRoutesByFullPath {
   '/app/invoice/$orderNo': typeof AuthenticatedAppInvoiceOrderNoRoute
   '/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
   '/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
-  '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/admin/inventory/': typeof AuthenticatedAdminInventoryIndexRoute
   '/admin/orders/': typeof AuthenticatedAdminOrdersIndexRoute
@@ -459,7 +452,6 @@ export interface FileRoutesByTo {
   '/app/invoice/$orderNo': typeof AuthenticatedAppInvoiceOrderNoRoute
   '/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
   '/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
-  '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/admin/inventory': typeof AuthenticatedAdminInventoryIndexRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersIndexRoute
@@ -516,7 +508,6 @@ export interface FileRoutesById {
   '/_authenticated/app/invoice/$orderNo': typeof AuthenticatedAppInvoiceOrderNoRoute
   '/_authenticated/app/orders/$id': typeof AuthenticatedAppOrdersIdRoute
   '/_authenticated/app/orders/new': typeof AuthenticatedAppOrdersNewRoute
-  '/api/public/img/$': typeof ApiPublicImgSplatRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
   '/_authenticated/admin/inventory/': typeof AuthenticatedAdminInventoryIndexRoute
   '/_authenticated/admin/orders/': typeof AuthenticatedAdminOrdersIndexRoute
@@ -573,7 +564,6 @@ export interface FileRouteTypes {
     | '/app/invoice/$orderNo'
     | '/app/orders/$id'
     | '/app/orders/new'
-    | '/api/public/img/$'
     | '/lovable/email/transactional/preview'
     | '/admin/inventory/'
     | '/admin/orders/'
@@ -628,7 +618,6 @@ export interface FileRouteTypes {
     | '/app/invoice/$orderNo'
     | '/app/orders/$id'
     | '/app/orders/new'
-    | '/api/public/img/$'
     | '/lovable/email/transactional/preview'
     | '/admin/inventory'
     | '/admin/orders'
@@ -684,7 +673,6 @@ export interface FileRouteTypes {
     | '/_authenticated/app/invoice/$orderNo'
     | '/_authenticated/app/orders/$id'
     | '/_authenticated/app/orders/new'
-    | '/api/public/img/$'
     | '/lovable/email/transactional/preview'
     | '/_authenticated/admin/inventory/'
     | '/_authenticated/admin/orders/'
@@ -721,7 +709,6 @@ export interface RootRouteChildren {
   ApiPublicIpaymuCallbackRoute: typeof ApiPublicIpaymuCallbackRoute
   ApiPublicMerchantFeedDotxmlRoute: typeof ApiPublicMerchantFeedDotxmlRoute
   ApiPublicOpsCronRoute: typeof ApiPublicOpsCronRoute
-  ApiPublicImgSplatRoute: typeof ApiPublicImgSplatRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
@@ -1063,13 +1050,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/img/$': {
-      id: '/api/public/img/$'
-      path: '/api/public/img/$'
-      fullPath: '/api/public/img/$'
-      preLoaderRoute: typeof ApiPublicImgSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated/app/orders/new': {
       id: '/_authenticated/app/orders/new'
       path: '/app/orders/new'
@@ -1196,7 +1176,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicIpaymuCallbackRoute: ApiPublicIpaymuCallbackRoute,
   ApiPublicMerchantFeedDotxmlRoute: ApiPublicMerchantFeedDotxmlRoute,
   ApiPublicOpsCronRoute: ApiPublicOpsCronRoute,
-  ApiPublicImgSplatRoute: ApiPublicImgSplatRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport
