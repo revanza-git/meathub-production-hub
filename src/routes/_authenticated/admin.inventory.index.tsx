@@ -335,6 +335,14 @@ function InventoryBody() {
 
   return (
     <div className="grid gap-6">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        aria-hidden="true"
+        onChange={(e) => void onPhotoChosen(e)}
+      />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label={bi("SKU (difilter)", "SKUs (filtered)")} value={String(total)} />
         <Stat label={bi(`Perlu restock (≤ ${threshold} kg)`, `Needs restock (≤ ${threshold} kg)`)} value={String(lowCount)} />
