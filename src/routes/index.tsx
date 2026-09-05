@@ -18,7 +18,7 @@ import { ImageDisclaimer } from "@/components/site/image-disclaimer";
 import { PriceTag, PromoFlag } from "@/components/site/price-tag";
 import { Recommendations } from "@/components/meatlink/recommendations";
 import { CATEGORY_LABEL, useCatalog } from "@/lib/meatlink/catalog";
-import { resolveFeatureImage, resolveProductImage, useFeaturedInventory } from "@/lib/meatlink/featured";
+import { resolveProductImage, useFeaturedInventory } from "@/lib/meatlink/featured";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import heroImg from "@/assets/hero-wagyu.jpg";
 import { DICT, useLang, type TKey } from "@/lib/i18n";
