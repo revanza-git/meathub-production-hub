@@ -1,13 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
-  BadgeCheck,
   ChevronDown,
   ClipboardList,
-  CreditCard,
-  Snowflake,
-  Truck,
-  Users,
+  PackageSearch,
+  Tags,
 } from "lucide-react";
 import { useState } from "react";
 import { CATEGORY_PAGES } from "@/lib/meatlink/categories";
@@ -41,19 +38,20 @@ const FAQ_JSONLD = {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Meatlink.id — Belanja Daging B2B, Harga Transparan" },
+      { title: "Pengadaan Daging untuk Bisnis — Meatlink.id" },
       {
         name: "description",
         content:
-          "Belanja daging premium untuk resto, hotel, katering, toko daging dan reseller: prime cut, second cut, offal dan bone dari importir terverifikasi. Harga per kilogram terbuka, kirim se-Indonesia.",
+          "Pengadaan daging untuk restoran, hotel, katering, toko daging dan reseller. Jelajahi harga transparan atau minta penawaran khusus di Meatlink.id.",
       },
-      { property: "og:title", content: "Meatlink.id — Belanja daging B2B, harga transparan" },
+      { property: "og:title", content: "Pengadaan Daging untuk Bisnis — Meatlink.id" },
       {
         property: "og:description",
         content:
-          "Katalog daging B2B siap pesan dari importir terverifikasi, dengan harga per kilogram dan pengiriman nasional.",
+          "Katalog dan solusi sourcing daging untuk restoran, hotel, katering, toko daging, retailer, dan reseller di Indonesia.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://meatlink.id/" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "canonical", href: "https://meatlink.id/" }],
@@ -63,13 +61,12 @@ export const Route = createFileRoute("/")({
 });
 
 const BENEFITS = [
-  { icon: BadgeCheck, key: "verified" },
-  { icon: Snowflake, key: "cold" },
-  { icon: CreditCard, key: "payment" },
-  { icon: Truck, key: "delivery" },
-  { icon: Users, key: "scale" },
-  { icon: ClipboardList, key: "sourcing" },
+  { icon: PackageSearch, key: "selection" },
+  { icon: Tags, key: "transparent" },
+  { icon: ClipboardList, key: "flexible" },
 ] as const;
+
+const AUDIENCES = ["restaurant", "hotel", "catering", "butcher", "retailer", "reseller"] as const;
 
 function HomePage() {
   return (
@@ -80,14 +77,14 @@ function HomePage() {
       <Recommendations />
       <ShopByOrigin />
       <Benefits />
-      <SpecialSourcingCta />
+      <ProcurementPaths />
       <Faq />
       <MarketInsights />
     </SiteLayout>
   );
 }
 
-/** Compact commercial hero: value proposition, working search, two CTAs. */
+/** Compact commercial hero: B2B value proposition, working search and two buying paths. */
 function CommercialHero() {
   const { t } = useLang();
   return (
@@ -100,39 +97,45 @@ function CommercialHero() {
         className="absolute inset-0 h-full w-full object-cover opacity-40"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-noir via-noir/85 to-noir/30" />
-      <div className="relative mx-auto flex min-h-[420px] max-w-7xl flex-col justify-center px-5 py-14 lg:min-h-[480px] lg:px-8">
-        <div className="max-w-2xl fade-in-up">
+      <div className="relative mx-auto flex min-h-[560px] max-w-7xl flex-col justify-center px-5 py-12 sm:min-h-[540px] lg:min-h-[570px] lg:px-8 lg:py-16">
+        <div className="max-w-3xl fade-in-up">
           <p className="eyebrow text-crimson">{t("home.hero.eyebrow")}</p>
-          <h1 className="mt-5 font-display text-4xl leading-[1.05] sm:text-5xl">
-            {t("home.hero.title1")}
-            <br />
-            <span className="italic text-bone/85">{t("home.hero.title2")}</span>
+          <h1 className="mt-4 max-w-3xl font-display text-4xl leading-[1.08] sm:text-5xl lg:text-[3.5rem]">
+            {t("home.hero.title")}
           </h1>
-          <p className="mt-5 max-w-xl text-sm leading-relaxed text-bone/70">
+          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-bone/75 sm:text-base">
             {t("home.hero.body")}
           </p>
 
-          <CatalogSearch dark className="mt-8 max-w-xl" />
+          <CatalogSearch dark className="mt-7 max-w-2xl" />
 
-          <div className="mt-6 flex flex-wrap items-center gap-3">
+          <div className="mt-5 flex flex-wrap items-center gap-3">
             <Link
               to="/produk"
-              className="eyebrow inline-flex items-center gap-2 bg-crimson px-7 py-4 text-bone transition-colors hover:bg-crimson-deep"
+              className="eyebrow inline-flex min-h-12 items-center justify-center gap-2 bg-crimson px-6 py-3 text-bone transition-colors hover:bg-crimson-deep"
             >
               {t("home.hero.shop")} <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
             <Link
-              to="/produk"
-              className="eyebrow inline-flex items-center border border-white/25 px-7 py-4 text-bone transition-colors hover:bg-white/10"
-            >
-              {t("home.hero.categories")}
-            </Link>
-            <Link
               to="/request-quote"
-              className="eyebrow text-bone/65 underline-offset-4 transition-colors hover:text-bone hover:underline"
+              className="eyebrow inline-flex min-h-12 items-center justify-center gap-2 border border-white/30 px-6 py-3 text-bone transition-colors hover:bg-white/10"
             >
-              {t("home.hero.special")}
+              {t("home.hero.quote")} <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
+          </div>
+
+          <div className="mt-7 border-t border-white/15 pt-4">
+            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-bone/50">
+              {t("home.hero.audienceLabel")}
+            </p>
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-bone/75">
+              {AUDIENCES.map((audience) => (
+                <span key={audience} className="inline-flex items-center gap-2">
+                  <span className="h-1 w-1 rounded-full bg-crimson" aria-hidden="true" />
+                  {t(`home.hero.audience.${audience}` as TKey)}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -314,13 +317,13 @@ function Benefits() {
         </p>
 
 
-        <div className="mt-16 grid border border-white/10 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid border-y border-white/10 md:grid-cols-3">
           {BENEFITS.map((b) => (
             <div
               key={b.key}
-              className="group border-b border-white/10 p-8 last:border-b-0 sm:[&:nth-child(odd)]:border-r lg:[&:nth-child(odd)]:border-r-0 lg:[&:not(:nth-child(3n))]:border-r"
+              className="group border-b border-white/10 py-8 last:border-b-0 md:border-b-0 md:px-8 md:first:pl-0 md:last:pr-0 md:[&:not(:last-child)]:border-r"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-crimson/40 text-crimson">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full border border-crimson/40 text-crimson">
                 <b.icon className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
               </div>
               <h3 className="mt-6 font-display text-xl">
@@ -338,26 +341,37 @@ function Benefits() {
 }
 
 
-function SpecialSourcingCta() {
+function ProcurementPaths() {
   const { t } = useLang();
   return (
     <section className="bg-sand">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6 px-5 py-12 lg:px-8">
-        <div className="max-w-2xl">
-          <p className="eyebrow text-crimson">{t("home.cta.eyebrow")}</p>
-          <h2 className="mt-4 font-display text-2xl sm:text-3xl">
-            {t("home.cta.title")}
-          </h2>
-          <p className="mt-3 text-sm leading-relaxed text-ash">
-            {t("home.cta.body")}
-          </p>
+      <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
+        <p className="eyebrow text-crimson">{t("home.paths.eyebrow")}</p>
+        <h2 className="mt-4 max-w-2xl font-display text-3xl sm:text-4xl">{t("home.paths.title")}</h2>
+        <div className="mt-10 grid border-y border-line md:grid-cols-2">
+          <div className="py-8 md:border-r md:border-line md:pr-10">
+            <p className="eyebrow text-ash">{t("home.paths.standardLabel")}</p>
+            <h3 className="mt-3 font-display text-2xl text-ink">{t("home.paths.standardTitle")}</h3>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-ash">{t("home.paths.standardBody")}</p>
+            <Link
+              to="/produk"
+              className="eyebrow mt-6 inline-flex min-h-11 items-center gap-2 text-ink underline decoration-crimson decoration-2 underline-offset-8 transition-colors hover:text-crimson"
+            >
+              {t("home.paths.standardButton")} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
+          <div className="border-t border-line py-8 md:border-t-0 md:pl-10">
+            <p className="eyebrow text-crimson">{t("home.paths.customLabel")}</p>
+            <h3 className="mt-3 font-display text-2xl text-ink">{t("home.paths.customTitle")}</h3>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-ash">{t("home.paths.customBody")}</p>
+            <Link
+              to="/request-quote"
+              className="eyebrow mt-6 inline-flex min-h-11 items-center gap-2 border border-ink px-6 py-3 text-ink transition-colors hover:bg-ink hover:text-bone"
+            >
+              {t("home.paths.customButton")} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
         </div>
-        <Link
-          to="/request-quote"
-          className="eyebrow inline-flex items-center gap-2 border border-ink px-7 py-4 text-ink transition-colors hover:bg-ink hover:text-bone"
-        >
-          {t("home.cta.button")} <ArrowRight className="h-4 w-4" aria-hidden="true" />
-        </Link>
       </div>
     </section>
   );

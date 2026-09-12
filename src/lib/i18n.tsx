@@ -24,8 +24,8 @@ export const DICT = {
   "nav.contact": { id: "Kontak", en: "Contact" },
   "nav.sell": { id: "Jual lewat Meatlink", en: "Sell with Meatlink" },
   "header.coverage": {
-    id: "PENGIRIMAN KE SELURUH INDONESIA · RANTAI DINGIN TERJAGA",
-    en: "NATIONWIDE DELIVERY ACROSS INDONESIA · UNBROKEN COLD CHAIN",
+    id: "SOLUSI PENGADAAN DAGING · PENGIRIMAN KE SELURUH INDONESIA",
+    en: "MEAT PROCUREMENT SOLUTIONS · DELIVERY ACROSS INDONESIA",
   },
   "header.categories": { id: "Kategori", en: "Categories" },
   "header.allProducts": { id: "Lihat semua produk", en: "View all products" },
@@ -80,18 +80,23 @@ export const DICT = {
     id: "Better Meat | Better Connections",
     en: "Better Meat | Better Connections",
   },
-  "home.hero.title1": {
-    id: "Daging premium untuk setiap skala usaha,",
-    en: "Premium meat for every scale of business,",
+  "home.hero.title": {
+    id: "Pengadaan Daging untuk Bisnis, Lebih Mudah dan Transparan.",
+    en: "Business Meat Procurement, Made Easier and More Transparent.",
   },
-  "home.hero.title2": { id: "siap pesan hari ini.", en: "ready to order today." },
   "home.hero.body": {
-    id: "Prime cut, second cut, offal dan bone dari importir terverifikasi. Harga per kilogram terbuka, stok diperbarui setiap hari, pengiriman ke seluruh Indonesia — untuk resto, hotel, katering, toko daging maupun reseller.",
-    en: "Prime cuts, second cuts, offal and bones from verified importers. Transparent per-kilogram pricing, stock updated daily, delivery across Indonesia — for restaurants, hotels, caterers, meat shops and resellers.",
+    id: "Prime cut, second cut, offal dan bone dari importir dan pemasok terpercaya. Harga per kilogram terbuka, informasi stok terkini, serta solusi pengadaan untuk restoran, hotel, katering, toko daging dan reseller.",
+    en: "Prime cuts, second cuts, offal and bones from trusted importers and suppliers. Transparent per-kilogram pricing, current stock information, and procurement solutions for restaurants, hotels, caterers, meat shops and resellers.",
   },
   "home.hero.shop": { id: "Belanja Produk", en: "Shop Products" },
-  "home.hero.categories": { id: "Lihat Kategori", en: "Browse Categories" },
-  "home.hero.special": { id: "Butuh spesifikasi khusus?", en: "Need a special specification?" },
+  "home.hero.quote": { id: "Minta Penawaran", en: "Request a Quote" },
+  "home.hero.audienceLabel": { id: "Untuk kebutuhan", en: "Built for" },
+  "home.hero.audience.restaurant": { id: "Restoran", en: "Restaurants" },
+  "home.hero.audience.hotel": { id: "Hotel", en: "Hotels" },
+  "home.hero.audience.catering": { id: "Katering", en: "Caterers" },
+  "home.hero.audience.butcher": { id: "Toko Daging", en: "Butcher Shops" },
+  "home.hero.audience.retailer": { id: "Retailer", en: "Retailers" },
+  "home.hero.audience.reseller": { id: "Reseller", en: "Resellers" },
 
   "home.category.eyebrow": { id: "Belanja per kategori", en: "Shop by category" },
   "home.category.title": { id: "Belanja per Kategori", en: "Shop by Category" },
@@ -107,54 +112,45 @@ export const DICT = {
 
   "home.benefits.eyebrow": { id: "KENAPA MEATLINK", en: "WHY MEATLINK" },
   "home.benefits.title": {
-    id: "Dibangun untuk pembelian bisnis, terbuka untuk berbagai skala.",
-    en: "Built for business buying, open to every scale.",
+    id: "Pengadaan daging yang jelas dari awal.",
+    en: "Clearer meat procurement from the start.",
   },
   "home.benefits.body": {
-    id: "Pembelian rutin dalam volume besar maupun order kecil untuk toko dan reseller berjalan di alur yang sama: harga jelas, stok nyata, dokumen lengkap.",
-    en: "Large recurring volumes and small orders for shops and resellers run through the same flow: clear pricing, real stock, complete documents.",
+    id: "MeatLink membantu bisnis menemukan produk, membandingkan informasi, dan memilih jalur pembelian yang sesuai. Pembeli ritel tetap dapat berbelanja pada produk yang tersedia.",
+    en: "MeatLink helps businesses find products, compare information, and choose the right purchasing path. Retail buyers can still shop eligible products.",
   },
-  "home.benefit.verified.title": { id: "Pasokan terverifikasi", en: "Verified supply" },
-  "home.benefit.verified.body": {
-    id: "Setiap importir dan pemasok diperiksa legalitas, dokumen dan konsistensinya sebelum masuk katalog.",
-    en: "Every importer and supplier is checked for legality, documents and consistency before entering the catalog.",
+  "home.benefit.selection.title": { id: "Pilihan Produk", en: "Product Selection" },
+  "home.benefit.selection.body": {
+    id: "Jelajahi berbagai cut, grade dan origin untuk kebutuhan operasional bisnis.",
+    en: "Explore a range of cuts, grades and origins for your operational needs.",
   },
-  "home.benefit.cold.title": { id: "Rantai dingin terjaga", en: "Unbroken cold chain" },
-  "home.benefit.cold.body": {
-    id: "Produk frozen dan chilled ditangani sesuai standar suhu dari gudang sampai lokasi Anda.",
-    en: "Frozen and chilled products are handled to temperature standards from warehouse to your door.",
+  "home.benefit.transparent.title": { id: "Harga Transparan", en: "Transparent Pricing" },
+  "home.benefit.transparent.body": {
+    id: "Lihat harga per kilogram dan informasi produk secara jelas sebelum melakukan pembelian.",
+    en: "See per-kilogram prices and clear product information before purchasing.",
   },
-  "home.benefit.payment.title": { id: "Pembayaran fleksibel", en: "Flexible payment" },
-  "home.benefit.payment.body": {
-    id: "Transfer VA, QRIS, bayar di tempat, atau tempo (TOP) untuk perusahaan yang telah disetujui.",
-    en: "VA transfer, QRIS, cash on delivery, or terms (TOP) for approved companies.",
-  },
-  "home.benefit.delivery.title": { id: "Pengiriman nasional", en: "Nationwide delivery" },
-  "home.benefit.delivery.body": {
-    id: "Jadwal kirim dan estimasi tiba tercatat pada setiap pesanan, lengkap dengan nomor resi.",
-    en: "Dispatch schedules and ETAs are recorded on every order, complete with tracking numbers.",
-  },
-  "home.benefit.scale.title": { id: "Cocok untuk semua skala", en: "Fits every scale" },
-  "home.benefit.scale.body": {
-    id: "Dari resto, katering dan hotel sampai toko daging dan reseller — riwayat pesanan, pesan ulang sekali klik, dan harga kontrak untuk pembeli rutin.",
-    en: "From restaurants, caterers and hotels to meat shops and resellers — order history, one-click reordering, and contract pricing for regular buyers.",
-  },
-  "home.benefit.sourcing.title": { id: "Special sourcing", en: "Special sourcing" },
-  "home.benefit.sourcing.body": {
-    id: "Spesifikasi di luar katalog tetap kami carikan lewat jaringan pemasok Meatlink.",
-    en: "Specifications outside the catalog are sourced through the Meatlink supplier network.",
+  "home.benefit.flexible.title": { id: "Fleksibel untuk Pengadaan", en: "Flexible Procurement" },
+  "home.benefit.flexible.body": {
+    id: "Belanja langsung melalui katalog atau kirim kebutuhan khusus untuk volume dan spesifikasi tertentu.",
+    en: "Shop directly through the catalog or submit specific volume and specification requirements.",
   },
 
-  "home.cta.eyebrow": { id: "Special sourcing", en: "Special sourcing" },
-  "home.cta.title": {
-    id: "Tidak menemukan spesifikasi yang Anda cari?",
-    en: "Not finding the specification you need?",
+  "home.paths.eyebrow": { id: "Dua cara pengadaan", en: "Two ways to procure" },
+  "home.paths.title": { id: "Pilih jalur sesuai kebutuhan bisnis Anda.", en: "Choose the path that fits your business needs." },
+  "home.paths.standardLabel": { id: "Pengadaan standar", en: "Standard procurement" },
+  "home.paths.standardTitle": { id: "Belanja langsung dari katalog", en: "Shop directly from the catalog" },
+  "home.paths.standardBody": {
+    id: "Temukan produk berdasarkan cut, origin, grade, ukuran dan kebutuhan bisnis Anda.",
+    en: "Find products by cut, origin, grade, size, and your business requirements.",
   },
-  "home.cta.body": {
-    id: "Kirim kebutuhan cut, grade, volume dan tanggal kirim. Tim kami mencarikannya lewat jaringan importir dan pemasok Meatlink.",
-    en: "Send your cut, grade, volume and delivery date. Our team will source it through the Meatlink importer and supplier network.",
+  "home.paths.standardButton": { id: "Lihat Produk", en: "View Products" },
+  "home.paths.customLabel": { id: "Pengadaan khusus / volume besar", en: "Custom / bulk procurement" },
+  "home.paths.customTitle": { id: "Perlu spesifikasi atau volume tertentu?", en: "Need a specific specification or volume?" },
+  "home.paths.customBody": {
+    id: "Kirim kebutuhan cut, grade, volume dan jadwal pengiriman. MeatLink akan membantu mencarikan produk melalui jaringan pemasok.",
+    en: "Send your cut, grade, volume, and delivery schedule. MeatLink will help source products through its supplier network.",
   },
-  "home.cta.button": { id: "Kirim permintaan khusus", en: "Send a special request" },
+  "home.paths.customButton": { id: "Minta Penawaran", en: "Request a Quote" },
 
   "home.faq.eyebrow": { id: "TANYA JAWAB", en: "FAQ" },
   "home.faq.title": {
@@ -162,8 +158,8 @@ export const DICT = {
     en: "Service coverage for buyers of every scale",
   },
   "home.faq.body": {
-    id: "Dari bisnis besar sampai pembeli pribadi — semua mendapat katalog, harga, dan layanan yang sama-sama transparan.",
-    en: "From large businesses to individual buyers — everyone gets the same catalog, pricing and transparent service.",
+    id: "Fokus utama kami adalah pengadaan bisnis, dengan pilihan produk tertentu yang tetap tersedia untuk pembeli ritel.",
+    en: "Our primary focus is business procurement, with selected products still available to retail buyers.",
   },
   "home.faq.scale.q": {
     id: "Apakah Meatlink hanya melayani pembeli B2B?",
@@ -186,24 +182,24 @@ export const DICT = {
     en: "How far does delivery reach?",
   },
   "home.faq.coverage.a": {
-    id: "Pengiriman kami menjangkau seluruh Indonesia. Produk frozen dan chilled dikemas sesuai standar rantai dingin, dengan jadwal kirim dan nomor resi yang tercatat di setiap pesanan.",
-    en: "We deliver across Indonesia. Frozen and chilled products are packed to cold-chain standards, with dispatch schedules and tracking numbers recorded on every order.",
+    id: "Pengiriman dapat menjangkau berbagai wilayah di Indonesia. Penanganan disesuaikan dengan karakteristik produk dan area tujuan untuk membantu menjaga kualitas selama perjalanan.",
+    en: "Delivery can reach regions across Indonesia. Handling is adapted to product characteristics and destination areas to help maintain quality in transit.",
   },
   "home.faq.price.q": {
     id: "Apakah harga berbeda untuk order kecil dan besar?",
     en: "Does pricing differ for small and large orders?",
   },
   "home.faq.price.a": {
-    id: "Harga yang tertera terbuka per kilogram. Pembeli volume rutin — restoran, hotel, katering, dan toko daging — bisa mendapatkan harga kontrak atau TOP (tempo) setelah disetujui. Pembeli kecil tetap menikmati harga katalog yang sama tanpa syarat tambahan.",
-    en: "Listed prices are transparent per kilogram. Regular volume buyers — restaurants, hotels, caterers and meat shops — can obtain contract pricing or terms (TOP) once approved. Smaller buyers still get the same catalog price with no extra conditions.",
+    id: "Harga katalog ditampilkan secara terbuka per kilogram dan dapat berbeda menurut satuan pembelian. Untuk kebutuhan rutin atau volume tertentu, pembeli bisnis dapat meminta penawaran khusus.",
+    en: "Catalog prices are shown transparently per kilogram and may vary by purchasing unit. Business buyers can request a tailored quote for recurring or specific volumes.",
   },
   "home.faq.top.q": {
-    id: "Apakah tersedia pembayaran tempo (TOP)?",
-    en: "Is payment on terms (TOP) available?",
+    id: "Opsi pembayaran apa yang tersedia?",
+    en: "What payment options are available?",
   },
   "home.faq.top.a": {
-    id: "Ya, untuk pembeli bisnis dengan histori atau kontrak rutin. Pengajuan TOP diverifikasi tim kami dalam 1–2 hari kerja. Sementara itu, pembeli lain tetap bisa memilih transfer VA, QRIS, atau bayar di tempat.",
-    en: "Yes, for business buyers with an order history or a recurring contract. TOP applications are verified by our team within 1–2 business days. Meanwhile, other buyers can still choose VA transfer, QRIS or cash on delivery.",
+    id: "Opsi pembayaran tersedia sesuai transaksi dan profil pembeli. Informasi yang berlaku akan ditampilkan atau dikonfirmasi pada proses pemesanan.",
+    en: "Payment options are available according to the transaction and buyer profile. Applicable information will be shown or confirmed during ordering.",
   },
   "home.faq.sourcing.q": {
     id: "Bisa request produk yang belum ada di katalog?",
