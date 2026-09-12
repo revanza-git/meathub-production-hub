@@ -2,4 +2,4 @@
 
 - [x] Mark top 5 highest-quality inventory items as unggulan (featured_rank 1–5) — all Wagyu A5
 - [x] Per-item inventory photo upload with public inventory photo storage
-- [ ] Strengthen homepage B2B positioning and verify desktop/mobile layouts
+- [x] Strengthen homepage B2B positioning and verify desktop/mobile layouts
