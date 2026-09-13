@@ -57,7 +57,7 @@ export const submitRfqRequest = createServerFn({ method: "POST" })
     if (!first) throw new Error("Minimal satu produk diperlukan.");
     const userId = await optionalUserId();
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin.from("quote_requests").insert({
+    const { data: request, error } = await supabaseAdmin.from("quote_requests").insert({
       company_name: data.company_name,
       contact_name: data.contact_name,
       whatsapp: data.whatsapp,
@@ -79,9 +79,16 @@ export const submitRfqRequest = createServerFn({ method: "POST" })
       notes: data.notes || null,
       user_id: userId,
       reference_no: referenceNo,
+    }).select("id").single();
+    if (error || !request) throw new Error("Permintaan belum dapat disimpan. Silakan coba lagi.");
+    const { error: tokenError } = await supabaseAdmin.from("quote_request_access_tokens").insert({
+      quote_request_id: request.id,
       access_token_hash: await sha256(token),
     });
-    if (error) throw new Error("Permintaan belum dapat disimpan. Silakan coba lagi.");
+    if (tokenError) {
+      await supabaseAdmin.from("quote_requests").delete().eq("id", request.id);
+      throw new Error("Tautan privat belum dapat dibuat. Silakan coba lagi.");
+    }
     const { sendOpsAlert } = await import("./ops-notify.server");
     await sendOpsAlert(
       {
@@ -105,15 +112,20 @@ export const getTrackedRfq = createServerFn({ method: "GET" })
   .inputValidator((input) => trackingSchema.parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const tokenHash = await sha256(data.token);
+    const { data: access, error: accessError } = await supabaseAdmin
+      .from("quote_request_access_tokens")
+      .select("quote_request_id")
+      .or(`access_token_hash.eq.${tokenHash},email_access_token_hash.eq.${tokenHash}`)
+      .maybeSingle();
+    if (accessError || !access) throw new Error("Tautan permintaan tidak valid atau sudah tidak tersedia.");
     const { data: row, error } = await supabaseAdmin
       .from("quote_requests")
       .select(
         "reference_no, company_name, delivery_location, required_delivery_date, status, created_at, updated_at, items, admin_response, responded_at, response_valid_until",
       )
+      .eq("id", access.quote_request_id)
       .eq("reference_no", data.referenceNo)
-      .or(
-        `access_token_hash.eq.${await sha256(data.token)},email_access_token_hash.eq.${await sha256(data.token)}`,
-      )
       .maybeSingle();
     if (error || !row) throw new Error("Tautan permintaan tidak valid atau sudah tidak tersedia.");
     return row;
@@ -145,10 +157,18 @@ export const respondToRfq = createServerFn({ method: "POST" })
         response_valid_until: data.validUntil,
         responded_at: respondedAt,
         responded_by: context.userId,
-        email_access_token_hash: emailToken ? await sha256(emailToken) : null,
       })
       .eq("id", data.id);
     if (error) throw new Error("Respons belum dapat disimpan.");
+    if (emailToken) {
+      const { error: tokenError } = await supabaseAdmin
+        .from("quote_request_access_tokens")
+        .upsert({
+          quote_request_id: data.id,
+          email_access_token_hash: await sha256(emailToken),
+        }, { onConflict: "quote_request_id" });
+      if (tokenError) throw new Error("Tautan email belum dapat dibuat.");
+    }
 
     let emailSent = false;
     let emailError = false;
