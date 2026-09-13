@@ -48,7 +48,7 @@ export function CatalogAnalysis() {
     if (requestCount !== null && requestCount >= 6) return bi("Tinggi", "High");
     if (requestCount !== null && requestCount >= 3) return bi("Aktif", "Active");
     if (suppressed) return bi("Terbatas", "Limited");
-    return bi("Belum terlihat", "Not yet visible");
+    return bi("Sinyal awal", "Early signal");
   }
 
   return (
