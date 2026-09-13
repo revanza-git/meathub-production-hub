@@ -164,7 +164,9 @@ function QuoteRequests() {
   if (!data?.length)
     return (
       <Panel className="p-8">
-        <p className="text-sm text-ash">{bi("Belum ada permintaan penawaran.", "No quote requests yet.")}</p>
+        <p className="text-sm text-ash">
+          {bi("Belum ada permintaan penawaran.", "No quote requests yet.")}
+        </p>
       </Panel>
     );
 
@@ -177,7 +179,13 @@ function QuoteRequests() {
   );
 }
 
-function QuoteRequestCard({ request: r, setStatus }: { request: QuoteRequest; setStatus: (id: string, status: string) => Promise<void> }) {
+function QuoteRequestCard({
+  request: r,
+  setStatus,
+}: {
+  request: QuoteRequest;
+  setStatus: (id: string, status: string) => Promise<void>;
+}) {
   const bi = useBi();
   const qc = useQueryClient();
   const respond = useServerFn(respondToRfq);
@@ -194,88 +202,168 @@ function QuoteRequestCard({ request: r, setStatus }: { request: QuoteRequest; se
     }
     setPending(true);
     try {
-      const result = await respond({ data: { id: r.id, status: status as "new" | "in_review" | "quoted" | "won" | "lost", response, validUntil: validUntil || null, sendEmail } });
-      toast.success(result.emailSent ? bi("Respons disimpan dan email terkirim.", "Response saved and email sent.") : bi("Respons disimpan.", "Response saved."));
+      const result = await respond({
+        data: {
+          id: r.id,
+          status: status as "new" | "in_review" | "quoted" | "won" | "lost",
+          response,
+          validUntil: validUntil || null,
+          sendEmail,
+        },
+      });
+      toast.success(
+        result.emailSent
+          ? bi("Respons disimpan dan email terkirim.", "Response saved and email sent.")
+          : bi("Respons disimpan.", "Response saved."),
+      );
       void qc.invalidateQueries({ queryKey: ["admin-quote-requests"] });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : bi("Respons gagal disimpan.", "Could not save response."));
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : bi("Respons gagal disimpan.", "Could not save response."),
+      );
     } finally {
       setPending(false);
     }
   }
 
   return (
-        <Panel className="p-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="eyebrow text-crimson">{r.reference_no}</p>
-              <h2 className="mt-2 font-display text-xl text-ink">{r.company_name}</h2>
-              <p className="mt-1 text-sm text-ash">
-                {r.contact_name} · {r.whatsapp}
-                {r.email ? ` · ${r.email}` : ""}
-              </p>
-              <p className="mt-1 text-xs text-ash">
-                {formatDate(r.created_at)} · {bi("Kirim ke", "Deliver to")} {r.delivery_location} · {bi("Dibutuhkan", "Needed")}{" "}
-                {r.required_delivery_date}
-              </p>
+    <Panel className="p-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="eyebrow text-crimson">{r.reference_no}</p>
+          <h2 className="mt-2 font-display text-xl text-ink">{r.company_name}</h2>
+          <p className="mt-1 text-sm text-ash">
+            {r.contact_name} · {r.whatsapp}
+            {r.email ? ` · ${r.email}` : ""}
+          </p>
+          <p className="mt-1 text-xs text-ash">
+            {formatDate(r.created_at)} · {bi("Kirim ke", "Deliver to")} {r.delivery_location} ·{" "}
+            {bi("Dibutuhkan", "Needed")} {r.required_delivery_date}
+          </p>
+        </div>
+        <select
+          value={r.status}
+          onChange={(e) => {
+            setLocalStatus(e.target.value);
+            void setStatus(r.id, e.target.value);
+          }}
+          className="border border-line bg-card px-3 py-2 text-sm text-ink outline-none focus:border-crimson"
+        >
+          {RFQ_STATUSES.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+          {RFQ_STATUSES.includes(r.status as (typeof RFQ_STATUSES)[number]) ? null : (
+            <option value={r.status}>{r.status}</option>
+          )}
+        </select>
+      </div>
+
+      <ul className="mt-5 grid gap-2 border-t border-line pt-4">
+        {(r.items ?? []).map((item, i) => (
+          <li key={i} className="text-sm text-ink">
+            <span className="text-ash">{i + 1}.</span> {item.product_cut}
+            {item.grade ? ` (${item.grade})` : ""} — {item.volume}
+            {item.origin_preference ? ` · ${item.origin_preference}` : ""}
+            {item.brand_preference ? ` · ${item.brand_preference}` : ""}
+          </li>
+        ))}
+      </ul>
+
+      {r.notes ? (
+        <p className="mt-4 whitespace-pre-line border-t border-line pt-4 text-sm text-ash">
+          {r.notes}
+        </p>
+      ) : null}
+      <div className="mt-5 border-t border-line pt-5">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setExpanded((value) => !value)}
+          className="rounded-none"
+        >
+          {expanded ? <ChevronUp /> : <ChevronDown />}
+          {bi("Respons admin", "Admin response")}
+        </Button>
+        {expanded ? (
+          <div className="mt-5 grid gap-4">
+            <label className="grid gap-2 text-sm text-ink">
+              <span className="eyebrow text-ash">
+                {bi("Isi respons / penawaran", "Response / quote")}
+              </span>
+              <textarea
+                value={response}
+                onChange={(event) => setResponse(event.target.value)}
+                maxLength={4000}
+                rows={6}
+                className="w-full resize-y border border-line bg-card px-4 py-3 text-sm leading-6 text-ink outline-none focus:border-crimson"
+                placeholder={bi(
+                  "Tuliskan ketersediaan, harga, MOQ, waktu pengiriman, dan langkah berikutnya…",
+                  "Add availability, price, MOQ, delivery timing, and next steps…",
+                )}
+              />
+            </label>
+            <label className="grid max-w-xs gap-2 text-sm text-ink">
+              <span className="eyebrow text-ash">
+                {bi("Berlaku hingga (opsional)", "Valid until (optional)")}
+              </span>
+              <input
+                type="date"
+                value={validUntil}
+                onChange={(event) => setValidUntil(event.target.value)}
+                className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson"
+              />
+            </label>
+            <div className="flex flex-wrap gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                disabled={pending}
+                onClick={() => void save(false)}
+                className="rounded-none"
+              >
+                <Save />
+                {bi("Simpan", "Save")}
+              </Button>
+              {r.email ? (
+                <Button
+                  type="button"
+                  disabled={pending}
+                  onClick={() => void save(true)}
+                  className="rounded-none bg-crimson text-bone hover:bg-crimson-deep"
+                >
+                  <Mail />
+                  {bi("Simpan & kirim email", "Save & email")}
+                </Button>
+              ) : null}
+              <Button asChild variant="outline" className="rounded-none">
+                <a
+                  href={waLink(
+                    `Halo ${r.contact_name}, berikut tindak lanjut untuk permintaan ${r.reference_no}:\n\n${response}`,
+                  )}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <MessageCircle />
+                  WhatsApp
+                </a>
+              </Button>
             </div>
-            <select
-              value={r.status}
-              onChange={(e) => { setLocalStatus(e.target.value); void setStatus(r.id, e.target.value); }}
-              className="border border-line bg-card px-3 py-2 text-sm text-ink outline-none focus:border-crimson"
-            >
-              {RFQ_STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-              {RFQ_STATUSES.includes(r.status as (typeof RFQ_STATUSES)[number]) ? null : (
-                <option value={r.status}>{r.status}</option>
-              )}
-            </select>
-          </div>
-
-          <ul className="mt-5 grid gap-2 border-t border-line pt-4">
-            {(r.items ?? []).map((item, i) => (
-              <li key={i} className="text-sm text-ink">
-                <span className="text-ash">{i + 1}.</span> {item.product_cut}
-                {item.grade ? ` (${item.grade})` : ""} — {item.volume}
-                {item.origin_preference ? ` · ${item.origin_preference}` : ""}
-                {item.brand_preference ? ` · ${item.brand_preference}` : ""}
-              </li>
-            ))}
-          </ul>
-
-          {r.notes ? (
-            <p className="mt-4 whitespace-pre-line border-t border-line pt-4 text-sm text-ash">
-              {r.notes}
-            </p>
-          ) : null}
-          <div className="mt-5 border-t border-line pt-5">
-            <Button type="button" variant="outline" onClick={() => setExpanded((value) => !value)} className="rounded-none">
-              {expanded ? <ChevronUp /> : <ChevronDown />}
-              {bi("Respons admin", "Admin response")}
-            </Button>
-            {expanded ? (
-              <div className="mt-5 grid gap-4">
-                <label className="grid gap-2 text-sm text-ink">
-                  <span className="eyebrow text-ash">{bi("Isi respons / penawaran", "Response / quote")}</span>
-                  <textarea value={response} onChange={(event) => setResponse(event.target.value)} maxLength={4000} rows={6} className="w-full resize-y border border-line bg-card px-4 py-3 text-sm leading-6 text-ink outline-none focus:border-crimson" placeholder={bi("Tuliskan ketersediaan, harga, MOQ, waktu pengiriman, dan langkah berikutnya…", "Add availability, price, MOQ, delivery timing, and next steps…")} />
-                </label>
-                <label className="grid max-w-xs gap-2 text-sm text-ink">
-                  <span className="eyebrow text-ash">{bi("Berlaku hingga (opsional)", "Valid until (optional)")}</span>
-                  <input type="date" value={validUntil} onChange={(event) => setValidUntil(event.target.value)} className="border border-line bg-card px-4 py-3 text-sm text-ink outline-none focus:border-crimson" />
-                </label>
-                <div className="flex flex-wrap gap-3">
-                  <Button type="button" variant="outline" disabled={pending} onClick={() => void save(false)} className="rounded-none"><Save />{bi("Simpan", "Save")}</Button>
-                  {r.email ? <Button type="button" disabled={pending} onClick={() => void save(true)} className="rounded-none bg-crimson text-bone hover:bg-crimson-deep"><Mail />{bi("Simpan & kirim email", "Save & email")}</Button> : null}
-                  <Button asChild variant="outline" className="rounded-none"><a href={waLink(`Halo ${r.contact_name}, berikut tindak lanjut untuk permintaan ${r.reference_no}:\n\n${response}`)} target="_blank" rel="noreferrer noopener"><MessageCircle />WhatsApp</a></Button>
-                </div>
-                {!r.email ? <p className="text-xs text-ash">{bi("Email tidak dicantumkan. Simpan respons lalu lanjutkan melalui WhatsApp.", "No email was provided. Save the response, then continue on WhatsApp.")}</p> : null}
-              </div>
+            {!r.email ? (
+              <p className="text-xs text-ash">
+                {bi(
+                  "Email tidak dicantumkan. Simpan respons lalu lanjutkan melalui WhatsApp.",
+                  "No email was provided. Save the response, then continue on WhatsApp.",
+                )}
+              </p>
             ) : null}
           </div>
-        </Panel>
+        ) : null}
+      </div>
+    </Panel>
   );
 }
 
@@ -298,7 +386,9 @@ function SupplierApplications() {
   if (!data?.length)
     return (
       <Panel className="p-8">
-        <p className="text-sm text-ash">{bi("Belum ada aplikasi pemasok.", "No supplier applications yet.")}</p>
+        <p className="text-sm text-ash">
+          {bi("Belum ada aplikasi pemasok.", "No supplier applications yet.")}
+        </p>
       </Panel>
     );
 

@@ -42,7 +42,9 @@ function RequestQuotePage() {
               bi("2. Tim kami meninjau", "2. Our team reviews"),
               bi("3. Pantau respons", "3. Track the response"),
             ].map((step) => (
-              <li key={step} className="bg-bone px-5 py-4 text-center text-ash">{step}</li>
+              <li key={step} className="bg-bone px-5 py-4 text-center text-ash">
+                {step}
+              </li>
             ))}
           </ol>
           <RfqForm />

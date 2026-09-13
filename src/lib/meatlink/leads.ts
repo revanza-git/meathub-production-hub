@@ -1,7 +1,11 @@
 import { z } from "zod";
 import { VErr } from "@/lib/i18n";
 
-const text = (max: number) => z.string().trim().max(max, { message: VErr.max(max) });
+const text = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max, { message: VErr.max(max) });
 const required = (_label: string, max = 160) =>
   z
     .string()

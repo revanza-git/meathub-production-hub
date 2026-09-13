@@ -173,8 +173,12 @@ function MyRfqBody() {
             {r.admin_response ? (
               <div className="mt-5 border-t border-line pt-4">
                 <p className="eyebrow text-crimson">Respons Meatlink</p>
-                <p className="mt-3 whitespace-pre-line text-sm leading-7 text-ink">{r.admin_response}</p>
-                {r.response_valid_until ? <p className="mt-3 text-xs text-ash">Valid until {r.response_valid_until}</p> : null}
+                <p className="mt-3 whitespace-pre-line text-sm leading-7 text-ink">
+                  {r.admin_response}
+                </p>
+                {r.response_valid_until ? (
+                  <p className="mt-3 text-xs text-ash">Valid until {r.response_valid_until}</p>
+                ) : null}
               </div>
             ) : null}
           </Panel>

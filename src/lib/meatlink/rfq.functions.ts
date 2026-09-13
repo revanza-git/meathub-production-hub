@@ -7,7 +7,10 @@ import type { Database, Json } from "@/integrations/supabase/types";
 import { rfqSchema } from "./leads";
 
 const trackingSchema = z.object({
-  referenceNo: z.string().trim().regex(/^RFQ-[A-Z0-9]{8,16}$/),
+  referenceNo: z
+    .string()
+    .trim()
+    .regex(/^RFQ-[A-Z0-9]{8,16}$/),
   token: z.string().trim().min(32).max(128),
 });
 
@@ -88,9 +91,13 @@ export const getTrackedRfq = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error } = await supabaseAdmin
       .from("quote_requests")
-      .select("reference_no, company_name, delivery_location, required_delivery_date, status, created_at, updated_at, items, admin_response, responded_at, response_valid_until")
+      .select(
+        "reference_no, company_name, delivery_location, required_delivery_date, status, created_at, updated_at, items, admin_response, responded_at, response_valid_until",
+      )
       .eq("reference_no", data.referenceNo)
-      .or(`access_token_hash.eq.${await sha256(data.token)},email_access_token_hash.eq.${await sha256(data.token)}`)
+      .or(
+        `access_token_hash.eq.${await sha256(data.token)},email_access_token_hash.eq.${await sha256(data.token)}`,
+      )
       .maybeSingle();
     if (error || !row) throw new Error("Tautan permintaan tidak valid atau sudah tidak tersedia.");
     return row;
