@@ -3435,15 +3435,6 @@ export type Database = {
       }
     }
     Views: {
-      ml_catalog_analysis_cache: {
-        Row: {
-          filter_cut: string | null
-          filter_grade: string | null
-          filter_origin: string | null
-          payload: Json | null
-        }
-        Relationships: []
-      }
       vendor_reliability: {
         Row: {
           active_sp5: number | null
