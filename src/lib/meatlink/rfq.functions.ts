@@ -82,6 +82,22 @@ export const submitRfqRequest = createServerFn({ method: "POST" })
       access_token_hash: await sha256(token),
     });
     if (error) throw new Error("Permintaan belum dapat disimpan. Silakan coba lagi.");
+    const { sendOpsAlert } = await import("./ops-notify.server");
+    await sendOpsAlert(
+      {
+        subject: `RFQ baru ${referenceNo}`,
+        heading: "Permintaan penawaran baru",
+        intro: `${data.company_name} mengirim kebutuhan untuk ${data.items.length} item.`,
+        stats: [
+          { label: "Referensi", value: referenceNo },
+          { label: "Lokasi", value: data.delivery_location },
+          { label: "Dibutuhkan", value: data.required_delivery_date },
+        ],
+        ctaUrl: "https://meatlink.id/admin/rfq",
+        ctaLabel: "Buka RFQ",
+      },
+      `new-rfq-${referenceNo}`,
+    );
     return { referenceNo, token, status: "new" as const };
   });
 

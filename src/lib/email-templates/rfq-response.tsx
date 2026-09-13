@@ -119,7 +119,7 @@ export function RfqResponseEmail({
 export const template = {
   component: RfqResponseEmail,
   displayName: "Respons permintaan penawaran",
-  subject: (data: Record<string, any>) =>
+  subject: (data: Record<string, unknown>) =>
     `Respons ${data?.["referenceNo"] ?? "permintaan penawaran"} — Meatlink`,
   previewData: {
     contactName: "Budi Santoso",

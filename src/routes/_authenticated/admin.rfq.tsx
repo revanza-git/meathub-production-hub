@@ -244,7 +244,7 @@ function QuoteRequestCard({
           </p>
         </div>
         <select
-              value={status}
+          value={status}
           onChange={(e) => {
             setLocalStatus(e.target.value);
             void setStatus(r.id, e.target.value);
