@@ -42,6 +42,9 @@ type MyRfq = {
   created_at: string;
   notes: string | null;
   items: RfqItem[] | null;
+  reference_no: string;
+  admin_response: string | null;
+  response_valid_until: string | null;
 };
 
 const STATUS_COPY: Record<string, { label: string; hint: string; className: string }> = {
@@ -103,7 +106,7 @@ function MyRfqBody() {
       const { data, error } = await supabase
         .from("quote_requests")
         .select(
-          "id, company_name, delivery_location, required_delivery_date, status, created_at, notes, items",
+          "id, company_name, delivery_location, required_delivery_date, status, created_at, notes, items, reference_no, admin_response, response_valid_until",
         )
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false });
@@ -145,6 +148,7 @@ function MyRfqBody() {
           <Panel key={r.id} className="p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
+                <p className="eyebrow mb-2 text-crimson">{r.reference_no}</p>
                 <h2 className="font-display text-xl text-ink">{r.company_name}</h2>
                 <p className="mt-1 text-xs text-ash">
                   Submitted {formatDate(r.created_at)} · Deliver to {r.delivery_location} · Needed{" "}
@@ -166,6 +170,13 @@ function MyRfqBody() {
                 </li>
               ))}
             </ul>
+            {r.admin_response ? (
+              <div className="mt-5 border-t border-line pt-4">
+                <p className="eyebrow text-crimson">Respons Meatlink</p>
+                <p className="mt-3 whitespace-pre-line text-sm leading-7 text-ink">{r.admin_response}</p>
+                {r.response_valid_until ? <p className="mt-3 text-xs text-ash">Valid until {r.response_valid_until}</p> : null}
+              </div>
+            ) : null}
           </Panel>
         );
       })}
