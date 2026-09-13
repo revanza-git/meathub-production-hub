@@ -1,12 +1,29 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef } from "react";
-import { Bot, ChevronLeft, ChevronRight } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowRight, Bot, ChevronLeft, ChevronRight } from "lucide-react";
 import { PageHero, SiteLayout } from "@/components/site/site-layout";
 import { ImageDisclaimer } from "@/components/site/image-disclaimer";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { resolveProductImage, useFeaturedInventory } from "@/lib/meatlink/featured";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { FALLBACK_NOTES, usePublishedInsights } from "@/lib/meatlink/insights";
 import { pickLocale, useBi, useLang } from "@/lib/i18n";
+
+type InsightNote = {
+  title: string;
+  body: string;
+  title_en: string | null;
+  body_en: string | null;
+  category: string;
+  region: string;
+  period_label?: string | null;
+};
 
 export const Route = createFileRoute("/insights")({
   head: () => ({
@@ -35,6 +52,8 @@ function InsightsPage() {
   const notes = published.length > 0 ? published : FALLBACK_NOTES;
   const trackRef = useRef<HTMLDivElement>(null);
   const notesTrackRef = useRef<HTMLDivElement>(null);
+  const [activeNote, setActiveNote] = useState<InsightNote | null>(null);
+  const [visibleNote, setVisibleNote] = useState(0);
 
   function scrollByCards(ref: React.RefObject<HTMLDivElement | null>, direction: 1 | -1) {
     const track = ref.current;
@@ -42,6 +61,14 @@ function InsightsPage() {
     const card = track.firstElementChild as HTMLElement | null;
     const step = card ? card.offsetWidth + 24 : track.clientWidth;
     track.scrollBy({ left: step * direction, behavior: "smooth" });
+  }
+
+  function updateVisibleNote() {
+    const track = notesTrackRef.current;
+    const card = track?.firstElementChild as HTMLElement | null;
+    if (!track || !card) return;
+    const step = card.offsetWidth + 24;
+    setVisibleNote(Math.min(notes.length - 1, Math.max(0, Math.round(track.scrollLeft / step))));
   }
 
   return (
@@ -107,33 +134,81 @@ function InsightsPage() {
 
           <div
             ref={notesTrackRef}
+            onScroll={updateVisibleNote}
             className="mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {notes.map((n) => (
               <article
                 key={n.title}
-                className="w-[85%] shrink-0 snap-start border border-line bg-card p-8 sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]"
+                className="flex min-h-[25rem] w-[88%] shrink-0 snap-start flex-col border border-line bg-card p-6 sm:w-[calc(50%-0.75rem)] sm:p-8 lg:w-[calc(33.333%-1rem)]"
               >
-                <p className="eyebrow text-crimson">
+                <p className="eyebrow min-h-8 text-crimson">
                   {n.category} · {n.region}
                   {"period_label" in n && n.period_label ? ` · ${n.period_label}` : ""}
                 </p>
-                <h2 className="mt-3 font-display text-2xl leading-snug" lang={lang}>
+                <h2 className="mt-3 line-clamp-3 font-display text-2xl leading-snug" lang={lang}>
                   {pickLocale(lang, n.title, n.title_en)}
                 </h2>
-                <p className="mt-4 text-sm leading-relaxed text-ash" lang={lang}>
+                <p className="mt-4 line-clamp-5 text-sm leading-relaxed text-ash" lang={lang}>
                   {pickLocale(lang, n.body, n.body_en)}
                 </p>
-                <p className="mt-5 inline-flex items-center gap-1.5 text-[11px] italic text-ash/80">
-                  <Bot className="h-3 w-3" aria-hidden="true" />
-                  {bi(
-                    "Hasil analisis AI — verifikasi sebelum digunakan sebagai dasar keputusan pembelian.",
-                    "AI-generated analysis — please verify before using it as a basis for purchasing decisions.",
-                  )}
-                </p>
+                <div className="mt-auto pt-7">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => setActiveNote(n)}
+                    className="h-auto rounded-none p-0 font-semibold text-crimson hover:bg-transparent hover:text-crimson-deep"
+                  >
+                    {bi("Baca analisis", "Read analysis")}
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </Button>
+                  <p className="mt-5 flex items-start gap-1.5 border-t border-line pt-4 text-[10px] italic leading-relaxed text-ash/75">
+                    <Bot className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
+                    {bi("Analisis AI — verifikasi sebelum mengambil keputusan.", "AI analysis — verify before deciding.")}
+                  </p>
+                </div>
               </article>
             ))}
           </div>
+          {notes.length > 1 ? (
+            <p className="mt-4 text-center text-xs tabular-nums text-ash sm:hidden" aria-live="polite">
+              {String(visibleNote + 1).padStart(2, "0")} / {String(notes.length).padStart(2, "0")}
+            </p>
+          ) : null}
+
+          <Dialog open={activeNote !== null} onOpenChange={(open) => !open && setActiveNote(null)}>
+            <DialogContent className="bottom-0 left-0 top-auto max-h-[92dvh] w-full max-w-none translate-x-0 translate-y-0 gap-0 overflow-y-auto rounded-none border-line bg-card p-0 sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:max-h-[86vh] sm:max-w-3xl sm:-translate-x-1/2 sm:-translate-y-1/2">
+              {activeNote ? (
+                <article className="px-6 pb-8 pt-12 sm:px-12 sm:pb-12 sm:pt-14">
+                  <p className="eyebrow pr-8 text-crimson">
+                    {activeNote.category} · {activeNote.region}
+                    {activeNote.period_label ? ` · ${activeNote.period_label}` : ""}
+                  </p>
+                  <DialogTitle className="mt-4 max-w-2xl font-display text-3xl font-normal leading-tight sm:text-4xl">
+                    {pickLocale(lang, activeNote.title, activeNote.title_en)}
+                  </DialogTitle>
+                  <DialogDescription className="sr-only">
+                    {bi("Analisis pasar Meatlink selengkapnya", "Full Meatlink market analysis")}
+                  </DialogDescription>
+                  <p className="mt-7 whitespace-pre-line text-base leading-8 text-ash" lang={lang}>
+                    {pickLocale(lang, activeNote.body, activeNote.body_en)}
+                  </p>
+                  <div className="mt-8 flex items-start gap-2 border-t border-line pt-5 text-xs italic leading-relaxed text-ash">
+                    <Bot className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                    <p>
+                      {bi(
+                        "Hasil analisis AI — verifikasi sebelum digunakan sebagai dasar keputusan pembelian.",
+                        "AI-generated analysis — please verify before using it as a basis for purchasing decisions.",
+                      )}
+                    </p>
+                  </div>
+                  <Button asChild className="mt-8 h-auto rounded-none bg-crimson px-6 py-4 text-bone hover:bg-crimson-deep">
+                    <Link to="/request-quote">{bi("Minta Penawaran", "Request a Quote")}</Link>
+                  </Button>
+                </article>
+              ) : null}
+            </DialogContent>
+          </Dialog>
 
           <div className="mt-20 flex items-end justify-between gap-4">
             <p className="eyebrow text-crimson">{bi("Baru disourcing", "Recently sourced")}</p>
