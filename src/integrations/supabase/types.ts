@@ -2498,6 +2498,7 @@ export type Database = {
           current_supplier: string | null
           delivery_location: string
           email: string | null
+          email_access_token_hash: string | null
           grade: string | null
           id: string
           items: Json
@@ -2530,6 +2531,7 @@ export type Database = {
           current_supplier?: string | null
           delivery_location: string
           email?: string | null
+          email_access_token_hash?: string | null
           grade?: string | null
           id?: string
           items?: Json
@@ -2562,6 +2564,7 @@ export type Database = {
           current_supplier?: string | null
           delivery_location?: string
           email?: string | null
+          email_access_token_hash?: string | null
           grade?: string | null
           id?: string
           items?: Json
