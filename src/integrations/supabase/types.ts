@@ -2485,9 +2485,34 @@ export type Database = {
           },
         ]
       }
-      quote_requests: {
+      quote_request_access_tokens: {
         Row: {
           access_token_hash: string | null
+          email_access_token_hash: string | null
+          quote_request_id: string
+        }
+        Insert: {
+          access_token_hash?: string | null
+          email_access_token_hash?: string | null
+          quote_request_id: string
+        }
+        Update: {
+          access_token_hash?: string | null
+          email_access_token_hash?: string | null
+          quote_request_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_request_access_tokens_quote_request_id_fkey"
+            columns: ["quote_request_id"]
+            isOneToOne: true
+            referencedRelation: "quote_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quote_requests: {
+        Row: {
           admin_response: string | null
           brand_preference: string | null
           category: string | null
@@ -2498,7 +2523,6 @@ export type Database = {
           current_supplier: string | null
           delivery_location: string
           email: string | null
-          email_access_token_hash: string | null
           grade: string | null
           id: string
           items: Json
@@ -2520,7 +2544,6 @@ export type Database = {
           whatsapp: string
         }
         Insert: {
-          access_token_hash?: string | null
           admin_response?: string | null
           brand_preference?: string | null
           category?: string | null
@@ -2531,7 +2554,6 @@ export type Database = {
           current_supplier?: string | null
           delivery_location: string
           email?: string | null
-          email_access_token_hash?: string | null
           grade?: string | null
           id?: string
           items?: Json
@@ -2553,7 +2575,6 @@ export type Database = {
           whatsapp: string
         }
         Update: {
-          access_token_hash?: string | null
           admin_response?: string | null
           brand_preference?: string | null
           category?: string | null
@@ -2564,7 +2585,6 @@ export type Database = {
           current_supplier?: string | null
           delivery_location?: string
           email?: string | null
-          email_access_token_hash?: string | null
           grade?: string | null
           id?: string
           items?: Json
