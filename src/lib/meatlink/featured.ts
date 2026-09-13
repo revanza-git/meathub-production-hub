@@ -217,7 +217,8 @@ export function resolveProductImage(
   seed?: string | null,
   variantIndex?: number,
 ): string {
-  const inferredGrade = gradeBand ?? (/\ba\s*5\b/i.test(name ?? "") ? "MB9_12" : null);
+  const inferredGrade =
+    gradeBand ?? (/\ba\s*5\b/i.test(name ?? "") ? "MB9_12" : variantIndex === undefined ? null : "UNGRADED");
   const variantSeed0 = `${seed ?? ""}|${name ?? ""}|${inferredGrade ?? ""}`;
   if (imageUrl) {
     // A real uploaded photo always wins; a preset key still gets cut variety.
