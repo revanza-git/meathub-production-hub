@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { ArrowRight, Bot, ChevronLeft, ChevronRight } from "lucide-react";
 import { PageHero, SiteLayout } from "@/components/site/site-layout";
 import { ImageDisclaimer } from "@/components/site/image-disclaimer";
+import { CatalogAnalysis } from "@/components/site/catalog-analysis";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,17 +29,19 @@ type InsightNote = {
 export const Route = createFileRoute("/insights")({
   head: () => ({
     meta: [
-      { title: "Market Insights — Meatlink.id meat sourcing intelligence" },
+      { title: "Analisis Harga, Stok & Permintaan — Meatlink.id" },
       {
         name: "description",
         content:
-          "What Meatlink is seeing across the Indonesian meat trade: demand patterns, sourcing notes and recently matched requests.",
+          "Analisis katalog daging Meatlink berdasarkan harga indikatif, stok, dan permintaan per cut, grade, serta origin.",
       },
-      { property: "og:title", content: "Market Insights — Meatlink.id" },
+      { property: "og:title", content: "Analisis Katalog & Market Insights — Meatlink.id" },
       {
         property: "og:description",
-        content: "Demand patterns and sourcing notes from the Indonesian meat trade.",
+        content: "Bandingkan harga, stok, dan permintaan daging berdasarkan cut, grade, dan origin.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: InsightsPage,
@@ -82,6 +85,15 @@ function InsightsPage() {
         )}
       />
 
+      <nav className="border-b border-line bg-bone" aria-label={bi("Navigasi insight", "Insights navigation")}>
+        <div className="mx-auto flex max-w-7xl gap-8 overflow-x-auto px-5 py-5 lg:px-8">
+          <a href="#analisis-katalog" className="eyebrow whitespace-nowrap text-crimson">{bi("Analisis Katalog", "Catalog Analysis")}</a>
+          <a href="#catatan-sourcing" className="eyebrow whitespace-nowrap text-ash hover:text-ink">{bi("Catatan Sourcing", "Sourcing Notes")}</a>
+        </div>
+      </nav>
+
+      <CatalogAnalysis />
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -106,7 +118,7 @@ function InsightsPage() {
         }}
       />
 
-      <section className="bg-bone">
+      <section id="catatan-sourcing" className="scroll-mt-20 bg-bone">
         <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
           <div className="flex items-end justify-between gap-4">
             <p className="eyebrow text-crimson">{bi("Catatan sourcing", "Sourcing notes")}</p>

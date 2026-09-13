@@ -32,6 +32,33 @@ export const INSIGHT_CONFIDENCE = ["low", "medium", "high"] as const;
 export const INSIGHT_SELECT =
   "id,title,body,title_en,body_en,category,region,period_label,source,confidence,status,display_rank,data_refs,created_at,updated_at";
 
+export type AnalysisDimension = "cut" | "grade" | "origin";
+export type CatalogAnalysisFilters = { cut?: string; grade?: string; origin?: string };
+export type CatalogAnalysisRow = {
+  label: string;
+  sku_count: number;
+  stock_kg: number;
+  min_price_idr: number | null;
+  avg_price_idr: number | null;
+  max_price_idr: number | null;
+  request_count: number | null;
+  demand_suppressed: boolean;
+};
+export type CatalogAnalysisData = {
+  generated_at: string;
+  window_days: number;
+  summary: {
+    sku_count: number;
+    stock_kg: number;
+    avg_price_idr: number;
+    median_price_idr: number;
+    request_count: number | null;
+    demand_suppressed: boolean;
+  };
+  facets: { cuts: string[]; grades: string[]; origins: string[] };
+  rows: CatalogAnalysisRow[];
+};
+
 /** Fallback copy so the public page never renders empty. */
 export const FALLBACK_NOTES: Pick<
   MarketInsight,
@@ -81,6 +108,28 @@ export function usePublishedInsights(limit = 9) {
         .limit(limit);
       if (error) throw error;
       return (data ?? []) as unknown as MarketInsight[];
+    },
+  });
+}
+
+/** Privacy-safe public catalog price, stock and aggregated RFQ demand. */
+export function useCatalogAnalysis(
+  dimension: AnalysisDimension,
+  filters: CatalogAnalysisFilters = {},
+) {
+  return useQuery({
+    queryKey: ["catalog-analysis", dimension, filters.cut, filters.grade, filters.origin],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("ml_public_catalog_analysis", {
+        _group_by: dimension,
+        _cut: filters.cut,
+        _grade: filters.grade,
+        _origin: filters.origin,
+      });
+      if (error) throw error;
+      if (!data) throw new Error("Catalog analysis is unavailable");
+      return data as unknown as CatalogAnalysisData;
     },
   });
 }
