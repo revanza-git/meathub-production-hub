@@ -9,134 +9,68 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SupplyRouteImport } from './routes/supply'
-import { Route as SuppliersRouteImport } from './routes/suppliers'
-import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as SearchRouteImport } from './routes/search'
-import { Route as RequestQuoteRouteImport } from './routes/request-quote'
-import { Route as PromoRouteImport } from './routes/promo'
-import { Route as PanduanGradeRouteImport } from './routes/panduan-grade'
-import { Route as NetworkRouteImport } from './routes/network'
-import { Route as McpRouteImport } from './routes/mcp'
-import { Route as KeranjangRouteImport } from './routes/keranjang'
-import { Route as InsightsRouteImport } from './routes/insights'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as BuyersRouteImport } from './routes/buyers'
-import { Route as BelanjaRouteImport } from './routes/belanja'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as BelanjaRouteImport } from './routes/belanja'
+import { Route as BuyersRouteImport } from './routes/buyers'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as InsightsRouteImport } from './routes/insights'
+import { Route as KeranjangRouteImport } from './routes/keranjang'
+import { Route as McpRouteImport } from './routes/mcp'
+import { Route as NetworkRouteImport } from './routes/network'
+import { Route as PanduanGradeRouteImport } from './routes/panduan-grade'
+import { Route as PromoRouteImport } from './routes/promo'
+import { Route as RequestQuoteRouteImport } from './routes/request-quote'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as SuppliersRouteImport } from './routes/suppliers'
+import { Route as SupplyRouteImport } from './routes/supply'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as KategoriSlugRouteImport } from './routes/kategori.$slug'
+import { Route as PenawaranReferenceRouteImport } from './routes/penawaran.$reference'
+import { Route as PesananOrderNoRouteImport } from './routes/pesanan.$orderNo'
 import { Route as ProdukIndexRouteImport } from './routes/produk.index'
 import { Route as ProdukSlugRouteImport } from './routes/produk.$slug'
-import { Route as PesananOrderNoRouteImport } from './routes/pesanan.$orderNo'
-import { Route as PenawaranReferenceRouteImport } from './routes/penawaran.$reference'
-import { Route as KategoriSlugRouteImport } from './routes/kategori.$slug'
-import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
-import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
-import { Route as ApiPublicOpsCronRouteImport } from './routes/api/public/ops-cron'
-import { Route as ApiPublicMerchantFeedDotxmlRouteImport } from './routes/api/public/merchant-feed[.]xml'
-import { Route as ApiPublicIpaymuCallbackRouteImport } from './routes/api/public/ipaymu-callback'
-import { Route as AuthenticatedVendorImportRouteImport } from './routes/_authenticated/vendor.import'
-import { Route as AuthenticatedVendorCatalogRouteImport } from './routes/_authenticated/vendor.catalog'
-import { Route as AuthenticatedAppStockRouteImport } from './routes/_authenticated/app.stock'
-import { Route as AuthenticatedAppRfqRouteImport } from './routes/_authenticated/app.rfq'
-import { Route as AuthenticatedAppPesananRouteImport } from './routes/_authenticated/app.pesanan'
-import { Route as AuthenticatedAppAlamatRouteImport } from './routes/_authenticated/app.alamat'
-import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
-import { Route as AuthenticatedAdminStorefrontOrdersRouteImport } from './routes/_authenticated/admin.storefront-orders'
-import { Route as AuthenticatedAdminStockRouteImport } from './routes/_authenticated/admin.stock'
-import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
-import { Route as AuthenticatedAdminRfqRouteImport } from './routes/_authenticated/admin.rfq'
-import { Route as AuthenticatedAdminReportsRouteImport } from './routes/_authenticated/admin.reports'
-import { Route as AuthenticatedAdminInsightsRouteImport } from './routes/_authenticated/admin.insights'
-import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
-import { Route as AuthenticatedAdminCommerceRouteImport } from './routes/_authenticated/admin.commerce'
-import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
-import { Route as AuthenticatedAppOrdersIndexRouteImport } from './routes/_authenticated/app.orders.index'
-import { Route as AuthenticatedAdminOrdersIndexRouteImport } from './routes/_authenticated/admin.orders.index'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as AuthenticatedAdminCommerceRouteImport } from './routes/_authenticated/admin.commerce'
+import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
+import { Route as AuthenticatedAdminInsightsRouteImport } from './routes/_authenticated/admin.insights'
+import { Route as AuthenticatedAdminReportsRouteImport } from './routes/_authenticated/admin.reports'
+import { Route as AuthenticatedAdminRfqRouteImport } from './routes/_authenticated/admin.rfq'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
+import { Route as AuthenticatedAdminStockRouteImport } from './routes/_authenticated/admin.stock'
+import { Route as AuthenticatedAdminStorefrontOrdersRouteImport } from './routes/_authenticated/admin.storefront-orders'
+import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
+import { Route as AuthenticatedAppAlamatRouteImport } from './routes/_authenticated/app.alamat'
+import { Route as AuthenticatedAppPesananRouteImport } from './routes/_authenticated/app.pesanan'
+import { Route as AuthenticatedAppRfqRouteImport } from './routes/_authenticated/app.rfq'
+import { Route as AuthenticatedAppStockRouteImport } from './routes/_authenticated/app.stock'
+import { Route as AuthenticatedVendorCatalogRouteImport } from './routes/_authenticated/vendor.catalog'
+import { Route as AuthenticatedVendorImportRouteImport } from './routes/_authenticated/vendor.import'
+import { Route as ApiPublicIpaymuCallbackRouteImport } from './routes/api/public/ipaymu-callback'
+import { Route as ApiPublicMerchantFeedDotxmlRouteImport } from './routes/api/public/merchant-feed[.]xml'
+import { Route as ApiPublicOpsCronRouteImport } from './routes/api/public/ops-cron'
 import { Route as AuthenticatedAdminInventoryIndexRouteImport } from './routes/_authenticated/admin.inventory.index'
-import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
-import { Route as AuthenticatedAppOrdersNewRouteImport } from './routes/_authenticated/app.orders.new'
-import { Route as AuthenticatedAppOrdersIdRouteImport } from './routes/_authenticated/app.orders.$id'
-import { Route as AuthenticatedAppInvoiceOrderNoRouteImport } from './routes/_authenticated/app.invoice.$orderNo'
-import { Route as AuthenticatedAdminOrdersIdRouteImport } from './routes/_authenticated/admin.orders.$id'
 import { Route as AuthenticatedAdminInventoryImportRouteImport } from './routes/_authenticated/admin.inventory.import'
+import { Route as AuthenticatedAdminOrdersIndexRouteImport } from './routes/_authenticated/admin.orders.index'
+import { Route as AuthenticatedAdminOrdersIdRouteImport } from './routes/_authenticated/admin.orders.$id'
+import { Route as AuthenticatedAppInvoiceOrderNoRouteImport } from './routes/_authenticated/app.invoice.$orderNo'
+import { Route as AuthenticatedAppOrdersIndexRouteImport } from './routes/_authenticated/app.orders.index'
+import { Route as AuthenticatedAppOrdersIdRouteImport } from './routes/_authenticated/app.orders.$id'
+import { Route as AuthenticatedAppOrdersNewRouteImport } from './routes/_authenticated/app.orders.new'
+import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
-const SupplyRoute = SupplyRouteImport.update({
-  id: '/supply',
-  path: '/supply',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SuppliersRoute = SuppliersRouteImport.update({
-  id: '/suppliers',
-  path: '/suppliers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SearchRoute = SearchRouteImport.update({
-  id: '/search',
-  path: '/search',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RequestQuoteRoute = RequestQuoteRouteImport.update({
-  id: '/request-quote',
-  path: '/request-quote',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PromoRoute = PromoRouteImport.update({
-  id: '/promo',
-  path: '/promo',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PanduanGradeRoute = PanduanGradeRouteImport.update({
-  id: '/panduan-grade',
-  path: '/panduan-grade',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NetworkRoute = NetworkRouteImport.update({
-  id: '/network',
-  path: '/network',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const McpRoute = McpRouteImport.update({
-  id: '/mcp',
-  path: '/mcp',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KeranjangRoute = KeranjangRouteImport.update({
-  id: '/keranjang',
-  path: '/keranjang',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InsightsRoute = InsightsRouteImport.update({
-  id: '/insights',
-  path: '/insights',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BuyersRoute = BuyersRouteImport.update({
-  id: '/buyers',
-  path: '/buyers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BelanjaRoute = BelanjaRouteImport.update({
-  id: '/belanja',
-  path: '/belanja',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -144,13 +78,106 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const BelanjaRoute = BelanjaRouteImport.update({
+  id: '/belanja',
+  path: '/belanja',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuyersRoute = BuyersRouteImport.update({
+  id: '/buyers',
+  path: '/buyers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InsightsRoute = InsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KeranjangRoute = KeranjangRouteImport.update({
+  id: '/keranjang',
+  path: '/keranjang',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NetworkRoute = NetworkRouteImport.update({
+  id: '/network',
+  path: '/network',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PanduanGradeRoute = PanduanGradeRouteImport.update({
+  id: '/panduan-grade',
+  path: '/panduan-grade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PromoRoute = PromoRouteImport.update({
+  id: '/promo',
+  path: '/promo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RequestQuoteRoute = RequestQuoteRouteImport.update({
+  id: '/request-quote',
+  path: '/request-quote',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuppliersRoute = SuppliersRouteImport.update({
+  id: '/suppliers',
+  path: '/suppliers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupplyRoute = SupplyRouteImport.update({
+  id: '/supply',
+  path: '/supply',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const KategoriSlugRoute = KategoriSlugRouteImport.update({
+  id: '/kategori/$slug',
+  path: '/kategori/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PenawaranReferenceRoute = PenawaranReferenceRouteImport.update({
+  id: '/penawaran/$reference',
+  path: '/penawaran/$reference',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PesananOrderNoRoute = PesananOrderNoRouteImport.update({
+  id: '/pesanan/$orderNo',
+  path: '/pesanan/$orderNo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProdukIndexRoute = ProdukIndexRouteImport.update({
@@ -163,118 +190,21 @@ const ProdukSlugRoute = ProdukSlugRouteImport.update({
   path: '/produk/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PesananOrderNoRoute = PesananOrderNoRouteImport.update({
-  id: '/pesanan/$orderNo',
-  path: '/pesanan/$orderNo',
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PenawaranReferenceRoute = PenawaranReferenceRouteImport.update({
-  id: '/penawaran/$reference',
-  path: '/penawaran/$reference',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KategoriSlugRoute = KategoriSlugRouteImport.update({
-  id: '/kategori/$slug',
-  path: '/kategori/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const Char91DotwellKnownChar93OauthProtectedResourceRoute =
-  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
-    id: '/.well-known/oauth-protected-resource',
-    path: '/.well-known/oauth-protected-resource',
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
-const Char91DotmcpChar93ListToolsRoute =
-  Char91DotmcpChar93ListToolsRouteImport.update({
-    id: '/.mcp/list-tools',
-    path: '/.mcp/list-tools',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicOpsCronRoute = ApiPublicOpsCronRouteImport.update({
-  id: '/api/public/ops-cron',
-  path: '/api/public/ops-cron',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiPublicMerchantFeedDotxmlRoute =
-  ApiPublicMerchantFeedDotxmlRouteImport.update({
-    id: '/api/public/merchant-feed.xml',
-    path: '/api/public/merchant-feed.xml',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiPublicIpaymuCallbackRoute = ApiPublicIpaymuCallbackRouteImport.update({
-  id: '/api/public/ipaymu-callback',
-  path: '/api/public/ipaymu-callback',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedVendorImportRoute =
-  AuthenticatedVendorImportRouteImport.update({
-    id: '/vendor/import',
-    path: '/vendor/import',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedVendorCatalogRoute =
-  AuthenticatedVendorCatalogRouteImport.update({
-    id: '/vendor/catalog',
-    path: '/vendor/catalog',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAppStockRoute = AuthenticatedAppStockRouteImport.update({
-  id: '/app/stock',
-  path: '/app/stock',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAppRfqRoute = AuthenticatedAppRfqRouteImport.update({
-  id: '/app/rfq',
-  path: '/app/rfq',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAppPesananRoute = AuthenticatedAppPesananRouteImport.update({
-  id: '/app/pesanan',
-  path: '/app/pesanan',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAppAlamatRoute = AuthenticatedAppAlamatRouteImport.update({
-  id: '/app/alamat',
-  path: '/app/alamat',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
-  id: '/admin/users',
-  path: '/admin/users',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAdminStorefrontOrdersRoute =
-  AuthenticatedAdminStorefrontOrdersRouteImport.update({
-    id: '/admin/storefront-orders',
-    path: '/admin/storefront-orders',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminStockRoute = AuthenticatedAdminStockRouteImport.update({
-  id: '/admin/stock',
-  path: '/admin/stock',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAdminSettingsRoute =
-  AuthenticatedAdminSettingsRouteImport.update({
-    id: '/admin/settings',
-    path: '/admin/settings',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminRfqRoute = AuthenticatedAdminRfqRouteImport.update({
-  id: '/admin/rfq',
-  path: '/admin/rfq',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedAdminReportsRoute =
-  AuthenticatedAdminReportsRouteImport.update({
-    id: '/admin/reports',
-    path: '/admin/reports',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAdminInsightsRoute =
-  AuthenticatedAdminInsightsRouteImport.update({
-    id: '/admin/insights',
-    path: '/admin/insights',
+const AuthenticatedAdminCommerceRoute =
+  AuthenticatedAdminCommerceRouteImport.update({
+    id: '/admin/commerce',
+    path: '/admin/commerce',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminDashboardRoute =
@@ -283,27 +213,103 @@ const AuthenticatedAdminDashboardRoute =
     path: '/admin/dashboard',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAdminCommerceRoute =
-  AuthenticatedAdminCommerceRouteImport.update({
-    id: '/admin/commerce',
-    path: '/admin/commerce',
+const AuthenticatedAdminInsightsRoute =
+  AuthenticatedAdminInsightsRouteImport.update({
+    id: '/admin/insights',
+    path: '/admin/insights',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const Char91DotmcpChar93InvokeToolToolRoute =
-  Char91DotmcpChar93InvokeToolToolRouteImport.update({
-    id: '/.mcp/invoke-tool/$tool',
-    path: '/.mcp/invoke-tool/$tool',
-    getParentRoute: () => rootRouteImport,
+const AuthenticatedAdminReportsRoute =
+  AuthenticatedAdminReportsRouteImport.update({
+    id: '/admin/reports',
+    path: '/admin/reports',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
-  id: '/.lovable/oauth/consent',
-  path: '/.lovable/oauth/consent',
+const AuthenticatedAdminRfqRoute = AuthenticatedAdminRfqRouteImport.update({
+  id: '/admin/rfq',
+  path: '/admin/rfq',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/admin/settings',
+    path: '/admin/settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminStockRoute = AuthenticatedAdminStockRouteImport.update({
+  id: '/admin/stock',
+  path: '/admin/stock',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminStorefrontOrdersRoute =
+  AuthenticatedAdminStorefrontOrdersRouteImport.update({
+    id: '/admin/storefront-orders',
+    path: '/admin/storefront-orders',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAppAlamatRoute = AuthenticatedAppAlamatRouteImport.update({
+  id: '/app/alamat',
+  path: '/app/alamat',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAppPesananRoute = AuthenticatedAppPesananRouteImport.update({
+  id: '/app/pesanan',
+  path: '/app/pesanan',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAppRfqRoute = AuthenticatedAppRfqRouteImport.update({
+  id: '/app/rfq',
+  path: '/app/rfq',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAppStockRoute = AuthenticatedAppStockRouteImport.update({
+  id: '/app/stock',
+  path: '/app/stock',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedVendorCatalogRoute =
+  AuthenticatedVendorCatalogRouteImport.update({
+    id: '/vendor/catalog',
+    path: '/vendor/catalog',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVendorImportRoute =
+  AuthenticatedVendorImportRouteImport.update({
+    id: '/vendor/import',
+    path: '/vendor/import',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const ApiPublicIpaymuCallbackRoute = ApiPublicIpaymuCallbackRouteImport.update({
+  id: '/api/public/ipaymu-callback',
+  path: '/api/public/ipaymu-callback',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAppOrdersIndexRoute =
-  AuthenticatedAppOrdersIndexRouteImport.update({
-    id: '/app/orders/',
-    path: '/app/orders/',
+const ApiPublicMerchantFeedDotxmlRoute =
+  ApiPublicMerchantFeedDotxmlRouteImport.update({
+    id: '/api/public/merchant-feed.xml',
+    path: '/api/public/merchant-feed.xml',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicOpsCronRoute = ApiPublicOpsCronRouteImport.update({
+  id: '/api/public/ops-cron',
+  path: '/api/public/ops-cron',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminInventoryIndexRoute =
+  AuthenticatedAdminInventoryIndexRouteImport.update({
+    id: '/admin/inventory/',
+    path: '/admin/inventory/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminInventoryImportRoute =
+  AuthenticatedAdminInventoryImportRouteImport.update({
+    id: '/admin/inventory/import',
+    path: '/admin/inventory/import',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAdminOrdersIndexRoute =
@@ -312,28 +318,10 @@ const AuthenticatedAdminOrdersIndexRoute =
     path: '/admin/orders/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAdminInventoryIndexRoute =
-  AuthenticatedAdminInventoryIndexRouteImport.update({
-    id: '/admin/inventory/',
-    path: '/admin/inventory/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const LovableEmailTransactionalPreviewRoute =
-  LovableEmailTransactionalPreviewRouteImport.update({
-    id: '/lovable/email/transactional/preview',
-    path: '/lovable/email/transactional/preview',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const AuthenticatedAppOrdersNewRoute =
-  AuthenticatedAppOrdersNewRouteImport.update({
-    id: '/app/orders/new',
-    path: '/app/orders/new',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedAppOrdersIdRoute =
-  AuthenticatedAppOrdersIdRouteImport.update({
-    id: '/app/orders/$id',
-    path: '/app/orders/$id',
+const AuthenticatedAdminOrdersIdRoute =
+  AuthenticatedAdminOrdersIdRouteImport.update({
+    id: '/admin/orders/$id',
+    path: '/admin/orders/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAppInvoiceOrderNoRoute =
@@ -342,17 +330,29 @@ const AuthenticatedAppInvoiceOrderNoRoute =
     path: '/app/invoice/$orderNo',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAdminOrdersIdRoute =
-  AuthenticatedAdminOrdersIdRouteImport.update({
-    id: '/admin/orders/$id',
-    path: '/admin/orders/$id',
+const AuthenticatedAppOrdersIndexRoute =
+  AuthenticatedAppOrdersIndexRouteImport.update({
+    id: '/app/orders/',
+    path: '/app/orders/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAdminInventoryImportRoute =
-  AuthenticatedAdminInventoryImportRouteImport.update({
-    id: '/admin/inventory/import',
-    path: '/admin/inventory/import',
+const AuthenticatedAppOrdersIdRoute =
+  AuthenticatedAppOrdersIdRouteImport.update({
+    id: '/app/orders/$id',
+    path: '/app/orders/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAppOrdersNewRoute =
+  AuthenticatedAppOrdersNewRouteImport.update({
+    id: '/app/orders/new',
+    path: '/app/orders/new',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const LovableEmailTransactionalPreviewRoute =
+  LovableEmailTransactionalPreviewRouteImport.update({
+    id: '/lovable/email/transactional/preview',
+    path: '/lovable/email/transactional/preview',
+    getParentRoute: () => rootRouteImport,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -727,116 +727,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/supply': {
-      id: '/supply'
-      path: '/supply'
-      fullPath: '/supply'
-      preLoaderRoute: typeof SupplyRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/suppliers': {
-      id: '/suppliers'
-      path: '/suppliers'
-      fullPath: '/suppliers'
-      preLoaderRoute: typeof SuppliersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/search': {
-      id: '/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof SearchRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/request-quote': {
-      id: '/request-quote'
-      path: '/request-quote'
-      fullPath: '/request-quote'
-      preLoaderRoute: typeof RequestQuoteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/promo': {
-      id: '/promo'
-      path: '/promo'
-      fullPath: '/promo'
-      preLoaderRoute: typeof PromoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/panduan-grade': {
-      id: '/panduan-grade'
-      path: '/panduan-grade'
-      fullPath: '/panduan-grade'
-      preLoaderRoute: typeof PanduanGradeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/network': {
-      id: '/network'
-      path: '/network'
-      fullPath: '/network'
-      preLoaderRoute: typeof NetworkRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mcp': {
-      id: '/mcp'
-      path: '/mcp'
-      fullPath: '/mcp'
-      preLoaderRoute: typeof McpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/keranjang': {
-      id: '/keranjang'
-      path: '/keranjang'
-      fullPath: '/keranjang'
-      preLoaderRoute: typeof KeranjangRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/insights': {
-      id: '/insights'
-      path: '/insights'
-      fullPath: '/insights'
-      preLoaderRoute: typeof InsightsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/buyers': {
-      id: '/buyers'
-      path: '/buyers'
-      fullPath: '/buyers'
-      preLoaderRoute: typeof BuyersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/belanja': {
-      id: '/belanja'
-      path: '/belanja'
-      fullPath: '/belanja'
-      preLoaderRoute: typeof BelanjaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -846,11 +741,151 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/belanja': {
+      id: '/belanja'
+      path: '/belanja'
+      fullPath: '/belanja'
+      preLoaderRoute: typeof BelanjaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/buyers': {
+      id: '/buyers'
+      path: '/buyers'
+      fullPath: '/buyers'
+      preLoaderRoute: typeof BuyersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/insights': {
+      id: '/insights'
+      path: '/insights'
+      fullPath: '/insights'
+      preLoaderRoute: typeof InsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/keranjang': {
+      id: '/keranjang'
+      path: '/keranjang'
+      fullPath: '/keranjang'
+      preLoaderRoute: typeof KeranjangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/network': {
+      id: '/network'
+      path: '/network'
+      fullPath: '/network'
+      preLoaderRoute: typeof NetworkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/panduan-grade': {
+      id: '/panduan-grade'
+      path: '/panduan-grade'
+      fullPath: '/panduan-grade'
+      preLoaderRoute: typeof PanduanGradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/promo': {
+      id: '/promo'
+      path: '/promo'
+      fullPath: '/promo'
+      preLoaderRoute: typeof PromoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/request-quote': {
+      id: '/request-quote'
+      path: '/request-quote'
+      fullPath: '/request-quote'
+      preLoaderRoute: typeof RequestQuoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/suppliers': {
+      id: '/suppliers'
+      path: '/suppliers'
+      fullPath: '/suppliers'
+      preLoaderRoute: typeof SuppliersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/supply': {
+      id: '/supply'
+      path: '/supply'
+      fullPath: '/supply'
+      preLoaderRoute: typeof SupplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kategori/$slug': {
+      id: '/kategori/$slug'
+      path: '/kategori/$slug'
+      fullPath: '/kategori/$slug'
+      preLoaderRoute: typeof KategoriSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/penawaran/$reference': {
+      id: '/penawaran/$reference'
+      path: '/penawaran/$reference'
+      fullPath: '/penawaran/$reference'
+      preLoaderRoute: typeof PenawaranReferenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pesanan/$orderNo': {
+      id: '/pesanan/$orderNo'
+      path: '/pesanan/$orderNo'
+      fullPath: '/pesanan/$orderNo'
+      preLoaderRoute: typeof PesananOrderNoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/produk/': {
@@ -867,151 +902,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdukSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/pesanan/$orderNo': {
-      id: '/pesanan/$orderNo'
-      path: '/pesanan/$orderNo'
-      fullPath: '/pesanan/$orderNo'
-      preLoaderRoute: typeof PesananOrderNoRouteImport
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/penawaran/$reference': {
-      id: '/penawaran/$reference'
-      path: '/penawaran/$reference'
-      fullPath: '/penawaran/$reference'
-      preLoaderRoute: typeof PenawaranReferenceRouteImport
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/kategori/$slug': {
-      id: '/kategori/$slug'
-      path: '/kategori/$slug'
-      fullPath: '/kategori/$slug'
-      preLoaderRoute: typeof KategoriSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/.well-known/oauth-protected-resource': {
-      id: '/.well-known/oauth-protected-resource'
-      path: '/.well-known/oauth-protected-resource'
-      fullPath: '/.well-known/oauth-protected-resource'
-      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/.mcp/list-tools': {
-      id: '/.mcp/list-tools'
-      path: '/.mcp/list-tools'
-      fullPath: '/.mcp/list-tools'
-      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/ops-cron': {
-      id: '/api/public/ops-cron'
-      path: '/api/public/ops-cron'
-      fullPath: '/api/public/ops-cron'
-      preLoaderRoute: typeof ApiPublicOpsCronRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/merchant-feed.xml': {
-      id: '/api/public/merchant-feed.xml'
-      path: '/api/public/merchant-feed.xml'
-      fullPath: '/api/public/merchant-feed.xml'
-      preLoaderRoute: typeof ApiPublicMerchantFeedDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/public/ipaymu-callback': {
-      id: '/api/public/ipaymu-callback'
-      path: '/api/public/ipaymu-callback'
-      fullPath: '/api/public/ipaymu-callback'
-      preLoaderRoute: typeof ApiPublicIpaymuCallbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/vendor/import': {
-      id: '/_authenticated/vendor/import'
-      path: '/vendor/import'
-      fullPath: '/vendor/import'
-      preLoaderRoute: typeof AuthenticatedVendorImportRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/vendor/catalog': {
-      id: '/_authenticated/vendor/catalog'
-      path: '/vendor/catalog'
-      fullPath: '/vendor/catalog'
-      preLoaderRoute: typeof AuthenticatedVendorCatalogRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/app/stock': {
-      id: '/_authenticated/app/stock'
-      path: '/app/stock'
-      fullPath: '/app/stock'
-      preLoaderRoute: typeof AuthenticatedAppStockRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/app/rfq': {
-      id: '/_authenticated/app/rfq'
-      path: '/app/rfq'
-      fullPath: '/app/rfq'
-      preLoaderRoute: typeof AuthenticatedAppRfqRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/app/pesanan': {
-      id: '/_authenticated/app/pesanan'
-      path: '/app/pesanan'
-      fullPath: '/app/pesanan'
-      preLoaderRoute: typeof AuthenticatedAppPesananRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/app/alamat': {
-      id: '/_authenticated/app/alamat'
-      path: '/app/alamat'
-      fullPath: '/app/alamat'
-      preLoaderRoute: typeof AuthenticatedAppAlamatRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/users': {
-      id: '/_authenticated/admin/users'
-      path: '/admin/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/storefront-orders': {
-      id: '/_authenticated/admin/storefront-orders'
-      path: '/admin/storefront-orders'
-      fullPath: '/admin/storefront-orders'
-      preLoaderRoute: typeof AuthenticatedAdminStorefrontOrdersRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/stock': {
-      id: '/_authenticated/admin/stock'
-      path: '/admin/stock'
-      fullPath: '/admin/stock'
-      preLoaderRoute: typeof AuthenticatedAdminStockRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/settings': {
-      id: '/_authenticated/admin/settings'
-      path: '/admin/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/rfq': {
-      id: '/_authenticated/admin/rfq'
-      path: '/admin/rfq'
-      fullPath: '/admin/rfq'
-      preLoaderRoute: typeof AuthenticatedAdminRfqRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/reports': {
-      id: '/_authenticated/admin/reports'
-      path: '/admin/reports'
-      fullPath: '/admin/reports'
-      preLoaderRoute: typeof AuthenticatedAdminReportsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/admin/insights': {
-      id: '/_authenticated/admin/insights'
-      path: '/admin/insights'
-      fullPath: '/admin/insights'
-      preLoaderRoute: typeof AuthenticatedAdminInsightsRouteImport
+    '/_authenticated/admin/commerce': {
+      id: '/_authenticated/admin/commerce'
+      path: '/admin/commerce'
+      fullPath: '/admin/commerce'
+      preLoaderRoute: typeof AuthenticatedAdminCommerceRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/dashboard': {
@@ -1021,32 +930,130 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin/commerce': {
-      id: '/_authenticated/admin/commerce'
-      path: '/admin/commerce'
-      fullPath: '/admin/commerce'
-      preLoaderRoute: typeof AuthenticatedAdminCommerceRouteImport
+    '/_authenticated/admin/insights': {
+      id: '/_authenticated/admin/insights'
+      path: '/admin/insights'
+      fullPath: '/admin/insights'
+      preLoaderRoute: typeof AuthenticatedAdminInsightsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/.mcp/invoke-tool/$tool': {
-      id: '/.mcp/invoke-tool/$tool'
-      path: '/.mcp/invoke-tool/$tool'
-      fullPath: '/.mcp/invoke-tool/$tool'
-      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+    '/_authenticated/admin/reports': {
+      id: '/_authenticated/admin/reports'
+      path: '/admin/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AuthenticatedAdminReportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/rfq': {
+      id: '/_authenticated/admin/rfq'
+      path: '/admin/rfq'
+      fullPath: '/admin/rfq'
+      preLoaderRoute: typeof AuthenticatedAdminRfqRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/stock': {
+      id: '/_authenticated/admin/stock'
+      path: '/admin/stock'
+      fullPath: '/admin/stock'
+      preLoaderRoute: typeof AuthenticatedAdminStockRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/storefront-orders': {
+      id: '/_authenticated/admin/storefront-orders'
+      path: '/admin/storefront-orders'
+      fullPath: '/admin/storefront-orders'
+      preLoaderRoute: typeof AuthenticatedAdminStorefrontOrdersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/users': {
+      id: '/_authenticated/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/alamat': {
+      id: '/_authenticated/app/alamat'
+      path: '/app/alamat'
+      fullPath: '/app/alamat'
+      preLoaderRoute: typeof AuthenticatedAppAlamatRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/pesanan': {
+      id: '/_authenticated/app/pesanan'
+      path: '/app/pesanan'
+      fullPath: '/app/pesanan'
+      preLoaderRoute: typeof AuthenticatedAppPesananRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/rfq': {
+      id: '/_authenticated/app/rfq'
+      path: '/app/rfq'
+      fullPath: '/app/rfq'
+      preLoaderRoute: typeof AuthenticatedAppRfqRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/stock': {
+      id: '/_authenticated/app/stock'
+      path: '/app/stock'
+      fullPath: '/app/stock'
+      preLoaderRoute: typeof AuthenticatedAppStockRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/vendor/catalog': {
+      id: '/_authenticated/vendor/catalog'
+      path: '/vendor/catalog'
+      fullPath: '/vendor/catalog'
+      preLoaderRoute: typeof AuthenticatedVendorCatalogRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/vendor/import': {
+      id: '/_authenticated/vendor/import'
+      path: '/vendor/import'
+      fullPath: '/vendor/import'
+      preLoaderRoute: typeof AuthenticatedVendorImportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/api/public/ipaymu-callback': {
+      id: '/api/public/ipaymu-callback'
+      path: '/api/public/ipaymu-callback'
+      fullPath: '/api/public/ipaymu-callback'
+      preLoaderRoute: typeof ApiPublicIpaymuCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/.lovable/oauth/consent': {
-      id: '/.lovable/oauth/consent'
-      path: '/.lovable/oauth/consent'
-      fullPath: '/.lovable/oauth/consent'
-      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+    '/api/public/merchant-feed.xml': {
+      id: '/api/public/merchant-feed.xml'
+      path: '/api/public/merchant-feed.xml'
+      fullPath: '/api/public/merchant-feed.xml'
+      preLoaderRoute: typeof ApiPublicMerchantFeedDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/app/orders/': {
-      id: '/_authenticated/app/orders/'
-      path: '/app/orders'
-      fullPath: '/app/orders/'
-      preLoaderRoute: typeof AuthenticatedAppOrdersIndexRouteImport
+    '/api/public/ops-cron': {
+      id: '/api/public/ops-cron'
+      path: '/api/public/ops-cron'
+      fullPath: '/api/public/ops-cron'
+      preLoaderRoute: typeof ApiPublicOpsCronRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin/inventory/': {
+      id: '/_authenticated/admin/inventory/'
+      path: '/admin/inventory'
+      fullPath: '/admin/inventory/'
+      preLoaderRoute: typeof AuthenticatedAdminInventoryIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/inventory/import': {
+      id: '/_authenticated/admin/inventory/import'
+      path: '/admin/inventory/import'
+      fullPath: '/admin/inventory/import'
+      preLoaderRoute: typeof AuthenticatedAdminInventoryImportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/orders/': {
@@ -1056,32 +1063,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminOrdersIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin/inventory/': {
-      id: '/_authenticated/admin/inventory/'
-      path: '/admin/inventory'
-      fullPath: '/admin/inventory/'
-      preLoaderRoute: typeof AuthenticatedAdminInventoryIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/lovable/email/transactional/preview': {
-      id: '/lovable/email/transactional/preview'
-      path: '/lovable/email/transactional/preview'
-      fullPath: '/lovable/email/transactional/preview'
-      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/app/orders/new': {
-      id: '/_authenticated/app/orders/new'
-      path: '/app/orders/new'
-      fullPath: '/app/orders/new'
-      preLoaderRoute: typeof AuthenticatedAppOrdersNewRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/app/orders/$id': {
-      id: '/_authenticated/app/orders/$id'
-      path: '/app/orders/$id'
-      fullPath: '/app/orders/$id'
-      preLoaderRoute: typeof AuthenticatedAppOrdersIdRouteImport
+    '/_authenticated/admin/orders/$id': {
+      id: '/_authenticated/admin/orders/$id'
+      path: '/admin/orders/$id'
+      fullPath: '/admin/orders/$id'
+      preLoaderRoute: typeof AuthenticatedAdminOrdersIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/app/invoice/$orderNo': {
@@ -1091,19 +1077,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppInvoiceOrderNoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin/orders/$id': {
-      id: '/_authenticated/admin/orders/$id'
-      path: '/admin/orders/$id'
-      fullPath: '/admin/orders/$id'
-      preLoaderRoute: typeof AuthenticatedAdminOrdersIdRouteImport
+    '/_authenticated/app/orders/': {
+      id: '/_authenticated/app/orders/'
+      path: '/app/orders'
+      fullPath: '/app/orders/'
+      preLoaderRoute: typeof AuthenticatedAppOrdersIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin/inventory/import': {
-      id: '/_authenticated/admin/inventory/import'
-      path: '/admin/inventory/import'
-      fullPath: '/admin/inventory/import'
-      preLoaderRoute: typeof AuthenticatedAdminInventoryImportRouteImport
+    '/_authenticated/app/orders/$id': {
+      id: '/_authenticated/app/orders/$id'
+      path: '/app/orders/$id'
+      fullPath: '/app/orders/$id'
+      preLoaderRoute: typeof AuthenticatedAppOrdersIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/app/orders/new': {
+      id: '/_authenticated/app/orders/new'
+      path: '/app/orders/new'
+      fullPath: '/app/orders/new'
+      preLoaderRoute: typeof AuthenticatedAppOrdersNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/lovable/email/transactional/preview': {
+      id: '/lovable/email/transactional/preview'
+      path: '/lovable/email/transactional/preview'
+      fullPath: '/lovable/email/transactional/preview'
+      preLoaderRoute: typeof LovableEmailTransactionalPreviewRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
