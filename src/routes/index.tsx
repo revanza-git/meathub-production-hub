@@ -453,11 +453,11 @@ function MarketInsights() {
           linkLabel={t("home.insights.all")}
         />
         <div className="mt-10 grid gap-px border border-line bg-line lg:grid-cols-3">
-          {items.map((item) => (
+          {items.map((item, index) => (
             <article key={item.id} className="bg-card">
               <div className="relative">
                 <img
-                  src={resolveProductImage(item.image_url, item.name, null, null, null, item.id)}
+                  src={resolveProductImage(item.image_url, item.name, null, null, null, item.id, index)}
                   alt={item.name}
                   loading="lazy"
                   width={1200}
