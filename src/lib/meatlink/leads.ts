@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { VErr } from "@/lib/i18n";
+import { supabase } from "@/integrations/supabase/client";
 
 const text = (max: number) =>
   z
