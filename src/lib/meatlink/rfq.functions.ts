@@ -163,8 +163,7 @@ export const respondToRfq = createServerFn({ method: "POST" })
             contactName: row.contact_name,
             referenceNo: row.reference_no,
             response: data.response,
-            statusLabel:
-              data.status === "quoted" ? "Penawaran tersedia" : "Status diperbarui",
+            statusLabel: data.status === "quoted" ? "Penawaran tersedia" : "Status diperbarui",
             trackUrl,
             validUntil: data.validUntil,
           },
