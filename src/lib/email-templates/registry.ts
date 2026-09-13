@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react'
 import { template as orderStatusTemplate } from './order-status'
 import { template as opsAlertTemplate } from './ops-alert'
+import { template as rfqResponseTemplate } from './rfq-response'
 
 
 export interface TemplateEntry {
@@ -23,4 +24,5 @@ export interface TemplateEntry {
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'order-status': orderStatusTemplate,
   'ops-alert': opsAlertTemplate,
+  'rfq-response': rfqResponseTemplate,
 }

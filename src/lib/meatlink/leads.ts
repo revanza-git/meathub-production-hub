@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { VErr } from "@/lib/i18n";
-import { supabase } from "@/integrations/supabase/client";
 
 const text = (max: number) => z.string().trim().max(max, { message: VErr.max(max) });
 const required = (_label: string, max = 160) =>
@@ -68,42 +67,6 @@ export const supplierSchema = z.object({
 });
 
 export type SupplierInput = z.infer<typeof supplierSchema>;
-
-export async function submitRfq(input: RfqInput) {
-  const { items, ...rest } = input;
-  const first = items[0]!;
-  const extraItems = items.slice(1);
-  const itemSummary = extraItems.length
-    ? extraItems
-        .map(
-          (i, idx) =>
-            `Item ${idx + 2}: ${i.product_cut} — ${i.volume}` +
-            [i.grade && `grade ${i.grade}`, i.origin_preference && `origin ${i.origin_preference}`, i.brand_preference && `brand ${i.brand_preference}`, i.notes]
-              .filter(Boolean)
-              .map((s) => ` | ${s}`)
-              .join(""),
-        )
-        .join("\n")
-    : "";
-
-  const { data: auth } = await supabase.auth.getUser();
-
-  const payload = {
-    ...rest,
-    user_id: auth.user?.id ?? null,
-    items,
-    category: first.category ?? "",
-    product_cut: first.product_cut,
-    origin_preference: first.origin_preference ?? "",
-    brand_preference: first.brand_preference ?? "",
-    grade: first.grade ?? "",
-    volume: first.volume,
-    notes: [rest.notes, first.notes, itemSummary].filter(Boolean).join("\n").slice(0, 4000),
-  };
-
-  const { error } = await supabase.from("quote_requests").insert(payload);
-  if (error) throw new Error(error.message);
-}
 
 export async function submitSupplier(input: SupplierInput) {
   const { error } = await supabase.from("supplier_applications").insert(input);
