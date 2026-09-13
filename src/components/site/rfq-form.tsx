@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { useBi, useErr } from "@/lib/i18n";
 import { toast } from "sonner";
 import { CheckCircle2, Plus, Trash2 } from "lucide-react";
@@ -8,10 +9,10 @@ import {
   emptyRfqItem,
   rfqSchema,
   rfqWhatsappMessage,
-  submitRfq,
   type RfqInput,
   type RfqItem,
 } from "@/lib/meatlink/leads";
+import { submitRfqRequest } from "@/lib/meatlink/rfq.functions";
 
 const EMPTY: RfqInput = {
   company_name: "",
@@ -33,7 +34,10 @@ export function RfqForm() {
   const [values, setValues] = useState<RfqInput>(EMPTY);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, setPending] = useState(false);
-  const [done, setDone] = useState<RfqInput | null>(null);
+  const [done, setDone] = useState<{ input: RfqInput; referenceNo: string; token: string } | null>(
+    null,
+  );
+  const submitRequest = useServerFn(submitRfqRequest);
   const bi = useBi();
   const err = useErr();
 
@@ -72,11 +76,20 @@ export function RfqForm() {
     setErrors({});
     setPending(true);
     try {
-      await submitRfq(parsed.data);
-      setDone(parsed.data);
-      toast.success(bi("Permintaan diterima. Tim sourcing kami akan menghubungi Anda.", "RFQ received. Our sourcing team will be in touch."));
+      const result = await submitRequest({ data: parsed.data });
+      setDone({ input: parsed.data, referenceNo: result.referenceNo, token: result.token });
+      toast.success(
+        bi(
+          "Permintaan diterima. Tim sourcing kami akan menghubungi Anda.",
+          "RFQ received. Our sourcing team will be in touch.",
+        ),
+      );
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : bi("Permintaan gagal dikirim.", "Could not send your request."));
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : bi("Permintaan gagal dikirim.", "Could not send your request."),
+      );
     } finally {
       setPending(false);
     }
@@ -86,18 +99,35 @@ export function RfqForm() {
     return (
       <div className="border border-line bg-card p-8 text-center">
         <CheckCircle2 className="mx-auto h-10 w-10 text-crimson" aria-hidden="true" />
-        <h2 className="mt-5 font-display text-2xl">{bi("Permintaan Anda sudah diterima tim sourcing", "Your request is with our sourcing team")}</h2>
+        <h2 className="mt-5 font-display text-2xl">
+          {bi(
+            "Permintaan Anda sudah diterima tim sourcing",
+            "Your request is with our sourcing team",
+          )}
+        </h2>
+        <p className="eyebrow mt-4 text-crimson">{done.referenceNo}</p>
         <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-ash">
-          {bi("Setiap permintaan kami tinjau manual dan cocokkan dengan jaringan pemasok. Balasan dalam satu hari kerja.", "We review every RFQ manually and match it against our supplier network. Expect a response within one business day.")}
+          {bi(
+            "Setiap permintaan kami tinjau manual dan cocokkan dengan jaringan pemasok. Balasan dalam satu hari kerja.",
+            "We review every RFQ manually and match it against our supplier network. Expect a response within one business day.",
+          )}
         </p>
-        <a
-          href={waLink(rfqWhatsappMessage(done))}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="eyebrow mt-6 inline-flex bg-crimson px-6 py-4 text-bone transition-colors hover:bg-crimson-deep"
-        >
-          {bi("Lanjut via WhatsApp", "Continue on WhatsApp")}
-        </a>
+        <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+          <a
+            href={`/penawaran/${encodeURIComponent(done.referenceNo)}?token=${encodeURIComponent(done.token)}`}
+            className="eyebrow inline-flex justify-center bg-crimson px-6 py-4 text-bone transition-colors hover:bg-crimson-deep"
+          >
+            {bi("Lihat status permintaan", "Track request")}
+          </a>
+          <a
+            href={waLink(rfqWhatsappMessage(done.input))}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="eyebrow inline-flex justify-center border border-line px-6 py-4 text-ink transition-colors hover:border-crimson hover:text-crimson"
+          >
+            {bi("Lanjut via WhatsApp", "Continue on WhatsApp")}
+          </a>
+        </div>
       </div>
     );
   }
@@ -105,8 +135,14 @@ export function RfqForm() {
   return (
     <form onSubmit={onSubmit} className="border border-line bg-card p-6 sm:p-8">
       <fieldset className="grid gap-5 sm:grid-cols-2">
-        <legend className="eyebrow mb-5 text-crimson">{bi("Profil bisnis Anda", "Your business")}</legend>
-        <Field label={bi("Nama perusahaan", "Company name")} required error={errors["company_name"]}>
+        <legend className="eyebrow mb-5 text-crimson">
+          {bi("Profil bisnis Anda", "Your business")}
+        </legend>
+        <Field
+          label={bi("Nama perusahaan", "Company name")}
+          required
+          error={errors["company_name"]}
+        >
           <TextInput
             value={values.company_name}
             onChange={(e) => set("company_name", e.target.value)}
@@ -136,14 +172,21 @@ export function RfqForm() {
             placeholder="name@company.com"
           />
         </Field>
-        <Field label={bi("Lokasi pengiriman", "Delivery location")} required error={errors["delivery_location"]}>
+        <Field
+          label={bi("Lokasi pengiriman", "Delivery location")}
+          required
+          error={errors["delivery_location"]}
+        >
           <TextInput
             value={values.delivery_location}
             onChange={(e) => set("delivery_location", e.target.value)}
             placeholder={bi("Kota / area", "City / area")}
           />
         </Field>
-        <Field label={bi("Termin pembayaran yang diinginkan", "Payment terms preferred")} error={errors["payment_terms"]}>
+        <Field
+          label={bi("Termin pembayaran yang diinginkan", "Payment terms preferred")}
+          error={errors["payment_terms"]}
+        >
           <TextInput
             value={values.payment_terms ?? ""}
             onChange={(e) => set("payment_terms", e.target.value)}
@@ -157,7 +200,10 @@ export function RfqForm() {
           <div>
             <p className="eyebrow text-crimson">{bi("Kebutuhan Anda", "What you need")}</p>
             <p className="mt-2 text-xs text-ash">
-              {bi("Tambahkan setiap potongan yang Anda cari — satu baris per produk. Tidak perlu kirim beberapa permintaan.", "Add every cut you are sourcing — one line per product. No need to send several requests.")}
+              {bi(
+                "Tambahkan setiap potongan yang Anda cari — satu baris per produk. Tidak perlu kirim beberapa permintaan.",
+                "Add every cut you are sourcing — one line per product. No need to send several requests.",
+              )}
             </p>
           </div>
           <span className="text-xs text-ash">
@@ -165,15 +211,15 @@ export function RfqForm() {
           </span>
         </div>
 
-        {errors["items"] ? (
-          <p className="mt-3 text-xs text-crimson">{errors["items"]}</p>
-        ) : null}
+        {errors["items"] ? <p className="mt-3 text-xs text-crimson">{errors["items"]}</p> : null}
 
         <div className="mt-5 space-y-5">
           {values.items.map((item, index) => (
             <fieldset key={index} className="border border-line p-5">
               <div className="mb-5 flex items-center justify-between">
-                <legend className="eyebrow text-ash">{bi("Item", "Item")} {index + 1}</legend>
+                <legend className="eyebrow text-ash">
+                  {bi("Item", "Item")} {index + 1}
+                </legend>
                 {values.items.length > 1 ? (
                   <button
                     type="button"
@@ -213,14 +259,20 @@ export function RfqForm() {
                     placeholder={bi("mis. Wagyu ribeye", "e.g. Wagyu ribeye")}
                   />
                 </Field>
-                <Field label={bi("Preferensi origin", "Origin preference")} error={errors[`items.${index}.origin_preference`]}>
+                <Field
+                  label={bi("Preferensi origin", "Origin preference")}
+                  error={errors[`items.${index}.origin_preference`]}
+                >
                   <TextInput
                     value={item.origin_preference ?? ""}
                     onChange={(e) => setItem(index, "origin_preference", e.target.value)}
                     placeholder={bi("mis. Australia, USA, NZ", "e.g. Australia, USA, NZ")}
                   />
                 </Field>
-                <Field label={bi("Preferensi brand", "Brand preference")} error={errors[`items.${index}.brand_preference`]}>
+                <Field
+                  label={bi("Preferensi brand", "Brand preference")}
+                  error={errors[`items.${index}.brand_preference`]}
+                >
                   <TextInput
                     value={item.brand_preference ?? ""}
                     onChange={(e) => setItem(index, "brand_preference", e.target.value)}
@@ -237,7 +289,11 @@ export function RfqForm() {
                     onChange={(e) => setItem(index, "grade", e.target.value)}
                   />
                 </Field>
-                <Field label={bi("Volume dibutuhkan", "Volume required")} required error={errors[`items.${index}.volume`]}>
+                <Field
+                  label={bi("Volume dibutuhkan", "Volume required")}
+                  required
+                  error={errors[`items.${index}.volume`]}
+                >
                   <TextInput
                     value={item.volume}
                     onChange={(e) => setItem(index, "volume", e.target.value)}
@@ -245,11 +301,17 @@ export function RfqForm() {
                   />
                 </Field>
                 <div className="sm:col-span-2">
-                  <Field label={bi("Catatan item", "Item notes")} error={errors[`items.${index}.notes`]}>
+                  <Field
+                    label={bi("Catatan item", "Item notes")}
+                    error={errors[`items.${index}.notes`]}
+                  >
                     <TextInput
                       value={item.notes ?? ""}
                       onChange={(e) => setItem(index, "notes", e.target.value)}
-                      placeholder={bi("Kemasan, ukuran porsi, spesifikasi trim…", "Packaging, portion size, trim spec…")}
+                      placeholder={bi(
+                        "Kemasan, ukuran porsi, spesifikasi trim…",
+                        "Packaging, portion size, trim spec…",
+                      )}
                     />
                   </Field>
                 </div>
@@ -269,8 +331,13 @@ export function RfqForm() {
       </div>
 
       <fieldset className="mt-10 grid gap-5 sm:grid-cols-2">
-        <legend className="eyebrow mb-5 text-crimson">{bi("Detail pemesanan", "Order details")}</legend>
-        <Field label={bi("Frekuensi pembelian", "Purchase frequency")} error={errors["purchase_frequency"]}>
+        <legend className="eyebrow mb-5 text-crimson">
+          {bi("Detail pemesanan", "Order details")}
+        </legend>
+        <Field
+          label={bi("Frekuensi pembelian", "Purchase frequency")}
+          error={errors["purchase_frequency"]}
+        >
           <SelectInput
             value={values.purchase_frequency ?? ""}
             onChange={(e) => set("purchase_frequency", e.target.value)}
@@ -282,7 +349,11 @@ export function RfqForm() {
             <option value="Monthly">{bi("Bulanan", "Monthly")}</option>
           </SelectInput>
         </Field>
-        <Field label={bi("Tanggal pengiriman dibutuhkan", "Required delivery date")} required error={errors["required_delivery_date"]}>
+        <Field
+          label={bi("Tanggal pengiriman dibutuhkan", "Required delivery date")}
+          required
+          error={errors["required_delivery_date"]}
+        >
           <TextInput
             value={values.required_delivery_date}
             onChange={(e) => set("required_delivery_date", e.target.value)}
@@ -292,8 +363,13 @@ export function RfqForm() {
       </fieldset>
 
       <fieldset className="mt-10 grid gap-5 sm:grid-cols-2">
-        <legend className="eyebrow mb-5 text-crimson">{bi("Sourcing saat ini (opsional)", "Current sourcing (optional)")}</legend>
-        <Field label={bi("Pemasok saat ini", "Current supplier")} error={errors["current_supplier"]}>
+        <legend className="eyebrow mb-5 text-crimson">
+          {bi("Sourcing saat ini (opsional)", "Current sourcing (optional)")}
+        </legend>
+        <Field
+          label={bi("Pemasok saat ini", "Current supplier")}
+          error={errors["current_supplier"]}
+        >
           <TextInput
             value={values.current_supplier ?? ""}
             onChange={(e) => set("current_supplier", e.target.value)}
@@ -318,7 +394,10 @@ export function RfqForm() {
             <TextArea
               value={values.notes ?? ""}
               onChange={(e) => set("notes", e.target.value)}
-              placeholder={bi("Sertifikasi, kebutuhan halal, catatan rantai dingin…", "Certification, halal requirements, cold chain notes…")}
+              placeholder={bi(
+                "Sertifikasi, kebutuhan halal, catatan rantai dingin…",
+                "Certification, halal requirements, cold chain notes…",
+              )}
             />
           </Field>
         </div>
@@ -326,7 +405,10 @@ export function RfqForm() {
 
       <div className="mt-10 flex flex-col items-start gap-4 border-t border-line pt-8 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs leading-relaxed text-ash">
-          {bi("Tanpa perlu akun. Kami tidak pernah mempublikasikan harga Anda atau membagikan data Anda di luar pemasok yang kami seleksi.", "No account needed. We never publish your pricing or share your details beyond the suppliers we shortlist for you.")}
+          {bi(
+            "Tanpa perlu akun. Kami tidak pernah mempublikasikan harga Anda atau membagikan data Anda di luar pemasok yang kami seleksi.",
+            "No account needed. We never publish your pricing or share your details beyond the suppliers we shortlist for you.",
+          )}
         </p>
         <SubmitButton pending={pending}>{bi("Kirim permintaan", "Submit RFQ")}</SubmitButton>
       </div>

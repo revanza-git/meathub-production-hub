@@ -36,6 +36,17 @@ function RequestQuotePage() {
       />
       <section className="bg-bone">
         <div className="mx-auto max-w-4xl px-5 py-16 lg:px-8 lg:py-20">
+          <ol className="mb-8 grid gap-px border border-line bg-line text-sm sm:grid-cols-3">
+            {[
+              bi("1. Kirim kebutuhan", "1. Send requirements"),
+              bi("2. Tim kami meninjau", "2. Our team reviews"),
+              bi("3. Pantau respons", "3. Track the response"),
+            ].map((step) => (
+              <li key={step} className="bg-bone px-5 py-4 text-center text-ash">
+                {step}
+              </li>
+            ))}
+          </ol>
           <RfqForm />
         </div>
       </section>

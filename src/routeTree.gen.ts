@@ -30,6 +30,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProdukIndexRouteImport } from './routes/produk.index'
 import { Route as ProdukSlugRouteImport } from './routes/produk.$slug'
 import { Route as PesananOrderNoRouteImport } from './routes/pesanan.$orderNo'
+import { Route as PenawaranReferenceRouteImport } from './routes/penawaran.$reference'
 import { Route as KategoriSlugRouteImport } from './routes/kategori.$slug'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
@@ -165,6 +166,11 @@ const ProdukSlugRoute = ProdukSlugRouteImport.update({
 const PesananOrderNoRoute = PesananOrderNoRouteImport.update({
   id: '/pesanan/$orderNo',
   path: '/pesanan/$orderNo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PenawaranReferenceRoute = PenawaranReferenceRouteImport.update({
+  id: '/penawaran/$reference',
+  path: '/penawaran/$reference',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KategoriSlugRoute = KategoriSlugRouteImport.update({
@@ -370,6 +376,7 @@ export interface FileRoutesByFullPath {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/kategori/$slug': typeof KategoriSlugRoute
+  '/penawaran/$reference': typeof PenawaranReferenceRoute
   '/pesanan/$orderNo': typeof PesananOrderNoRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/produk/': typeof ProdukIndexRoute
@@ -424,6 +431,7 @@ export interface FileRoutesByTo {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/kategori/$slug': typeof KategoriSlugRoute
+  '/penawaran/$reference': typeof PenawaranReferenceRoute
   '/pesanan/$orderNo': typeof PesananOrderNoRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/produk': typeof ProdukIndexRoute
@@ -480,6 +488,7 @@ export interface FileRoutesById {
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/kategori/$slug': typeof KategoriSlugRoute
+  '/penawaran/$reference': typeof PenawaranReferenceRoute
   '/pesanan/$orderNo': typeof PesananOrderNoRoute
   '/produk/$slug': typeof ProdukSlugRoute
   '/produk/': typeof ProdukIndexRoute
@@ -536,6 +545,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/kategori/$slug'
+    | '/penawaran/$reference'
     | '/pesanan/$orderNo'
     | '/produk/$slug'
     | '/produk/'
@@ -590,6 +600,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/kategori/$slug'
+    | '/penawaran/$reference'
     | '/pesanan/$orderNo'
     | '/produk/$slug'
     | '/produk'
@@ -645,6 +656,7 @@ export interface FileRouteTypes {
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/kategori/$slug'
+    | '/penawaran/$reference'
     | '/pesanan/$orderNo'
     | '/produk/$slug'
     | '/produk/'
@@ -701,6 +713,7 @@ export interface RootRouteChildren {
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   KategoriSlugRoute: typeof KategoriSlugRoute
+  PenawaranReferenceRoute: typeof PenawaranReferenceRoute
   PesananOrderNoRoute: typeof PesananOrderNoRoute
   ProdukSlugRoute: typeof ProdukSlugRoute
   ProdukIndexRoute: typeof ProdukIndexRoute
@@ -859,6 +872,13 @@ declare module '@tanstack/react-router' {
       path: '/pesanan/$orderNo'
       fullPath: '/pesanan/$orderNo'
       preLoaderRoute: typeof PesananOrderNoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/penawaran/$reference': {
+      id: '/penawaran/$reference'
+      path: '/penawaran/$reference'
+      fullPath: '/penawaran/$reference'
+      preLoaderRoute: typeof PenawaranReferenceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/kategori/$slug': {
@@ -1168,6 +1188,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   KategoriSlugRoute: KategoriSlugRoute,
+  PenawaranReferenceRoute: PenawaranReferenceRoute,
   PesananOrderNoRoute: PesananOrderNoRoute,
   ProdukSlugRoute: ProdukSlugRoute,
   ProdukIndexRoute: ProdukIndexRoute,

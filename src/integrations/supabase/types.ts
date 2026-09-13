@@ -2487,6 +2487,8 @@ export type Database = {
       }
       quote_requests: {
         Row: {
+          access_token_hash: string | null
+          admin_response: string | null
           brand_preference: string | null
           category: string | null
           company_name: string
@@ -2496,6 +2498,7 @@ export type Database = {
           current_supplier: string | null
           delivery_location: string
           email: string | null
+          email_access_token_hash: string | null
           grade: string | null
           id: string
           items: Json
@@ -2504,7 +2507,11 @@ export type Database = {
           payment_terms: string | null
           product_cut: string
           purchase_frequency: string | null
+          reference_no: string
           required_delivery_date: string
+          responded_at: string | null
+          responded_by: string | null
+          response_valid_until: string | null
           status: string
           target_price: string | null
           updated_at: string
@@ -2513,6 +2520,8 @@ export type Database = {
           whatsapp: string
         }
         Insert: {
+          access_token_hash?: string | null
+          admin_response?: string | null
           brand_preference?: string | null
           category?: string | null
           company_name: string
@@ -2522,6 +2531,7 @@ export type Database = {
           current_supplier?: string | null
           delivery_location: string
           email?: string | null
+          email_access_token_hash?: string | null
           grade?: string | null
           id?: string
           items?: Json
@@ -2530,7 +2540,11 @@ export type Database = {
           payment_terms?: string | null
           product_cut: string
           purchase_frequency?: string | null
+          reference_no: string
           required_delivery_date: string
+          responded_at?: string | null
+          responded_by?: string | null
+          response_valid_until?: string | null
           status?: string
           target_price?: string | null
           updated_at?: string
@@ -2539,6 +2553,8 @@ export type Database = {
           whatsapp: string
         }
         Update: {
+          access_token_hash?: string | null
+          admin_response?: string | null
           brand_preference?: string | null
           category?: string | null
           company_name?: string
@@ -2548,6 +2564,7 @@ export type Database = {
           current_supplier?: string | null
           delivery_location?: string
           email?: string | null
+          email_access_token_hash?: string | null
           grade?: string | null
           id?: string
           items?: Json
@@ -2556,7 +2573,11 @@ export type Database = {
           payment_terms?: string | null
           product_cut?: string
           purchase_frequency?: string | null
+          reference_no?: string
           required_delivery_date?: string
+          responded_at?: string | null
+          responded_by?: string | null
+          response_valid_until?: string | null
           status?: string
           target_price?: string | null
           updated_at?: string
