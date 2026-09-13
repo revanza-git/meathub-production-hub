@@ -3652,6 +3652,15 @@ export type Database = {
           total_count: number
         }[]
       }
+      ml_public_catalog_analysis: {
+        Args: {
+          _cut?: string
+          _grade?: string
+          _group_by?: string
+          _origin?: string
+        }
+        Returns: Json
+      }
       ml_public_catalog_facets: {
         Args: {
           _category?: Database["public"]["Enums"]["ml_product_category"]
