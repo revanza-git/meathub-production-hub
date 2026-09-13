@@ -217,21 +217,22 @@ export function resolveProductImage(
   seed?: string | null,
   variantIndex?: number,
 ): string {
-  const variantSeed0 = `${seed ?? ""}|${name ?? ""}|${gradeBand ?? ""}`;
+  const inferredGrade = gradeBand ?? (/\ba\s*5\b/i.test(name ?? "") ? "MB9_12" : null);
+  const variantSeed0 = `${seed ?? ""}|${name ?? ""}|${inferredGrade ?? ""}`;
   if (imageUrl) {
     // A real uploaded photo always wins; a preset key still gets cut variety.
     const isUrl =
       /^https?:\/\//i.test(imageUrl) || imageUrl.startsWith("/__l5e/") || imageUrl.startsWith("/");
     if (isUrl) return imageUrl;
-    return pickCutPhoto(IMAGE_ALIASES[imageUrl] ?? imageUrl, variantSeed0, gradeBand, variantIndex);
+    return pickCutPhoto(IMAGE_ALIASES[imageUrl] ?? imageUrl, variantSeed0, inferredGrade, variantIndex);
   }
   const variantSeed = variantSeed0;
   const byCut = matchCut(cutType ?? "") ?? matchCut(name ?? "");
-  if (byCut) return pickCutPhoto(byCut, variantSeed, gradeBand, variantIndex);
+  if (byCut) return pickCutPhoto(byCut, variantSeed, inferredGrade, variantIndex);
   if (category === "OFFAL") return pickCutPhoto("offal", variantSeed, undefined, variantIndex);
   if (category === "BONE") return pickCutPhoto("bone", variantSeed, undefined, variantIndex);
-  if (gradeBand && GRADE_IMAGES[gradeBand]) return GRADE_IMAGES[gradeBand];
-  if (category === "SECOND_CUT") return pickCutPhoto("chuck", variantSeed, gradeBand, variantIndex);
+  if (inferredGrade && GRADE_IMAGES[inferredGrade]) return GRADE_IMAGES[inferredGrade];
+  if (category === "SECOND_CUT") return pickCutPhoto("chuck", variantSeed, inferredGrade, variantIndex);
   return pickCutPhoto("striploin", variantSeed, undefined, variantIndex);
 }
 
