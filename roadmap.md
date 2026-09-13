@@ -7,3 +7,4 @@
 - [x] Strengthen homepage B2B positioning and verify desktop/mobile layouts
 - [x] Ringkas kartu artikel insights dan tambahkan panel baca lengkap
 - [x] Tambahkan Analisis Katalog harga, stok, dan permintaan di /insights
+- [x] Rotasikan foto placeholder pada kartu Baru disourcing agar item berdekatan tidak duplikat

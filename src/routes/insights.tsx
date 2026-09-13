@@ -257,14 +257,14 @@ function InsightsPage() {
               ref={trackRef}
               className="mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             >
-              {featured.map((item) => (
+              {featured.map((item, index) => (
                 <article
                   key={item.id}
                   className="w-[85%] shrink-0 snap-start border border-line bg-card sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]"
                 >
                   <div className="relative">
                     <img
-                      src={resolveProductImage(item.image_url, item.name, null, null, null, item.id)}
+                      src={resolveProductImage(item.image_url, item.name, null, null, null, item.id, index)}
                       alt={item.name}
                       loading="lazy"
                       width={1200}

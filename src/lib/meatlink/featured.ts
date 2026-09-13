@@ -122,12 +122,17 @@ function seedIndex(seed: string, length: number): number {
 
 /** Picks one of the real photos for a cut, varied deterministically by item.
  *  When a cut has few photos, the matching marbling shot widens the pool. */
-export function pickCutPhoto(key: string, seed: string, gradeBand?: string | null): string {
+export function pickCutPhoto(
+  key: string,
+  seed: string,
+  gradeBand?: string | null,
+  variantIndex?: number,
+): string {
   const base = CUT_VARIANTS[key];
   if (!base || base.length === 0) return resolveFeatureImage(key);
   const gradeShot = gradeBand ? GRADE_IMAGES[gradeBand] : undefined;
   const pool = base.length < 3 && gradeShot ? [...base, gradeShot] : base;
-  return pool[seedIndex(seed, pool.length)];
+  return pool[variantIndex === undefined ? seedIndex(seed, pool.length) : variantIndex % pool.length];
 }
 
 /** Cut keywords → photo key, most specific first. */
@@ -210,23 +215,26 @@ export function resolveProductImage(
   gradeBand?: string | null,
   cutType?: string | null,
   seed?: string | null,
+  variantIndex?: number,
 ): string {
-  const variantSeed0 = `${seed ?? ""}|${name ?? ""}|${gradeBand ?? ""}`;
+  const inferredGrade =
+    gradeBand ?? (/\ba\s*5\b/i.test(name ?? "") ? "MB9_12" : variantIndex === undefined ? null : "UNGRADED");
+  const variantSeed0 = `${seed ?? ""}|${name ?? ""}|${inferredGrade ?? ""}`;
   if (imageUrl) {
     // A real uploaded photo always wins; a preset key still gets cut variety.
     const isUrl =
       /^https?:\/\//i.test(imageUrl) || imageUrl.startsWith("/__l5e/") || imageUrl.startsWith("/");
     if (isUrl) return imageUrl;
-    return pickCutPhoto(IMAGE_ALIASES[imageUrl] ?? imageUrl, variantSeed0, gradeBand);
+    return pickCutPhoto(IMAGE_ALIASES[imageUrl] ?? imageUrl, variantSeed0, inferredGrade, variantIndex);
   }
   const variantSeed = variantSeed0;
   const byCut = matchCut(cutType ?? "") ?? matchCut(name ?? "");
-  if (byCut) return pickCutPhoto(byCut, variantSeed, gradeBand);
-  if (category === "OFFAL") return pickCutPhoto("offal", variantSeed);
-  if (category === "BONE") return pickCutPhoto("bone", variantSeed);
-  if (gradeBand && GRADE_IMAGES[gradeBand]) return GRADE_IMAGES[gradeBand];
-  if (category === "SECOND_CUT") return pickCutPhoto("chuck", variantSeed, gradeBand);
-  return pickCutPhoto("striploin", variantSeed);
+  if (byCut) return pickCutPhoto(byCut, variantSeed, inferredGrade, variantIndex);
+  if (category === "OFFAL") return pickCutPhoto("offal", variantSeed, undefined, variantIndex);
+  if (category === "BONE") return pickCutPhoto("bone", variantSeed, undefined, variantIndex);
+  if (inferredGrade && GRADE_IMAGES[inferredGrade]) return GRADE_IMAGES[inferredGrade];
+  if (category === "SECOND_CUT") return pickCutPhoto("chuck", variantSeed, inferredGrade, variantIndex);
+  return pickCutPhoto("striploin", variantSeed, undefined, variantIndex);
 }
 
 
