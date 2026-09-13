@@ -80,8 +80,8 @@ function AboutPage() {
             <div className="mt-6 space-y-5 text-sm leading-relaxed text-ash">
               <p>
                 {bi(
-                  "Meatlink tumbuh dari pengalaman langsung bersama EV Butchers — memotong, menilai grade, dan mengirimkan daging premium ke dapur dengan standar tinggi. Pengalaman itu menunjukkan satu hal: hambatan dalam pasokan daging Indonesia bukan produknya, melainkan koneksinya.",
-                  "Meatlink grew out of hands-on trade experience with EV Butchers — cutting, grading and delivering premium meat to demanding kitchens. That work made one thing obvious: the bottleneck in Indonesian meat supply isn't product, it's connection.",
+                  "Meatlink tumbuh dari pengalaman langsung bersama tim butcher berpengalaman — memotong, menilai grade, dan mengirimkan daging premium ke dapur dengan standar tinggi. Pengalaman itu menunjukkan satu hal: hambatan dalam pasokan daging Indonesia bukan produknya, melainkan koneksinya.",
+                  "Meatlink grew out of hands-on trade experience with experienced butchers — cutting, grading and delivering premium meat to demanding kitchens. That work made one thing obvious: the bottleneck in Indonesian meat supply isn't product, it's connection.",
                 )}
               </p>
               <p>
