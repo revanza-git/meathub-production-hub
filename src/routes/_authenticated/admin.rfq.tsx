@@ -211,11 +211,20 @@ function QuoteRequestCard({
           sendEmail,
         },
       });
-      toast.success(
-        result.emailSent
-          ? bi("Respons disimpan dan email terkirim.", "Response saved and email sent.")
-          : bi("Respons disimpan.", "Response saved."),
-      );
+      if (result.emailError) {
+        toast.warning(
+          bi(
+            "Respons tersimpan, tetapi email belum terkirim. Lanjutkan via WhatsApp.",
+            "Response saved, but the email was not sent. Continue on WhatsApp.",
+          ),
+        );
+      } else {
+        toast.success(
+          result.emailSent
+            ? bi("Respons disimpan dan email terkirim.", "Response saved and email sent.")
+            : bi("Respons disimpan.", "Response saved."),
+        );
+      }
       void qc.invalidateQueries({ queryKey: ["admin-quote-requests"] });
     } catch (error) {
       toast.error(

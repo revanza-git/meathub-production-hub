@@ -151,22 +151,29 @@ export const respondToRfq = createServerFn({ method: "POST" })
     if (error) throw new Error("Respons belum dapat disimpan.");
 
     let emailSent = false;
+    let emailError = false;
     if (data.sendEmail && row.email && emailToken) {
-      const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
-      const origin = process.env["SITE_URL"] || "https://meatlink.id";
-      const trackUrl = `${origin}/penawaran/${encodeURIComponent(row.reference_no)}?token=${encodeURIComponent(emailToken)}`;
-      const result = await sendTemplateEmail("rfq-response", row.email, {
-        idempotencyKey: `rfq-response-${row.id}-${respondedAt}`,
-        templateData: {
-          contactName: row.contact_name,
-          referenceNo: row.reference_no,
-          response: data.response,
-          statusLabel: data.status === "quoted" ? "Penawaran tersedia" : "Status diperbarui",
-          trackUrl,
-          validUntil: data.validUntil,
-        },
-      });
-      emailSent = result.sent;
+      try {
+        const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+        const origin = process.env["SITE_URL"] || "https://meatlink.id";
+        const trackUrl = `${origin}/penawaran/${encodeURIComponent(row.reference_no)}?token=${encodeURIComponent(emailToken)}`;
+        const result = await sendTemplateEmail("rfq-response", row.email, {
+          idempotencyKey: `rfq-response-${row.id}-${respondedAt}`,
+          templateData: {
+            contactName: row.contact_name,
+            referenceNo: row.reference_no,
+            response: data.response,
+            statusLabel:
+              data.status === "quoted" ? "Penawaran tersedia" : "Status diperbarui",
+            trackUrl,
+            validUntil: data.validUntil,
+          },
+        });
+        emailSent = result.sent;
+        emailError = !result.sent;
+      } catch {
+        emailError = true;
+      }
     }
-    return { ok: true, emailSent, hasEmail: Boolean(row.email), respondedAt };
+    return { ok: true, emailSent, emailError, hasEmail: Boolean(row.email), respondedAt };
   });
