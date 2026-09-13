@@ -90,7 +90,7 @@ export const getTrackedRfq = createServerFn({ method: "GET" })
       .from("quote_requests")
       .select("reference_no, company_name, delivery_location, required_delivery_date, status, created_at, updated_at, items, admin_response, responded_at, response_valid_until")
       .eq("reference_no", data.referenceNo)
-      .eq("access_token_hash", await sha256(data.token))
+      .or(`access_token_hash.eq.${await sha256(data.token)},email_access_token_hash.eq.${await sha256(data.token)}`)
       .maybeSingle();
     if (error || !row) throw new Error("Tautan permintaan tidak valid atau sudah tidak tersedia.");
     return row;
@@ -100,16 +100,20 @@ export const respondToRfq = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => responseSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const { data: allowed } = await context.supabase.rpc("ml_has_role", { role_name: "admin" });
+    const { data: allowed } = await context.supabase.rpc("ml_has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
     if (!allowed) throw new Error("Forbidden");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: row, error: readError } = await supabaseAdmin
       .from("quote_requests")
-      .select("id, email, contact_name, reference_no, access_token_hash")
+      .select("id, email, contact_name, reference_no")
       .eq("id", data.id)
       .single();
     if (readError || !row) throw new Error("Permintaan tidak ditemukan.");
     const respondedAt = new Date().toISOString();
+    const emailToken = data.sendEmail && row.email ? randomToken() : null;
     const { error } = await supabaseAdmin
       .from("quote_requests")
       .update({
@@ -118,23 +122,28 @@ export const respondToRfq = createServerFn({ method: "POST" })
         response_valid_until: data.validUntil,
         responded_at: respondedAt,
         responded_by: context.userId,
+        email_access_token_hash: emailToken ? await sha256(emailToken) : null,
       })
       .eq("id", data.id);
     if (error) throw new Error("Respons belum dapat disimpan.");
 
     let emailSent = false;
-    if (data.sendEmail && row.email) {
-      const { data: tokenRow } = await supabaseAdmin
-        .from("quote_requests")
-        .select("access_token_hash")
-        .eq("id", data.id)
-        .single();
-      // Existing requests without a recoverable token can still be answered in admin and WhatsApp.
-      if (tokenRow?.access_token_hash) {
-        // The plaintext token is intentionally unavailable to administrators and cannot be reconstructed.
-        // Email is sent only when its private URL is provided by the buyer-facing submission response.
-        emailSent = false;
-      }
+    if (data.sendEmail && row.email && emailToken) {
+      const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+      const origin = process.env["SITE_URL"] || "https://meatlink.id";
+      const trackUrl = `${origin}/penawaran/${encodeURIComponent(row.reference_no)}?token=${encodeURIComponent(emailToken)}`;
+      const result = await sendTemplateEmail("rfq-response", row.email, {
+        idempotencyKey: `rfq-response-${row.id}-${respondedAt}`,
+        templateData: {
+          contactName: row.contact_name,
+          referenceNo: row.reference_no,
+          response: data.response,
+          statusLabel: data.status === "quoted" ? "Penawaran tersedia" : "Status diperbarui",
+          trackUrl,
+          validUntil: data.validUntil,
+        },
+      });
+      emailSent = result.sent;
     }
     return { ok: true, emailSent, hasEmail: Boolean(row.email), respondedAt };
   });

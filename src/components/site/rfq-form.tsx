@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { useBi, useErr } from "@/lib/i18n";
 import { toast } from "sonner";
 import { CheckCircle2, Plus, Trash2 } from "lucide-react";
@@ -8,10 +9,10 @@ import {
   emptyRfqItem,
   rfqSchema,
   rfqWhatsappMessage,
-  submitRfq,
   type RfqInput,
   type RfqItem,
 } from "@/lib/meatlink/leads";
+import { submitRfqRequest } from "@/lib/meatlink/rfq.functions";
 
 const EMPTY: RfqInput = {
   company_name: "",
@@ -33,7 +34,8 @@ export function RfqForm() {
   const [values, setValues] = useState<RfqInput>(EMPTY);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [pending, setPending] = useState(false);
-  const [done, setDone] = useState<RfqInput | null>(null);
+  const [done, setDone] = useState<{ input: RfqInput; referenceNo: string; token: string } | null>(null);
+  const submitRequest = useServerFn(submitRfqRequest);
   const bi = useBi();
   const err = useErr();
 
@@ -72,8 +74,8 @@ export function RfqForm() {
     setErrors({});
     setPending(true);
     try {
-      await submitRfq(parsed.data);
-      setDone(parsed.data);
+      const result = await submitRequest({ data: parsed.data });
+      setDone({ input: parsed.data, referenceNo: result.referenceNo, token: result.token });
       toast.success(bi("Permintaan diterima. Tim sourcing kami akan menghubungi Anda.", "RFQ received. Our sourcing team will be in touch."));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : bi("Permintaan gagal dikirim.", "Could not send your request."));
@@ -87,17 +89,26 @@ export function RfqForm() {
       <div className="border border-line bg-card p-8 text-center">
         <CheckCircle2 className="mx-auto h-10 w-10 text-crimson" aria-hidden="true" />
         <h2 className="mt-5 font-display text-2xl">{bi("Permintaan Anda sudah diterima tim sourcing", "Your request is with our sourcing team")}</h2>
+        <p className="eyebrow mt-4 text-crimson">{done.referenceNo}</p>
         <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-ash">
           {bi("Setiap permintaan kami tinjau manual dan cocokkan dengan jaringan pemasok. Balasan dalam satu hari kerja.", "We review every RFQ manually and match it against our supplier network. Expect a response within one business day.")}
         </p>
+        <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
         <a
-          href={waLink(rfqWhatsappMessage(done))}
+          href={`/penawaran/${encodeURIComponent(done.referenceNo)}?token=${encodeURIComponent(done.token)}`}
+          className="eyebrow inline-flex justify-center bg-crimson px-6 py-4 text-bone transition-colors hover:bg-crimson-deep"
+        >
+          {bi("Lihat status permintaan", "Track request")}
+        </a>
+        <a
+          href={waLink(rfqWhatsappMessage(done.input))}
           target="_blank"
           rel="noreferrer noopener"
-          className="eyebrow mt-6 inline-flex bg-crimson px-6 py-4 text-bone transition-colors hover:bg-crimson-deep"
+          className="eyebrow inline-flex justify-center border border-line px-6 py-4 text-ink transition-colors hover:border-crimson hover:text-crimson"
         >
           {bi("Lanjut via WhatsApp", "Continue on WhatsApp")}
         </a>
+        </div>
       </div>
     );
   }
