@@ -14,4 +14,4 @@
 - [x] Ringkas Analisis Katalog publik menjadi lima sinyal pasar utama
 
 - [x] Impor spreadsheet berbantuan Lovable AI: petakan kolom, temukan dugaan duplikat/data invalid, pratinjau append-only dan verifikasi tanpa menulis produk uji
-- [ ] Selaraskan kedaluwarsa Midtrans 24 jam dengan pembatalan pesanan setelah status Midtrans diverifikasi
+- [x] Selaraskan kedaluwarsa Midtrans 24 jam dengan pembatalan pesanan setelah status Midtrans diverifikasi; scheduler tetap setiap 30 menit
