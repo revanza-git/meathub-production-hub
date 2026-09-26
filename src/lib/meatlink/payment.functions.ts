@@ -112,9 +112,14 @@ export const createOrderPayment = createServerFn({ method: "POST" })
       payment_ref: paymentReference(environment, orderId),
       status: "AWAITING_PAYMENT" as const,
     };
-    const { error: saveError } = await supabaseAdmin.from("storefront_orders").update(patch)
-      .eq("id", order.id).in("status", ["NEW", "AWAITING_PAYMENT"]);
+    const saveQuery = supabaseAdmin.from("storefront_orders").update(patch)
+      .eq("id", order.id).in("status", ["NEW", "AWAITING_PAYMENT"])
+      .eq("total_idr", order.total_idr);
+    const { data: saved, error: saveError } = await (order.payment_ref
+      ? saveQuery.eq("payment_ref", order.payment_ref)
+      : saveQuery.is("payment_ref", null)).select("id").maybeSingle();
     if (saveError) throw new Error("Gagal menyimpan instruksi pembayaran.");
+    if (!saved) throw new Error("Pesanan berubah saat pembayaran dibuat. Hubungi tim kami untuk memastikan tidak ada transaksi ganda.");
 
     return {
       channel: bank,

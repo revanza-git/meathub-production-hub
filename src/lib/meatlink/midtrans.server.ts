@@ -4,7 +4,7 @@ export type MidtransEnvironment = "sandbox" | "production";
 export const paymentReference = (environment: MidtransEnvironment, orderId: string) =>
   `${environment === "production" ? "Midtrans Live " : "Midtrans "}${orderId}`;
 export function paymentReferenceDetails(ref: string | null | undefined): { environment: MidtransEnvironment; orderId: string } | null {
-  if (ref?.startsWith("Midtrans Live ")) return { environment: "production", orderId: ref.slice(14) };
+  if (ref?.startsWith("Midtrans Live ")) return { environment: "production", orderId: ref.slice("Midtrans Live ".length) };
   if (ref?.startsWith("Midtrans ")) return { environment: "sandbox", orderId: ref.slice(9) };
   return null;
 }

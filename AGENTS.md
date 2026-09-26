@@ -9,7 +9,8 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- Storefront payment attempts use Midtrans Core API sandbox only; a tokenized order link authorizes buyer payment actions and notifications must be signature-checked plus verified against Midtrans before marking paid — prevents unverified payment state transitions.
+- Storefront payment attempts record their Midtrans environment in the reference (legacy `Midtrans ` sandbox, `Midtrans Live ` production); select credentials and status endpoint from that reference, not the current charge mode, and verify signed notifications before settlement — prevents sandbox/live cross-settlement after switching.
+- Production charges require explicit MIDTRANS_MODE=production and the real site hostname; keep preview charges blocked and legacy sandbox VA hidden from buyers — prevents accidental real charges in previews and reuse of test instructions.
 - Reconcile Midtrans paid and terminal cancelled/expired/denied statuses only after verifying the active transaction ID and amount; the generic database expiry skips Midtrans orders to prevent false nonpayment.
 - Treat aborted HTTP requests as empty 204 responses at both request middleware and server entry, not rethrown errors — h3 otherwise turns a disconnected navigation into a misleading 500.
 - Inventory AI receives only headers and six bounded sample rows through an admin-guarded server function; the browser validates the full sheet against current inventory and imports only new items via the append-only RPC — model suggestions must never authorize writes.

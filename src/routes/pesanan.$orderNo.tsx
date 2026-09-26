@@ -26,6 +26,7 @@ type TrackedOrder = {
   payment_va?: string | null;
   payment_qr_url?: string | null;
   payment_expires_at?: string | null;
+  payment_environment?: "sandbox" | "production" | null;
   paid_at?: string | null;
   courier_name?: string | null;
   tracking_no?: string | null;
@@ -118,7 +119,8 @@ function OrderPage() {
 
             {(data.payment_method === "BANK_TRANSFER" || data.payment_method === "QRIS") &&
             !data.paid_at &&
-            (data.status === "NEW" || data.status === "AWAITING_PAYMENT") ? (
+            (data.status === "NEW" || data.status === "AWAITING_PAYMENT") &&
+            data.payment_environment !== "sandbox" ? (
               <PaymentPanel
                 orderNo={data.order_no}
                 token={t}
@@ -166,8 +168,8 @@ function OrderPage() {
                             "Our team will contact you via WhatsApp to finalize the order and payment.",
                           )}
               </p>
-              {!data.paid_at && data.status !== "CANCELLED" && (data.payment_method === "BANK_TRANSFER" || data.payment_method === "QRIS") ? (
-                <p className="mt-3 text-xs text-ash">{bi("Pembayaran sedang diuji dalam mode sandbox Midtrans. Jangan transfer uang sungguhan.", "Payments are being tested in Midtrans sandbox. Do not transfer real money.")}</p>
+              {!data.paid_at && data.status !== "CANCELLED" && data.payment_environment === "sandbox" ? (
+                <p className="mt-3 text-sm text-crimson">{bi("Transaksi ini dibuat dalam mode uji. Jangan transfer uang ke nomor VA atau memindai QR lama. Hubungi tim kami untuk membuat pesanan pembayaran nyata yang baru.", "This transaction was created in test mode. Do not transfer money to its old VA or scan its QR code. Contact us to create a new real-payment order.")}</p>
               ) : null}
               <a
                 href={waLink(data.payment_method === "TERMS_REQUEST"
