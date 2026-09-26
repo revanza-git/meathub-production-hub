@@ -25,6 +25,10 @@ export const Route = createFileRoute("/_authenticated/admin/settings")({
         name: "description",
         content: "Configure Meatlink admin settings: low-stock warnings, unpaid-order expiry, and ops alert emails.",
       },
+      { property: "og:title", content: "Settings — Meatlink admin" },
+      { property: "og:description", content: "Configure Meatlink admin settings and operational alerts." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
 });
@@ -150,11 +154,12 @@ function SettingsBody() {
       );
       return;
     }
-    const email = alertEmail.trim();
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast.error(bi("Masukkan alamat email peringatan yang valid.", "Enter a valid alert email address."));
+    const emails = alertEmail.trim().split(/[,;\s]+/).filter(Boolean);
+    if (emails.some((email) => email.length > 254 || !/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(email))) {
+      toast.error(bi("Periksa setiap alamat email. Pisahkan dengan koma.", "Check each email address. Separate them with commas."));
       return;
     }
+    const email = [...new Set(emails.map((address) => address.toLowerCase()))].join(", ");
     await persist(
       [
         { key: KEYS.expiryHours, value: hours },
@@ -283,17 +288,20 @@ function SettingsBody() {
               />
             </Field>
             <Field
-              label={bi("Email peringatan operasional", "Ops alert email")}
+              label={bi("Email peringatan operasional", "Ops alert emails")}
               hint={bi(
-                "Kosongkan untuk mematikan semua email otomatis operasional.",
-                "Leave empty to turn off all automated ops emails.",
+                "Pisahkan beberapa alamat dengan koma. Alamat bawaan tetap menerima notifikasi; gunakan pilihan di bawah untuk mematikan peringatan stok atau ringkasan harian.",
+                "Separate addresses with commas. Default recipients still receive notifications; use the options below to turn off stock alerts or daily summaries.",
               )}
             >
               <TextInput
-                type="email"
+                type="text"
+                inputMode="email"
+                autoComplete="off"
+                maxLength={2000}
                 value={alertEmail}
                 onChange={(e) => setAlertEmail(e.target.value)}
-                placeholder="ops@meatlink.id"
+                placeholder="ops@meatlink.id, tim@meatlink.id"
               />
             </Field>
             <label className="flex items-center gap-3 text-sm text-ink">

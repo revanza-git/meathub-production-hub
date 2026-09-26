@@ -2,6 +2,7 @@
 
 # Roadmap
 
+- [x] Perbaiki validasi alamat email peringatan agar beberapa penerima dapat disimpan dari pengaturan admin.
 - [ ] Midtrans produksi: pisahkan transaksi sandbox/nyata, pastikan kunci dan notifikasi produksi, lalu uji transaksi nyata bernilai kecil setelah diterbitkan.
 - [x] Ganti gateway iPaymu ke Midtrans sandbox; pesanan dan VA BCA diuji dengan simulator resmi hingga status pembayaran diterima
 - [x] Transaksi iPaymu lama diperiksa; satu catatan PENDING tanpa pesanan dan tanpa pembayaran dihapus setelah dikonfirmasi pemilik akun
