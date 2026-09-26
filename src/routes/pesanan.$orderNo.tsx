@@ -26,6 +26,7 @@ type TrackedOrder = {
   payment_va?: string | null;
   payment_qr_url?: string | null;
   payment_expires_at?: string | null;
+  payment_environment?: "sandbox" | "production" | null;
   paid_at?: string | null;
   courier_name?: string | null;
   tracking_no?: string | null;
@@ -118,7 +119,8 @@ function OrderPage() {
 
             {(data.payment_method === "BANK_TRANSFER" || data.payment_method === "QRIS") &&
             !data.paid_at &&
-            (data.status === "NEW" || data.status === "AWAITING_PAYMENT") ? (
+            (data.status === "NEW" || data.status === "AWAITING_PAYMENT") &&
+            data.payment_environment !== "sandbox" ? (
               <PaymentPanel
                 orderNo={data.order_no}
                 token={t}
@@ -144,6 +146,8 @@ function OrderPage() {
                     )
                   : data.status === "CANCELLED"
                     ? bi("Pembayaran dibatalkan atau kedaluwarsa. Jika Anda sudah membayar, hubungi tim kami agar transaksi dapat diperiksa.", "Payment was cancelled or expired. If you have paid, contact our team so we can review the transaction.")
+                  : data.payment_environment === "sandbox" && (data.payment_method === "BANK_TRANSFER" || data.payment_method === "QRIS")
+                    ? bi("Instruksi uji lama tidak berlaku untuk pembayaran nyata. Hubungi tim kami untuk membuat pesanan baru.", "Old test instructions cannot be used for real payment. Contact us to place a new order.")
                   : data.payment_method === "TERMS_REQUEST"
                     ? bi("Pesanan Anda tercatat sebagai pengajuan termin, bukan persetujuan kredit. Hubungi tim kami untuk membahas syarat pembayaran, harga akhir, dan pengiriman. Belum ada tagihan atau jatuh tempo.", "Your order is recorded as a payment terms request, not approved credit. Contact our team to discuss terms, final price and delivery. No invoice or due date has been issued.")
                   : data.payment_method === "BANK_TRANSFER"
@@ -166,8 +170,8 @@ function OrderPage() {
                             "Our team will contact you via WhatsApp to finalize the order and payment.",
                           )}
               </p>
-              {!data.paid_at && data.status !== "CANCELLED" && (data.payment_method === "BANK_TRANSFER" || data.payment_method === "QRIS") ? (
-                <p className="mt-3 text-xs text-ash">{bi("Pembayaran sedang diuji dalam mode sandbox Midtrans. Jangan transfer uang sungguhan.", "Payments are being tested in Midtrans sandbox. Do not transfer real money.")}</p>
+              {!data.paid_at && data.status !== "CANCELLED" && data.payment_environment === "sandbox" ? (
+                <p className="mt-3 text-sm text-crimson">{bi("Transaksi ini dibuat dalam mode uji. Jangan transfer uang ke nomor VA atau memindai QR lama. Hubungi tim kami untuk membuat pesanan pembayaran nyata yang baru.", "This transaction was created in test mode. Do not transfer money to its old VA or scan its QR code. Contact us to create a new real-payment order.")}</p>
               ) : null}
               <a
                 href={waLink(data.payment_method === "TERMS_REQUEST"

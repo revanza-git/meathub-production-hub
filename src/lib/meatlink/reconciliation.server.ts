@@ -1,4 +1,4 @@
-import { isMidtransPaid, getMidtransStatus, type MidtransTransaction } from "./midtrans.server";
+import { isMidtransPaid, getMidtransStatus, paymentReferenceDetails, type MidtransTransaction } from "./midtrans.server";
 import { reconcileMidtransClosure, reconcileMidtransPayment } from "./payment-status.server";
 
 type Admin = Awaited<typeof import("@/integrations/supabase/client.server")>["supabaseAdmin"];
@@ -6,7 +6,7 @@ type Order = { id: string; order_no: string; status: string; total_idr: number; 
 type Result = "MATCHED" | "PENDING" | "REVIEW" | "FAILED";
 
 export function classify(order: Order, transaction: MidtransTransaction): { result: Result; reason: string | null } {
-  if (transaction.order_id !== order.payment_ref?.slice(9) || transaction.transaction_id !== order.payment_trx_id)
+  if (transaction.order_id !== paymentReferenceDetails(order.payment_ref)?.orderId || transaction.transaction_id !== order.payment_trx_id)
     return { result: "REVIEW", reason: "ID transaksi tidak sesuai dengan percobaan pembayaran aktif." };
   if (!Number.isFinite(Number(transaction.gross_amount)) || Math.round(Number(transaction.gross_amount)) !== Math.round(Number(order.total_idr)))
     return { result: "REVIEW", reason: "Nominal Midtrans berbeda dari total pesanan." };
@@ -25,12 +25,13 @@ export function classify(order: Order, transaction: MidtransTransaction): { resu
 
 /** Verify the active attempt again before any state transition, then store a minimal comparison. */
 export async function checkReconciliation(db: Admin, order: Order) {
-  if (!order.payment_ref?.startsWith("Midtrans ")) return null;
+  const attempt = paymentReferenceDetails(order.payment_ref);
+  if (!attempt) return null;
   const previous = await db.from("ml_payment_reconciliations").select("result, payment_ref").eq("order_id", order.id).maybeSingle();
   let transaction: MidtransTransaction | null = null;
   let failure: string | null = null;
   try {
-    transaction = await getMidtransStatus(order.payment_ref.slice(9));
+    transaction = await getMidtransStatus(attempt.orderId, attempt.environment);
   } catch (err) {
     console.error("[reconciliation] Midtrans unavailable", order.order_no, err);
     failure = "Status Midtrans tidak tersedia; periksa kembali nanti.";
@@ -42,7 +43,7 @@ export async function checkReconciliation(db: Admin, order: Order) {
   if (error || !current) throw new Error("Pesanan tidak dapat dibaca ulang.");
   if (current.payment_ref !== order.payment_ref || current.payment_trx_id !== order.payment_trx_id) return null;
 
-  if (transaction && transaction.order_id === current.payment_ref?.slice(9) && transaction.transaction_id === current.payment_trx_id &&
+  if (transaction && transaction.order_id === paymentReferenceDetails(current.payment_ref)?.orderId && transaction.transaction_id === current.payment_trx_id &&
       Math.round(Number(transaction.gross_amount)) === Math.round(Number(current.total_idr))) {
     // Safe helpers use transaction ID, amount, and active payment reference to guard updates.
     if (!(await reconcileMidtransPayment(current, transaction))) await reconcileMidtransClosure(current, transaction);
@@ -53,7 +54,8 @@ export async function checkReconciliation(db: Admin, order: Order) {
   if (updated.payment_ref !== order.payment_ref || updated.payment_trx_id !== order.payment_trx_id) return null;
   const verdict = transaction ? classify(updated, transaction) : { result: "FAILED" as Result, reason: failure };
   const { error: saveError } = await db.from("ml_payment_reconciliations").upsert({
-    order_id: order.id, payment_ref: order.payment_ref, transaction_id: transaction?.transaction_id ?? order.payment_trx_id,
+    order_id: order.id, payment_ref: attempt.environment === "production" ? `Midtrans Live ${attempt.orderId}` : `Midtrans ${attempt.orderId}`,
+    transaction_id: transaction?.transaction_id ?? order.payment_trx_id ?? null,
     gateway_status: transaction?.transaction_status ?? null,
     gateway_amount: transaction && Number.isFinite(Number(transaction.gross_amount)) ? Number(transaction.gross_amount) : null,
     order_amount: Number(updated.total_idr), order_status: updated.status,

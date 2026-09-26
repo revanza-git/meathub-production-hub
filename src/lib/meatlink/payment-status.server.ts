@@ -1,9 +1,9 @@
-import { isMidtransPaid, type MidtransTransaction } from "./midtrans.server";
+import { isMidtransPaid, paymentReferenceDetails, type MidtransTransaction } from "./midtrans.server";
 
 type PendingOrder = { id: string; order_no: string; status: string; total_idr: number; paid_at: string | null; payment_trx_id: string | null; payment_ref: string | null };
 
 function matchesActiveAttempt(order: PendingOrder, transaction: MidtransTransaction) {
-  const expectedOrderId = order.payment_ref?.startsWith("Midtrans ") ? order.payment_ref.slice(9) : null;
+  const expectedOrderId = paymentReferenceDetails(order.payment_ref)?.orderId;
   return Boolean(expectedOrderId && transaction.order_id === expectedOrderId &&
     transaction.transaction_id === order.payment_trx_id &&
     Number.isFinite(Number(transaction.gross_amount)) &&
@@ -28,7 +28,7 @@ export async function reconcileMidtransPayment(
   if (!data) return false;
   await supabaseAdmin.from("storefront_order_events").insert({
     order_id: order.id, from_status: order.status === "NEW" ? "NEW" : "AWAITING_PAYMENT", to_status: "PAID",
-    note: `Pembayaran Midtrans sandbox terverifikasi (${transaction.transaction_id})`,
+    note: `Pembayaran Midtrans ${paymentReferenceDetails(order.payment_ref)?.environment} terverifikasi (${transaction.transaction_id})`,
   });
   try {
     const { sendOrderEmail } = await import("./notify.server");

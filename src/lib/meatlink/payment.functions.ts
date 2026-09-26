@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
 
 type CreateInput = {
   orderNo: string;
@@ -16,7 +17,7 @@ export type PaymentInstruction = {
 };
 
 /**
- * Creates (or returns the existing) Midtrans sandbox VA / QRIS instruction for a storefront order.
+ * Creates (or returns the existing) Midtrans VA / QRIS instruction for a storefront order.
  * Access is proven by the order's tokenized tracking link, so guests can pay without an account.
  */
 export const createOrderPayment = createServerFn({ method: "POST" })
@@ -28,7 +29,11 @@ export const createOrderPayment = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }): Promise<PaymentInstruction> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { createMidtransCharge } = await import("./midtrans.server");
+    const { createMidtransCharge, chargeEnvironment, paymentReference, paymentReferenceDetails } = await import("./midtrans.server");
+    const environment = chargeEnvironment();
+    if (environment === "production" && !["meatlink.id", "www.meatlink.id"].includes(new URL(getRequest().url).hostname)) {
+      throw new Error("Pembayaran nyata hanya tersedia melalui meatlink.id.");
+    }
 
     const { data: order, error } = await supabaseAdmin
       .from("storefront_orders")
@@ -48,13 +53,17 @@ export const createOrderPayment = createServerFn({ method: "POST" })
       throw new Error("Pesanan ini tidak menunggu pembayaran.");
     }
 
-    if (order.payment_ref?.startsWith("Midtrans ") && order.payment_expires_at &&
+    const existingAttempt = paymentReferenceDetails(order.payment_ref);
+    if (existingAttempt && existingAttempt.environment !== environment) {
+      throw new Error("Pesanan ini memakai transaksi uji lama. Hubungi tim kami untuk membuat pesanan pembayaran nyata yang baru.");
+    }
+    if (existingAttempt && order.payment_expires_at &&
         new Date(order.payment_expires_at).getTime() <= Date.now()) {
       throw new Error("Instruksi pembayaran telah berakhir. Tunggu verifikasi status pesanan atau hubungi tim kami.");
     }
 
     const stillValid =
-      order.payment_ref?.startsWith("Midtrans ") && (order.payment_va || order.payment_qr_url) &&
+      existingAttempt && (order.payment_va || order.payment_qr_url) &&
       (!order.payment_expires_at || new Date(order.payment_expires_at).getTime() > Date.now()) &&
       (!data.channel || data.channel === order.payment_channel);
 
@@ -77,6 +86,7 @@ export const createOrderPayment = createServerFn({ method: "POST" })
     // A fresh Midtrans ID allows retry after expiration without colliding with an older attempt.
     const orderId = `${order.order_no}-${crypto.randomUUID().slice(0, 8)}`;
     const result = await createMidtransCharge({
+      environment,
       orderId,
       amount: Number(order.total_idr),
       method,
@@ -99,12 +109,17 @@ export const createOrderPayment = createServerFn({ method: "POST" })
       payment_url: null as string | null,
       payment_expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
       payment_trx_id: result.transaction_id,
-      payment_ref: `Midtrans ${orderId}`,
+      payment_ref: paymentReference(environment, orderId),
       status: "AWAITING_PAYMENT" as const,
     };
-    const { error: saveError } = await supabaseAdmin.from("storefront_orders").update(patch)
-      .eq("id", order.id).in("status", ["NEW", "AWAITING_PAYMENT"]);
+    const saveQuery = supabaseAdmin.from("storefront_orders").update(patch)
+      .eq("id", order.id).in("status", ["NEW", "AWAITING_PAYMENT"])
+      .eq("total_idr", order.total_idr);
+    const { data: saved, error: saveError } = await (order.payment_ref
+      ? saveQuery.eq("payment_ref", order.payment_ref)
+      : saveQuery.is("payment_ref", null)).select("id").maybeSingle();
     if (saveError) throw new Error("Gagal menyimpan instruksi pembayaran.");
+    if (!saved) throw new Error("Pesanan berubah saat pembayaran dibuat. Hubungi tim kami untuk memastikan tidak ada transaksi ganda.");
 
     return {
       channel: bank,
@@ -130,10 +145,11 @@ export const checkOrderPayment = createServerFn({ method: "POST" })
       .select("id, order_no, status, total_idr, paid_at, payment_trx_id, payment_ref")
       .eq("order_no", data.orderNo).eq("access_token", data.token).maybeSingle();
     if (!order) throw new Error("Pesanan tidak ditemukan.");
-    if (order.paid_at || !order.payment_ref?.startsWith("Midtrans ")) return { paid: Boolean(order.paid_at), closed: order.status === "CANCELLED" };
-    const { getMidtransStatus } = await import("./midtrans.server");
+    const { getMidtransStatus, paymentReferenceDetails } = await import("./midtrans.server");
+    const attempt = paymentReferenceDetails(order.payment_ref);
+    if (order.paid_at || !attempt) return { paid: Boolean(order.paid_at), closed: order.status === "CANCELLED" };
     const { reconcileMidtransPayment, reconcileMidtransClosure } = await import("./payment-status.server");
-    const transaction = await getMidtransStatus(order.payment_ref.slice(9));
+    const transaction = await getMidtransStatus(attempt.orderId, attempt.environment);
     const changed = await reconcileMidtransPayment(order, transaction);
     const closed = changed ? false : await reconcileMidtransClosure(order, transaction);
     return { paid: changed || Boolean(order.paid_at), closed };
