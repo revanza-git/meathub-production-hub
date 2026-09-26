@@ -16,7 +16,7 @@ export type PaymentInstruction = {
 };
 
 /**
- * Creates (or returns the existing) iPaymu VA / QRIS instruction for a storefront order.
+ * Creates (or returns the existing) Midtrans sandbox VA / QRIS instruction for a storefront order.
  * Access is proven by the order's tokenized tracking link, so guests can pay without an account.
  */
 export const createOrderPayment = createServerFn({ method: "POST" })
