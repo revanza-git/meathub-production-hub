@@ -41,7 +41,7 @@ export async function suggestInventoryMapping(
     return await result.output;
   } catch (error) {
     if (NoObjectGeneratedError.isInstance(error)) {
-      try { return suggestionSchema.parse(JSON.parse(error.text)); } catch { /* not recoverable */ }
+      try { if (error.text) return suggestionSchema.parse(JSON.parse(error.text)); } catch { /* not recoverable */ }
     }
     throw error;
   }
