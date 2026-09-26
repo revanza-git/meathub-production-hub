@@ -36,8 +36,9 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
   const check = useServerFn(checkOrderPayment);
   const [bank, setBank] = useState(existing.channel && existing.channel !== "qris" ? existing.channel : "bca");
   const [pending, setPending] = useState(false);
+  const expired = Boolean(existing.expiresAt && new Date(existing.expiresAt).getTime() <= Date.now());
   const [info, setInfo] = useState<PaymentInstruction | null>(
-    existing.va || existing.qrUrl
+    !expired && (existing.va || existing.qrUrl)
       ? {
           channel: existing.channel ?? "",
           va: existing.va,
@@ -51,14 +52,14 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
 
   // Poll for payment confirmation while an instruction is on screen.
   useEffect(() => {
-    if (!info) return;
+    if (!info && !expired) return;
     const id = window.setInterval(() => {
       void check({ data: { orderNo, token } }).then((result) => {
-        if (result.paid) onPaid();
+        if (result.paid || result.closed) onPaid();
       }).catch(() => {});
     }, 15000);
     return () => window.clearInterval(id);
-  }, [info, onPaid, orderNo, token, check]);
+  }, [info, expired, onPaid, orderNo, token, check]);
 
   async function generate() {
     setPending(true);
@@ -88,7 +89,9 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
         )}
       </p>
 
-      {method === "BANK_TRANSFER" ? (
+      {expired ? <p className="mt-4 text-sm text-crimson">{bi("Instruksi pembayaran telah berakhir. Status transaksi sedang diverifikasi; hubungi tim kami bila Anda sudah membayar.", "Payment instructions have expired. The transaction is being verified; contact our team if you have already paid.")}</p> : null}
+
+      {expired ? null : method === "BANK_TRANSFER" ? (
         <div className="mt-5 flex flex-wrap items-end gap-3">
           <label className="text-xs text-ash">
             <span className="mb-1 block">{bi("Pilih bank", "Choose bank")}</span>
