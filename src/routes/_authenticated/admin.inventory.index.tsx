@@ -6,9 +6,9 @@ import { toast } from "sonner";
 import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { Field, SelectInput, TextInput } from "@/components/site/form-kit";
 import { supabase } from "@/integrations/supabase/client";
-import { resolveProductImage } from "@/lib/meatlink/featured";
+import { FEATURED_RANKS, resolveProductImage } from "@/lib/meatlink/featured";
 import { Button } from "@/components/ui/button";
-import { Download, Plus, Pencil, Upload } from "lucide-react";
+import { Download, Plus, Pencil, Upload, Archive } from "lucide-react";
 import * as XLSX from "xlsx";
 import { uploadInventoryImage } from "@/lib/meatlink/inventory-image.functions";
 import {
@@ -88,6 +88,9 @@ const EMPTY_FORM = {
   channels: [...DEFAULT_SALE_CHANNELS] as string[],
   retail_price_idr: "",
   retail_pack_text: "",
+  promo_price_idr: "",
+  promo_until: "",
+  featured_rank: "",
 };
 
 function InventoryBody() {
@@ -276,6 +279,9 @@ function InventoryBody() {
       channels: item.sale_channels?.length ? [...item.sale_channels] : [...DEFAULT_SALE_CHANNELS],
       retail_price_idr: item.retail_price_idr == null ? "" : String(item.retail_price_idr),
       retail_pack_text: item.retail_pack_text ?? "",
+      promo_price_idr: item.promo_price_idr == null ? "" : String(item.promo_price_idr),
+      promo_until: item.promo_until ?? "",
+      featured_rank: item.featured_rank == null ? "" : String(item.featured_rank),
     } : { ...EMPTY_FORM, channels: [...DEFAULT_SALE_CHANNELS] });
     setStep(0);
     setShowForm(true);
@@ -283,11 +289,19 @@ function InventoryBody() {
 
   async function saveItem(e: React.FormEvent) {
     e.preventDefault();
+    if (step === 0 && (!form.name.trim() || !form.brand.trim() || !form.origin.trim())) {
+      toast.error(bi("Isi nama, merek, dan asal produk.", "Enter product name, brand and origin.")); return;
+    }
+    if (step === 1 && (form.sale_price_idr.trim() === "" || form.qty_on_hand_kg.trim() === "" || Number(form.sale_price_idr) < 0 || Number(form.qty_on_hand_kg) < 0)) {
+      toast.error(bi("Isi harga dan stok dengan angka yang valid.", "Enter valid price and stock.")); return;
+    }
+    if (step === 2 && form.channels.length === 0) { toast.error(bi("Pilih minimal satu kanal.", "Select at least one channel.")); return; }
     if (step < 3) { setStep(step + 1); return; }
     const price = Number(form.sale_price_idr), qty = Number(form.qty_on_hand_kg);
     const markup = form.markup_idr === "" ? defaultMarkup(form.name, form.brand) : Number(form.markup_idr);
     const retail = form.retail_price_idr === "" ? null : Number(form.retail_price_idr);
-    if (!form.name.trim() || !form.brand.trim() || !Number.isFinite(price) || price < 0 || !Number.isFinite(qty) || qty < 0 || !Number.isFinite(markup) || markup < 0 || (retail !== null && (!Number.isFinite(retail) || retail < 0)) || form.channels.length === 0) {
+    const promo = form.promo_price_idr === "" ? null : Number(form.promo_price_idr);
+    if (!form.name.trim() || !form.brand.trim() || !Number.isFinite(price) || price < 0 || !Number.isFinite(qty) || qty < 0 || !Number.isFinite(markup) || markup < 0 || (retail !== null && (!Number.isFinite(retail) || retail < 0)) || (promo !== null && (!Number.isFinite(promo) || promo < 0)) || form.channels.length === 0) {
       toast.error(bi("Periksa nama, merek, harga, stok, dan kanal penjualan.", "Check name, brand, price, stock and sale channels."));
       return;
     }
@@ -302,6 +316,8 @@ function InventoryBody() {
       avg_weight_kg: weightToKg(form.avg_weight_text), sale_price_idr: price,
       markup_idr: markup, qty_on_hand_kg: qty, sale_channels: form.channels,
       retail_price_idr: retail, retail_pack_text: form.retail_pack_text.trim() || null,
+      promo_price_idr: promo, promo_until: form.promo_until || null,
+      featured_rank: form.featured_rank === "" ? null : Number(form.featured_rank),
     };
     const { error } = editing
       ? await supabase.from("admin_inventory").update(values).eq("id", editing.id)
@@ -345,6 +361,12 @@ function InventoryBody() {
       toast.success(bi("Inventaris diperbarui.", "Inventory updated."));
       refresh();
     }
+  }
+
+  async function archive(item: InventoryItem) {
+    if (!window.confirm(bi(`Arsipkan "${item.name}"? Produk disembunyikan, harga khusus pelanggan tetap tersimpan.`, `Archive "${item.name}"? It will be hidden; customer prices remain saved.`))) return;
+    await patch(item.id, { is_active: false, is_published: false, featured_rank: null });
+    setShowForm(false);
   }
 
   const pageValue = rows.reduce((sum, item) => sum + Number(item.qty_on_hand_kg) * Number(item.sale_price_idr), 0);
