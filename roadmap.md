@@ -13,4 +13,4 @@
 - [x] Rotasikan foto placeholder pada kartu Baru disourcing agar item berdekatan tidak duplikat
 - [x] Ringkas Analisis Katalog publik menjadi lima sinyal pasar utama
 
-- [ ] Impor spreadsheet berbantuan Lovable AI: petakan kolom, temukan dugaan duplikat/data invalid, pratinjau append-only dan verifikasi
+- [x] Impor spreadsheet berbantuan Lovable AI: petakan kolom, temukan dugaan duplikat/data invalid, pratinjau append-only dan verifikasi tanpa menulis produk uji

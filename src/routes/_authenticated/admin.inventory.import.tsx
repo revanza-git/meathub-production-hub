@@ -44,8 +44,8 @@ function InventoryImportPage() {
     <AppShell
       title={bi("Impor inventaris", "Import inventory")}
       intro={bi(
-        "Unggah file Excel atau CSV menggunakan template Meatlink. Tinjau ringkasan perubahan dan cek duplikat sebelum menyimpan.",
-        "Upload an Excel or CSV file using the Meatlink template. Review the change summary and duplicate check before saving.",
+        "Unggah Excel atau CSV, cocokkan kolom dengan bantuan AI, lalu tinjau produk baru dan duplikat sebelum menyimpan.",
+        "Upload Excel or CSV, match columns with AI, then review new products and duplicates before saving.",
       )}
       actions={
         <Link to="/admin/inventory" className="eyebrow border border-ink/25 px-5 py-3 text-ink">
@@ -287,7 +287,7 @@ function ImportBody() {
             <Button type="button" variant="outline" className="w-full" disabled={analyzing || pending} onClick={() => void runAnalysis()}>
               {analyzing ? bi("Menganalisis…", "Analyzing…") : bi("Petakan kolom dengan AI", "Map columns with AI")}
             </Button>
-            <p className="mt-2 text-xs text-ash">{bi("AI membaca nama kolom dan 6 contoh baris saja. Periksa sarannya sebelum impor. Penggunaan ini memakai kredit Lovable.", "AI reads column names and only 6 sample rows. Review its suggestions before import. This uses Lovable credits.")}</p>
+            <p className="mt-2 text-xs text-ash">{bi("AI membaca nama kolom dan 6 contoh baris saja. Pemeriksaan seluruh berkas dan duplikat katalog muncul di pratinjau. Penggunaan AI memakai kredit Lovable.", "AI reads column names and only 6 sample rows. The full-file and catalog duplicate checks appear in the preview. AI usage consumes Lovable credits.")}</p>
           </div>
         ) : null}
 
