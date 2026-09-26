@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
@@ -18,6 +18,8 @@ import {
   type InventoryDraft,
 } from "@/lib/meatlink/inventory";
 import { useBi } from "@/lib/i18n";
+import { useServerFn } from "@tanstack/react-start";
+import { analyzeInventorySheet } from "@/lib/meatlink/inventory-ai.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/inventory/import")({
   component: InventoryImportPage,
@@ -42,8 +44,8 @@ function InventoryImportPage() {
     <AppShell
       title={bi("Impor inventaris", "Import inventory")}
       intro={bi(
-        "Unggah file Excel atau CSV menggunakan template Meatlink. Tinjau ringkasan perubahan dan cek duplikat sebelum menyimpan.",
-        "Upload an Excel or CSV file using the Meatlink template. Review the change summary and duplicate check before saving.",
+        "Unggah Excel atau CSV, cocokkan kolom dengan bantuan AI, lalu tinjau produk baru dan duplikat sebelum menyimpan.",
+        "Upload Excel or CSV, match columns with AI, then review new products and duplicates before saving.",
       )}
       actions={
         <Link to="/admin/inventory" className="eyebrow border border-ink/25 px-5 py-3 text-ink">
@@ -69,6 +71,79 @@ function ImportBody() {
   const [result, setResult] = useState("");
   const [defaultQty, setDefaultQty] = useState(String(DEFAULT_IMPORT_QTY_KG));
   const [pending, setPending] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
+  const previewSequence = useRef(0);
+  const [records, setRecords] = useState<Record<string, unknown>[]>([]);
+  const [headers, setHeaders] = useState<string[]>([]);
+  const [mapping, setMapping] = useState<Record<string, string>>({});
+  const [warnings, setWarnings] = useState<{ row: number; message: string }[]>([]);
+  const analyze = useServerFn(analyzeInventorySheet);
+
+  async function preview(source: Record<string, unknown>[], columns: Record<string, string>) {
+    const sequence = ++previewSequence.current;
+    setPreviewing(true);
+    setRows([]);
+    const collected: string[] = [];
+    if (!Object.values(columns).includes("name")) {
+      setErrors([bi("Pilih kolom nama produk sebelum menyimpan.", "Select the product name column before saving.")]);
+      setPreviewing(false);
+      return;
+    }
+    if (new Set(Object.values(columns).filter(Boolean)).size !== Object.values(columns).filter(Boolean).length) {
+      setErrors([bi("Satu tujuan hanya boleh dipakai satu kolom.", "Each field can only have one source column.")]);
+      setPreviewing(false);
+      return;
+    }
+    const fallback = Number(defaultQty.replace(/[^\d.]/g, "")) || 0;
+    const parsed: InventoryDraft[] = [];
+    source.forEach((record, i) => {
+      const normalized: Record<string, unknown> = {};
+      Object.entries(columns).forEach(([header, target]) => { if (target) normalized[target] = record[header]; });
+      const row = normaliseRow(normalized, i + 2, collected, { defaultQtyKg: fallback });
+      if (row) parsed.push(row.item);
+    });
+    const existing = new Set<string>();
+    const { data, error } = await supabase.from("admin_inventory").select("id, brand, name").limit(10000);
+    if (sequence !== previewSequence.current) return;
+    if (error) {
+      setErrors([error.message]);
+      setPreviewing(false);
+      return;
+    }
+    (data ?? []).forEach((r) => existing.add(inventoryKey(r.brand ?? "", r.name ?? "")));
+    const seen = new Set<string>();
+    const mapped: Row[] = parsed.map((item) => {
+      const key = inventoryKey(item.brand, item.name);
+      if (seen.has(key)) return { item, key, status: "duplicate" };
+      seen.add(key);
+      return { item, key, status: existing.has(key) ? "existing" : "new" };
+    });
+    setRows(mapped);
+    setErrors(mapped.length === 0 && collected.length === 0
+      ? [bi("Tidak ada baris yang dapat digunakan.", "No usable rows found.")]
+      : collected);
+    setPreviewing(false);
+  }
+
+  async function runAnalysis() {
+    if (!records.length || analyzing) return;
+    setAnalyzing(true);
+    try {
+      const response = await analyze({ data: { headers, samples: records.slice(0, 6).map((record) =>
+        Object.fromEntries(headers.map((header) => [header, String(record[header] ?? "").slice(0, 160)])),
+      ) } });
+      const suggested = Object.fromEntries(headers.map((header) => [header, ""]));
+      response.mapping.forEach(({ source, target }) => { suggested[source] = target; });
+      setMapping(suggested);
+      setWarnings(response.warnings);
+      await preview(records, suggested);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : bi("Analisis AI gagal. Periksa kolom secara manual.", "AI analysis failed. Check columns manually."));
+    } finally {
+      setAnalyzing(false);
+    }
+  }
 
   function downloadTemplate() {
     const sheet = XLSX.utils.aoa_to_sheet([[...IMPORT_COLUMNS], ...IMPORT_SAMPLE_ROWS]);
@@ -80,8 +155,14 @@ function ImportBody() {
   async function onFile(file: File) {
     setFileName(file.name);
     setRows([]);
+    ++previewSequence.current;
+    setPreviewing(false);
     setErrors([]);
     setResult("");
+    setRecords([]);
+    setHeaders([]);
+    setMapping({});
+    setWarnings([]);
     if (!/\.(xlsx|xls|csv)$/i.test(file.name)) {
       setErrors([bi("Gunakan file Excel atau CSV.", "Use an Excel or CSV file.")]);
       return;
@@ -90,11 +171,10 @@ function ImportBody() {
       setErrors([bi("Ukuran file maksimal 10 MB.", "Maximum file size is 10 MB.")]);
       return;
     }
-    const collected: string[] = [];
-    let records: Record<string, unknown>[] = [];
+    let parsedRecords: Record<string, unknown>[] = [];
     try {
     if (file.name.toLowerCase().endsWith(".csv")) {
-      records = csvToRecords(await file.text());
+       parsedRecords = csvToRecords(await file.text());
     } else {
       const book = XLSX.read(await file.arrayBuffer(), { type: "array" });
       const first = book.SheetNames[0];
@@ -103,53 +183,25 @@ function ImportBody() {
         setRows([]);
         return;
       }
-      records = XLSX.utils.sheet_to_json<Record<string, unknown>>(book.Sheets[first]!, { defval: "" });
+       parsedRecords = XLSX.utils.sheet_to_json<Record<string, unknown>>(book.Sheets[first]!, { defval: "" });
     }
     } catch {
       setErrors([bi("File tidak dapat dibaca. Coba simpan ulang sebagai .xlsx atau .csv.", "Could not read the file. Save it again as .xlsx or .csv.")]);
       return;
     }
-    if (records.length > 2000) {
+    if (parsedRecords.length > 2000) {
       setErrors([bi("Maksimal 2.000 baris per impor. Bagi file menjadi beberapa bagian.", "Maximum 2,000 rows per import. Split the file into smaller parts.")]);
       return;
     }
 
-    const fallback = Number(defaultQty.replace(/[^\d.]/g, "")) || 0;
-    const parsed: InventoryDraft[] = [];
-    records.forEach((record, i) => {
-      const result = normaliseRow(record, i + 2, collected, { defaultQtyKg: fallback });
-      if (result) parsed.push(result.item);
-    });
-
-    // Existing catalogue keyed by brand + name so we never create a second slug/SKU.
-    const existing = new Map<string, string>();
-    const { data, error } = await supabase.from("admin_inventory").select("id, brand, name").limit(10000);
-    if (error) {
-      setErrors([error.message]);
-      setRows([]);
-      return;
-    }
-    (data ?? []).forEach((r) => existing.set(inventoryKey(r.brand ?? "", r.name ?? ""), r.id));
-
-    const seen = new Set<string>();
-    const mapped: Row[] = parsed.map((item) => {
-      const key = inventoryKey(item.brand, item.name);
-      if (seen.has(key)) return { item, key, status: "duplicate" };
-      seen.add(key);
-      return { item, key, status: existing.has(key) ? "existing" : "new" };
-    });
-
-
-    setRows(mapped);
-    setErrors(collected);
-    if (mapped.length === 0 && collected.length === 0) {
-      setErrors([
-        bi(
-          "Tidak ada baris yang dapat digunakan. Periksa apakah header sesuai template.",
-          "No usable rows found. Check that the header matches the template.",
-        ),
-      ]);
-    }
+    const detected = Object.keys(parsedRecords[0] ?? {});
+    const initial = Object.fromEntries(detected.map((header) => [header,
+      IMPORT_COLUMNS.find((column) => column === header.trim().toLowerCase()) ?? "",
+    ]));
+    setRecords(parsedRecords);
+    setHeaders(detected);
+    setMapping(initial);
+    await preview(parsedRecords, initial);
   }
 
   const news = rows.filter((r) => r.status === "new");
@@ -158,7 +210,7 @@ function ImportBody() {
   const totalKg = news.reduce((s, r) => s + r.item.qty_on_hand_kg, 0);
 
   async function commit() {
-    if (news.length === 0 || errors.length > 0 || pending) return;
+    if (news.length === 0 || errors.length > 0 || pending || analyzing || previewing) return;
     setPending(true);
     try {
       const { data, error } = await supabase.rpc("ml_import_inventory_append", {
@@ -197,13 +249,13 @@ function ImportBody() {
           )}
         </p>
 
-        <button
+        <Button
           type="button"
           onClick={downloadTemplate}
-          className="eyebrow mt-4 w-full border border-ink/25 px-5 py-3 text-ink"
+          variant="outline" className="mt-4 w-full"
         >
           {bi("Unduh template .xlsx", "Download .xlsx template")}
-        </button>
+        </Button>
 
         <p className="eyebrow mt-8 text-ash">{bi("Langkah 2 — stok default", "Step 2 — default stock")}</p>
         <label className="mt-3 block text-sm text-ash">
@@ -230,14 +282,51 @@ function ImportBody() {
         />
         {fileName ? <p className="mt-2 text-xs text-ash">{fileName}</p> : null}
 
+        {records.length > 0 ? (
+          <div className="mt-5 border-t border-line pt-5">
+            <Button type="button" variant="outline" className="w-full" disabled={analyzing || pending} onClick={() => void runAnalysis()}>
+              {analyzing ? bi("Menganalisis…", "Analyzing…") : bi("Petakan kolom dengan AI", "Map columns with AI")}
+            </Button>
+            <p className="mt-2 text-xs text-ash">{bi("AI membaca nama kolom dan 6 contoh baris saja. Pemeriksaan seluruh berkas dan duplikat katalog muncul di pratinjau. Penggunaan AI memakai kredit Lovable.", "AI reads column names and only 6 sample rows. The full-file and catalog duplicate checks appear in the preview. AI usage consumes Lovable credits.")}</p>
+          </div>
+        ) : null}
+
         <p className="mt-8 text-sm text-ash">{bi("Hanya produk baru yang ditambahkan. Produk yang sudah ada dan baris ganda tidak akan diubah atau dihapus. Simpan seluruh baris sekaligus atau tidak sama sekali.", "Only new products are added. Existing products and duplicates are never changed or deleted. All rows save together or none do.")}</p>
-        <Button type="button" disabled={pending || news.length === 0 || errors.length > 0} onClick={() => void commit()} className="mt-6 w-full">
-          {pending ? bi("Menyimpan…", "Saving…") : bi(`Tambah ${news.length} produk baru`, `Add ${news.length} new products`)}
+        <Button type="button" disabled={pending || analyzing || previewing || news.length === 0 || errors.length > 0} onClick={() => void commit()} className="mt-6 w-full">
+          {pending ? bi("Menyimpan…", "Saving…") : previewing ? bi("Memeriksa…", "Checking…") : bi(`Tambah ${news.length} produk baru`, `Add ${news.length} new products`)}
         </Button>
         {result ? <p role="status" className="mt-3 text-sm text-ink">{result}</p> : null}
       </Panel>
 
       <div className="grid gap-5 lg:col-span-2">
+        {headers.length > 0 ? (
+          <section className="border-b border-line pb-5">
+            <h2 className="text-lg text-ink">{bi("Cocokkan kolom", "Match columns")}</h2>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {headers.map((header) => (
+                <label key={header} className="min-w-0 text-sm text-ash">
+                  <span className="block truncate" title={header}>{header}</span>
+                  <select className="mt-1 w-full border border-line bg-card px-3 py-2 text-ink" value={mapping[header] ?? ""} disabled={analyzing || pending}
+                    onChange={(event) => {
+                      const next = { ...mapping, [header]: event.target.value };
+                      setMapping(next);
+                      setWarnings([]);
+                      void preview(records, next);
+                    }}>
+                    <option value="">{bi("Abaikan kolom", "Ignore column")}</option>
+                    {IMPORT_COLUMNS.map((column) => <option key={column} value={column} disabled={Object.entries(mapping).some(([key, value]) => key !== header && value === column)}>{column}</option>)}
+                  </select>
+                </label>
+              ))}
+            </div>
+          </section>
+        ) : null}
+        {warnings.length > 0 ? (
+          <section className="border-b border-line pb-5 text-sm text-ash">
+            <h2 className="text-ink">{bi("Catatan AI dari contoh baris", "AI notes from sample rows")}</h2>
+            <ul className="mt-2 list-disc space-y-1 pl-5">{warnings.map((warning, index) => <li key={index}>{bi("Baris", "Row")} {warning.row}: {warning.message}</li>)}</ul>
+          </section>
+        ) : null}
         {rows.length > 0 ? (
           <Panel className="p-5">
             <p className="eyebrow text-ash">{bi("Ringkasan perubahan", "Change summary")}</p>
