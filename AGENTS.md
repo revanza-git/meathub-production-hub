@@ -14,3 +14,4 @@
 - Treat aborted HTTP requests as empty 204 responses at both request middleware and server entry, not rethrown errors — h3 otherwise turns a disconnected navigation into a misleading 500.
 - Inventory AI receives only headers and six bounded sample rows through an admin-guarded server function; the browser validates the full sheet against current inventory and imports only new items via the append-only RPC — model suggestions must never authorize writes.
 - Midtrans reconciliation snapshots are admin-readable and server-written; status transitions reuse verified active-attempt guards, while mismatches remain review-only — prevents stale or unequal charges from marking orders paid.
+- New payment-term requests use TERMS_REQUEST orders without credit limits, due dates, payment instructions, or invoices; reject new TOP orders in the database while keeping historic TOP readable — conversations are not approval or settlement.

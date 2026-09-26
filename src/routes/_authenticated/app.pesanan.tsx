@@ -127,6 +127,7 @@ function StoreOrdersPage() {
                       {formatDate(o.created_at)} · {PAY_METHOD_LABEL[o.payment_method]}
                       {o.credit_term_days ? ` · Tempo ${o.credit_term_days} hari` : ""}
                     </p>
+                    {o.payment_method === "TERMS_REQUEST" && o.status === "NEW" ? <p className="mt-2 text-xs text-crimson">Pengajuan termin — menunggu kesepakatan via WhatsApp, belum ada tagihan.</p> : null}
                     {badge ? (
                       <span
                         className={`mt-2 inline-flex border px-2 py-1 text-[11px] ${
@@ -195,13 +196,13 @@ function StoreOrdersPage() {
                   >
                     Pesan ulang
                   </button>
-                  <Link
+                   {o.payment_method !== "TERMS_REQUEST" ? <Link
                     to="/app/invoice/$orderNo"
                     params={{ orderNo: o.order_no }}
                     className="eyebrow border border-ink/25 px-5 py-3 text-ink"
                   >
                     {o.buyer_confirmed_at ? "Tanda terima" : "Faktur"}
-                  </Link>
+                   </Link> : null}
                 </div>
 
                 {open ? <OrderDetail order={o} onChanged={() => refetch()} /> : null}

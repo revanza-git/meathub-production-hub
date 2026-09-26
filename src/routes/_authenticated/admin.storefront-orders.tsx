@@ -238,9 +238,9 @@ function OrdersTable() {
           </p>
         </Panel>
         <Panel className="p-4">
-          <p className="eyebrow text-ash">{bi("Sedang diproses", "In progress")}</p>
+          <p className="eyebrow text-ash">{bi("Pengajuan termin", "Terms requests")}</p>
           <p className="mt-1 font-display text-2xl text-ink">
-            {(counts.get("PAID") ?? 0) + (counts.get("PROCESSING") ?? 0) + (counts.get("SHIPPED") ?? 0)}
+            {orders.filter((o) => o.payment_method === "TERMS_REQUEST" && o.status === "NEW").length}
           </p>
         </Panel>
         <Panel className="p-4">
