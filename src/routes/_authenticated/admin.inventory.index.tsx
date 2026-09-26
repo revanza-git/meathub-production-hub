@@ -347,6 +347,8 @@ function InventoryBody() {
     }
   }
 
+  const pageValue = rows.reduce((sum, item) => sum + Number(item.qty_on_hand_kg) * Number(item.sale_price_idr), 0);
+
   return (
     <div className="grid gap-6">
       <input
