@@ -10,6 +10,15 @@ const errorMiddleware = createMiddleware().server(async ({ next, request }) => {
   try {
     return await next();
   } catch (error) {
+    // A cancelled navigation closes the response before rendering completes.
+    // Let the runtime handle it instead of logging it as an application error
+    // and attempting to write a 500 page to an already closed connection.
+    if (
+      request.signal.aborted ||
+      (error instanceof Error && error.name === "AbortError")
+    ) {
+      throw error;
+    }
     if (error != null && typeof error === "object" && "statusCode" in error) {
       throw error;
     }
