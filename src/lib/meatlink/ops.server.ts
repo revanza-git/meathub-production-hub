@@ -213,8 +213,13 @@ export async function runOpsCron(jobs?: string[]) {
   if (wanted("low-stock")) out["low-stock"] = await lowStockAlert();
   if (wanted("daily-digest")) out["daily-digest"] = await dailyDigest();
   if (wanted("daily-digest") || wanted("reconcile-midtrans")) {
-    const { reconcileDaily } = await import("./reconciliation.server");
-    out["reconcile-midtrans"] = await reconcileDaily();
+    try {
+      const { reconcileDaily } = await import("./reconciliation.server");
+      out["reconcile-midtrans"] = await reconcileDaily();
+    } catch (error) {
+      console.error("[ops] reconciliation failed", error);
+      out["reconcile-midtrans"] = { failed: true };
+    }
   }
   return out;
 }

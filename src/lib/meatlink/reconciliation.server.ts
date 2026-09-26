@@ -78,13 +78,12 @@ export async function reconcileDaily(limit = 80) {
   const { supabaseAdmin: db } = await import("@/integrations/supabase/client.server");
   let checked = 0, failed = 0, review = 0, scanned = 0;
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Jakarta" });
-  let before: string | null = null;
+  let offset = 0;
   while (checked < limit && scanned < 10000) {
     let query = db.from("storefront_orders")
       .select("id, order_no, status, total_idr, paid_at, payment_ref, payment_trx_id, created_at")
       .like("payment_ref", "Midtrans %")
-      .order("created_at", { ascending: false }).limit(200);
-    if (before) query = query.lt("created_at", before);
+      .order("created_at", { ascending: false }).order("id", { ascending: false }).range(offset, offset + 199);
     const { data: page, error } = await query;
     if (error) throw new Error(error.message);
     if (!page?.length) break;
@@ -103,7 +102,7 @@ export async function reconcileDaily(limit = 80) {
         if (result) { checked++; if (result === "FAILED") failed++; if (result === "REVIEW") review++; }
       } catch (err) { failed++; console.error("[reconciliation] order failed", row.order_no, err); }
     }
-    before = page[page.length - 1]?.created_at ?? null;
+    offset += page.length;
     if (page.length < 200) break;
   }
   return { checked, failed, review, scanned };
