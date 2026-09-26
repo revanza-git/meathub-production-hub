@@ -312,6 +312,7 @@ export const PAY_METHOD_LABEL_I18N: Record<string, Record<Lang, string>> = {
   WHATSAPP: { id: "WhatsApp", en: "WhatsApp" },
   CBD: { id: "Cash Before Delivery", en: "Cash before delivery" },
   TOP: { id: "Tempo (TOP)", en: "Terms (TOP)" },
+  TERMS_REQUEST: { id: "Pengajuan termin — belum disetujui", en: "Payment terms request — not approved" },
 };
 
 /** Localised label lookup with graceful fallback to the raw code. */

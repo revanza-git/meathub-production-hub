@@ -15,15 +15,7 @@ const PAY_METHOD_HINT_EN: Record<string, string> = {
   QRIS: "Midtrans sandbox QR code is shown after placing the order.",
   WHATSAPP: "Our team will contact you to finalize the order.",
   CBD: "Pay in cash before the goods are delivered.",
-  TOP: "Pay according to your credit limit due date.",
-};
-
-type CreditSummary = {
-  status: string;
-  limit_idr: number;
-  term_days: number;
-  outstanding_idr: number;
-  available_idr: number;
+  TERMS_REQUEST: "Place an order first, then discuss payment terms with our team. Not yet approved.",
 };
 
 export const Route = createFileRoute("/keranjang")({
@@ -104,7 +96,6 @@ function CartPage() {
   const [coupon, setCoupon] = useState("");
   const [applied, setApplied] = useState<{ code: string; discount: number } | null>(null);
   const [checkingCoupon, setCheckingCoupon] = useState(false);
-  const [credit, setCredit] = useState<CreditSummary | null>(null);
   const [signedIn, setSignedIn] = useState(false);
   const [addresses, setAddresses] = useState<BuyerAddress[]>([]);
   const [pickedAddress, setPickedAddress] = useState<string | null>(null);
@@ -148,8 +139,6 @@ function CartPage() {
       const saved = await listAddresses().catch(() => [] as BuyerAddress[]);
       if (active) setAddresses(saved);
 
-      const { data: creditRow } = await supabase.rpc("ml_my_credit");
-      if (active && creditRow) setCredit(creditRow as unknown as CreditSummary);
       if (!active) return;
 
       const preferred = saved.find((a) => a.is_default) ?? saved[0];
@@ -213,25 +202,6 @@ function CartPage() {
     }
     setApplied({ code: res.code ?? code, discount: Number(res.discount_idr ?? 0) });
     toast.success(bi("Kode promo diterapkan.", "Promo code applied."));
-  }
-
-  async function requestCredit() {
-    const { data: auth } = await supabase.auth.getUser();
-    if (!auth.user) {
-      toast.error(bi("Masuk terlebih dahulu untuk mengajukan pembayaran tempo.", "Sign in first to request payment terms."));
-      return;
-    }
-    const raw = window.prompt(bi("Berapa limit tempo yang Anda ajukan (Rp)?", "What credit limit are you requesting (IDR)?"), "50000000");
-    const limit = Number((raw ?? "").replace(/\D/g, ""));
-    if (!limit) return;
-    const { error } = await supabase.rpc("ml_request_credit", { _limit: limit });
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    toast.success(bi("Pengajuan limit tempo terkirim.", "Credit limit request submitted."));
-    const { data: creditRow } = await supabase.rpc("ml_my_credit");
-    if (creditRow) setCredit(creditRow as unknown as CreditSummary);
   }
 
   async function submit(e: React.FormEvent) {
@@ -420,7 +390,7 @@ function CartPage() {
                     <span className="text-crimson">-{fmt.money(applied.discount)}</span>
                   </div>
                   <div className="mt-3 flex items-baseline justify-between border-t border-line pt-3">
-                    <span className="text-sm text-ash">{bi("Total", "Total")}</span>
+                    <span className="text-sm text-ash">{method === "TERMS_REQUEST" ? bi("Nilai indikatif", "Indicative value") : bi("Total", "Total")}</span>
                     <span className="font-display text-2xl text-ink">
                       {fmt.money(Math.max(subtotal - applied.discount, 0))}
                     </span>
@@ -457,40 +427,10 @@ function CartPage() {
                 </div>
               </div>
 
-              {credit && credit.status !== "APPROVED" ? (
-                <p className="mt-4 border border-line p-4 text-xs text-ash">
-                  {bi(
-                    `Pengajuan limit tempo Anda berstatus ${credit.status.toLowerCase()}. Tim kami akan mengabari setelah ditinjau.`,
-                    `Your credit limit request is ${credit.status.toLowerCase()}. Our team will notify you once reviewed.`,
-                  )}
-                </p>
-              ) : null}
-
-              {!credit ? (
-                <button
-                  type="button"
-                  onClick={() => void requestCredit()}
-                  className="eyebrow mt-4 w-full border border-ink px-4 py-3 text-ink"
-                >
-                  {bi("Ajukan pembayaran tempo", "Request payment terms")}
-                </button>
-              ) : null}
-
-              {credit?.status === "APPROVED" ? (
-                <p className="mt-4 border border-line bg-ink/[0.03] p-4 text-xs text-ash">
-                  {bi(
-                    `Limit tempo tersedia ${fmt.money(Number(credit.available_idr))} dari ${fmt.money(Number(credit.limit_idr))} · jatuh tempo ${credit.term_days} hari.`,
-                    `Available credit ${fmt.money(Number(credit.available_idr))} of ${fmt.money(Number(credit.limit_idr))} · due in ${credit.term_days} days.`,
-                  )}
-                </p>
-              ) : null}
-
               <fieldset className="mt-8">
                 <legend className="eyebrow text-ash">{bi("Metode pembayaran", "Payment method")}</legend>
                 <div className="mt-4 grid gap-2">
-                  {PAY_METHODS.filter(
-                    (m) => !m.requiresCredit || credit?.status === "APPROVED",
-                  ).map((m) => (
+                  {PAY_METHODS.map((m) => (
                     <label
                       key={m.value}
                       className={`flex cursor-pointer gap-3 border p-4 text-sm ${
@@ -506,7 +446,7 @@ function CartPage() {
                         className="mt-1"
                       />
                       <span>
-                        <span className="block text-ink">{label(PAY_METHOD_LABEL_I18N, m.value)}</span>
+                         <span className="block text-ink">{m.value === "TERMS_REQUEST" ? bi("Ajukan termin via WhatsApp", "Request payment terms via WhatsApp") : label(PAY_METHOD_LABEL_I18N, m.value)}</span>
                         <span className="mt-1 block text-xs text-ash">
                           {bi(m.hint, PAY_METHOD_HINT_EN[m.value] ?? m.hint)}
                         </span>

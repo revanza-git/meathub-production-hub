@@ -71,6 +71,14 @@ function InvoicePage() {
       </div>
     );
 
+  if (data.payment_method === "TERMS_REQUEST")
+    return (
+      <div className="p-10">
+        <p className="text-sm text-ash">{bi("Pengajuan termin ini belum menjadi tagihan. Hubungi tim kami untuk menyepakati pembayaran dan total akhir.", "This payment terms request is not an invoice. Contact our team to agree on payment and the final total.")}</p>
+        <Link to="/app/pesanan" className="eyebrow mt-4 inline-flex border border-ink/25 px-5 py-3 text-ink">{bi("Kembali ke pesanan", "Back to orders")}</Link>
+      </div>
+    );
+
   const discount = Number(data.discount_idr ?? 0);
   const completed = Boolean(data.buyer_confirmed_at);
 

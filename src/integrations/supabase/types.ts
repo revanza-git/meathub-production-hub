@@ -4022,7 +4022,13 @@ export type Database = {
         | "ON_HOLD"
         | "REJECTED"
         | "DELIVERED"
-      ml_pay_method: "BANK_TRANSFER" | "QRIS" | "WHATSAPP" | "CBD" | "TOP"
+      ml_pay_method:
+        | "BANK_TRANSFER"
+        | "QRIS"
+        | "WHATSAPP"
+        | "CBD"
+        | "TOP"
+        | "TERMS_REQUEST"
       ml_payment_term: "CBD" | "TOP7" | "TOP14" | "TOP30"
       ml_product_category: "PRIME_CUT" | "SECOND_CUT" | "OFFAL" | "BONE"
       ml_role: "buyer" | "vendor" | "admin"
@@ -4278,7 +4284,14 @@ export const Constants = {
         "REJECTED",
         "DELIVERED",
       ],
-      ml_pay_method: ["BANK_TRANSFER", "QRIS", "WHATSAPP", "CBD", "TOP"],
+      ml_pay_method: [
+        "BANK_TRANSFER",
+        "QRIS",
+        "WHATSAPP",
+        "CBD",
+        "TOP",
+        "TERMS_REQUEST",
+      ],
       ml_payment_term: ["CBD", "TOP7", "TOP14", "TOP30"],
       ml_product_category: ["PRIME_CUT", "SECOND_CUT", "OFFAL", "BONE"],
       ml_role: ["buyer", "vendor", "admin"],

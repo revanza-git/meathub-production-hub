@@ -1,0 +1,1 @@
+ALTER TYPE public.ml_pay_method ADD VALUE IF NOT EXISTS 'TERMS_REQUEST';

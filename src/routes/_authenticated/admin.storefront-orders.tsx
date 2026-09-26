@@ -234,13 +234,13 @@ function OrdersTable() {
         <Panel className="p-4">
           <p className="eyebrow text-ash">{bi("Menunggu pembayaran", "Awaiting payment")}</p>
           <p className="mt-1 font-display text-2xl text-ink">
-            {(counts.get("NEW") ?? 0) + (counts.get("AWAITING_PAYMENT") ?? 0)}
+            {orders.filter((o) => o.payment_method !== "TERMS_REQUEST" && (o.status === "NEW" || o.status === "AWAITING_PAYMENT")).length}
           </p>
         </Panel>
         <Panel className="p-4">
-          <p className="eyebrow text-ash">{bi("Sedang diproses", "In progress")}</p>
+          <p className="eyebrow text-ash">{bi("Pengajuan termin", "Terms requests")}</p>
           <p className="mt-1 font-display text-2xl text-ink">
-            {(counts.get("PAID") ?? 0) + (counts.get("PROCESSING") ?? 0) + (counts.get("SHIPPED") ?? 0)}
+            {orders.filter((o) => o.payment_method === "TERMS_REQUEST" && o.status === "NEW").length}
           </p>
         </Panel>
         <Panel className="p-4">
@@ -325,6 +325,7 @@ function OrdersTable() {
               <div className="flex items-center gap-4">
                 <span className="text-sm text-ash">{lines.length} {bi("item", "items")}</span>
                 <span className="font-display text-lg text-ink">{formatIdr(Number(o.total_idr))}</span>
+                {o.payment_method === "TERMS_REQUEST" && o.status === "NEW" ? <span className="text-xs font-medium text-crimson">{bi("Termin belum disetujui", "Terms not approved")}</span> : null}
                 <StatusPill status={o.status} label={label(ORDER_STATUS_LABEL_I18N, o.status)} />
                 <span className="eyebrow text-ash">{isOpen ? bi("Tutup", "Close") : bi("Detail", "Detail")}</span>
               </div>
@@ -386,6 +387,7 @@ function OrdersTable() {
                   <div>
                     <p className="eyebrow text-ash">{bi("Pembayaran", "Payment")}</p>
                     <p className="mt-2 text-sm text-ink">{label(PAY_METHOD_LABEL_I18N, o.payment_method)}</p>
+                    {o.payment_method === "TERMS_REQUEST" ? <p className="mt-2 text-xs text-ash">{bi("Pengajuan saja — belum ada tagihan, persetujuan kredit, atau jatuh tempo. Tindak lanjuti dengan pembeli lewat WhatsApp.", "Request only — no invoice, credit approval, or due date. Follow up with the buyer on WhatsApp.")}</p> : null}
                     {o.payment_ref ? (
                       <p className="mt-1 text-xs text-ash">{bi("Ref", "Ref")}: {o.payment_ref}</p>
                     ) : null}
@@ -428,7 +430,7 @@ function OrdersTable() {
                         onChange={(e) => updateStatus(o.id, e.target.value as StoreStatus)}
                         className={`${inputClass} mt-1.5`}
                       >
-                        {STATUSES.map((s) => (
+                        {STATUSES.filter((s) => o.payment_method !== "TERMS_REQUEST" || s === "NEW" || s === "CANCELLED").map((s) => (
                           <option key={s} value={s}>
                             {label(ORDER_STATUS_LABEL_I18N, s)}
                           </option>

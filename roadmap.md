@@ -18,4 +18,4 @@
 - [x] Sinkronkan pembatalan Midtrans lebih awal melalui notifikasi dan pemeriksaan halaman pesanan, bukan menunggu 24 jam
 - [x] Rekonsiliasi Midtrans khusus admin sebagai tab di Pesanan Toko Online: pemeriksaan harian dan manual, perbandingan jumlah/status/waktu, serta penandaan selisih tanpa pelunasan paksa
 - [ ] Uji langsung tab rekonsiliasi memakai akun berperan admin (akun pengujian saat ini hanya buyer)
-- [ ] Setelah persetujuan rencana, arahkan pengajuan termin checkout ke pesanan baru lalu WhatsApp; matikan TOP otomatis tanpa menghapus riwayat
+- [x] Arahkan pengajuan termin checkout ke pesanan baru lalu WhatsApp; matikan TOP otomatis tanpa menghapus riwayat
