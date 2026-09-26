@@ -85,33 +85,15 @@ export async function expireUnpaidOrders() {
     .limit(100);
   if (lookupError) throw new Error(lookupError.message);
   const { getMidtransStatus } = await import("./midtrans.server");
-  const { reconcileMidtransPayment } = await import("./payment-status.server");
+  const { reconcileMidtransPayment, reconcileMidtransClosure } = await import("./payment-status.server");
   let midtransExpired = 0;
   for (const order of candidates ?? []) {
     const reference = order.payment_ref?.slice(9);
     if (!reference) continue;
     try {
       const transaction = await getMidtransStatus(reference);
-      if (transaction.order_id !== reference || transaction.transaction_id !== order.payment_trx_id ||
-          Math.round(Number(transaction.gross_amount)) !== Math.round(Number(order.total_idr))) {
-        console.error("[expire-unpaid] Midtrans mismatch", order.order_no);
-        continue;
-      }
       if (await reconcileMidtransPayment(order, transaction)) continue;
-      if (!["expire", "cancel", "deny"].includes(transaction.transaction_status)) continue;
-      const { data: closed, error: closeError } = await db.from("storefront_orders")
-        .update({ status: "CANCELLED", admin_note: `Midtrans ${transaction.transaction_status}: pembayaran tidak selesai` })
-        .eq("id", order.id).eq("payment_trx_id", transaction.transaction_id)
-        .is("paid_at", null).in("status", ["NEW", "AWAITING_PAYMENT"])
-        .select("id").maybeSingle();
-      if (closeError) throw closeError;
-      if (!closed) continue;
-      midtransExpired++;
-      const { error: eventError } = await db.from("storefront_order_events").insert({
-        order_id: order.id, from_status: order.status as "NEW" | "AWAITING_PAYMENT", to_status: "CANCELLED",
-        note: `Transaksi Midtrans ${transaction.transaction_status}; pembayaran tidak diterima.`,
-      });
-      if (eventError) console.error("[expire-unpaid] timeline failed", order.order_no, eventError);
+      if (await reconcileMidtransClosure(order, transaction)) midtransExpired++;
     } catch (error) {
       console.error("[expire-unpaid] check failed", order.order_no, error);
     }

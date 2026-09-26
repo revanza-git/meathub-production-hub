@@ -132,8 +132,9 @@ export const checkOrderPayment = createServerFn({ method: "POST" })
     if (!order) throw new Error("Pesanan tidak ditemukan.");
     if (order.paid_at || !order.payment_ref?.startsWith("Midtrans ")) return { paid: Boolean(order.paid_at), closed: order.status === "CANCELLED" };
     const { getMidtransStatus } = await import("./midtrans.server");
-    const { reconcileMidtransPayment } = await import("./payment-status.server");
+    const { reconcileMidtransPayment, reconcileMidtransClosure } = await import("./payment-status.server");
     const transaction = await getMidtransStatus(order.payment_ref.slice(9));
     const changed = await reconcileMidtransPayment(order, transaction);
-    return { paid: changed || Boolean(order.paid_at), closed: false };
+    const closed = changed ? false : await reconcileMidtransClosure(order, transaction);
+    return { paid: changed || Boolean(order.paid_at), closed };
   });
