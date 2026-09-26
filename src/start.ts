@@ -11,13 +11,12 @@ const errorMiddleware = createMiddleware().server(async ({ next, request }) => {
     return await next();
   } catch (error) {
     // A cancelled navigation closes the response before rendering completes.
-    // Let the runtime handle it instead of logging it as an application error
-    // and attempting to write a 500 page to an already closed connection.
+    // Throwing here reaches h3's 500 handler, so settle it without a body.
     if (
       request.signal.aborted ||
       (error instanceof Error && error.name === "AbortError")
     ) {
-      throw error;
+      return new Response(null, { status: 204 });
     }
     if (error != null && typeof error === "object" && "statusCode" in error) {
       throw error;
