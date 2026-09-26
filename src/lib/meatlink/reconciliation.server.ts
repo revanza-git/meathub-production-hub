@@ -5,7 +5,7 @@ type Admin = Awaited<typeof import("@/integrations/supabase/client.server")>["su
 type Order = { id: string; order_no: string; status: string; total_idr: number; paid_at: string | null; payment_ref: string | null; payment_trx_id: string | null };
 type Result = "MATCHED" | "PENDING" | "REVIEW" | "FAILED";
 
-function classify(order: Order, transaction: MidtransTransaction): { result: Result; reason: string | null } {
+export function classify(order: Order, transaction: MidtransTransaction): { result: Result; reason: string | null } {
   if (transaction.order_id !== order.payment_ref?.slice(9) || transaction.transaction_id !== order.payment_trx_id)
     return { result: "REVIEW", reason: "ID transaksi tidak sesuai dengan percobaan pembayaran aktif." };
   if (!Number.isFinite(Number(transaction.gross_amount)) || Math.round(Number(transaction.gross_amount)) !== Math.round(Number(order.total_idr)))
@@ -42,7 +42,8 @@ export async function checkReconciliation(db: Admin, order: Order) {
   if (error || !current) throw new Error("Pesanan tidak dapat dibaca ulang.");
   if (current.payment_ref !== order.payment_ref || current.payment_trx_id !== order.payment_trx_id) return null;
 
-  if (transaction) {
+  if (transaction && transaction.order_id === current.payment_ref?.slice(9) && transaction.transaction_id === current.payment_trx_id &&
+      Math.round(Number(transaction.gross_amount)) === Math.round(Number(current.total_idr))) {
     // Safe helpers use transaction ID, amount, and active payment reference to guard updates.
     if (!(await reconcileMidtransPayment(current, transaction))) await reconcileMidtransClosure(current, transaction);
   }
