@@ -82,9 +82,17 @@ function ImportBody() {
     setRows([]);
     setErrors([]);
     setResult("");
+    if (!/\.(xlsx|xls|csv)$/i.test(file.name)) {
+      setErrors([bi("Gunakan file Excel atau CSV.", "Use an Excel or CSV file.")]);
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setErrors([bi("Ukuran file maksimal 10 MB.", "Maximum file size is 10 MB.")]);
+      return;
+    }
     const collected: string[] = [];
     let records: Record<string, unknown>[] = [];
-
+    try {
     if (file.name.toLowerCase().endsWith(".csv")) {
       records = csvToRecords(await file.text());
     } else {
@@ -96,6 +104,14 @@ function ImportBody() {
         return;
       }
       records = XLSX.utils.sheet_to_json<Record<string, unknown>>(book.Sheets[first]!, { defval: "" });
+    }
+    } catch {
+      setErrors([bi("File tidak dapat dibaca. Coba simpan ulang sebagai .xlsx atau .csv.", "Could not read the file. Save it again as .xlsx or .csv.")]);
+      return;
+    }
+    if (records.length > 2000) {
+      setErrors([bi("Maksimal 2.000 baris per impor. Bagi file menjadi beberapa bagian.", "Maximum 2,000 rows per import. Split the file into smaller parts.")]);
+      return;
     }
 
     const fallback = Number(defaultQty.replace(/[^\d.]/g, "")) || 0;
@@ -214,7 +230,7 @@ function ImportBody() {
         />
         {fileName ? <p className="mt-2 text-xs text-ash">{fileName}</p> : null}
 
-        <p className="mt-8 text-sm text-ash">{bi("Hanya produk baru yang ditambahkan. Produk yang sudah ada dan baris ganda tidak akan diubah atau dihapus.", "Only new products are added. Existing products and duplicate rows will not be changed or deleted.")}</p>
+        <p className="mt-8 text-sm text-ash">{bi("Hanya produk baru yang ditambahkan. Produk yang sudah ada dan baris ganda tidak akan diubah atau dihapus. Simpan seluruh baris sekaligus atau tidak sama sekali.", "Only new products are added. Existing products and duplicates are never changed or deleted. All rows save together or none do.")}</p>
         <Button type="button" disabled={pending || news.length === 0 || errors.length > 0} onClick={() => void commit()} className="mt-6 w-full">
           {pending ? bi("Menyimpan…", "Saving…") : bi(`Tambah ${news.length} produk baru`, `Add ${news.length} new products`)}
         </Button>
