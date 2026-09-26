@@ -20,14 +20,17 @@ export const Route = createFileRoute("/api/public/midtrans-callback")({
         } catch {
           return new Response("bad request", { status: 400 });
         }
-        const { validMidtransSignature, getMidtransStatus } = await import("@/lib/meatlink/midtrans.server");
-        if (!validMidtransSignature(payload)) return new Response("invalid signature", { status: 401 });
+        const { validMidtransSignature, getMidtransStatus, paymentReference } = await import("@/lib/meatlink/midtrans.server");
+        const environment = (["production", "sandbox"] as const).find((env) => {
+          try { return validMidtransSignature(payload, env); } catch { return false; }
+        });
+        if (!environment) return new Response("invalid signature", { status: 401 });
         try {
-          const verified = await getMidtransStatus(payload.order_id);
+          const verified = await getMidtransStatus(payload.order_id, environment);
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
           const { data: order, error } = await supabaseAdmin.from("storefront_orders")
             .select("id, order_no, status, total_idr, paid_at, payment_trx_id, payment_ref")
-            .eq("payment_ref", `Midtrans ${payload.order_id}`).maybeSingle();
+            .eq("payment_ref", paymentReference(environment, payload.order_id)).maybeSingle();
           if (error) throw error;
           if (!order) return new Response("order not ready", { status: 503 });
           const { reconcileMidtransPayment, reconcileMidtransClosure } = await import("@/lib/meatlink/payment-status.server");

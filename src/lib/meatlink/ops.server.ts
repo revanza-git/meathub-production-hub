@@ -84,14 +84,14 @@ export async function expireUnpaidOrders() {
     .order("payment_expires_at", { ascending: true })
     .limit(100);
   if (lookupError) throw new Error(lookupError.message);
-  const { getMidtransStatus } = await import("./midtrans.server");
+  const { getMidtransStatus, paymentReferenceDetails } = await import("./midtrans.server");
   const { reconcileMidtransPayment, reconcileMidtransClosure } = await import("./payment-status.server");
   let midtransExpired = 0;
   for (const order of candidates ?? []) {
-    const reference = order.payment_ref?.slice(9);
-    if (!reference) continue;
+    const attempt = paymentReferenceDetails(order.payment_ref);
+    if (!attempt) continue;
     try {
-      const transaction = await getMidtransStatus(reference);
+      const transaction = await getMidtransStatus(attempt.orderId, attempt.environment);
       if (await reconcileMidtransPayment(order, transaction)) continue;
       if (await reconcileMidtransClosure(order, transaction)) midtransExpired++;
     } catch (error) {
