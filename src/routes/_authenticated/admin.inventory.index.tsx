@@ -292,7 +292,7 @@ function InventoryBody() {
     if (step === 0 && (!form.name.trim() || !form.brand.trim() || !form.origin.trim())) {
       toast.error(bi("Isi nama, merek, dan asal produk.", "Enter product name, brand and origin.")); return;
     }
-    if (step === 1 && (form.sale_price_idr.trim() === "" || form.qty_on_hand_kg.trim() === "" || Number(form.sale_price_idr) < 0 || Number(form.qty_on_hand_kg) < 0)) {
+    if (step === 1 && (form.sale_price_idr.trim() === "" || form.qty_on_hand_kg.trim() === "" || !Number.isFinite(Number(form.sale_price_idr)) || !Number.isFinite(Number(form.qty_on_hand_kg)) || Number(form.sale_price_idr) < 0 || Number(form.qty_on_hand_kg) < 0 || (form.markup_idr !== "" && (!Number.isFinite(Number(form.markup_idr)) || Number(form.markup_idr) < 0)))) {
       toast.error(bi("Isi harga dan stok dengan angka yang valid.", "Enter valid price and stock.")); return;
     }
     if (step === 2 && form.channels.length === 0) { toast.error(bi("Pilih minimal satu kanal.", "Select at least one channel.")); return; }
@@ -306,6 +306,7 @@ function InventoryBody() {
       return;
     }
     setPending(true);
+    try {
     const values = {
       origin: form.origin, brand: form.brand.trim(), name: form.name.trim(),
       condition: form.condition || null,
@@ -322,7 +323,6 @@ function InventoryBody() {
     const { error } = editing
       ? await supabase.from("admin_inventory").update(values).eq("id", editing.id)
       : await supabase.from("admin_inventory").insert(values);
-    setPending(false);
     if (error) { toast.error(error.message); return; }
     setShowForm(false);
     setEditing(null);
@@ -330,6 +330,9 @@ function InventoryBody() {
     refresh();
     void qc.invalidateQueries({ queryKey: ["admin-inventory-brands"] });
     void qc.invalidateQueries({ queryKey: ["admin-inventory-origins"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : bi("Produk gagal disimpan.", "Could not save product."));
+    } finally { setPending(false); }
   }
 
   async function exportInventory() {
@@ -507,7 +510,7 @@ function InventoryBody() {
                   <Field label={bi("Kemasan ritel", "Retail pack")}><TextInput value={form.retail_pack_text} onChange={(e) => setForm({ ...form, retail_pack_text: e.target.value })} /></Field>
                   <Field label={bi("Harga promo / kg (Rp)", "Promo price / kg (Rp)")}><TextInput type="number" min="0" value={form.promo_price_idr} onChange={(e) => setForm({ ...form, promo_price_idr: e.target.value })} /></Field>
                   <Field label={bi("Promo hingga", "Promo until")}><TextInput type="date" value={form.promo_until} onChange={(e) => setForm({ ...form, promo_until: e.target.value })} /></Field>
-                  <div className="border-t border-line pt-5 sm:col-span-2"><p className="eyebrow text-ash">{bi("Perkiraan harga tampil / kg", "Preview customer price / kg")}</p><p className="mt-2 font-display text-3xl text-crimson">{formatIdr(publicPrice(form.sale_price_idr, form.markup_idr === "" ? defaultMarkup(form.name, form.brand) : form.markup_idr))}</p><div className="mt-3 grid grid-cols-2 gap-2 text-sm text-ash">{SALE_UNITS.map((u) => <p key={u}>{bi(UNIT_LABEL[u].id, UNIT_LABEL[u].en)}: {formatIdr(unitPrice(form.sale_price_idr, form.markup_idr === "" ? defaultMarkup(form.name, form.brand) : form.markup_idr, u === "RETAIL" ? "retail" : u === "LOAF" ? "loaf" : u === "CTN" ? "carton" : "ton", margins))}</p>)}</div></div>
+                  <div className="border-t border-line pt-5 sm:col-span-2"><p className="eyebrow text-ash">{bi("Perkiraan harga tampil / kg", "Preview customer price / kg")}</p><p className="mt-2 font-display text-3xl text-crimson">{form.sale_price_idr === "" ? "—" : formatIdr(publicPrice(form.sale_price_idr, form.markup_idr === "" ? defaultMarkup(form.name, form.brand) : form.markup_idr))}</p><div className="mt-3 grid grid-cols-2 gap-2 text-sm text-ash">{SALE_UNITS.map((u) => <p key={u}>{bi(UNIT_LABEL[u].id, UNIT_LABEL[u].en)}: {form.sale_price_idr === "" ? "—" : formatIdr(unitPrice(form.sale_price_idr, form.markup_idr === "" ? defaultMarkup(form.name, form.brand) : form.markup_idr, u === "RETAIL" ? "retail" : u === "LOAF" ? "loaf" : u === "CTN" ? "carton" : "ton", margins))}</p>)}</div></div>
                 </div> : null}
                 {step === 2 ? <div><h3 className="font-display text-xl text-ink">{bi("Kanal penjualan", "Sale channels")}</h3><div className="mt-5 grid gap-3 sm:grid-cols-2">{SALE_UNITS.map((u) => <label key={u} className="flex items-center gap-3 border border-line bg-card p-4 text-sm text-ink"><input type="checkbox" checked={form.channels.includes(u)} onChange={(e) => setForm((f) => ({ ...f, channels: e.target.checked ? [...f.channels, u] : f.channels.filter((c) => c !== u) }))} />{bi(UNIT_LABEL[u].id, UNIT_LABEL[u].en)}</label>)}</div><p className="mt-4 text-sm text-ash">{bi("Pilih minimal satu kanal.", "Select at least one channel.")}</p><Field label={bi("Posisi unggulan di beranda", "Homepage featured position")}><SelectInput value={form.featured_rank} onChange={(e) => setForm({ ...form, featured_rank: e.target.value })}><option value="">{bi("Tidak ditampilkan", "Not featured")}</option>{FEATURED_RANKS.map((rank) => <option key={rank} value={rank}>{rank}</option>)}</SelectInput></Field>{editing ? <div className="mt-7 border-t border-line pt-5"><Button type="button" variant="outline" onClick={() => void patch(editing.id, { is_active: !editing.is_active, is_published: !editing.is_active }).then(() => setShowForm(false))}>{editing.is_active ? bi("Sembunyikan sementara", "Hide temporarily") : bi("Aktifkan kembali", "Reactivate")}</Button><Button type="button" variant="ghost" onClick={() => void archive(editing)}><Archive />{bi("Arsipkan produk", "Archive product")}</Button></div> : null}</div> : null}
                 {step === 3 ? <div className="space-y-5 text-sm text-ink"><h3 className="font-display text-xl">{bi("Tinjau sebelum menyimpan", "Review before saving")}</h3><div className="grid grid-cols-2 gap-4 border-y border-line py-5"><span>{bi("Produk", "Product")}</span><strong className="break-words text-right">{form.name || "—"}</strong><span>{bi("Merek", "Brand")}</span><strong className="text-right">{form.brand || "—"}</strong><span>{bi("Stok", "Stock")}</span><strong className="text-right">{form.qty_on_hand_kg || "0"} kg</strong><span>{bi("Harga pelanggan / kg", "Customer price / kg")}</span><strong className="text-right">{formatIdr(publicPrice(form.sale_price_idr, form.markup_idr === "" ? defaultMarkup(form.name, form.brand) : form.markup_idr))}</strong><span>{bi("Kanal", "Channels")}</span><strong className="text-right">{form.channels.join(", ") || "—"}</strong></div></div> : null}
