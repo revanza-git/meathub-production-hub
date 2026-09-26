@@ -6,7 +6,10 @@ import { toast } from "sonner";
 import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { Field, SelectInput, TextInput } from "@/components/site/form-kit";
 import { supabase } from "@/integrations/supabase/client";
-import { FEATURED_RANKS, FEATURE_IMAGES, resolveFeatureImage } from "@/lib/meatlink/featured";
+import { resolveProductImage } from "@/lib/meatlink/featured";
+import { Button } from "@/components/ui/button";
+import { Download, Plus, Pencil, Upload } from "lucide-react";
+import * as XLSX from "xlsx";
 import { uploadInventoryImage } from "@/lib/meatlink/inventory-image.functions";
 import {
   CONDITIONS,
@@ -19,6 +22,8 @@ import {
   publicPrice,
   unitPrice,
   defaultMarkup,
+  guessCategory,
+  IMPORT_COLUMNS,
   weightToKg,
   type InventoryItem,
   GRADE_BAND_VALUES,
@@ -37,7 +42,11 @@ export const Route = createFileRoute("/_authenticated/admin/inventory/")({
   component: AdminInventoryPage,
   head: () => ({
     meta: [
-      { title: "Inventory — Meatlink admin" },
+      { title: "Inventaris — Meatlink admin" },
+      { property: "og:title", content: "Inventaris — Meatlink admin" },
+      { property: "og:description", content: "Kelola stok, harga, dan foto produk Meatlink." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       {
         name: "description",
         content: "Manage the Meatlink house inventory: origins, brands, prices and stock on hand.",
@@ -55,11 +64,7 @@ function AdminInventoryPage() {
         "Daftar stok kami sendiri — asal, merek, harga jual, dan jumlah yang tersedia.",
         "Our own stock list — origins, brands, sale prices and quantities on hand.",
       )}
-      actions={
-        <Link to="/admin/inventory/import" className="eyebrow border border-ink/25 px-5 py-3 text-ink">
-          {bi("Impor spreadsheet", "Import spreadsheet")}
-        </Link>
-      }
+
     >
       <RoleGate allow="admin">
         <InventoryBody />
@@ -73,7 +78,7 @@ const EMPTY_FORM = {
   brand: "",
   name: "",
   condition: "FRZ",
-  category: "PRIME_CUT",
+  category: "",
   grade_band: "",
   cut_type: "",
   avg_weight_text: "",
@@ -99,6 +104,9 @@ function InventoryBody() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<InventoryItem | null>(null);
+  const [step, setStep] = useState(0);
+  const [exporting, setExporting] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [pending, setPending] = useState(false);
 
@@ -200,10 +208,6 @@ function InventoryBody() {
   const total = result?.count ?? 0;
   const pageCount = Math.max(1, Math.ceil(total / pageSize));
 
-  const pageValue = useMemo(
-    () => rows.reduce((sum, r) => sum + Number(r.qty_on_hand_kg) * Number(r.sale_price_idr), 0),
-    [rows],
-  );
 
   const originOptions = useMemo(() => {
     const set = new Set<string>([...ORIGINS, ...(origins ?? [])]);
@@ -261,41 +265,77 @@ function InventoryBody() {
 
 
 
-  async function addItem(e: React.FormEvent) {
+  function openEditor(item?: InventoryItem) {
+    setEditing(item ?? null);
+    setForm(item ? {
+      origin: item.origin, brand: item.brand ?? "", name: item.name,
+      condition: item.condition ?? "", category: item.category,
+      grade_band: item.grade_band ?? "", cut_type: item.cut_type ?? "",
+      avg_weight_text: item.avg_weight_text ?? "", sale_price_idr: String(item.sale_price_idr),
+      markup_idr: String(item.markup_idr ?? 0), qty_on_hand_kg: String(item.qty_on_hand_kg),
+      channels: item.sale_channels?.length ? [...item.sale_channels] : [...DEFAULT_SALE_CHANNELS],
+      retail_price_idr: item.retail_price_idr == null ? "" : String(item.retail_price_idr),
+      retail_pack_text: item.retail_pack_text ?? "",
+    } : { ...EMPTY_FORM, channels: [...DEFAULT_SALE_CHANNELS] });
+    setStep(0);
+    setShowForm(true);
+  }
+
+  async function saveItem(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.name.trim()) {
-      toast.error(bi("Nama produk wajib diisi.", "Product name is required."));
+    if (step < 3) { setStep(step + 1); return; }
+    const price = Number(form.sale_price_idr), qty = Number(form.qty_on_hand_kg);
+    const markup = form.markup_idr === "" ? defaultMarkup(form.name, form.brand) : Number(form.markup_idr);
+    const retail = form.retail_price_idr === "" ? null : Number(form.retail_price_idr);
+    if (!form.name.trim() || !form.brand.trim() || !Number.isFinite(price) || price < 0 || !Number.isFinite(qty) || qty < 0 || !Number.isFinite(markup) || markup < 0 || (retail !== null && (!Number.isFinite(retail) || retail < 0)) || form.channels.length === 0) {
+      toast.error(bi("Periksa nama, merek, harga, stok, dan kanal penjualan.", "Check name, brand, price, stock and sale channels."));
       return;
     }
     setPending(true);
-    const { error } = await supabase.from("admin_inventory").insert({
-      origin: form.origin,
-      brand: form.brand.trim(),
-      name: form.name.trim(),
+    const values = {
+      origin: form.origin, brand: form.brand.trim(), name: form.name.trim(),
       condition: form.condition || null,
-      category: form.category as ProductCategory,
+      category: (form.category || guessCategory(form.name)) as ProductCategory,
       grade_band: (form.grade_band || guessGradeBand(form.name)) as GradeBandValue,
       cut_type: form.cut_type.trim() || guessCutType(form.name),
       avg_weight_text: form.avg_weight_text.trim() || null,
-      avg_weight_kg: weightToKg(form.avg_weight_text),
-      sale_price_idr: Number(form.sale_price_idr || 0),
-      markup_idr: form.markup_idr === "" ? defaultMarkup(form.name, form.brand) : Number(form.markup_idr),
-      qty_on_hand_kg: Number(form.qty_on_hand_kg || 0),
-      sale_channels: form.channels.length > 0 ? form.channels : DEFAULT_SALE_CHANNELS,
-      retail_price_idr: form.retail_price_idr.trim()
-        ? Number(form.retail_price_idr.replace(/[^\d.]/g, "")) || null
-        : null,
-      retail_pack_text: form.retail_pack_text.trim() || null,
-    });
+      avg_weight_kg: weightToKg(form.avg_weight_text), sale_price_idr: price,
+      markup_idr: markup, qty_on_hand_kg: qty, sale_channels: form.channels,
+      retail_price_idr: retail, retail_pack_text: form.retail_pack_text.trim() || null,
+    };
+    const { error } = editing
+      ? await supabase.from("admin_inventory").update(values).eq("id", editing.id)
+      : await supabase.from("admin_inventory").insert(values);
     setPending(false);
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-    setForm(EMPTY_FORM);
+    if (error) { toast.error(error.message); return; }
     setShowForm(false);
-    toast.success(bi("Item ditambahkan.", "Item added."));
+    setEditing(null);
+    toast.success(bi("Produk tersimpan.", "Product saved."));
     refresh();
+    void qc.invalidateQueries({ queryKey: ["admin-inventory-brands"] });
+    void qc.invalidateQueries({ queryKey: ["admin-inventory-origins"] });
+  }
+
+  async function exportInventory() {
+    setExporting(true);
+    try {
+      const all: InventoryItem[] = [];
+      for (let offset = 0; ; offset += 500) {
+        const { data, error } = await supabase.from("admin_inventory").select("*").order("id").range(offset, offset + 499);
+        if (error) throw error;
+        all.push(...((data ?? []) as InventoryItem[]));
+        if ((data ?? []).length < 500) break;
+      }
+      const records = all.map((item) => ({
+        ...Object.fromEntries(IMPORT_COLUMNS.map((key) => [key, key === "avg_weight" ? item.avg_weight_text ?? "" : key === "sale_channels" ? item.sale_channels?.join(",") ?? "" : item[key as keyof InventoryItem] ?? ""])),
+        status: item.is_active ? "Aktif" : "Arsip", slug: item.slug ?? "",
+      }));
+      const book = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(book, XLSX.utils.json_to_sheet(records), "Inventori");
+      XLSX.writeFile(book, `meatlink-inventori-${new Date().toISOString().slice(0, 10)}.xlsx`);
+      toast.success(bi(`${all.length} produk diunduh.`, `${all.length} products downloaded.`));
+    } catch (err) { toast.error(err instanceof Error ? err.message : bi("Gagal mengunduh daftar.", "Download failed.")); }
+    finally { setExporting(false); }
   }
 
   async function patch(id: string, values: Partial<InventoryItem>) {
@@ -303,33 +343,6 @@ function InventoryBody() {
     if (error) toast.error(error.message);
     else {
       toast.success(bi("Inventaris diperbarui.", "Inventory updated."));
-      refresh();
-    }
-  }
-
-  async function setFeatured(item: InventoryItem, rank: number | null) {
-    if (rank !== null) {
-      const { error: clearError } = await supabase
-        .from("admin_inventory")
-        .update({ featured_rank: null })
-        .eq("featured_rank", rank);
-      if (clearError) {
-        toast.error(clearError.message);
-        return;
-      }
-    }
-    await patch(item.id, {
-      featured_rank: rank,
-      image_url: rank === null ? null : item.image_url ?? FEATURE_IMAGES[0].key,
-    });
-  }
-
-  async function remove(item: InventoryItem) {
-    if (!window.confirm(bi(`Hapus "${item.name}"?`, `Delete "${item.name}"?`))) return;
-    const { error } = await supabase.from("admin_inventory").delete().eq("id", item.id);
-    if (error) toast.error(error.message);
-    else {
-      toast.success(bi("Item dihapus.", "Item deleted."));
       refresh();
     }
   }
@@ -433,472 +446,61 @@ function InventoryBody() {
             </option>
           ))}
         </select>
-        <button
-          type="button"
-          onClick={() => setShowForm((v) => !v)}
-          className="eyebrow bg-crimson px-5 py-3 text-bone"
-        >
-          {showForm ? bi("Tutup", "Close") : bi("Tambah item", "Add item")}
-        </button>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3 border-t border-line pt-5">
+        <Button onClick={() => openEditor()}><Plus />{bi("Tambah produk", "Add product")}</Button>
+        <Button variant="outline" onClick={() => void exportInventory()} disabled={exporting}><Download />{exporting ? bi("Menyiapkan…", "Preparing…") : bi("Unduh daftar inventori", "Download inventory list")}</Button>
+        <Button variant="outline" asChild><Link to="/admin/inventory/import"><Upload />{bi("Tambah dari Excel", "Add from Excel")}</Link></Button>
       </div>
 
 
       {showForm ? (
-        <Panel className="p-6">
-          <form onSubmit={addItem} className="grid gap-4 md:grid-cols-3">
-            <Field label={bi("Asal", "Origin")} required>
-              <SelectInput
-                value={form.origin}
-                onChange={(e) => setForm({ ...form, origin: e.target.value })}
-              >
-                {originOptions.map((o) => (
-                  <option key={o} value={o}>
-                    {o}
-                  </option>
-                ))}
-              </SelectInput>
-            </Field>
-            <Field label={bi("Merek", "Brand")}>
-              <TextInput value={form.brand} onChange={(e) => setForm({ ...form, brand: e.target.value })} />
-            </Field>
-            <Field label={bi("Nama produk", "Product name")} required>
-              <TextInput
-                required
-                value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-            </Field>
-            <Field label={bi("Kondisi", "Condition")}>
-              <SelectInput
-                value={form.condition}
-                onChange={(e) => setForm({ ...form, condition: e.target.value })}
-              >
-                <option value="">{bi("Tidak ditentukan", "Not specified")}</option>
-                {CONDITIONS.map((c) => (
-                  <option key={c} value={c}>
-                    {CONDITION_LABEL[c]}
-                  </option>
-                ))}
-              </SelectInput>
-            </Field>
-            <Field label={bi("Kategori", "Category")}>
-              <SelectInput
-                value={form.category}
-                onChange={(e) => setForm({ ...form, category: e.target.value })}
-              >
-                {CATEGORIES.map((c) => (
-                  <option key={c.value} value={c.value}>
-                    {c.label}
-                  </option>
-                ))}
-              </SelectInput>
-            </Field>
-            <Field
-              label={bi("Grade marbling", "Marbling grade")}
-              hint={bi("kosongkan untuk deteksi otomatis dari nama", "leave blank to auto-detect from the name")}
-            >
-              <SelectInput
-                value={form.grade_band}
-                onChange={(e) => setForm({ ...form, grade_band: e.target.value })}
-              >
-                <option value="">{bi("Otomatis", "Auto")}</option>
-                {GRADE_BAND_VALUES.map((g) => (
-                  <option key={g} value={g}>
-                    {GRADE_LABEL[g]}
-                  </option>
-                ))}
-              </SelectInput>
-            </Field>
-            <Field
-              label={bi("Cut", "Cut")}
-              hint={bi("kosongkan untuk deteksi otomatis", "leave blank to auto-detect")}
-            >
-              <TextInput
-                value={form.cut_type}
-                onChange={(e) => setForm({ ...form, cut_type: e.target.value })}
-              />
-            </Field>
-            <Field label={bi("Berat rata-rata", "Average weight")} hint={bi("contoh: 8KG atau 250GR", "e.g. 8KG or 250GR")}>
-              <TextInput
-                value={form.avg_weight_text}
-                onChange={(e) => setForm({ ...form, avg_weight_text: e.target.value })}
-              />
-            </Field>
-            <Field label={bi("Harga jual (IDR / kg)", "Sale price (IDR / kg)")}>
-              <TextInput
-                inputMode="numeric"
-                value={form.sale_price_idr}
-                onChange={(e) => setForm({ ...form, sale_price_idr: e.target.value })}
-              />
-            </Field>
-            <Field label={bi("Markup (IDR / kg)", "Markup (IDR / kg)")}>
-              <TextInput
-                inputMode="numeric"
-                placeholder={String(defaultMarkup(form.name, form.brand))}
-                value={form.markup_idr}
-                onChange={(e) => setForm({ ...form, markup_idr: e.target.value })}
-              />
-            </Field>
-            <Field label={bi("Jumlah tersedia (kg)", "Quantity on hand (kg)")}>
-              <TextInput
-                inputMode="decimal"
-                value={form.qty_on_hand_kg}
-                onChange={(e) => setForm({ ...form, qty_on_hand_kg: e.target.value })}
-              />
-            </Field>
-            <Field
-              label={bi("Kanal penjualan", "Sale channels")}
-              hint={bi("pilih minimal satu satuan yang boleh dijual", "select at least one sellable unit")}
-            >
-              <div className="flex flex-wrap gap-2 pt-1.5">
-                {SALE_UNITS.map((u) => {
-                  const active = form.channels.includes(u);
-                  return (
-                    <button
-                      key={u}
-                      type="button"
-                      aria-pressed={active}
-                      onClick={() =>
-                        setForm((f) => {
-                          const next = active
-                            ? f.channels.filter((c) => c !== u)
-                            : [...f.channels, u];
-                          return { ...f, channels: next.length > 0 ? next : f.channels };
-                        })
-                      }
-                      className={`eyebrow border px-3 py-2 transition-colors ${
-                        active
-                          ? "border-crimson bg-crimson/10 text-crimson"
-                          : "border-line text-ash hover:border-ink/40"
-                      }`}
-                    >
-                      {bi(UNIT_LABEL[u].id, UNIT_LABEL[u].en)}
-                    </button>
-                  );
-                })}
-              </div>
-            </Field>
-            <Field
-              label={bi("Harga ritel (IDR / kg)", "Retail price (IDR / kg)")}
-              hint={bi("opsional — kosong berarti ikut harga loaf", "optional — blank follows the loaf price")}
-            >
-              <TextInput
-                inputMode="numeric"
-                value={form.retail_price_idr}
-                onChange={(e) => setForm({ ...form, retail_price_idr: e.target.value })}
-              />
-            </Field>
-            <Field
-              label={bi("Kemasan ritel", "Retail pack")}
-              hint={bi("contoh: ±500 g/pack", "e.g. ±500 g/pack")}
-            >
-              <TextInput
-                value={form.retail_pack_text}
-                onChange={(e) => setForm({ ...form, retail_pack_text: e.target.value })}
-              />
-            </Field>
-            <div className="flex items-end">
-              <button
-                type="submit"
-                disabled={pending}
-                className="eyebrow w-full bg-crimson px-6 py-4 text-bone disabled:opacity-60"
-              >
-                {pending ? bi("Menyimpan…", "Saving…") : bi("Simpan item", "Save item")}
-              </button>
+        <div className="fixed inset-0 z-50 flex justify-end bg-ink/50" onMouseDown={(e) => { if (e.target === e.currentTarget && !pending) setShowForm(false); }}>
+          <section role="dialog" aria-modal="true" aria-label={editing ? bi("Edit produk", "Edit product") : bi("Tambah produk", "Add product")} className="flex h-full w-full max-w-2xl flex-col overflow-hidden bg-bone shadow-xl">
+            <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-5 sm:px-8">
+              <div><p className="eyebrow text-crimson">{bi(`Langkah ${step + 1} dari 4`, `Step ${step + 1} of 4`)}</p><h2 className="mt-1 font-display text-2xl text-ink">{editing ? bi("Edit produk", "Edit product") : bi("Tambah produk", "Add product")}</h2></div>
+              <Button variant="ghost" type="button" onClick={() => setShowForm(false)} aria-label={bi("Tutup", "Close")}>✕</Button>
             </div>
-          </form>
-        </Panel>
+            <form onSubmit={(e) => void saveItem(e)} className="flex min-h-0 flex-1 flex-col" noValidate>
+              <div className="flex-1 overflow-y-auto px-5 py-7 sm:px-8">
+                {step === 0 ? <div className="grid gap-5 sm:grid-cols-2">
+                  <Field label={bi("Nama produk", "Product name")} required><TextInput value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
+                  <Field label={bi("Merek", "Brand")} required><TextInput value={form.brand} onChange={(e) => setForm({ ...form, brand: e.target.value })} /></Field>
+                  <Field label={bi("Asal", "Origin")} required><SelectInput value={form.origin} onChange={(e) => setForm({ ...form, origin: e.target.value })}>{originOptions.map((o) => <option key={o} value={o}>{o}</option>)}</SelectInput></Field>
+                  <Field label={bi("Kondisi", "Condition")}><SelectInput value={form.condition} onChange={(e) => setForm({ ...form, condition: e.target.value })}><option value="">—</option>{CONDITIONS.map((c) => <option key={c} value={c}>{CONDITION_LABEL[c]}</option>)}</SelectInput></Field>
+                  <Field label={bi("Kategori", "Category")}><SelectInput value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}><option value="">{bi("Deteksi dari nama", "Detect from name")}</option>{CATEGORIES.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}</SelectInput></Field>
+                  <Field label="Grade"><SelectInput value={form.grade_band} onChange={(e) => setForm({ ...form, grade_band: e.target.value })}><option value="">{bi("Deteksi dari nama", "Detect from name")}</option>{GRADE_BAND_VALUES.map((g) => <option key={g} value={g}>{GRADE_LABEL[g]}</option>)}</SelectInput></Field>
+                  <Field label={bi("Potongan", "Cut")}><TextInput value={form.cut_type} placeholder={guessCutType(form.name)} onChange={(e) => setForm({ ...form, cut_type: e.target.value })} /></Field>
+                  <Field label={bi("Berat rata-rata", "Average weight")} hint={bi("Misalnya 8KG atau 250GR", "For example 8KG or 250GR")}><TextInput value={form.avg_weight_text} onChange={(e) => setForm({ ...form, avg_weight_text: e.target.value })} /></Field>
+                  {editing ? <div className="sm:col-span-2"><Button variant="outline" type="button" onClick={() => pickPhoto(editing.id)} disabled={uploadingId === editing.id}><Upload />{uploadingId === editing.id ? bi("Mengunggah…", "Uploading…") : bi("Unggah foto produk", "Upload product photo")}</Button></div> : <p className="text-sm text-ash sm:col-span-2">{bi("Setelah produk disimpan, foto dapat diunggah dari layar edit.", "After saving, upload a photo from the edit screen.")}</p>}
+                </div> : null}
+                {step === 1 ? <div className="grid gap-5 sm:grid-cols-2">
+                  <Field label={bi("Harga dasar / kg (Rp)", "Base price / kg (Rp)")} required><TextInput type="number" min="0" value={form.sale_price_idr} onChange={(e) => setForm({ ...form, sale_price_idr: e.target.value })} /></Field>
+                  <Field label={bi("Stok tersedia (kg)", "Available stock (kg)")} required><TextInput type="number" min="0" step="0.01" value={form.qty_on_hand_kg} onChange={(e) => setForm({ ...form, qty_on_hand_kg: e.target.value })} /></Field>
+                  <Field label={bi("Markup / kg (Rp)", "Markup / kg (Rp)")} hint={bi("Kosong = otomatis sesuai jenis produk", "Blank = automatic by product type")}><TextInput type="number" min="0" placeholder={String(defaultMarkup(form.name, form.brand))} value={form.markup_idr} onChange={(e) => setForm({ ...form, markup_idr: e.target.value })} /></Field>
+                  <Field label={bi("Harga ritel khusus / kg (Rp)", "Special retail price / kg (Rp)")}><TextInput type="number" min="0" value={form.retail_price_idr} onChange={(e) => setForm({ ...form, retail_price_idr: e.target.value })} /></Field>
+                  <Field label={bi("Kemasan ritel", "Retail pack")}><TextInput value={form.retail_pack_text} onChange={(e) => setForm({ ...form, retail_pack_text: e.target.value })} /></Field>
+                  <div className="border-t border-line pt-5 sm:col-span-2"><p className="eyebrow text-ash">{bi("Perkiraan harga tampil / kg", "Preview customer price / kg")}</p><p className="mt-2 font-display text-3xl text-crimson">{formatIdr(publicPrice(form.sale_price_idr, form.markup_idr === "" ? defaultMarkup(form.name, form.brand) : form.markup_idr))}</p><div className="mt-3 grid grid-cols-2 gap-2 text-sm text-ash">{SALE_UNITS.map((u) => <p key={u}>{bi(UNIT_LABEL[u].id, UNIT_LABEL[u].en)}: {formatIdr(unitPrice(form.sale_price_idr, form.markup_idr === "" ? defaultMarkup(form.name, form.brand) : form.markup_idr, u === "RETAIL" ? "retail" : u === "LOAF" ? "loaf" : u === "CTN" ? "carton" : "ton", margins))}</p>)}</div></div>
+                </div> : null}
+                {step === 2 ? <div><h3 className="font-display text-xl text-ink">{bi("Kanal penjualan", "Sale channels")}</h3><div className="mt-5 grid gap-3 sm:grid-cols-2">{SALE_UNITS.map((u) => <label key={u} className="flex items-center gap-3 border border-line bg-card p-4 text-sm text-ink"><input type="checkbox" checked={form.channels.includes(u)} onChange={(e) => setForm((f) => ({ ...f, channels: e.target.checked ? [...f.channels, u] : f.channels.filter((c) => c !== u) }))} />{bi(UNIT_LABEL[u].id, UNIT_LABEL[u].en)}</label>)}</div><p className="mt-4 text-sm text-ash">{bi("Pilih minimal satu kanal.", "Select at least one channel.")}</p></div> : null}
+                {step === 3 ? <div className="space-y-5 text-sm text-ink"><h3 className="font-display text-xl">{bi("Tinjau sebelum menyimpan", "Review before saving")}</h3><div className="grid grid-cols-2 gap-4 border-y border-line py-5"><span>{bi("Produk", "Product")}</span><strong className="break-words text-right">{form.name || "—"}</strong><span>{bi("Merek", "Brand")}</span><strong className="text-right">{form.brand || "—"}</strong><span>{bi("Stok", "Stock")}</span><strong className="text-right">{form.qty_on_hand_kg || "0"} kg</strong><span>{bi("Harga pelanggan / kg", "Customer price / kg")}</span><strong className="text-right">{formatIdr(publicPrice(form.sale_price_idr, form.markup_idr === "" ? defaultMarkup(form.name, form.brand) : form.markup_idr))}</strong><span>{bi("Kanal", "Channels")}</span><strong className="text-right">{form.channels.join(", ") || "—"}</strong></div></div> : null}
+              </div>
+              <div className="flex items-center justify-between gap-3 border-t border-line bg-card px-5 py-5 sm:px-8"><Button type="button" variant="outline" disabled={step === 0 || pending} onClick={() => setStep(step - 1)}>{bi("Kembali", "Back")}</Button><Button type="submit" disabled={pending}>{pending ? bi("Menyimpan…", "Saving…") : step === 3 ? bi("Simpan produk", "Save product") : bi("Lanjut", "Continue")}</Button></div>
+            </form>
+          </section>
+        </div>
       ) : null}
 
-      {isLoading ? (
-        <p className="text-sm text-ash">{bi("Memuat inventaris…", "Loading inventory…")}</p>
-      ) : rows.length === 0 ? (
-        <Panel className="p-10 text-center text-sm text-ash">{bi("Tidak ada inventaris yang cocok dengan filter ini.", "No inventory matches these filters.")}</Panel>
-      ) : (
-        <Panel className="overflow-x-auto">
-          <table className="w-full min-w-[1720px] text-left text-sm">
-            <thead className="border-b border-line text-xs uppercase tracking-[0.16em] text-ash">
-              <tr>
-                <th className="px-4 py-3">{bi("Produk", "Product")}</th>
-                <th className="px-4 py-3">{bi("Asal", "Origin")}</th>
-                <th className="px-4 py-3">{bi("Merek", "Brand")}</th>
-                <th className="px-4 py-3">{bi("Kondisi", "Cond.")}</th>
-                <th className="px-4 py-3">{bi("Kategori", "Category")}</th>
-                <th className="px-4 py-3">{bi("Grade", "Grade")}</th>
-                <th className="px-4 py-3">{bi("Cut", "Cut")}</th>
-                <th className="px-4 py-3">{bi("Kanal", "Channels")}</th>
-                <th className="px-4 py-3">{bi("Berat rata-rata", "Avg wt")}</th>
-                <th className="px-4 py-3">{bi("Harga / kg", "Price / kg")}</th>
-                <th className="px-4 py-3">{bi("Markup / kg", "Markup / kg")}</th>
-                <th className="px-4 py-3">{bi("Harga publik", "Public price")}</th>
-                <th className="px-4 py-3">{bi("Promo / kg", "Promo / kg")}</th>
-                <th className="px-4 py-3">{bi("Promo sampai", "Promo until")}</th>
-                <th className="px-4 py-3">{bi("Jumlah (kg)", "Qty (kg)")}</th>
-                <th className="px-4 py-3">{bi("Status", "Status")}</th>
-                <th className="px-4 py-3">{bi("Beranda", "Homepage")}</th>
-
-                <th className="px-4 py-3" />
-              </tr>
-
-
-            </thead>
-            <tbody>
-              {rows.map((item) => (
-                <tr key={item.id} className="border-b border-line/60 last:border-0">
-                  <td className="px-4 py-3 text-ink">
-                    {item.name}
-                    {!item.is_active ? <span className="ml-2 text-xs text-ash">{bi("(disembunyikan)", "(hidden)")}</span> : null}
-                  </td>
-                  <td className="px-4 py-3 text-ash">{item.origin}</td>
-                  <td className="px-4 py-3 text-xs text-ash">{item.brand || "—"}</td>
-                  <td className="px-4 py-3 text-xs text-ash">
-                    {item.condition ? CONDITION_LABEL[item.condition] ?? item.condition : "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <select
-                      className="border border-line bg-transparent px-2 py-1 text-xs text-ink"
-                      value={item.category}
-                      onChange={(e) =>
-                        void patch(item.id, { category: e.target.value as ProductCategory })
-                      }
-                    >
-                      {CATEGORIES.map((c) => (
-                        <option key={c.value} value={c.value}>
-                          {c.label}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="px-4 py-3">
-                    <select
-                      className="border border-line bg-transparent px-2 py-1 text-xs text-ink"
-                      aria-label={`Grade for ${item.name}`}
-                      value={item.grade_band}
-                      onChange={(e) =>
-                        void patch(item.id, { grade_band: e.target.value as GradeBandValue })
-                      }
-                    >
-                      {GRADE_BAND_VALUES.map((g) => (
-                        <option key={g} value={g}>
-                          {GRADE_LABEL[g]}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="px-4 py-3">
-                    <input
-                      defaultValue={item.cut_type ?? ""}
-                      aria-label={`Cut for ${item.name}`}
-                      onBlur={(e) => {
-                        const v = e.target.value.trim();
-                        if (v !== (item.cut_type ?? "")) void patch(item.id, { cut_type: v || null });
-                      }}
-                      className="w-36 border border-line bg-bone px-2 py-1 text-xs text-ink outline-none focus:border-crimson"
-                    />
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-1" aria-label={`Kanal penjualan untuk ${item.name}`}>
-                      {SALE_UNITS.map((u) => {
-                        const channels =
-                          item.sale_channels && item.sale_channels.length > 0
-                            ? item.sale_channels
-                            : DEFAULT_SALE_CHANNELS;
-                        const active = channels.includes(u);
-                        return (
-                          <button
-                            key={u}
-                            type="button"
-                            title={UNIT_LABEL[u].id}
-                            aria-pressed={active}
-                            onClick={() => {
-                              const next = active
-                                ? channels.filter((c) => c !== u)
-                                : [...channels, u];
-                              if (next.length > 0) void patch(item.id, { sale_channels: next });
-                              else toast.error(bi("Minimal satu kanal harus aktif.", "At least one channel must stay active."));
-                            }}
-                            className={`border px-1.5 py-0.5 text-[10px] font-medium ${
-                              active
-                                ? "border-crimson bg-crimson/10 text-crimson"
-                                : "border-line text-ash/50 hover:border-ink/40"
-                            }`}
-                          >
-                            {u === "RETAIL" ? "R" : u === "LOAF" ? "L" : u === "CTN" ? "C" : "T"}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-ash">{item.avg_weight_text ?? "—"}</td>
-                  <td className="px-4 py-3">
-                    <input
-                      type="number"
-                      min={0}
-                      step="1000"
-                      defaultValue={Number(item.sale_price_idr)}
-                      aria-label={`Price for ${item.name}`}
-                      onBlur={(e) => {
-                        const v = Number(e.target.value);
-                        if (Number.isFinite(v) && v !== Number(item.sale_price_idr)) {
-                          void patch(item.id, { sale_price_idr: v });
-                        }
-                      }}
-                      className="w-32 border border-line bg-bone px-2 py-1 text-sm text-ink outline-none focus:border-crimson"
-                    />
-                  </td>
-                  <td className="px-4 py-3">
-                    <input
-                      type="number"
-                      min={0}
-                      step="1000"
-                      defaultValue={Number(item.markup_idr ?? 0)}
-                      aria-label={`Markup for ${item.name}`}
-                      onBlur={(e) => {
-                        const v = Number(e.target.value);
-                        if (Number.isFinite(v) && v !== Number(item.markup_idr ?? 0)) {
-                          void patch(item.id, { markup_idr: v });
-                        }
-                      }}
-                      className="w-28 border border-line bg-bone px-2 py-1 text-sm text-ink outline-none focus:border-crimson"
-                    />
-                  </td>
-                  <td className="px-4 py-3 text-xs text-crimson">
-                    {formatIdr(publicPrice(item.sale_price_idr, item.markup_idr))}
-                    <span className="mt-1 block text-[10px] leading-tight text-ash">
-                      R {formatIdr(unitPrice(item.sale_price_idr, item.markup_idr, "retail", margins))}
-                      {" · "}L {formatIdr(unitPrice(item.sale_price_idr, item.markup_idr, "loaf", margins))}
-                      <br />C {formatIdr(unitPrice(item.sale_price_idr, item.markup_idr, "carton", margins))}
-                      {" · "}T {formatIdr(unitPrice(item.sale_price_idr, item.markup_idr, "ton", margins))}
-                    </span>
-                  </td>
-
-                  <td className="px-4 py-3">
-                    <input
-                      type="number"
-                      min={0}
-                      step="1000"
-                      placeholder="—"
-                      defaultValue={item.promo_price_idr ?? ""}
-                      aria-label={`Promo price for ${item.name}`}
-                      onBlur={(e) => {
-                        const raw = e.target.value.trim();
-                        const v = raw === "" ? null : Number(raw);
-                        if (v !== null && !Number.isFinite(v)) return;
-                        if (Number(v ?? -1) !== Number(item.promo_price_idr ?? -1)) {
-                          void patch(item.id, { promo_price_idr: v });
-                        }
-                      }}
-                      className="w-32 border border-line bg-bone px-2 py-1 text-sm text-ink outline-none focus:border-crimson"
-                    />
-                  </td>
-                  <td className="px-4 py-3">
-                    <input
-                      type="date"
-                      defaultValue={item.promo_until ?? ""}
-                      aria-label={`Promo end date for ${item.name}`}
-                      onBlur={(e) => {
-                        const v = e.target.value || null;
-                        if (v !== (item.promo_until ?? null)) {
-                          void patch(item.id, { promo_until: v });
-                        }
-                      }}
-                      className="w-36 border border-line bg-bone px-2 py-1 text-sm text-ink outline-none focus:border-crimson"
-                    />
-                  </td>
-                  <td className="px-4 py-3">
-                    <input
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      defaultValue={Number(item.qty_on_hand_kg)}
-                      aria-label={`Quantity for ${item.name}`}
-                      onBlur={(e) => {
-                        const v = Number(e.target.value);
-                        if (Number.isFinite(v) && v !== Number(item.qty_on_hand_kg)) {
-                          void patch(item.id, { qty_on_hand_kg: v });
-                        }
-                      }}
-                      className="w-28 border border-line bg-bone px-2 py-1 text-sm text-ink outline-none focus:border-crimson"
-                    />
-                  </td>
-                  <td className="px-4 py-3">
-                    {Number(item.qty_on_hand_kg) <= threshold ? (
-                      <span className="eyebrow inline-block bg-crimson/10 px-2 py-1 text-crimson">
-                        {bi("Restok", "Restock")}
-                      </span>
-                    ) : (
-                      <span className="eyebrow inline-block bg-ink/5 px-2 py-1 text-ash">{bi("Tersedia", "In stock")}</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <select
-                        value={item.featured_rank ?? ""}
-                        aria-label={`Featured position for ${item.name}`}
-                        onChange={(e) =>
-                          void setFeatured(item, e.target.value ? Number(e.target.value) : null)
-                        }
-                        className="border border-line bg-bone px-2 py-1 text-xs text-ink outline-none focus:border-crimson"
-                      >
-                        <option value="">{bi("Tidak unggulan", "Not featured")}</option>
-                        {FEATURED_RANKS.map((r) => (
-                          <option key={r} value={r}>
-                            {bi(`Top ${r}`, `Top ${r}`)}
-                          </option>
-                        ))}
-                      </select>
-                      {item.featured_rank ? (
-                        <select
-                          value={item.image_url ?? FEATURE_IMAGES[0].key}
-                          aria-label={`Photo for ${item.name}`}
-                          onChange={(e) => void patch(item.id, { image_url: e.target.value })}
-                          className="border border-line bg-bone px-2 py-1 text-xs text-ink outline-none focus:border-crimson"
-                        >
-                          {item.image_url && !FEATURE_IMAGES.some((img) => img.key === item.image_url) ? (
-                            <option value={item.image_url}>{bi("Foto kustom", "Custom photo")}</option>
-                          ) : null}
-                          {FEATURE_IMAGES.map((img) => (
-                            <option key={img.key} value={img.key}>
-                              {img.label}
-                            </option>
-                          ))}
-                        </select>
-                      ) : null}
-                      <button
-                        type="button"
-                        disabled={uploadingId === item.id}
-                        onClick={() => pickPhoto(item.id)}
-                        className="text-xs text-ash underline underline-offset-4 disabled:opacity-40"
-                      >
-                        {uploadingId === item.id
-                          ? bi("Mengunggah…", "Uploading…")
-                          : bi("Ganti foto", "Change photo")}
-                      </button>
-                    </div>
-                  </td>
-
-                  <td className="whitespace-nowrap px-4 py-3 text-right">
-
-                    <button
-                      type="button"
-                      onClick={() => void patch(item.id, { is_active: !item.is_active })}
-                      className="text-xs text-ash underline underline-offset-4"
-                    >
-                      {item.is_active ? bi("Sembunyikan", "Hide") : bi("Tampilkan", "Show")}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => void remove(item)}
-                      className="ml-3 text-xs text-crimson underline underline-offset-4"
-                    >
-                      {bi("Hapus", "Delete")}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </Panel>
+      {isLoading ? <p className="text-sm text-ash">{bi("Memuat inventaris…", "Loading inventory…")}</p> : rows.length === 0 ? <p className="border-t border-line py-12 text-center text-sm text-ash">{bi("Tidak ada produk yang cocok.", "No matching products.")}</p> : (
+        <div className="border-y border-line bg-card">
+          <div className="hidden grid-cols-[minmax(0,1fr)_110px_150px_100px_90px] gap-4 border-b border-line px-4 py-3 text-xs uppercase text-ash md:grid"><span>{bi("Produk", "Product")}</span><span>{bi("Stok", "Stock")}</span><span>{bi("Harga / kg", "Price / kg")}</span><span>Status</span><span></span></div>
+          {rows.map((item) => <div key={item.id} className="flex flex-wrap items-center gap-4 border-b border-line px-4 py-4 last:border-0 md:grid md:grid-cols-[minmax(0,1fr)_110px_150px_100px_90px]">
+            <div className="flex min-w-0 flex-[1_1_220px] items-center gap-3"><img className="h-14 w-14 shrink-0 object-cover" src={resolveProductImage(item.image_url, item.name, item.category, item.grade_band, item.cut_type, item.id)} alt="" /><div className="min-w-0"><p className="break-words font-medium text-ink">{item.name}</p><p className="text-xs text-ash">{item.brand || "—"} · {item.origin}</p></div></div>
+            <p className="min-w-[80px] text-sm text-ink md:min-w-0">{Number(item.qty_on_hand_kg).toLocaleString("id-ID")} kg</p><p className="min-w-[110px] text-sm font-semibold text-ink md:min-w-0">{formatIdr(publicPrice(item.sale_price_idr, item.markup_idr))}</p><span className={`text-xs ${item.is_active ? "text-ink" : "text-ash"}`}>{item.is_active ? bi("Aktif", "Active") : bi("Arsip", "Archived")}</span>
+            <Button variant="outline" size="sm" onClick={() => openEditor(item)} aria-label={`${bi("Edit", "Edit")} ${item.name}`}><Pencil />{bi("Edit", "Edit")}</Button>
+          </div>)}
+        </div>
       )}
 
       {total > 0 ? (
