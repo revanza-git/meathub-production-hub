@@ -21,6 +21,7 @@ export async function reconcileMidtransPayment(
   const { data, error } = await supabaseAdmin.from("storefront_orders")
     .update({ status: "PAID", paid_at: new Date().toISOString() })
     .eq("id", order.id).eq("payment_trx_id", transaction.transaction_id)
+    .eq("payment_ref", order.payment_ref ?? "")
     .is("paid_at", null).in("status", ["NEW", "AWAITING_PAYMENT"])
     .select("id").maybeSingle();
   if (error) throw error;

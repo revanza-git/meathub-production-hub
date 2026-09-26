@@ -33,6 +33,11 @@ export const Route = createFileRoute("/api/public/midtrans-callback")({
           const { reconcileMidtransPayment, reconcileMidtransClosure } = await import("@/lib/meatlink/payment-status.server");
           const paid = await reconcileMidtransPayment(order, verified);
           if (!paid) await reconcileMidtransClosure(order, verified);
+           try {
+             const { checkReconciliation } = await import("@/lib/meatlink/reconciliation.server");
+             // Snapshot is supplementary; never retry a completed status update because the report failed.
+             await checkReconciliation(supabaseAdmin, order);
+           } catch (snapshotError) { console.error("[midtrans] reconciliation snapshot failed", snapshotError); }
           return new Response("ok");
         } catch (err) {
           console.error("[midtrans] callback failed", err);
