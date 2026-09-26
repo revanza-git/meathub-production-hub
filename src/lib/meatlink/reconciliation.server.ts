@@ -54,7 +54,8 @@ export async function checkReconciliation(db: Admin, order: Order) {
   if (updated.payment_ref !== order.payment_ref || updated.payment_trx_id !== order.payment_trx_id) return null;
   const verdict = transaction ? classify(updated, transaction) : { result: "FAILED" as Result, reason: failure };
   const { error: saveError } = await db.from("ml_payment_reconciliations").upsert({
-    order_id: order.id, payment_ref: order.payment_ref, transaction_id: transaction?.transaction_id ?? order.payment_trx_id ?? null,
+    order_id: order.id, payment_ref: attempt.environment === "production" ? `Midtrans Live ${attempt.orderId}` : `Midtrans ${attempt.orderId}`,
+    transaction_id: transaction?.transaction_id ?? order.payment_trx_id ?? null,
     gateway_status: transaction?.transaction_status ?? null,
     gateway_amount: transaction && Number.isFinite(Number(transaction.gross_amount)) ? Number(transaction.gross_amount) : null,
     order_amount: Number(updated.total_idr), order_status: updated.status,
