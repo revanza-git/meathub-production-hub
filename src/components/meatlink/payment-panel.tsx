@@ -103,8 +103,8 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
       {paymentError ? (
         <p role="alert" className="mt-4 text-sm text-crimson">
           {method === "QRIS"
-            ? bi("Kode QR belum tersedia. Jangan bayar pesanan ini sebelum kode QR muncul. Coba lagi nanti atau hubungi tim kami.", "The QR code is not available yet. Do not pay for this order until a QR code appears. Try again later or contact our team.")
-            : bi("Nomor pembayaran belum tersedia. Jangan transfer sebelum nomor muncul. Coba lagi nanti atau hubungi tim kami.", "A payment number is not available yet. Do not transfer until a number appears. Try again later or contact our team.")}
+            ? bi("Kode QR belum tersedia. Coba lagi nanti atau hubungi tim kami.", "The QR code is not available yet. Try again later or contact our team.")
+            : bi("Nomor pembayaran belum tersedia. Coba lagi nanti atau hubungi tim kami.", "A payment number is not available yet. Try again later or contact our team.")}
         </p>
       ) : null}
 

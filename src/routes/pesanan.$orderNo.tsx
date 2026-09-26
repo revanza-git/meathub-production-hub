@@ -157,8 +157,8 @@ function OrderPage() {
                       )
                     : data.payment_method === "QRIS"
                       ? bi(
-                          "Tampilkan kode QRIS di atas sebelum membayar. Jika kode belum muncul, jangan lakukan pembayaran dan hubungi tim kami. Status pesanan diperbarui setelah pembayaran terverifikasi.",
-                          "Show the QRIS code above before paying. If no code appears, do not pay and contact our team. The order status updates after payment is verified.",
+                          "Tampilkan kode QRIS di atas. Jika kode belum tersedia, hubungi tim kami. Status pesanan diperbarui setelah pembayaran terverifikasi.",
+                          "Show the QRIS code above. If the code is not available, contact our team. The order status updates after payment is verified.",
                         )
                       : data.payment_method === "CBD"
                         ? bi(
