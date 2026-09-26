@@ -213,7 +213,7 @@ function OrderPage() {
               ))}
             </ul>
             <div className="mt-6 flex items-baseline justify-between">
-              <span className="eyebrow text-ash">{bi("Total", "Total")}</span>
+              <span className="eyebrow text-ash">{data.payment_method === "TERMS_REQUEST" ? bi("Nilai indikatif", "Indicative value") : bi("Total", "Total")}</span>
               <span className="font-display text-3xl text-ink">{fmt.money(data.total_idr)}</span>
             </div>
 

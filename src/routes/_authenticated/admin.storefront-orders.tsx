@@ -430,7 +430,7 @@ function OrdersTable() {
                         onChange={(e) => updateStatus(o.id, e.target.value as StoreStatus)}
                         className={`${inputClass} mt-1.5`}
                       >
-                        {STATUSES.map((s) => (
+                        {STATUSES.filter((s) => o.payment_method !== "TERMS_REQUEST" || s === "NEW" || s === "CANCELLED").map((s) => (
                           <option key={s} value={s}>
                             {label(ORDER_STATUS_LABEL_I18N, s)}
                           </option>

@@ -390,7 +390,7 @@ function CartPage() {
                     <span className="text-crimson">-{fmt.money(applied.discount)}</span>
                   </div>
                   <div className="mt-3 flex items-baseline justify-between border-t border-line pt-3">
-                    <span className="text-sm text-ash">{bi("Total", "Total")}</span>
+                    <span className="text-sm text-ash">{method === "TERMS_REQUEST" ? bi("Nilai indikatif", "Indicative value") : bi("Total", "Total")}</span>
                     <span className="font-display text-2xl text-ink">
                       {fmt.money(Math.max(subtotal - applied.discount, 0))}
                     </span>
@@ -446,7 +446,7 @@ function CartPage() {
                         className="mt-1"
                       />
                       <span>
-                        <span className="block text-ink">{label(PAY_METHOD_LABEL_I18N, m.value)}</span>
+                         <span className="block text-ink">{m.value === "TERMS_REQUEST" ? bi("Ajukan termin via WhatsApp", "Request payment terms via WhatsApp") : label(PAY_METHOD_LABEL_I18N, m.value)}</span>
                         <span className="mt-1 block text-xs text-ash">
                           {bi(m.hint, PAY_METHOD_HINT_EN[m.value] ?? m.hint)}
                         </span>
