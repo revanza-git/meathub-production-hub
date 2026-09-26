@@ -143,7 +143,7 @@ function OrderPage() {
                       "We have received your payment. Our team is processing and scheduling delivery of your order.",
                     )
                   : data.status === "CANCELLED"
-                    ? bi("Masa pembayaran telah berakhir. Jika Anda sudah membayar, hubungi tim kami agar transaksi dapat diperiksa.", "The payment window has ended. If you have paid, contact our team so we can review the transaction.")
+                    ? bi("Pembayaran dibatalkan atau kedaluwarsa. Jika Anda sudah membayar, hubungi tim kami agar transaksi dapat diperiksa.", "Payment was cancelled or expired. If you have paid, contact our team so we can review the transaction.")
                   : data.payment_method === "BANK_TRANSFER"
                     ? bi(
                         "Transfer ke nomor Virtual Account di atas. Status pesanan otomatis diperbarui setelah pembayaran diterima.",

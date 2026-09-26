@@ -30,8 +30,9 @@ export const Route = createFileRoute("/api/public/midtrans-callback")({
             .eq("payment_ref", `Midtrans ${payload.order_id}`).maybeSingle();
           if (error) throw error;
           if (!order) return new Response("order not ready", { status: 503 });
-          const { reconcileMidtransPayment } = await import("@/lib/meatlink/payment-status.server");
-          await reconcileMidtransPayment(order, verified);
+          const { reconcileMidtransPayment, reconcileMidtransClosure } = await import("@/lib/meatlink/payment-status.server");
+          const paid = await reconcileMidtransPayment(order, verified);
+          if (!paid) await reconcileMidtransClosure(order, verified);
           return new Response("ok");
         } catch (err) {
           console.error("[midtrans] callback failed", err);
