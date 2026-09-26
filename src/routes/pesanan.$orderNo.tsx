@@ -108,7 +108,7 @@ function OrderPage() {
         ) : (
           <>
             <p className="eyebrow inline-flex items-center gap-2 text-crimson">
-              <CheckCircle2 className="h-4 w-4" /> {bi("Pesanan diterima", "Order received")}
+              {data.status === "CANCELLED" ? bi("Pesanan dibatalkan", "Order cancelled") : <><CheckCircle2 className="h-4 w-4" /> {bi("Pesanan diterima", "Order received")}</>}
             </p>
             <h1 className="mt-4 font-display text-4xl text-ink">{data.order_no}</h1>
             <p className="mt-3 text-sm text-ash">
@@ -142,6 +142,8 @@ function OrderPage() {
                       "Pembayaran sudah kami terima. Tim kami memproses dan menjadwalkan pengiriman pesanan Anda.",
                       "We have received your payment. Our team is processing and scheduling delivery of your order.",
                     )
+                  : data.status === "CANCELLED"
+                    ? bi("Masa pembayaran telah berakhir. Jika Anda sudah membayar, hubungi tim kami agar transaksi dapat diperiksa.", "The payment window has ended. If you have paid, contact our team so we can review the transaction.")
                   : data.payment_method === "BANK_TRANSFER"
                     ? bi(
                         "Transfer ke nomor Virtual Account di atas. Status pesanan otomatis diperbarui setelah pembayaran diterima.",
@@ -162,7 +164,7 @@ function OrderPage() {
                             "Our team will contact you via WhatsApp to finalize the order and payment.",
                           )}
               </p>
-              {!data.paid_at && (data.payment_method === "BANK_TRANSFER" || data.payment_method === "QRIS") ? (
+              {!data.paid_at && data.status !== "CANCELLED" && (data.payment_method === "BANK_TRANSFER" || data.payment_method === "QRIS") ? (
                 <p className="mt-3 text-xs text-ash">{bi("Pembayaran sedang diuji dalam mode sandbox Midtrans. Jangan transfer uang sungguhan.", "Payments are being tested in Midtrans sandbox. Do not transfer real money.")}</p>
               ) : null}
               <a
@@ -180,7 +182,7 @@ function OrderPage() {
               </a>
             </div>
 
-            {!data.paid_at ? <PaymentProofUpload orderNo={data.order_no} token={t} /> : null}
+            {!data.paid_at && data.status !== "CANCELLED" ? <PaymentProofUpload orderNo={data.order_no} token={t} /> : null}
 
             <DeliveryPanel
               orderNo={data.order_no}

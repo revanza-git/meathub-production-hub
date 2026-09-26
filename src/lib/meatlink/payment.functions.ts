@@ -48,6 +48,11 @@ export const createOrderPayment = createServerFn({ method: "POST" })
       throw new Error("Pesanan ini tidak menunggu pembayaran.");
     }
 
+    if (order.payment_ref?.startsWith("Midtrans ") && order.payment_expires_at &&
+        new Date(order.payment_expires_at).getTime() <= Date.now()) {
+      throw new Error("Instruksi pembayaran telah berakhir. Tunggu verifikasi status pesanan atau hubungi tim kami.");
+    }
+
     const stillValid =
       order.payment_ref?.startsWith("Midtrans ") && (order.payment_va || order.payment_qr_url) &&
       (!order.payment_expires_at || new Date(order.payment_expires_at).getTime() > Date.now()) &&
@@ -125,10 +130,10 @@ export const checkOrderPayment = createServerFn({ method: "POST" })
       .select("id, order_no, status, total_idr, paid_at, payment_trx_id, payment_ref")
       .eq("order_no", data.orderNo).eq("access_token", data.token).maybeSingle();
     if (!order) throw new Error("Pesanan tidak ditemukan.");
-    if (order.paid_at || !order.payment_ref?.startsWith("Midtrans ")) return { paid: Boolean(order.paid_at) };
+    if (order.paid_at || !order.payment_ref?.startsWith("Midtrans ")) return { paid: Boolean(order.paid_at), closed: order.status === "CANCELLED" };
     const { getMidtransStatus } = await import("./midtrans.server");
     const { reconcileMidtransPayment } = await import("./payment-status.server");
     const transaction = await getMidtransStatus(order.payment_ref.slice(9));
     const changed = await reconcileMidtransPayment(order, transaction);
-    return { paid: changed || Boolean(order.paid_at) };
+    return { paid: changed || Boolean(order.paid_at), closed: false };
   });
