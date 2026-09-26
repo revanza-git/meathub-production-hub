@@ -146,6 +146,8 @@ function OrderPage() {
                     )
                   : data.status === "CANCELLED"
                     ? bi("Pembayaran dibatalkan atau kedaluwarsa. Jika Anda sudah membayar, hubungi tim kami agar transaksi dapat diperiksa.", "Payment was cancelled or expired. If you have paid, contact our team so we can review the transaction.")
+                  : data.payment_environment === "sandbox" && (data.payment_method === "BANK_TRANSFER" || data.payment_method === "QRIS")
+                    ? bi("Instruksi uji lama tidak berlaku untuk pembayaran nyata. Hubungi tim kami untuk membuat pesanan baru.", "Old test instructions cannot be used for real payment. Contact us to place a new order.")
                   : data.payment_method === "TERMS_REQUEST"
                     ? bi("Pesanan Anda tercatat sebagai pengajuan termin, bukan persetujuan kredit. Hubungi tim kami untuk membahas syarat pembayaran, harga akhir, dan pengiriman. Belum ada tagihan atau jatuh tempo.", "Your order is recorded as a payment terms request, not approved credit. Contact our team to discuss terms, final price and delivery. No invoice or due date has been issued.")
                   : data.payment_method === "BANK_TRANSFER"
