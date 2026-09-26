@@ -130,7 +130,11 @@ function CartPage() {
   const validation = formSchema.safeParse({ ...form, email: form.email.trim() });
   const fieldErrors = validation.success
     ? {} as Record<string, string>
-    : Object.fromEntries(validation.error.issues.map((issue) => [String(issue.path[0]), issue.message])) as Record<string, string>;
+    : validation.error.issues.reduce<Record<string, string>>((errors, issue) => {
+        const key = String(issue.path[0]);
+        if (!errors[key]) errors[key] = issue.message;
+        return errors;
+      }, {});
   const visibleError = (key: string) => (submitAttempted || touched.has(key)) ? fieldErrors[key] : undefined;
   const touch = (key: string) => setTouched((prev) => new Set(prev).add(key));
 
@@ -377,10 +381,10 @@ function CartPage() {
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                  <Input id="buyer_name" label={bi("Nama pemesan", "Buyer name")} required value={form.buyer_name} onChange={(v) => set("buyer_name", v)} onBlur={() => touch("buyer_name")} error={visibleError("buyer_name")} maxLength={120} />
-                <Input label={bi("Perusahaan", "Company")} value={form.company} onChange={(v) => set("company", v)} />
+                 <Input id="company" label={bi("Perusahaan", "Company")} value={form.company} onChange={(v) => set("company", v)} onBlur={() => touch("company")} error={visibleError("company")} maxLength={160} />
                  <Input id="phone" label={bi("Nomor WhatsApp", "WhatsApp number")} required type="tel" value={form.phone} onChange={(v) => set("phone", v)} onBlur={() => touch("phone")} error={visibleError("phone")} maxLength={40} />
                  <Input id="email" label={bi("Email", "Email")} type="email" value={form.email} onChange={(v) => set("email", v)} onBlur={() => touch("email")} error={visibleError("email")} maxLength={160} />
-                <Input label={bi("Kota", "City")} value={form.city} onChange={(v) => set("city", v)} />
+                 <Input id="city" label={bi("Kota", "City")} value={form.city} onChange={(v) => set("city", v)} onBlur={() => touch("city")} error={visibleError("city")} maxLength={120} />
                 <div className="sm:col-span-2">
                    <Input id="address" label={bi("Alamat pengiriman", "Shipping address")} required value={form.address} onChange={(v) => set("address", v)} onBlur={() => touch("address")} error={visibleError("address")} maxLength={500} />
                 </div>
@@ -393,8 +397,13 @@ function CartPage() {
                     rows={3}
                     value={form.notes}
                     onChange={(e) => set("notes", e.target.value)}
-                    className="mt-2 w-full border border-line bg-background px-4 py-3 text-sm text-ink outline-none focus:border-ink"
+                     onBlur={() => touch("notes")}
+                     maxLength={1000}
+                     aria-invalid={Boolean(visibleError("notes"))}
+                     aria-describedby={visibleError("notes") ? "notes-error" : undefined}
+                     className={`mt-2 w-full border bg-background px-4 py-3 text-sm text-ink outline-none focus:border-ink ${visibleError("notes") ? "border-crimson" : "border-line"}`}
                   />
+                   {visibleError("notes") ? <p id="notes-error" className="mt-1 text-xs text-crimson">{visibleError("notes")}</p> : null}
                 </div>
                 {signedIn ? (
                   <label className="flex items-center gap-3 text-sm text-ink sm:col-span-2">
@@ -450,12 +459,7 @@ function CartPage() {
                     placeholder="MEATLINK10"
                     className="w-full border border-line bg-background px-4 py-3 text-sm text-ink outline-none focus:border-ink"
                   />
-               {submitAttempted && !validation.success ? (
-                 <p role="alert" className="mt-6 text-sm text-crimson">
-                   {bi("Periksa kolom yang ditandai sebelum membuat pesanan.", "Check the marked fields before placing your order.")}
-                 </p>
-               ) : null}
-               <button
+                   <button
                     type="button"
                     onClick={() => void applyCoupon()}
                     disabled={checkingCoupon || !coupon.trim()}
@@ -495,6 +499,11 @@ function CartPage() {
                 </div>
               </fieldset>
 
+               {submitAttempted && !validation.success ? (
+                 <p role="alert" className="mt-6 text-sm text-crimson">
+                   {bi("Periksa kolom yang ditandai sebelum membuat pesanan.", "Check the marked fields before placing your order.")}
+                 </p>
+               ) : null}
               <button
                 type="submit"
                 disabled={pending}
