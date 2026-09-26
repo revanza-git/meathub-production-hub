@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
@@ -22,7 +23,11 @@ export const Route = createFileRoute("/_authenticated/admin/inventory/import")({
   component: InventoryImportPage,
   head: () => ({
     meta: [
-      { title: "Import inventory — Meatlink admin" },
+      { title: "Tambah dari Excel — Meatlink admin" },
+      { property: "og:title", content: "Tambah dari Excel — Meatlink admin" },
+      { property: "og:description", content: "Tambah produk baru ke inventori Meatlink dari Excel atau CSV." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       {
         name: "description",
         content: "Bulk upload the Meatlink house inventory from an Excel or CSV spreadsheet.",
@@ -53,16 +58,15 @@ function InventoryImportPage() {
   );
 }
 
-type Mode = "append" | "upsert" | "replace";
-type Status = "new" | "update" | "duplicate";
-type Row = { item: InventoryDraft; key: string; status: Status; existingId?: string };
+type Status = "new" | "existing" | "duplicate";
+type Row = { item: InventoryDraft; key: string; status: Status };
 
 function ImportBody() {
   const bi = useBi();
   const [rows, setRows] = useState<Row[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
   const [fileName, setFileName] = useState("");
-  const [mode, setMode] = useState<Mode>("upsert");
+  const [result, setResult] = useState("");
   const [defaultQty, setDefaultQty] = useState(String(DEFAULT_IMPORT_QTY_KG));
   const [pending, setPending] = useState(false);
 
@@ -75,9 +79,20 @@ function ImportBody() {
 
   async function onFile(file: File) {
     setFileName(file.name);
+    setRows([]);
+    setErrors([]);
+    setResult("");
+    if (!/\.(xlsx|xls|csv)$/i.test(file.name)) {
+      setErrors([bi("Gunakan file Excel atau CSV.", "Use an Excel or CSV file.")]);
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setErrors([bi("Ukuran file maksimal 10 MB.", "Maximum file size is 10 MB.")]);
+      return;
+    }
     const collected: string[] = [];
     let records: Record<string, unknown>[] = [];
-
+    try {
     if (file.name.toLowerCase().endsWith(".csv")) {
       records = csvToRecords(await file.text());
     } else {
@@ -90,6 +105,14 @@ function ImportBody() {
       }
       records = XLSX.utils.sheet_to_json<Record<string, unknown>>(book.Sheets[first]!, { defval: "" });
     }
+    } catch {
+      setErrors([bi("File tidak dapat dibaca. Coba simpan ulang sebagai .xlsx atau .csv.", "Could not read the file. Save it again as .xlsx or .csv.")]);
+      return;
+    }
+    if (records.length > 2000) {
+      setErrors([bi("Maksimal 2.000 baris per impor. Bagi file menjadi beberapa bagian.", "Maximum 2,000 rows per import. Split the file into smaller parts.")]);
+      return;
+    }
 
     const fallback = Number(defaultQty.replace(/[^\d.]/g, "")) || 0;
     const parsed: InventoryDraft[] = [];
@@ -100,7 +123,7 @@ function ImportBody() {
 
     // Existing catalogue keyed by brand + name so we never create a second slug/SKU.
     const existing = new Map<string, string>();
-    const { data, error } = await supabase.from("admin_inventory").select("id, brand, name");
+    const { data, error } = await supabase.from("admin_inventory").select("id, brand, name").limit(10000);
     if (error) {
       setErrors([error.message]);
       setRows([]);
@@ -113,22 +136,9 @@ function ImportBody() {
       const key = inventoryKey(item.brand, item.name);
       if (seen.has(key)) return { item, key, status: "duplicate" };
       seen.add(key);
-      const existingId = existing.get(key);
-      return existingId
-        ? { item, key, status: "update", existingId }
-        : { item, key, status: "new" };
+      return { item, key, status: existing.has(key) ? "existing" : "new" };
     });
 
-    mapped
-      .filter((r) => r.status === "duplicate")
-      .forEach((r) =>
-        collected.push(
-          bi(
-            `Duplikat dalam berkas dilewati: ${r.item.brand} — ${r.item.name}`,
-            `Duplicate row in file skipped: ${r.item.brand} — ${r.item.name}`,
-          ),
-        ),
-      );
 
     setRows(mapped);
     setErrors(collected);
@@ -143,52 +153,28 @@ function ImportBody() {
   }
 
   const news = rows.filter((r) => r.status === "new");
-  const updates = rows.filter((r) => r.status === "update");
+  const existingRows = rows.filter((r) => r.status === "existing");
   const dupes = rows.filter((r) => r.status === "duplicate");
-  const applied = mode === "append" ? news : mode === "upsert" ? [...news, ...updates] : [...news, ...updates];
-  const totalKg = applied.reduce((s, r) => s + r.item.qty_on_hand_kg, 0);
+  const totalKg = news.reduce((s, r) => s + r.item.qty_on_hand_kg, 0);
 
   async function commit() {
-    if (applied.length === 0) return;
+    if (news.length === 0 || errors.length > 0 || pending) return;
     setPending(true);
     try {
-      if (mode === "replace") {
-        const { error } = await supabase
-          .from("admin_inventory")
-          .delete()
-          .neq("id", "00000000-0000-0000-0000-000000000000");
-        if (error) throw error;
-      }
-
-      const inserts = mode === "replace" ? applied : news;
-      for (let i = 0; i < inserts.length; i += 200) {
-        const { error } = await supabase
-          .from("admin_inventory")
-          .insert(inserts.slice(i, i + 200).map((r) => r.item));
-        if (error) throw error;
-      }
-
-      if (mode === "upsert") {
-        for (const row of updates) {
-          const { error } = await supabase
-            .from("admin_inventory")
-            .update(row.item)
-            .eq("id", row.existingId!);
-          if (error) throw error;
-        }
-      }
-
-      toast.success(
-        bi(
-          `${inserts.length} item baru, ${mode === "upsert" ? updates.length : 0} diperbarui.`,
-          `${inserts.length} new item(s), ${mode === "upsert" ? updates.length : 0} updated.`,
-        ),
-      );
+      const { data, error } = await supabase.rpc("ml_import_inventory_append", {
+        _file_name: fileName,
+        _items: news.map((r) => r.item),
+        _skipped: existingRows.length + dupes.length,
+      });
+      if (error) throw error;
+      const message = bi(`${data ?? news.length} item ditambahkan, ${existingRows.length + dupes.length} dilewati.`, `${data ?? news.length} items added, ${existingRows.length + dupes.length} skipped.`);
+      setResult(message);
+      toast.success(message);
       setRows([]);
       setErrors([]);
       setFileName("");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : bi("Impor gagal.", "Import failed."));
+      toast.error(err instanceof Error ? err.message : bi("Impor gagal; tidak ada item yang disimpan.", "Import failed; no items were saved."));
     } finally {
       setPending(false);
     }
@@ -244,53 +230,11 @@ function ImportBody() {
         />
         {fileName ? <p className="mt-2 text-xs text-ash">{fileName}</p> : null}
 
-        <p className="eyebrow mt-8 text-ash">{bi("Langkah 4 — mode", "Step 4 — mode")}</p>
-        <div className="mt-3 grid gap-2 text-sm text-ink">
-          {(
-            [
-              [
-                "upsert",
-                bi("Tambah & perbarui", "Add & update"),
-                bi("Item baru ditambahkan, item yang sudah ada diperbarui (tanpa slug ganda).", "New items are added, existing items are updated (no duplicate slugs)."),
-              ],
-              [
-                "append",
-                bi("Hanya tambah item baru", "Only add new items"),
-                bi("Item yang sudah ada dilewati.", "Existing items are skipped."),
-              ],
-              [
-                "replace",
-                bi("Ganti semuanya", "Replace everything"),
-                bi("Menghapus semua inventaris saat ini terlebih dahulu.", "Deletes all current inventory first."),
-              ],
-            ] as [Mode, string, string][]
-          ).map(([value, label, hint]) => (
-            <label key={value} className="flex items-start gap-3">
-              <input
-                type="radio"
-                name="mode"
-                checked={mode === value}
-                onChange={() => setMode(value)}
-                className="mt-1"
-              />
-              <span>
-                {label}
-                <span className="block text-xs text-ash">{hint}</span>
-              </span>
-            </label>
-          ))}
-        </div>
-
-        <button
-          type="button"
-          disabled={pending || applied.length === 0}
-          onClick={() => void commit()}
-          className="eyebrow mt-6 w-full bg-crimson px-6 py-4 text-bone disabled:opacity-50"
-        >
-          {pending
-            ? bi("Mengimpor…", "Importing…")
-            : bi(`Simpan ${applied.length} perubahan`, `Save ${applied.length} change(s)`)}
-        </button>
+        <p className="mt-8 text-sm text-ash">{bi("Hanya produk baru yang ditambahkan. Produk yang sudah ada dan baris ganda tidak akan diubah atau dihapus. Simpan seluruh baris sekaligus atau tidak sama sekali.", "Only new products are added. Existing products and duplicates are never changed or deleted. All rows save together or none do.")}</p>
+        <Button type="button" disabled={pending || news.length === 0 || errors.length > 0} onClick={() => void commit()} className="mt-6 w-full">
+          {pending ? bi("Menyimpan…", "Saving…") : bi(`Tambah ${news.length} produk baru`, `Add ${news.length} new products`)}
+        </Button>
+        {result ? <p role="status" className="mt-3 text-sm text-ink">{result}</p> : null}
       </Panel>
 
       <div className="grid gap-5 lg:col-span-2">
@@ -300,8 +244,8 @@ function ImportBody() {
             <div className="mt-4 grid gap-4 sm:grid-cols-4">
               <Stat label={bi("Item baru", "New items")} value={String(news.length)} />
               <Stat
-                label={bi("Diperbarui", "Updated")}
-                value={mode === "append" ? "0" : String(updates.length)}
+                label={bi("Sudah ada — dilewati", "Existing — skipped")}
+                value={String(existingRows.length)}
               />
               <Stat label={bi("Duplikat dilewati", "Duplicates skipped")} value={String(dupes.length)} />
               <Stat label={bi("Total stok", "Total stock")} value={formatQty(totalKg)} />
@@ -318,7 +262,7 @@ function ImportBody() {
         {errors.length > 0 ? (
           <Panel className="border-crimson/40 p-5">
             <p className="eyebrow text-crimson">
-              {bi(`${errors.length} baris bermasalah dilewati`, `${errors.length} row issue(s) skipped`)}
+              {bi(`${errors.length} masalah harus diperbaiki sebelum menyimpan`, `${errors.length} issues must be fixed before saving`)}
             </p>
             <ul className="mt-3 grid gap-1 text-sm text-ash">
               {errors.slice(0, 20).map((e) => (
@@ -350,7 +294,7 @@ function ImportBody() {
                 {rows.slice(0, 50).map((r, i) => (
                   <tr key={`${r.key}-${i}`} className="border-b border-line/60 last:border-0">
                     <td className="px-4 py-3">
-                      <StatusTag status={r.status} mode={mode} />
+                      <StatusTag status={r.status} />
                     </td>
                     <td className="px-4 py-3 text-ink">{r.item.name}</td>
                     <td className="px-4 py-3 text-xs text-ash">{r.item.brand || "—"}</td>
@@ -394,14 +338,14 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function StatusTag({ status, mode }: { status: Status; mode: Mode }) {
+function StatusTag({ status }: { status: Status }) {
   const bi = useBi();
   if (status === "duplicate")
     return <span className="text-xs uppercase tracking-[0.14em] text-crimson">{bi("Duplikat", "Duplicate")}</span>;
-  if (status === "update")
+  if (status === "existing")
     return (
       <span className="text-xs uppercase tracking-[0.14em] text-ash">
-        {mode === "append" ? bi("Dilewati", "Skipped") : bi("Perbarui", "Update")}
+        {bi("Sudah ada — dilewati", "Existing — skipped")}
       </span>
     );
   return <span className="text-xs uppercase tracking-[0.14em] text-ink">{bi("Baru", "New")}</span>;

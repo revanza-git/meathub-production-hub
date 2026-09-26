@@ -1,0 +1,2 @@
+GRANT INSERT ON public.ml_inventory_imports TO authenticated;
+CREATE POLICY "Admins log imports" ON public.ml_inventory_imports FOR INSERT TO authenticated WITH CHECK (actor_user_id = auth.uid() AND public.ml_has_role(auth.uid(), 'admin'));
