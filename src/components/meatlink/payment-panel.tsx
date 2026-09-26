@@ -3,16 +3,15 @@ import { useServerFn } from "@tanstack/react-start";
 import { Copy, Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
-import { createOrderPayment, type PaymentInstruction } from "@/lib/meatlink/payment.functions";
+import { createOrderPayment, checkOrderPayment, type PaymentInstruction } from "@/lib/meatlink/payment.functions";
+import { Button } from "@/components/ui/button";
 import { useBi, useFormat } from "@/lib/i18n";
 
 const VA_BANKS: { value: string; label: string }[] = [
-  { value: "bag", label: "Bank Artha Graha" },
   { value: "bca", label: "BCA" },
   { value: "bni", label: "BNI" },
   { value: "bri", label: "BRI" },
   { value: "mandiri", label: "Mandiri" },
-  { value: "cimb", label: "CIMB Niaga" },
   { value: "permata", label: "Permata" },
 ];
 
@@ -34,7 +33,8 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
   const bi = useBi();
   const fmt = useFormat();
   const create = useServerFn(createOrderPayment);
-  const [bank, setBank] = useState(existing.channel || "bag");
+  const check = useServerFn(checkOrderPayment);
+  const [bank, setBank] = useState(existing.channel && existing.channel !== "qris" ? existing.channel : "bca");
   const [pending, setPending] = useState(false);
   const [info, setInfo] = useState<PaymentInstruction | null>(
     existing.va || existing.qrUrl
@@ -52,9 +52,13 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
   // Poll for payment confirmation while an instruction is on screen.
   useEffect(() => {
     if (!info) return;
-    const id = window.setInterval(onPaid, 15000);
+    const id = window.setInterval(() => {
+      void check({ data: { orderNo, token } }).then((result) => {
+        if (result.paid) onPaid();
+      }).catch(() => {});
+    }, 15000);
     return () => window.clearInterval(id);
-  }, [info, onPaid]);
+  }, [info, onPaid, orderNo, token, check]);
 
   async function generate() {
     setPending(true);
@@ -100,26 +104,26 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
               ))}
             </select>
           </label>
-          <button
+           <Button
             type="button"
             onClick={generate}
             disabled={pending}
-            className="eyebrow inline-flex items-center gap-2 bg-crimson px-5 py-3 text-bone hover:bg-crimson-deep disabled:opacity-60"
+             className="eyebrow h-auto rounded-none bg-crimson px-5 py-3 text-bone hover:bg-crimson-deep disabled:opacity-60"
           >
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
             {info?.va ? bi("Ganti bank / perbarui", "Change bank / refresh") : bi("Buat nomor VA", "Generate VA number")}
-          </button>
+           </Button>
         </div>
       ) : (
-        <button
+         <Button
           type="button"
           onClick={generate}
           disabled={pending}
-          className="eyebrow mt-5 inline-flex items-center gap-2 bg-crimson px-5 py-3 text-bone hover:bg-crimson-deep disabled:opacity-60"
+           className="eyebrow mt-5 h-auto rounded-none bg-crimson px-5 py-3 text-bone hover:bg-crimson-deep disabled:opacity-60"
         >
           {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
           {info?.qrUrl ? bi("Perbarui kode QRIS", "Refresh QRIS code") : bi("Tampilkan kode QRIS", "Show QRIS code")}
-        </button>
+         </Button>
       )}
 
       {info?.va ? (
@@ -129,8 +133,10 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
           </p>
           <div className="mt-2 flex items-center gap-3">
             <p className="font-display text-2xl text-ink">{info.va}</p>
-            <button
+             <Button
               type="button"
+              variant="ghost"
+              size="icon"
               aria-label={bi("Salin nomor VA", "Copy VA number")}
               onClick={() => {
                 void navigator.clipboard.writeText(info.va ?? "");
@@ -139,7 +145,7 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
               className="text-ash hover:text-crimson"
             >
               <Copy className="h-4 w-4" />
-            </button>
+             </Button>
           </div>
           {info.expiresAt ? (
             <p className="mt-2 text-xs text-ash">

@@ -162,6 +162,9 @@ function OrderPage() {
                             "Our team will contact you via WhatsApp to finalize the order and payment.",
                           )}
               </p>
+              {!data.paid_at && (data.payment_method === "BANK_TRANSFER" || data.payment_method === "QRIS") ? (
+                <p className="mt-3 text-xs text-ash">{bi("Pembayaran sedang diuji dalam mode sandbox Midtrans. Jangan transfer uang sungguhan.", "Payments are being tested in Midtrans sandbox. Do not transfer real money.")}</p>
+              ) : null}
               <a
                 href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
                   bi(
