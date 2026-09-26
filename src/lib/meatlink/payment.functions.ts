@@ -48,6 +48,11 @@ export const createOrderPayment = createServerFn({ method: "POST" })
       throw new Error("Pesanan ini tidak menunggu pembayaran.");
     }
 
+    if (order.payment_ref?.startsWith("Midtrans ") && order.payment_expires_at &&
+        new Date(order.payment_expires_at).getTime() <= Date.now()) {
+      throw new Error("Instruksi pembayaran telah berakhir. Tunggu verifikasi status pesanan atau hubungi tim kami.");
+    }
+
     const stillValid =
       order.payment_ref?.startsWith("Midtrans ") && (order.payment_va || order.payment_qr_url) &&
       (!order.payment_expires_at || new Date(order.payment_expires_at).getTime() > Date.now()) &&
