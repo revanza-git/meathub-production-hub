@@ -51,7 +51,6 @@ import { Route as AuthenticatedAppRfqRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedAppStockRouteImport } from './routes/_authenticated/app.stock'
 import { Route as AuthenticatedVendorCatalogRouteImport } from './routes/_authenticated/vendor.catalog'
 import { Route as AuthenticatedVendorImportRouteImport } from './routes/_authenticated/vendor.import'
-import { Route as ApiPublicIpaymuCallbackRouteImport } from './routes/api/public/ipaymu-callback'
 import { Route as ApiPublicMerchantFeedDotxmlRouteImport } from './routes/api/public/merchant-feed[.]xml'
 import { Route as ApiPublicMidtransCallbackRouteImport } from './routes/api/public/midtrans-callback'
 import { Route as ApiPublicOpsCronRouteImport } from './routes/api/public/ops-cron'
@@ -285,11 +284,6 @@ const AuthenticatedVendorImportRoute =
     path: '/vendor/import',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiPublicIpaymuCallbackRoute = ApiPublicIpaymuCallbackRouteImport.update({
-  id: '/api/public/ipaymu-callback',
-  path: '/api/public/ipaymu-callback',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicMerchantFeedDotxmlRoute =
   ApiPublicMerchantFeedDotxmlRouteImport.update({
     id: '/api/public/merchant-feed.xml',
@@ -404,7 +398,6 @@ export interface FileRoutesByFullPath {
   '/app/stock': typeof AuthenticatedAppStockRoute
   '/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
   '/vendor/import': typeof AuthenticatedVendorImportRoute
-  '/api/public/ipaymu-callback': typeof ApiPublicIpaymuCallbackRoute
   '/api/public/merchant-feed.xml': typeof ApiPublicMerchantFeedDotxmlRoute
   '/api/public/midtrans-callback': typeof ApiPublicMidtransCallbackRoute
   '/api/public/ops-cron': typeof ApiPublicOpsCronRoute
@@ -460,7 +453,6 @@ export interface FileRoutesByTo {
   '/app/stock': typeof AuthenticatedAppStockRoute
   '/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
   '/vendor/import': typeof AuthenticatedVendorImportRoute
-  '/api/public/ipaymu-callback': typeof ApiPublicIpaymuCallbackRoute
   '/api/public/merchant-feed.xml': typeof ApiPublicMerchantFeedDotxmlRoute
   '/api/public/midtrans-callback': typeof ApiPublicMidtransCallbackRoute
   '/api/public/ops-cron': typeof ApiPublicOpsCronRoute
@@ -518,7 +510,6 @@ export interface FileRoutesById {
   '/_authenticated/app/stock': typeof AuthenticatedAppStockRoute
   '/_authenticated/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
   '/_authenticated/vendor/import': typeof AuthenticatedVendorImportRoute
-  '/api/public/ipaymu-callback': typeof ApiPublicIpaymuCallbackRoute
   '/api/public/merchant-feed.xml': typeof ApiPublicMerchantFeedDotxmlRoute
   '/api/public/midtrans-callback': typeof ApiPublicMidtransCallbackRoute
   '/api/public/ops-cron': typeof ApiPublicOpsCronRoute
@@ -576,7 +567,6 @@ export interface FileRouteTypes {
     | '/app/stock'
     | '/vendor/catalog'
     | '/vendor/import'
-    | '/api/public/ipaymu-callback'
     | '/api/public/merchant-feed.xml'
     | '/api/public/midtrans-callback'
     | '/api/public/ops-cron'
@@ -632,7 +622,6 @@ export interface FileRouteTypes {
     | '/app/stock'
     | '/vendor/catalog'
     | '/vendor/import'
-    | '/api/public/ipaymu-callback'
     | '/api/public/merchant-feed.xml'
     | '/api/public/midtrans-callback'
     | '/api/public/ops-cron'
@@ -689,7 +678,6 @@ export interface FileRouteTypes {
     | '/_authenticated/app/stock'
     | '/_authenticated/vendor/catalog'
     | '/_authenticated/vendor/import'
-    | '/api/public/ipaymu-callback'
     | '/api/public/merchant-feed.xml'
     | '/api/public/midtrans-callback'
     | '/api/public/ops-cron'
@@ -732,7 +720,6 @@ export interface RootRouteChildren {
   ProdukIndexRoute: typeof ProdukIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
-  ApiPublicIpaymuCallbackRoute: typeof ApiPublicIpaymuCallbackRoute
   ApiPublicMerchantFeedDotxmlRoute: typeof ApiPublicMerchantFeedDotxmlRoute
   ApiPublicMidtransCallbackRoute: typeof ApiPublicMidtransCallbackRoute
   ApiPublicOpsCronRoute: typeof ApiPublicOpsCronRoute
@@ -1035,13 +1022,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVendorImportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/public/ipaymu-callback': {
-      id: '/api/public/ipaymu-callback'
-      path: '/api/public/ipaymu-callback'
-      fullPath: '/api/public/ipaymu-callback'
-      preLoaderRoute: typeof ApiPublicIpaymuCallbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/merchant-feed.xml': {
       id: '/api/public/merchant-feed.xml'
       path: '/api/public/merchant-feed.xml'
@@ -1215,7 +1195,6 @@ const rootRouteChildren: RootRouteChildren = {
   ProdukIndexRoute: ProdukIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
-  ApiPublicIpaymuCallbackRoute: ApiPublicIpaymuCallbackRoute,
   ApiPublicMerchantFeedDotxmlRoute: ApiPublicMerchantFeedDotxmlRoute,
   ApiPublicMidtransCallbackRoute: ApiPublicMidtransCallbackRoute,
   ApiPublicOpsCronRoute: ApiPublicOpsCronRoute,
