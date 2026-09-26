@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
@@ -72,6 +72,8 @@ function ImportBody() {
   const [defaultQty, setDefaultQty] = useState(String(DEFAULT_IMPORT_QTY_KG));
   const [pending, setPending] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
+  const previewSequence = useRef(0);
   const [records, setRecords] = useState<Record<string, unknown>[]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
   const [mapping, setMapping] = useState<Record<string, string>>({});
@@ -79,10 +81,18 @@ function ImportBody() {
   const analyze = useServerFn(analyzeInventorySheet);
 
   async function preview(source: Record<string, unknown>[], columns: Record<string, string>) {
+    const sequence = ++previewSequence.current;
+    setPreviewing(true);
     setRows([]);
     const collected: string[] = [];
     if (!Object.values(columns).includes("name")) {
       setErrors([bi("Pilih kolom nama produk sebelum menyimpan.", "Select the product name column before saving.")]);
+      setPreviewing(false);
+      return;
+    }
+    if (new Set(Object.values(columns).filter(Boolean)).size !== Object.values(columns).filter(Boolean).length) {
+      setErrors([bi("Satu tujuan hanya boleh dipakai satu kolom.", "Each field can only have one source column.")]);
+      setPreviewing(false);
       return;
     }
     const fallback = Number(defaultQty.replace(/[^\d.]/g, "")) || 0;
@@ -95,8 +105,10 @@ function ImportBody() {
     });
     const existing = new Set<string>();
     const { data, error } = await supabase.from("admin_inventory").select("id, brand, name").limit(10000);
+    if (sequence !== previewSequence.current) return;
     if (error) {
       setErrors([error.message]);
+      setPreviewing(false);
       return;
     }
     (data ?? []).forEach((r) => existing.add(inventoryKey(r.brand ?? "", r.name ?? "")));
@@ -111,6 +123,7 @@ function ImportBody() {
     setErrors(mapped.length === 0 && collected.length === 0
       ? [bi("Tidak ada baris yang dapat digunakan.", "No usable rows found.")]
       : collected);
+    setPreviewing(false);
   }
 
   async function runAnalysis() {
@@ -142,6 +155,8 @@ function ImportBody() {
   async function onFile(file: File) {
     setFileName(file.name);
     setRows([]);
+    ++previewSequence.current;
+    setPreviewing(false);
     setErrors([]);
     setResult("");
     setRecords([]);
@@ -195,7 +210,7 @@ function ImportBody() {
   const totalKg = news.reduce((s, r) => s + r.item.qty_on_hand_kg, 0);
 
   async function commit() {
-    if (news.length === 0 || errors.length > 0 || pending || analyzing) return;
+    if (news.length === 0 || errors.length > 0 || pending || analyzing || previewing) return;
     setPending(true);
     try {
       const { data, error } = await supabase.rpc("ml_import_inventory_append", {
@@ -277,8 +292,8 @@ function ImportBody() {
         ) : null}
 
         <p className="mt-8 text-sm text-ash">{bi("Hanya produk baru yang ditambahkan. Produk yang sudah ada dan baris ganda tidak akan diubah atau dihapus. Simpan seluruh baris sekaligus atau tidak sama sekali.", "Only new products are added. Existing products and duplicates are never changed or deleted. All rows save together or none do.")}</p>
-        <Button type="button" disabled={pending || analyzing || news.length === 0 || errors.length > 0} onClick={() => void commit()} className="mt-6 w-full">
-          {pending ? bi("Menyimpan…", "Saving…") : bi(`Tambah ${news.length} produk baru`, `Add ${news.length} new products`)}
+        <Button type="button" disabled={pending || analyzing || previewing || news.length === 0 || errors.length > 0} onClick={() => void commit()} className="mt-6 w-full">
+          {pending ? bi("Menyimpan…", "Saving…") : previewing ? bi("Memeriksa…", "Checking…") : bi(`Tambah ${news.length} produk baru`, `Add ${news.length} new products`)}
         </Button>
         {result ? <p role="status" className="mt-3 text-sm text-ink">{result}</p> : null}
       </Panel>

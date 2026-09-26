@@ -3,8 +3,8 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const inputSchema = z.object({
-  headers: z.array(z.string()).max(40),
-  samples: z.array(z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()]))).max(6),
+  headers: z.array(z.string().max(120)).max(40),
+  samples: z.array(z.record(z.string().max(120), z.string().max(160))).max(6),
 });
 
 export const analyzeInventorySheet = createServerFn({ method: "POST" })
@@ -18,7 +18,7 @@ export const analyzeInventorySheet = createServerFn({ method: "POST" })
     if (error || !allowed) throw new Error("Hanya admin dapat menganalisis inventaris.");
     const { IMPORT_COLUMNS } = await import("./inventory");
     const { suggestInventoryMapping } = await import("./inventory-ai.server");
-    const safeHeaders = data.headers.map((h) => h.slice(0, 120));
+    const safeHeaders = data.headers;
     const safeSamples = data.samples.map((sample) =>
       Object.fromEntries(safeHeaders.map((header) => [header, String(sample[header] ?? "").slice(0, 160)])),
     );
