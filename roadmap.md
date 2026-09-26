@@ -3,7 +3,7 @@
 # Roadmap
 
 - [x] Ganti gateway iPaymu ke Midtrans sandbox; pesanan dan VA BCA diuji dengan simulator resmi hingga status pembayaran diterima
-- [ ] Rekonsiliasi manual transaksi iPaymu lama yang masih tertunda (memerlukan daftar transaksi lama dari pemilik akun)
+- [x] Transaksi iPaymu lama diperiksa; satu catatan PENDING tanpa pesanan dan tanpa pembayaran dihapus setelah dikonfirmasi pemilik akun
 
 - [x] Mark top 5 highest-quality inventory items as unggulan (featured_rank 1–5) — all Wagyu A5
 - [x] Per-item inventory photo upload with public inventory photo storage
