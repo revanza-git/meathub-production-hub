@@ -110,3 +110,25 @@ export const createOrderPayment = createServerFn({ method: "POST" })
       total: Number(order.total_idr),
     };
   });
+
+/** Recheck directly with Midtrans in case its notification has not arrived yet. */
+export const checkOrderPayment = createServerFn({ method: "POST" })
+  .inputValidator((input: { orderNo: string; token: string }) => {
+    const orderNo = String(input?.orderNo ?? "").trim();
+    const token = String(input?.token ?? "").trim();
+    if (orderNo.length < 4 || token.length < 8) throw new Error("Tautan pesanan tidak valid.");
+    return { orderNo, token };
+  })
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order } = await supabaseAdmin.from("storefront_orders")
+      .select("id, order_no, status, total_idr, paid_at, payment_trx_id, payment_ref")
+      .eq("order_no", data.orderNo).eq("access_token", data.token).maybeSingle();
+    if (!order) throw new Error("Pesanan tidak ditemukan.");
+    if (order.paid_at || !order.payment_ref?.startsWith("Midtrans ")) return { paid: Boolean(order.paid_at) };
+    const { getMidtransStatus } = await import("./midtrans.server");
+    const { reconcileMidtransPayment } = await import("./payment-status.server");
+    const transaction = await getMidtransStatus(order.payment_ref.slice(9));
+    const changed = await reconcileMidtransPayment(order, transaction);
+    return { paid: changed || Boolean(order.paid_at) };
+  });
