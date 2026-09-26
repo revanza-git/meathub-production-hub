@@ -20,7 +20,7 @@ export async function reconcileMidtransPayment(
   if (error) throw error;
   if (!data) return false;
   await supabaseAdmin.from("storefront_order_events").insert({
-    order_id: order.id, from_status: order.status, to_status: "PAID",
+    order_id: order.id, from_status: order.status === "NEW" ? "NEW" : "AWAITING_PAYMENT", to_status: "PAID",
     note: `Pembayaran Midtrans sandbox terverifikasi (${transaction.transaction_id})`,
   });
   try {
