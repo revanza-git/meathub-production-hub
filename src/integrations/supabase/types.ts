@@ -1534,6 +1534,65 @@ export type Database = {
         }
         Relationships: []
       }
+      ml_payment_reconciliations: {
+        Row: {
+          checked_at: string
+          created_at: string
+          gateway_amount: number | null
+          gateway_status: string | null
+          order_amount: number
+          order_id: string
+          order_status: string
+          payment_ref: string
+          reason: string | null
+          result: string
+          settlement_time: string | null
+          transaction_id: string | null
+          transaction_time: string | null
+          updated_at: string
+        }
+        Insert: {
+          checked_at?: string
+          created_at?: string
+          gateway_amount?: number | null
+          gateway_status?: string | null
+          order_amount: number
+          order_id: string
+          order_status: string
+          payment_ref: string
+          reason?: string | null
+          result: string
+          settlement_time?: string | null
+          transaction_id?: string | null
+          transaction_time?: string | null
+          updated_at?: string
+        }
+        Update: {
+          checked_at?: string
+          created_at?: string
+          gateway_amount?: number | null
+          gateway_status?: string | null
+          order_amount?: number
+          order_id?: string
+          order_status?: string
+          payment_ref?: string
+          reason?: string | null
+          result?: string
+          settlement_time?: string | null
+          transaction_id?: string | null
+          transaction_time?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ml_payment_reconciliations_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "storefront_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ml_role_audit: {
         Row: {
           actor_user_id: string | null
