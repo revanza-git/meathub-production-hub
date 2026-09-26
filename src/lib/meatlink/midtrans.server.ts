@@ -21,6 +21,7 @@ export type MidtransTransaction = {
   biller_code?: string;
   actions?: { name: string; url: string }[];
   transaction_time?: string;
+  settlement_time?: string;
 };
 
 async function midtransRequest(path: string, body?: Record<string, unknown>) {

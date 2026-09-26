@@ -13,3 +13,4 @@
 - Reconcile Midtrans paid and terminal cancelled/expired/denied statuses only after verifying the active transaction ID and amount; the generic database expiry skips Midtrans orders to prevent false nonpayment.
 - Treat aborted HTTP requests as empty 204 responses at both request middleware and server entry, not rethrown errors — h3 otherwise turns a disconnected navigation into a misleading 500.
 - Inventory AI receives only headers and six bounded sample rows through an admin-guarded server function; the browser validates the full sheet against current inventory and imports only new items via the append-only RPC — model suggestions must never authorize writes.
+- Midtrans reconciliation snapshots are admin-readable and server-written; status transitions reuse verified active-attempt guards, while mismatches remain review-only — prevents stale or unequal charges from marking orders paid.

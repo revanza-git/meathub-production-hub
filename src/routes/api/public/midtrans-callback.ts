@@ -33,6 +33,9 @@ export const Route = createFileRoute("/api/public/midtrans-callback")({
           const { reconcileMidtransPayment, reconcileMidtransClosure } = await import("@/lib/meatlink/payment-status.server");
           const paid = await reconcileMidtransPayment(order, verified);
           if (!paid) await reconcileMidtransClosure(order, verified);
+           const { checkReconciliation } = await import("@/lib/meatlink/reconciliation.server");
+           // Re-read the active attempt and record its comparison after the verified notification.
+           await checkReconciliation(supabaseAdmin, order);
           return new Response("ok");
         } catch (err) {
           console.error("[midtrans] callback failed", err);

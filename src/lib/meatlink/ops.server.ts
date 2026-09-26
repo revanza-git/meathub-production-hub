@@ -212,5 +212,9 @@ export async function runOpsCron(jobs?: string[]) {
   if (wanted("expire-unpaid")) out["expire-unpaid"] = await expireUnpaidOrders();
   if (wanted("low-stock")) out["low-stock"] = await lowStockAlert();
   if (wanted("daily-digest")) out["daily-digest"] = await dailyDigest();
+  if (wanted("daily-digest") || wanted("reconcile-midtrans")) {
+    const { reconcileDaily } = await import("./reconciliation.server");
+    out["reconcile-midtrans"] = await reconcileDaily();
+  }
   return out;
 }
