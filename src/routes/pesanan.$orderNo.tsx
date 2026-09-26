@@ -157,8 +157,8 @@ function OrderPage() {
                       )
                     : data.payment_method === "QRIS"
                       ? bi(
-                          "Scan QRIS di atas dari aplikasi bank atau e-wallet mana pun. Status pesanan otomatis diperbarui setelah pembayaran diterima.",
-                          "Scan the QRIS above from any bank or e-wallet app. The order status updates automatically once payment is received.",
+                          "Tampilkan kode QRIS di atas sebelum membayar. Jika kode belum muncul, jangan lakukan pembayaran dan hubungi tim kami. Status pesanan diperbarui setelah pembayaran terverifikasi.",
+                          "Show the QRIS code above before paying. If no code appears, do not pay and contact our team. The order status updates after payment is verified.",
                         )
                       : data.payment_method === "CBD"
                         ? bi(

@@ -37,6 +37,19 @@ export type MidtransTransaction = {
   settlement_time?: string;
 };
 
+export function qrisImageUrl(transaction: MidtransTransaction): string | null {
+  const action = transaction.actions?.find((entry) => entry.name === "generate-qr-code") ??
+    transaction.actions?.find((entry) => entry.name === "generate-qr-code-v2");
+  if (!action?.url) return null;
+  try {
+    const url = new URL(action.url);
+    if (url.protocol !== "https:" || !["api.midtrans.com", "api.sandbox.midtrans.com"].includes(url.hostname)) return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
 async function midtransRequest(environment: MidtransEnvironment, path: string, body?: Record<string, unknown>) {
   const { key, base } = config(environment);
   const response = await fetch(`${base}${path}`, {
