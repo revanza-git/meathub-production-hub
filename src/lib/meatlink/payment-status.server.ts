@@ -43,6 +43,7 @@ export async function reconcileMidtransClosure(order: PendingOrder, transaction:
   if (!matchesActiveAttempt(order, transaction) || order.paid_at ||
     !["NEW", "AWAITING_PAYMENT"].includes(order.status) ||
     !["expire", "cancel", "deny"].includes(transaction.transaction_status)) return false;
+  if (!order.payment_ref) return false;
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin.from("storefront_orders")
     .update({ status: "CANCELLED", admin_note: `Midtrans ${transaction.transaction_status}: pembayaran tidak selesai` })
