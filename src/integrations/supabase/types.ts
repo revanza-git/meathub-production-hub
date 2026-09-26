@@ -1501,6 +1501,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ml_inventory_imports: {
+        Row: {
+          actor_user_id: string
+          created_at: string
+          file_name: string
+          id: string
+          inserted_count: number
+          row_count: number
+          skipped_count: number
+          updated_at: string
+        }
+        Insert: {
+          actor_user_id: string
+          created_at?: string
+          file_name: string
+          id?: string
+          inserted_count: number
+          row_count: number
+          skipped_count: number
+          updated_at?: string
+        }
+        Update: {
+          actor_user_id?: string
+          created_at?: string
+          file_name?: string
+          id?: string
+          inserted_count?: number
+          row_count?: number
+          skipped_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ml_role_audit: {
         Row: {
           actor_user_id: string | null
@@ -3590,6 +3623,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      ml_import_inventory_append: {
+        Args: { _file_name: string; _items: Json; _skipped?: number }
+        Returns: number
       }
       ml_market_snapshot: { Args: { _days?: number }; Returns: Json }
       ml_my_credit: { Args: never; Returns: Json }
