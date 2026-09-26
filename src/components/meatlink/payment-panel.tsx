@@ -36,6 +36,7 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
   const check = useServerFn(checkOrderPayment);
   const [bank, setBank] = useState(existing.channel && existing.channel !== "qris" ? existing.channel : "bca");
   const [pending, setPending] = useState(false);
+  const [paymentError, setPaymentError] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   const initiallyExpired = Boolean(existing.expiresAt && new Date(existing.expiresAt).getTime() <= Date.now());
   const [info, setInfo] = useState<PaymentInstruction | null>(
@@ -71,6 +72,7 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
 
   async function generate() {
     setPending(true);
+    setPaymentError(false);
     try {
       const result = await create({
         data: { orderNo, token, channel: method === "QRIS" ? "qris" : bank },
@@ -78,8 +80,8 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
       setInfo(result);
       setNow(Date.now());
       onPaid();
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : bi("Gagal membuat pembayaran.", "Failed to create payment."));
+    } catch {
+      setPaymentError(true);
     } finally {
       setPending(false);
     }
@@ -97,6 +99,14 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
           "The order status updates automatically once payment is verified.",
         )}
       </p>
+
+      {paymentError ? (
+        <p role="alert" className="mt-4 text-sm text-crimson">
+          {method === "QRIS"
+            ? bi("Kode QR belum tersedia. Jangan bayar pesanan ini sebelum kode QR muncul. Coba lagi nanti atau hubungi tim kami.", "The QR code is not available yet. Do not pay for this order until a QR code appears. Try again later or contact our team.")
+            : bi("Nomor pembayaran belum tersedia. Jangan transfer sebelum nomor muncul. Coba lagi nanti atau hubungi tim kami.", "A payment number is not available yet. Do not transfer until a number appears. Try again later or contact our team.")}
+        </p>
+      ) : null}
 
       {expired ? <p className="mt-4 text-sm text-crimson">{bi("Instruksi pembayaran telah berakhir. Status transaksi sedang diverifikasi; hubungi tim kami bila Anda sudah membayar.", "Payment instructions have expired. The transaction is being verified; contact our team if you have already paid.")}</p> : null}
 

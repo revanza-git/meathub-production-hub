@@ -29,7 +29,7 @@ export const createOrderPayment = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }): Promise<PaymentInstruction> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { createMidtransCharge, chargeEnvironment, paymentReference, paymentReferenceDetails } = await import("./midtrans.server");
+    const { createMidtransCharge, chargeEnvironment, paymentReference, paymentReferenceDetails, qrisImageUrl } = await import("./midtrans.server");
     const environment = chargeEnvironment();
     if (environment === "production" && !["meatlink.id", "www.meatlink.id"].includes(new URL(getRequest().url).hostname)) {
       throw new Error("Pembayaran nyata hanya tersedia melalui meatlink.id.");
@@ -95,11 +95,19 @@ export const createOrderPayment = createServerFn({ method: "POST" })
       phone: order.phone,
       email: order.email,
     });
-    const qrUrl = result.actions?.find((action) => action.name === "generate-qr-code")?.url ?? null;
+    const qrUrl = method === "QRIS" ? qrisImageUrl(result) : null;
     const va = result.va_numbers?.[0]?.va_number ?? result.permata_va_number ??
       (result.bill_key && result.biller_code ? `${result.biller_code} / ${result.bill_key}` : null);
     if (method === "QRIS" && !qrUrl || method === "BANK_TRANSFER" && !va) {
-      throw new Error("Midtrans belum mengembalikan instruksi pembayaran. Hubungi tim kami.");
+      console.error("[payment] charge missing usable instructions", {
+        orderNo: order.order_no,
+        environment,
+        method,
+        statusCode: result.status_code,
+        transactionStatus: result.transaction_status,
+        actionNames: result.actions?.map((action) => action.name) ?? [],
+      });
+      throw new Error("Instruksi pembayaran belum tersedia. Silakan coba lagi atau hubungi tim kami.");
     }
 
     const patch = {
