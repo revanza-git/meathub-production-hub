@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { SiteLayout, PageHero } from "@/components/site/site-layout";
 
 import { PAY_METHODS, useCart, type PayMethod } from "@/lib/meatlink/cart";
@@ -100,6 +101,8 @@ function CartPage() {
   const [addresses, setAddresses] = useState<BuyerAddress[]>([]);
   const [pickedAddress, setPickedAddress] = useState<string | null>(null);
   const [saveNewAddress, setSaveNewAddress] = useState(false);
+  const [touched, setTouched] = useState<Set<string>>(new Set());
+  const [submitAttempted, setSubmitAttempted] = useState(false);
   const [form, setForm] = useState({
     buyer_name: "",
     company: "",
@@ -109,6 +112,27 @@ function CartPage() {
     city: "",
     notes: "",
   });
+
+  const requiredField = (name: string, min: number, max: number) =>
+    z.string().trim()
+      .min(1, bi(`${name} wajib diisi.`, `${name} is required.`))
+      .min(min, bi(`${name} harus minimal ${min} karakter.`, `${name} must be at least ${min} characters.`))
+      .max(max, bi(`${name} maksimal ${max} karakter.`, `${name} must be no more than ${max} characters.`));
+  const formSchema = z.object({
+    buyer_name: requiredField(bi("Nama pemesan", "Buyer name"), 2, 120),
+    phone: requiredField(bi("Nomor WhatsApp", "WhatsApp number"), 6, 40),
+    address: requiredField(bi("Alamat pengiriman", "Shipping address"), 5, 500),
+    company: z.string().trim().max(160),
+    city: z.string().trim().max(120),
+    notes: z.string().trim().max(1000),
+    email: z.union([z.literal(""), z.email(bi("Masukkan alamat email yang valid.", "Enter a valid email address."))]),
+  });
+  const validation = formSchema.safeParse({ ...form, email: form.email.trim() });
+  const fieldErrors = validation.success
+    ? {} as Record<string, string>
+    : Object.fromEntries(validation.error.issues.map((issue) => [String(issue.path[0]), issue.message])) as Record<string, string>;
+  const visibleError = (key: string) => (submitAttempted || touched.has(key)) ? fieldErrors[key] : undefined;
+  const touch = (key: string) => setTouched((prev) => new Set(prev).add(key));
 
   function set<K extends keyof typeof form>(k: K, v: string) {
     setForm((f) => ({ ...f, [k]: v }));
@@ -206,6 +230,13 @@ function CartPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    setSubmitAttempted(true);
+    if (!validation.success) {
+      const first = validation.error.issues[0];
+      const key = first ? String(first.path[0]) : "buyer_name";
+      document.getElementById(key)?.focus();
+      return;
+    }
     if (lines.length === 0) {
       toast.error(bi("Keranjang masih kosong.", "Your cart is still empty."));
       return;
@@ -213,7 +244,7 @@ function CartPage() {
     setPending(true);
     try {
       const { data, error } = await supabase.rpc("ml_place_order", {
-        _buyer: form,
+        _buyer: validation.data,
         _items: lines.map((l) => ({ slug: l.slug, qty_kg: l.qty })),
         _payment_method: method,
         _coupon: applied?.code ?? undefined,
@@ -246,7 +277,10 @@ function CartPage() {
         search: { t: row.access_token },
       });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : bi("Pesanan gagal dibuat.", "Order could not be created."));
+      const message = err instanceof Error ? err.message : "";
+      toast.error(message === "Data pemesan tidak lengkap"
+        ? bi("Periksa kembali nama, nomor WhatsApp, dan alamat pengiriman.", "Check your name, WhatsApp number, and shipping address.")
+        : message || bi("Pesanan gagal dibuat. Silakan coba lagi.", "Order could not be created. Please try again."));
     } finally {
       setPending(false);
     }
@@ -273,7 +307,7 @@ function CartPage() {
             .
           </p>
         ) : (
-          <form onSubmit={submit} className="grid gap-12 lg:grid-cols-[1.3fr_1fr]">
+          <form onSubmit={submit} noValidate className="grid gap-12 lg:grid-cols-[1.3fr_1fr]">
             <div>
               <h2 className="font-display text-2xl text-ink">{bi("Item pesanan", "Order items")}</h2>
               <ul className="mt-6 divide-y divide-line border-y border-line">
@@ -342,13 +376,13 @@ function CartPage() {
               ) : null}
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <Input label={bi("Nama pemesan", "Buyer name")} required value={form.buyer_name} onChange={(v) => set("buyer_name", v)} />
+                 <Input id="buyer_name" label={bi("Nama pemesan", "Buyer name")} required value={form.buyer_name} onChange={(v) => set("buyer_name", v)} onBlur={() => touch("buyer_name")} error={visibleError("buyer_name")} maxLength={120} />
                 <Input label={bi("Perusahaan", "Company")} value={form.company} onChange={(v) => set("company", v)} />
-                <Input label={bi("Nomor WhatsApp", "WhatsApp number")} required value={form.phone} onChange={(v) => set("phone", v)} />
-                <Input label={bi("Email", "Email")} type="email" value={form.email} onChange={(v) => set("email", v)} />
+                 <Input id="phone" label={bi("Nomor WhatsApp", "WhatsApp number")} required type="tel" value={form.phone} onChange={(v) => set("phone", v)} onBlur={() => touch("phone")} error={visibleError("phone")} maxLength={40} />
+                 <Input id="email" label={bi("Email", "Email")} type="email" value={form.email} onChange={(v) => set("email", v)} onBlur={() => touch("email")} error={visibleError("email")} maxLength={160} />
                 <Input label={bi("Kota", "City")} value={form.city} onChange={(v) => set("city", v)} />
                 <div className="sm:col-span-2">
-                  <Input label={bi("Alamat pengiriman", "Shipping address")} required value={form.address} onChange={(v) => set("address", v)} />
+                   <Input id="address" label={bi("Alamat pengiriman", "Shipping address")} required value={form.address} onChange={(v) => set("address", v)} onBlur={() => touch("address")} error={visibleError("address")} maxLength={500} />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="eyebrow text-ash" htmlFor="notes">
@@ -416,7 +450,12 @@ function CartPage() {
                     placeholder="MEATLINK10"
                     className="w-full border border-line bg-background px-4 py-3 text-sm text-ink outline-none focus:border-ink"
                   />
-                  <button
+               {submitAttempted && !validation.success ? (
+                 <p role="alert" className="mt-6 text-sm text-crimson">
+                   {bi("Periksa kolom yang ditandai sebelum membuat pesanan.", "Check the marked fields before placing your order.")}
+                 </p>
+               ) : null}
+               <button
                     type="button"
                     onClick={() => void applyCoupon()}
                     disabled={checkingCoupon || !coupon.trim()}
@@ -472,33 +511,46 @@ function CartPage() {
 }
 
 function Input({
+   id,
   label,
   value,
   onChange,
+   onBlur,
+   error,
+   maxLength,
   required,
   type = "text",
 }: {
+   id?: string;
   label: string;
   value: string;
   onChange: (v: string) => void;
+   onBlur?: () => void;
+   error?: string;
+   maxLength?: number;
   required?: boolean;
   type?: string;
 }) {
-  const id = label.toLowerCase().replace(/\s+/g, "-");
+   const inputId = id ?? label.toLowerCase().replace(/\s+/g, "-");
   return (
     <div>
-      <label htmlFor={id} className="eyebrow text-ash">
+       <label htmlFor={inputId} className="eyebrow text-ash">
         {label}
         {required ? " *" : ""}
       </label>
       <input
-        id={id}
+         id={inputId}
         type={type}
         required={required}
+         maxLength={maxLength}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-2 w-full border border-line bg-background px-4 py-3 text-sm text-ink outline-none focus:border-ink"
+         onBlur={onBlur}
+         aria-invalid={Boolean(error)}
+         aria-describedby={error ? `${inputId}-error` : undefined}
+         className={`mt-2 w-full border bg-background px-4 py-3 text-sm text-ink outline-none focus:border-ink ${error ? "border-crimson" : "border-line"}`}
       />
+       {error ? <p id={`${inputId}-error`} className="mt-1 text-xs text-crimson">{error}</p> : null}
     </div>
   );
 }
