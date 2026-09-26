@@ -11,8 +11,8 @@ import { notifyOrderEventPublic } from "@/lib/meatlink/notify.functions";
 import { listAddresses, saveAddress, type BuyerAddress } from "@/lib/meatlink/addresses";
 
 const PAY_METHOD_HINT_EN: Record<string, string> = {
-  BANK_TRANSFER: "VA instructions are sent after the order is placed.",
-  QRIS: "Pay by scanning the QR from any app.",
+  BANK_TRANSFER: "Midtrans sandbox VA details are shown after placing the order.",
+  QRIS: "Midtrans sandbox QR code is shown after placing the order.",
   WHATSAPP: "Our team will contact you to finalize the order.",
   CBD: "Pay in cash before the goods are delivered.",
   TOP: "Pay according to your credit limit due date.",

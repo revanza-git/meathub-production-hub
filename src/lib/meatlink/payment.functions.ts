@@ -16,7 +16,7 @@ export type PaymentInstruction = {
 };
 
 /**
- * Creates (or returns the existing) iPaymu VA / QRIS instruction for a storefront order.
+ * Creates (or returns the existing) Midtrans sandbox VA / QRIS instruction for a storefront order.
  * Access is proven by the order's tokenized tracking link, so guests can pay without an account.
  */
 export const createOrderPayment = createServerFn({ method: "POST" })
@@ -28,12 +28,12 @@ export const createOrderPayment = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }): Promise<PaymentInstruction> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { createDirectPayment, ipaymuChannel } = await import("./ipaymu.server");
+    const { createMidtransCharge } = await import("./midtrans.server");
 
     const { data: order, error } = await supabaseAdmin
       .from("storefront_orders")
       .select(
-        "id, order_no, status, payment_method, payment_channel, payment_va, payment_qr_url, payment_url, payment_expires_at, total_idr, buyer_name, phone, email",
+        "id, order_no, status, payment_method, payment_channel, payment_va, payment_qr_url, payment_url, payment_expires_at, payment_trx_id, payment_ref, total_idr, buyer_name, phone, email",
       )
       .eq("order_no", data.orderNo)
       .eq("access_token", data.token)
@@ -49,7 +49,7 @@ export const createOrderPayment = createServerFn({ method: "POST" })
     }
 
     const stillValid =
-      (order.payment_va || order.payment_qr_url) &&
+      order.payment_ref?.startsWith("Midtrans ") && (order.payment_va || order.payment_qr_url) &&
       (!order.payment_expires_at || new Date(order.payment_expires_at).getTime() > Date.now()) &&
       (!data.channel || data.channel === order.payment_channel);
 
@@ -64,51 +64,71 @@ export const createOrderPayment = createServerFn({ method: "POST" })
       };
     }
 
-    const { data: items } = await supabaseAdmin
-      .from("storefront_order_items")
-      .select("product_name, qty_kg, unit_price_idr")
-      .eq("order_id", order.id);
-
-    const picked = ipaymuChannel(order.payment_method as "BANK_TRANSFER" | "QRIS", data.channel);
-    const siteUrl = process.env["SITE_URL"] ?? "https://meatlink.id";
-
-    const result = await createDirectPayment({
-      method: picked.method,
-      channel: picked.channel,
+    const method = order.payment_method as "BANK_TRANSFER" | "QRIS";
+    const bank = method === "QRIS" ? "qris" : data.channel || "bca";
+    if (method === "BANK_TRANSFER" && !["bca", "bni", "bri", "permata", "mandiri"].includes(bank)) {
+      throw new Error("Bank tidak didukung oleh Midtrans.");
+    }
+    // A fresh Midtrans ID allows retry after expiration without colliding with an older attempt.
+    const orderId = `${order.order_no}-${crypto.randomUUID().slice(0, 8)}`;
+    const result = await createMidtransCharge({
+      orderId,
       amount: Number(order.total_idr),
-      referenceId: order.order_no,
-      buyerName: order.buyer_name,
+      method,
+      bank,
+      name: order.buyer_name,
       phone: order.phone,
       email: order.email,
-      notifyUrl: `${siteUrl.replace(/\/$/, "")}/api/public/ipaymu-callback`,
-      products: (items ?? []).map((i) => ({
-        name: i.product_name,
-        qty: Number(i.qty_kg),
-        price: Number(i.unit_price_idr),
-      })),
     });
-
-    const expired = result.Expired ? new Date(result.Expired.replace(" ", "T")) : null;
-    const qrUrl = result.QrImage ?? result.QrTemplate ?? null;
+    const qrUrl = result.actions?.find((action) => action.name === "generate-qr-code")?.url ?? null;
+    const va = result.va_numbers?.[0]?.va_number ?? result.permata_va_number ??
+      (result.bill_key && result.biller_code ? `${result.biller_code} / ${result.bill_key}` : null);
+    if (method === "QRIS" && !qrUrl || method === "BANK_TRANSFER" && !va) {
+      throw new Error("Midtrans belum mengembalikan instruksi pembayaran. Hubungi tim kami.");
+    }
 
     const patch = {
-      payment_channel: picked.channel,
-      payment_va: result.PaymentNo ?? null,
+      payment_channel: bank,
+      payment_va: va,
       payment_qr_url: qrUrl,
       payment_url: null as string | null,
-      payment_expires_at: expired && !Number.isNaN(expired.getTime()) ? expired.toISOString() : null,
-      payment_trx_id: result.TransactionId != null ? String(result.TransactionId) : null,
+      payment_expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      payment_trx_id: result.transaction_id,
+      payment_ref: `Midtrans ${orderId}`,
       status: "AWAITING_PAYMENT" as const,
     };
-
-    await supabaseAdmin.from("storefront_orders").update(patch).eq("id", order.id);
+    const { error: saveError } = await supabaseAdmin.from("storefront_orders").update(patch)
+      .eq("id", order.id).in("status", ["NEW", "AWAITING_PAYMENT"]);
+    if (saveError) throw new Error("Gagal menyimpan instruksi pembayaran.");
 
     return {
-      channel: picked.channel,
+      channel: bank,
       va: patch.payment_va,
       qrUrl: patch.payment_qr_url,
       paymentUrl: patch.payment_url,
       expiresAt: patch.payment_expires_at,
       total: Number(order.total_idr),
     };
+  });
+
+/** Recheck directly with Midtrans in case its notification has not arrived yet. */
+export const checkOrderPayment = createServerFn({ method: "POST" })
+  .inputValidator((input: { orderNo: string; token: string }) => {
+    const orderNo = String(input?.orderNo ?? "").trim();
+    const token = String(input?.token ?? "").trim();
+    if (orderNo.length < 4 || token.length < 8) throw new Error("Tautan pesanan tidak valid.");
+    return { orderNo, token };
+  })
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order } = await supabaseAdmin.from("storefront_orders")
+      .select("id, order_no, status, total_idr, paid_at, payment_trx_id, payment_ref")
+      .eq("order_no", data.orderNo).eq("access_token", data.token).maybeSingle();
+    if (!order) throw new Error("Pesanan tidak ditemukan.");
+    if (order.paid_at || !order.payment_ref?.startsWith("Midtrans ")) return { paid: Boolean(order.paid_at) };
+    const { getMidtransStatus } = await import("./midtrans.server");
+    const { reconcileMidtransPayment } = await import("./payment-status.server");
+    const transaction = await getMidtransStatus(order.payment_ref.slice(9));
+    const changed = await reconcileMidtransPayment(order, transaction);
+    return { paid: changed || Boolean(order.paid_at) };
   });

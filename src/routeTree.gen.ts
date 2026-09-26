@@ -51,8 +51,8 @@ import { Route as AuthenticatedAppRfqRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedAppStockRouteImport } from './routes/_authenticated/app.stock'
 import { Route as AuthenticatedVendorCatalogRouteImport } from './routes/_authenticated/vendor.catalog'
 import { Route as AuthenticatedVendorImportRouteImport } from './routes/_authenticated/vendor.import'
-import { Route as ApiPublicIpaymuCallbackRouteImport } from './routes/api/public/ipaymu-callback'
 import { Route as ApiPublicMerchantFeedDotxmlRouteImport } from './routes/api/public/merchant-feed[.]xml'
+import { Route as ApiPublicMidtransCallbackRouteImport } from './routes/api/public/midtrans-callback'
 import { Route as ApiPublicOpsCronRouteImport } from './routes/api/public/ops-cron'
 import { Route as AuthenticatedAdminInventoryIndexRouteImport } from './routes/_authenticated/admin.inventory.index'
 import { Route as AuthenticatedAdminInventoryImportRouteImport } from './routes/_authenticated/admin.inventory.import'
@@ -284,15 +284,16 @@ const AuthenticatedVendorImportRoute =
     path: '/vendor/import',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ApiPublicIpaymuCallbackRoute = ApiPublicIpaymuCallbackRouteImport.update({
-  id: '/api/public/ipaymu-callback',
-  path: '/api/public/ipaymu-callback',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicMerchantFeedDotxmlRoute =
   ApiPublicMerchantFeedDotxmlRouteImport.update({
     id: '/api/public/merchant-feed.xml',
     path: '/api/public/merchant-feed.xml',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicMidtransCallbackRoute =
+  ApiPublicMidtransCallbackRouteImport.update({
+    id: '/api/public/midtrans-callback',
+    path: '/api/public/midtrans-callback',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ApiPublicOpsCronRoute = ApiPublicOpsCronRouteImport.update({
@@ -397,8 +398,8 @@ export interface FileRoutesByFullPath {
   '/app/stock': typeof AuthenticatedAppStockRoute
   '/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
   '/vendor/import': typeof AuthenticatedVendorImportRoute
-  '/api/public/ipaymu-callback': typeof ApiPublicIpaymuCallbackRoute
   '/api/public/merchant-feed.xml': typeof ApiPublicMerchantFeedDotxmlRoute
+  '/api/public/midtrans-callback': typeof ApiPublicMidtransCallbackRoute
   '/api/public/ops-cron': typeof ApiPublicOpsCronRoute
   '/admin/inventory/import': typeof AuthenticatedAdminInventoryImportRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
@@ -452,8 +453,8 @@ export interface FileRoutesByTo {
   '/app/stock': typeof AuthenticatedAppStockRoute
   '/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
   '/vendor/import': typeof AuthenticatedVendorImportRoute
-  '/api/public/ipaymu-callback': typeof ApiPublicIpaymuCallbackRoute
   '/api/public/merchant-feed.xml': typeof ApiPublicMerchantFeedDotxmlRoute
+  '/api/public/midtrans-callback': typeof ApiPublicMidtransCallbackRoute
   '/api/public/ops-cron': typeof ApiPublicOpsCronRoute
   '/admin/inventory/import': typeof AuthenticatedAdminInventoryImportRoute
   '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
@@ -509,8 +510,8 @@ export interface FileRoutesById {
   '/_authenticated/app/stock': typeof AuthenticatedAppStockRoute
   '/_authenticated/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
   '/_authenticated/vendor/import': typeof AuthenticatedVendorImportRoute
-  '/api/public/ipaymu-callback': typeof ApiPublicIpaymuCallbackRoute
   '/api/public/merchant-feed.xml': typeof ApiPublicMerchantFeedDotxmlRoute
+  '/api/public/midtrans-callback': typeof ApiPublicMidtransCallbackRoute
   '/api/public/ops-cron': typeof ApiPublicOpsCronRoute
   '/_authenticated/admin/inventory/import': typeof AuthenticatedAdminInventoryImportRoute
   '/_authenticated/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
@@ -566,8 +567,8 @@ export interface FileRouteTypes {
     | '/app/stock'
     | '/vendor/catalog'
     | '/vendor/import'
-    | '/api/public/ipaymu-callback'
     | '/api/public/merchant-feed.xml'
+    | '/api/public/midtrans-callback'
     | '/api/public/ops-cron'
     | '/admin/inventory/import'
     | '/admin/orders/$id'
@@ -621,8 +622,8 @@ export interface FileRouteTypes {
     | '/app/stock'
     | '/vendor/catalog'
     | '/vendor/import'
-    | '/api/public/ipaymu-callback'
     | '/api/public/merchant-feed.xml'
+    | '/api/public/midtrans-callback'
     | '/api/public/ops-cron'
     | '/admin/inventory/import'
     | '/admin/orders/$id'
@@ -677,8 +678,8 @@ export interface FileRouteTypes {
     | '/_authenticated/app/stock'
     | '/_authenticated/vendor/catalog'
     | '/_authenticated/vendor/import'
-    | '/api/public/ipaymu-callback'
     | '/api/public/merchant-feed.xml'
+    | '/api/public/midtrans-callback'
     | '/api/public/ops-cron'
     | '/_authenticated/admin/inventory/import'
     | '/_authenticated/admin/orders/$id'
@@ -719,8 +720,8 @@ export interface RootRouteChildren {
   ProdukIndexRoute: typeof ProdukIndexRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
-  ApiPublicIpaymuCallbackRoute: typeof ApiPublicIpaymuCallbackRoute
   ApiPublicMerchantFeedDotxmlRoute: typeof ApiPublicMerchantFeedDotxmlRoute
+  ApiPublicMidtransCallbackRoute: typeof ApiPublicMidtransCallbackRoute
   ApiPublicOpsCronRoute: typeof ApiPublicOpsCronRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
@@ -1021,18 +1022,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVendorImportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/public/ipaymu-callback': {
-      id: '/api/public/ipaymu-callback'
-      path: '/api/public/ipaymu-callback'
-      fullPath: '/api/public/ipaymu-callback'
-      preLoaderRoute: typeof ApiPublicIpaymuCallbackRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/merchant-feed.xml': {
       id: '/api/public/merchant-feed.xml'
       path: '/api/public/merchant-feed.xml'
       fullPath: '/api/public/merchant-feed.xml'
       preLoaderRoute: typeof ApiPublicMerchantFeedDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/midtrans-callback': {
+      id: '/api/public/midtrans-callback'
+      path: '/api/public/midtrans-callback'
+      fullPath: '/api/public/midtrans-callback'
+      preLoaderRoute: typeof ApiPublicMidtransCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/ops-cron': {
@@ -1194,8 +1195,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProdukIndexRoute: ProdukIndexRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
-  ApiPublicIpaymuCallbackRoute: ApiPublicIpaymuCallbackRoute,
   ApiPublicMerchantFeedDotxmlRoute: ApiPublicMerchantFeedDotxmlRoute,
+  ApiPublicMidtransCallbackRoute: ApiPublicMidtransCallbackRoute,
   ApiPublicOpsCronRoute: ApiPublicOpsCronRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }

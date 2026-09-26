@@ -13,9 +13,9 @@ export const PAY_METHODS: {
   {
     value: "BANK_TRANSFER",
     label: "Transfer bank / Virtual Account",
-    hint: "Instruksi VA dikirim setelah pesanan dibuat.",
+    hint: "Nomor VA Midtrans sandbox tersedia setelah pesanan dibuat.",
   },
-  { value: "QRIS", label: "QRIS", hint: "Bayar lewat scan QR dari aplikasi apa pun." },
+  { value: "QRIS", label: "QRIS", hint: "Kode QR Midtrans sandbox tersedia setelah pesanan dibuat." },
   { value: "WHATSAPP", label: "Konfirmasi via WhatsApp", hint: "Tim kami menghubungi Anda untuk finalisasi." },
   { value: "CBD", label: "Cash Before Delivery", hint: "Bayar tunai sebelum barang dikirim." },
   {
