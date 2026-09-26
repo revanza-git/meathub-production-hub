@@ -16,4 +16,5 @@
 - [x] Impor spreadsheet berbantuan Lovable AI: petakan kolom, temukan dugaan duplikat/data invalid, pratinjau append-only dan verifikasi tanpa menulis produk uji
 - [x] Selaraskan kedaluwarsa Midtrans 24 jam dengan pembatalan pesanan setelah status Midtrans diverifikasi; scheduler tetap setiap 30 menit
 - [x] Sinkronkan pembatalan Midtrans lebih awal melalui notifikasi dan pemeriksaan halaman pesanan, bukan menunggu 24 jam
-- [ ] Rencanakan rekonsiliasi Midtrans khusus admin sebagai tab di menu Pesanan; menunggu persetujuan rencana
+- [x] Rekonsiliasi Midtrans khusus admin sebagai tab di Pesanan Toko Online: pemeriksaan harian dan manual, perbandingan jumlah/status/waktu, serta penandaan selisih tanpa pelunasan paksa
+- [ ] Uji langsung tab rekonsiliasi memakai akun berperan admin (akun pengujian saat ini hanya buyer)
