@@ -9,6 +9,8 @@ import { formatIdr } from "@/lib/meatlink/inventory";
 import { useBi, useLabel, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
 import { notifyOrderEventAdmin } from "@/lib/meatlink/notify.functions";
 import type { Database } from "@/integrations/supabase/types";
+import { ReconciliationPanel } from "@/components/meatlink/reconciliation-panel";
+import { Button } from "@/components/ui/button";
 
 type StoreStatus = Database["public"]["Enums"]["ml_store_order_status"];
 
@@ -54,6 +56,7 @@ export const Route = createFileRoute("/_authenticated/admin/storefront-orders")(
 
 function AdminStorefrontOrdersPage() {
   const bi = useBi();
+  const [tab, setTab] = useState<"orders" | "reconciliation">("orders");
   return (
     <AppShell
       title={bi("Pesanan toko online", "Storefront orders")}
@@ -63,7 +66,11 @@ function AdminStorefrontOrdersPage() {
       )}
     >
       <RoleGate allow="admin">
-        <OrdersTable />
+        <div className="mb-6 flex gap-1 border-b border-line" role="tablist" aria-label={bi("Tampilan pesanan", "Order views")}>
+          <Button role="tab" aria-selected={tab === "orders"} variant="ghost" onClick={() => setTab("orders")} className={tab === "orders" ? "border-b-2 border-crimson text-ink" : "text-ash"}>{bi("Daftar pesanan", "Orders")}</Button>
+          <Button role="tab" aria-selected={tab === "reconciliation"} variant="ghost" onClick={() => setTab("reconciliation")} className={tab === "reconciliation" ? "border-b-2 border-crimson text-ink" : "text-ash"}>{bi("Rekonsiliasi", "Reconciliation")}</Button>
+        </div>
+        {tab === "orders" ? <OrdersTable /> : <ReconciliationPanel />}
       </RoleGate>
     </AppShell>
   );
