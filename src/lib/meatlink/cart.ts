@@ -8,7 +8,6 @@ export const PAY_METHODS: {
   value: PayMethod;
   label: string;
   hint: string;
-  requiresCredit?: boolean;
 }[] = [
   {
     value: "BANK_TRANSFER",
@@ -19,10 +18,9 @@ export const PAY_METHODS: {
   { value: "WHATSAPP", label: "Konfirmasi via WhatsApp", hint: "Tim kami menghubungi Anda untuk finalisasi." },
   { value: "CBD", label: "Cash Before Delivery", hint: "Bayar tunai sebelum barang dikirim." },
   {
-    value: "TOP",
-    label: "Tempo (TOP)",
-    hint: "Bayar sesuai jatuh tempo limit kredit Anda.",
-    requiresCredit: true,
+    value: "TERMS_REQUEST",
+    label: "Ajukan termin via WhatsApp",
+    hint: "Buat pesanan dahulu, lalu bahas syarat pembayaran dengan tim kami. Belum disetujui.",
   },
 ];
 
@@ -32,6 +30,7 @@ export const PAY_METHOD_LABEL: Record<PayMethod, string> = {
   WHATSAPP: "WhatsApp",
   CBD: "Cash Before Delivery",
   TOP: "Tempo (TOP)",
+  TERMS_REQUEST: "Pengajuan termin — belum disetujui",
 };
 
 export const ORDER_STATUS_LABEL: Record<string, string> = {

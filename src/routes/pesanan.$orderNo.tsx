@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 import { type PayMethod } from "@/lib/meatlink/cart";
 import { useBi, useLabel, useFormat, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
-import { WHATSAPP_NUMBER } from "@/lib/meatlink/config";
+import { WHATSAPP_NUMBER, waLink } from "@/lib/meatlink/config";
 import { PaymentPanel } from "@/components/meatlink/payment-panel";
 import { PaymentProofUpload } from "@/components/meatlink/payment-proof";
 import { OrderTimeline, type TimelineEvent } from "@/components/meatlink/order-timeline";
@@ -112,7 +112,7 @@ function OrderPage() {
             </p>
             <h1 className="mt-4 font-display text-4xl text-ink">{data.order_no}</h1>
             <p className="mt-3 text-sm text-ash">
-              {bi("Status", "Status")}: {label(ORDER_STATUS_LABEL_I18N, data.status)} ·{" "}
+              {bi("Status", "Status")}: {data.payment_method === "TERMS_REQUEST" && data.status === "NEW" ? bi("Menunggu kesepakatan termin", "Awaiting payment terms agreement") : label(ORDER_STATUS_LABEL_I18N, data.status)} ·{" "}
               {bi("Pembayaran", "Payment")}: {label(PAY_METHOD_LABEL_I18N, data.payment_method)}
             </p>
 
@@ -144,6 +144,8 @@ function OrderPage() {
                     )
                   : data.status === "CANCELLED"
                     ? bi("Pembayaran dibatalkan atau kedaluwarsa. Jika Anda sudah membayar, hubungi tim kami agar transaksi dapat diperiksa.", "Payment was cancelled or expired. If you have paid, contact our team so we can review the transaction.")
+                  : data.payment_method === "TERMS_REQUEST"
+                    ? bi("Pesanan Anda tercatat sebagai pengajuan termin, bukan persetujuan kredit. Hubungi tim kami untuk membahas syarat pembayaran, harga akhir, dan pengiriman. Belum ada tagihan atau jatuh tempo.", "Your order is recorded as a payment terms request, not approved credit. Contact our team to discuss terms, final price and delivery. No invoice or due date has been issued.")
                   : data.payment_method === "BANK_TRANSFER"
                     ? bi(
                         "Transfer ke nomor Virtual Account di atas. Status pesanan otomatis diperbarui setelah pembayaran diterima.",
@@ -168,21 +170,18 @@ function OrderPage() {
                 <p className="mt-3 text-xs text-ash">{bi("Pembayaran sedang diuji dalam mode sandbox Midtrans. Jangan transfer uang sungguhan.", "Payments are being tested in Midtrans sandbox. Do not transfer real money.")}</p>
               ) : null}
               <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-                  bi(
-                    `Halo Meatlink, saya ingin menindaklanjuti pesanan ${data.order_no}.`,
-                    `Hello Meatlink, I would like to follow up on order ${data.order_no}.`,
-                  ),
-                )}`}
+                href={waLink(data.payment_method === "TERMS_REQUEST"
+                  ? bi(`Halo Meatlink, saya ingin membahas pengajuan termin untuk pesanan ${data.order_no}. Kebutuhan: ${data.items.map((item) => `${item.product_name} ${fmt.qty(item.qty_kg)}`).join(", ")}. Nilai indikatif ${fmt.money(data.total_idr)}. Mohon info syarat pembayaran dan total akhir.`, `Hello Meatlink, I would like to discuss payment terms for order ${data.order_no}. Items: ${data.items.map((item) => `${item.product_name} ${fmt.qty(item.qty_kg)}`).join(", ")}. Indicative total ${fmt.money(data.total_idr)}. Please confirm payment terms and final total.`)
+                  : bi(`Halo Meatlink, saya ingin menindaklanjuti pesanan ${data.order_no}.`, `Hello Meatlink, I would like to follow up on order ${data.order_no}.`))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="eyebrow mt-6 inline-block bg-crimson px-6 py-3 text-bone hover:bg-crimson-deep"
               >
-                {bi("Hubungi tim via WhatsApp", "Contact our team via WhatsApp")}
+                {data.payment_method === "TERMS_REQUEST" && data.status !== "CANCELLED" ? bi("Bahas termin di WhatsApp", "Discuss terms on WhatsApp") : bi("Hubungi tim via WhatsApp", "Contact our team via WhatsApp")}
               </a>
             </div>
 
-            {!data.paid_at && data.status !== "CANCELLED" ? <PaymentProofUpload orderNo={data.order_no} token={t} /> : null}
+            {!data.paid_at && data.status !== "CANCELLED" && data.payment_method !== "TERMS_REQUEST" ? <PaymentProofUpload orderNo={data.order_no} token={t} /> : null}
 
             <DeliveryPanel
               orderNo={data.order_no}
