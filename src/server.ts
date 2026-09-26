@@ -51,6 +51,11 @@ export default {
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
+      // A closed browser connection is not an SSR failure. In particular,
+      // reading a streamed 500 body above may itself be aborted after render.
+      if (request.signal.aborted || (error instanceof Error && error.name === "AbortError")) {
+        return new Response(null, { status: 204 });
+      }
       console.error(error);
       return new Response(renderErrorPage(), {
         status: 500,
