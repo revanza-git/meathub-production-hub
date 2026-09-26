@@ -24,7 +24,8 @@ export function ReconciliationPanel() {
     (filter === "ALL" || row.result === filter) &&
     `${row.storefront_orders?.order_no ?? ""} ${row.payment_ref} ${row.transaction_id ?? ""}`.toLowerCase().includes(search.toLowerCase()));
   const name = (value: string) => ({ ALL: bi("Semua", "All"), REVIEW: bi("Perlu ditinjau", "Needs review"), FAILED: bi("Gagal diperiksa", "Check failed"), PENDING: bi("Menunggu", "Pending"), MATCHED: bi("Cocok", "Matched") }[value] ?? value);
-  const time = (value: string | null | undefined) => value ? new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jakarta" }).format(new Date(value)) + " WIB" : bi("Tidak tersedia", "Unavailable");
+  const parseTime = (value: string) => new Date(/Z$|[+-]\d\d:?\d\d$/.test(value) ? value : `${value.replace(" ", "T")}+07:00`);
+  const time = (value: string | null | undefined) => value ? new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jakarta" }).format(parseTime(value)) + " WIB" : bi("Tidak tersedia", "Unavailable");
 
   async function run(orderId?: string) {
     if (orderId) setActive(orderId); else setRunning(true);
@@ -70,7 +71,7 @@ export function ReconciliationPanel() {
             <div><p className="text-xs text-ash">{bi("ID transaksi", "Transaction ID")}</p><p className="break-all text-ink">{row.transaction_id ?? "—"}</p></div>
             <div><p className="text-xs text-ash">{bi("Dibuat di Midtrans", "Created at Midtrans")}</p><p className="text-ink">{time(row.transaction_time)}</p></div>
             <div><p className="text-xs text-ash">{bi("Dibayar di Midtrans / pesanan", "Paid at Midtrans / order")}</p><p className="text-ink">{time(row.settlement_time)} / {time(paid)}</p></div>
-            <div><p className="text-xs text-ash">{bi("Selisih waktu pembayaran", "Payment time difference")}</p><p className="text-ink">{paid && row.settlement_time ? `${Math.round((new Date(paid).getTime() - new Date(row.settlement_time).getTime()) / 60000)} ${bi("menit", "minutes")}` : "—"}</p></div>
+            <div><p className="text-xs text-ash">{bi("Selisih waktu pembayaran", "Payment time difference")}</p><p className="text-ink">{paid && row.settlement_time ? `${Math.round((parseTime(paid).getTime() - parseTime(row.settlement_time).getTime()) / 60000)} ${bi("menit", "minutes")}` : "—"}</p></div>
             {row.reason && <p className="text-crimson sm:col-span-2 lg:col-span-3">{row.reason}</p>}
             <div className="sm:col-span-2 lg:col-span-3"><Button variant="outline" size="sm" disabled={active === row.order_id} onClick={() => void run(row.order_id)}>{active === row.order_id ? bi("Memeriksa…", "Checking…") : bi("Periksa ulang", "Recheck")}</Button></div>
           </div>
