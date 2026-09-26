@@ -36,9 +36,10 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
   const check = useServerFn(checkOrderPayment);
   const [bank, setBank] = useState(existing.channel && existing.channel !== "qris" ? existing.channel : "bca");
   const [pending, setPending] = useState(false);
-  const expired = Boolean(existing.expiresAt && new Date(existing.expiresAt).getTime() <= Date.now());
+  const [now, setNow] = useState(() => Date.now());
+  const initiallyExpired = Boolean(existing.expiresAt && new Date(existing.expiresAt).getTime() <= Date.now());
   const [info, setInfo] = useState<PaymentInstruction | null>(
-    !expired && (existing.va || existing.qrUrl)
+    !initiallyExpired && (existing.va || existing.qrUrl)
       ? {
           channel: existing.channel ?? "",
           va: existing.va,
@@ -49,6 +50,13 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
         }
       : null,
   );
+  const expiry = info?.expiresAt ?? existing.expiresAt;
+  const expired = Boolean(expiry && new Date(expiry).getTime() <= now);
+
+  useEffect(() => {
+    const id = window.setInterval(() => setNow(Date.now()), 30000);
+    return () => window.clearInterval(id);
+  }, []);
 
   // Poll for payment confirmation while an instruction is on screen.
   useEffect(() => {
@@ -68,6 +76,7 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
         data: { orderNo, token, channel: method === "QRIS" ? "qris" : bank },
       });
       setInfo(result);
+      setNow(Date.now());
       onPaid();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : bi("Gagal membuat pembayaran.", "Failed to create payment."));
@@ -129,7 +138,7 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
          </Button>
       )}
 
-      {info?.va ? (
+      {!expired && info?.va ? (
         <div className="mt-6 border border-line bg-background p-5">
           <p className="text-xs uppercase tracking-wide text-ash">
             {bi("Nomor Virtual Account", "Virtual Account number")} {info.channel ? `· ${info.channel.toUpperCase()}` : ""}
@@ -158,7 +167,7 @@ export function PaymentPanel({ orderNo, token, method, total, existing, onPaid }
         </div>
       ) : null}
 
-      {info?.qrUrl ? (
+      {!expired && info?.qrUrl ? (
         <div className="mt-6 border border-line bg-background p-5">
           <img
             src={info.qrUrl}
