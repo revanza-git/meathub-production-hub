@@ -11,12 +11,9 @@ export const PAY_METHODS: {
 }[] = [
   {
     value: "BANK_TRANSFER",
-    label: "Transfer bank / Virtual Account",
-    hint: "Nomor VA tersedia setelah pesanan dibuat.",
+    label: "Transfer BCA langsung",
+    hint: "Transfer ke rekening BCA setelah pesanan dibuat, lalu konfirmasi via WhatsApp.",
   },
-  { value: "QRIS", label: "QRIS", hint: "Kode QR tersedia setelah pesanan dibuat." },
-  { value: "WHATSAPP", label: "Konfirmasi via WhatsApp", hint: "Tim kami menghubungi Anda untuk finalisasi." },
-  { value: "CBD", label: "Cash Before Delivery", hint: "Bayar tunai sebelum barang dikirim." },
   {
     value: "TERMS_REQUEST",
     label: "Ajukan termin via WhatsApp",
@@ -25,7 +22,7 @@ export const PAY_METHODS: {
 ];
 
 export const PAY_METHOD_LABEL: Record<PayMethod, string> = {
-  BANK_TRANSFER: "Transfer bank / VA",
+  BANK_TRANSFER: "Transfer BCA langsung",
   QRIS: "QRIS",
   WHATSAPP: "WhatsApp",
   CBD: "Cash Before Delivery",

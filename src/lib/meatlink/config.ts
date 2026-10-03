@@ -6,6 +6,8 @@
 /** International format, digits only — used to build wa.me links. */
 export const WHATSAPP_NUMBER = "628978872745";
 
+export const TRANSFER_ACCOUNT = { bank: "BCA", number: "5271212403", holder: "Revanza Raytama" } as const;
+
 export const CONTACT_EMAIL = "cs@meatlink.id";
 
 export function waLink(message: string) {

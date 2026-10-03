@@ -307,7 +307,7 @@ export const ORDER_STATUS_LABEL_I18N: Record<string, Record<Lang, string>> = {
 };
 
 export const PAY_METHOD_LABEL_I18N: Record<string, Record<Lang, string>> = {
-  BANK_TRANSFER: { id: "Transfer bank / VA", en: "Bank transfer / VA" },
+  BANK_TRANSFER: { id: "Transfer langsung BCA", en: "Direct BCA transfer" },
   QRIS: { id: "QRIS", en: "QRIS" },
   WHATSAPP: { id: "WhatsApp", en: "WhatsApp" },
   CBD: { id: "Cash Before Delivery", en: "Cash before delivery" },
