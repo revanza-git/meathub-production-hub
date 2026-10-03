@@ -103,9 +103,9 @@ export const DICT = {
   "home.category.all": { id: "Semua produk", en: "All products" },
   "home.category.shop": { id: "Belanja", en: "Shop" },
 
-  "home.available.eyebrow": { id: "Siap kirim", en: "Ready to ship" },
-  "home.available.title": { id: "Tersedia Sekarang", en: "Available Now" },
-  "home.available.all": { id: "Lihat semua", en: "View all" },
+  "home.available.eyebrow": { id: "Pilihan unggulan", en: "Featured selection" },
+  "home.available.title": { id: "Pilihan Tokusen Wagyu", en: "Tokusen Wagyu selection" },
+  "home.available.all": { id: "Lihat semua Tokusen", en: "Explore Tokusen" },
 
   "home.origin.eyebrow": { id: "Asal produk", en: "Product origin" },
   "home.origin.title": { id: "Belanja per Asal", en: "Shop by Origin" },
