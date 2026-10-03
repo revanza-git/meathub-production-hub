@@ -205,11 +205,15 @@ function ShopByCategory() {
   );
 }
 
-/** Available-now shelf. Grid, not a carousel — never renders empty. */
+/** Homepage Tokusen shelf: recognizable prime cuts, sourced from the live public catalog. */
 function AvailableNow() {
   const { t } = useLang();
-  const { data, isLoading } = useCatalog({ page: 1, pageSize: 8 });
-  const rows = data?.rows ?? [];
+  const { data, isLoading } = useCatalog({ brands: ["TOKUSEN WAGYU"], category: "PRIME_CUT", page: 1, pageSize: 100 });
+  const cuts = ["RIBEYE", "TENDERLOIN", "STRIPLOIN", "TOMAHAWK"];
+  const rows = cuts.flatMap((cut) => {
+    const match = data?.rows.find((row) => row.name.toUpperCase() === cut || (cut === "TOMAHAWK" && row.name.toUpperCase() === "TOMAHAWK LONG BONE"));
+    return match ? [match] : [];
+  });
   if (!isLoading && rows.length === 0) return null;
 
   return (
@@ -218,9 +222,10 @@ function AvailableNow() {
         <ShelfHeading
           eyebrow={t("home.available.eyebrow")}
           title={t("home.available.title")}
-          to="/produk"
-          linkLabel={t("home.available.all")}
         />
+        <Link to="/produk" search={{ brand: ["TOKUSEN WAGYU"] }} className="eyebrow mt-5 inline-flex items-center gap-2 text-ink hover:text-crimson">
+          {t("home.available.all")} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        </Link>
         <div className="mt-10 grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
           {isLoading
             ? Array.from({ length: 4 }).map((_, i) => (
