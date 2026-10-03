@@ -154,11 +154,8 @@ function OrderPage() {
                          "Transfer ke rekening BCA di atas, unggah bukti pembayaran, lalu konfirmasi ke WhatsApp. Tim kami akan memverifikasi pembayaran secara manual.",
                          "Transfer to the BCA account above, upload your payment receipt, then confirm on WhatsApp. Our team will verify your payment manually.",
                       )
-                    : data.payment_method === "QRIS"
-                      ? bi(
-                          "Tampilkan kode QRIS di atas. Jika kode belum tersedia, hubungi tim kami. Status pesanan diperbarui setelah pembayaran terverifikasi.",
-                          "Show the QRIS code above. If the code is not available, contact our team. The order status updates after payment is verified.",
-                        )
+                     : data.payment_method === "QRIS"
+                       ? bi("Pembayaran QRIS sedang tidak tersedia. Hubungi tim kami sebelum membayar.", "QRIS payment is currently unavailable. Contact our team before paying.")
                       : data.payment_method === "CBD"
                         ? bi(
                             "Pembayaran tunai dilakukan sebelum pengiriman. Tim kami menghubungi Anda untuk menjadwalkan pengiriman.",
