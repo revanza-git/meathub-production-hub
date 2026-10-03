@@ -28,6 +28,8 @@ export const createOrderPayment = createServerFn({ method: "POST" })
     return { orderNo, token, channel: String(input?.channel ?? "").trim().slice(0, 20) };
   })
   .handler(async ({ data }): Promise<PaymentInstruction> => {
+    // Gateway payments are paused; keep the historical reconciliation path read-only.
+    throw new Error("Pembayaran VA/QRIS sedang tidak tersedia. Hubungi tim Meatlink untuk transfer BCA langsung.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { createMidtransCharge, chargeEnvironment, paymentReference, paymentReferenceDetails, qrisImageUrl } = await import("./midtrans.server");
     const environment = chargeEnvironment();
