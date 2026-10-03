@@ -6,8 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 import { type PayMethod } from "@/lib/meatlink/cart";
 import { useBi, useLabel, useFormat, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
-import { WHATSAPP_NUMBER, waLink } from "@/lib/meatlink/config";
-import { PaymentPanel } from "@/components/meatlink/payment-panel";
+import { WHATSAPP_NUMBER, TRANSFER_ACCOUNT, waLink } from "@/lib/meatlink/config";
 import { PaymentProofUpload } from "@/components/meatlink/payment-proof";
 import { OrderTimeline, type TimelineEvent } from "@/components/meatlink/order-timeline";
 import { DeliveryPanel } from "@/components/meatlink/delivery-panel";
@@ -119,21 +118,21 @@ function OrderPage() {
 
             {(data.payment_method === "BANK_TRANSFER" || data.payment_method === "QRIS") &&
             !data.paid_at &&
-            (data.status === "NEW" || data.status === "AWAITING_PAYMENT") &&
-            data.payment_environment !== "sandbox" ? (
-              <PaymentPanel
-                orderNo={data.order_no}
-                token={t}
-                method={data.payment_method}
-                total={data.total_idr}
-                existing={{
-                  channel: data.payment_channel ?? null,
-                  va: data.payment_va ?? null,
-                  qrUrl: data.payment_qr_url ?? null,
-                  expiresAt: data.payment_expires_at ?? null,
-                }}
-                onPaid={() => refetch()}
-              />
+            (data.status === "NEW" || data.status === "AWAITING_PAYMENT") ? (
+              data.payment_environment ? (
+                <div className="mt-8 border border-crimson/40 p-6 text-sm text-ink">
+                  {bi("Pesanan ini masih terkait transaksi pembayaran sebelumnya. Jangan transfer lagi sebelum tim kami memeriksa statusnya. Hubungi kami melalui WhatsApp.", "This order is linked to an earlier payment attempt. Do not transfer again until our team checks its status. Contact us on WhatsApp.")}
+                </div>
+              ) : (
+                <div className="mt-8 border border-crimson/40 bg-crimson/5 p-6">
+                  <h2 className="eyebrow text-crimson">{bi("Transfer langsung ke rekening BCA", "Transfer directly to our BCA account")}</h2>
+                  <p className="mt-4 text-sm text-ash">{bi("Total pesanan", "Order total")}: <strong className="text-ink">{fmt.money(data.total_idr)}</strong></p>
+                  <p className="mt-4 text-sm text-ink">{TRANSFER_ACCOUNT.bank} · <strong className="font-display text-2xl">{TRANSFER_ACCOUNT.number}</strong></p>
+                  <p className="mt-1 text-sm text-ink">{bi("Atas nama", "Account name")}: {TRANSFER_ACCOUNT.holder}</p>
+                  <button type="button" className="mt-4 text-sm text-crimson underline" onClick={() => void navigator.clipboard.writeText(TRANSFER_ACCOUNT.number)}>{bi("Salin nomor rekening", "Copy account number")}</button>
+                  <p className="mt-4 text-xs text-ash">{bi("Cantumkan nomor pesanan saat konfirmasi. Pembayaran diperiksa manual oleh tim kami; status tidak berubah otomatis.", "Include the order number when confirming. Our team verifies payments manually; status does not change automatically.")}</p>
+                </div>
+              )
             ) : null}
 
             <div className="mt-8 border border-line p-6">
@@ -146,14 +145,14 @@ function OrderPage() {
                     )
                   : data.status === "CANCELLED"
                     ? bi("Pembayaran dibatalkan atau kedaluwarsa. Jika Anda sudah membayar, hubungi tim kami agar transaksi dapat diperiksa.", "Payment was cancelled or expired. If you have paid, contact our team so we can review the transaction.")
-                  : data.payment_environment === "sandbox" && (data.payment_method === "BANK_TRANSFER" || data.payment_method === "QRIS")
-                    ? bi("Instruksi uji lama tidak berlaku untuk pembayaran nyata. Hubungi tim kami untuk membuat pesanan baru.", "Old test instructions cannot be used for real payment. Contact us to place a new order.")
+                   : data.payment_environment && (data.payment_method === "BANK_TRANSFER" || data.payment_method === "QRIS")
+                     ? bi("Transaksi pembayaran lama harus diperiksa sebelum Anda transfer lagi. Hubungi tim kami.", "Your previous payment attempt must be checked before you transfer again. Contact our team.")
                   : data.payment_method === "TERMS_REQUEST"
                     ? bi("Pesanan Anda tercatat sebagai pengajuan termin, bukan persetujuan kredit. Hubungi tim kami untuk membahas syarat pembayaran, harga akhir, dan pengiriman. Belum ada tagihan atau jatuh tempo.", "Your order is recorded as a payment terms request, not approved credit. Contact our team to discuss terms, final price and delivery. No invoice or due date has been issued.")
                   : data.payment_method === "BANK_TRANSFER"
                     ? bi(
-                        "Transfer ke nomor Virtual Account di atas. Status pesanan otomatis diperbarui setelah pembayaran diterima.",
-                        "Transfer to the Virtual Account number above. The order status updates automatically once payment is received.",
+                         "Transfer ke rekening BCA di atas, unggah bukti pembayaran, lalu konfirmasi ke WhatsApp. Tim kami akan memverifikasi pembayaran secara manual.",
+                         "Transfer to the BCA account above, upload your payment receipt, then confirm on WhatsApp. Our team will verify your payment manually.",
                       )
                     : data.payment_method === "QRIS"
                       ? bi(
@@ -170,22 +169,22 @@ function OrderPage() {
                             "Our team will contact you via WhatsApp to finalize the order and payment.",
                           )}
               </p>
-              {!data.paid_at && data.status !== "CANCELLED" && data.payment_environment === "sandbox" ? (
-                <p className="mt-3 text-sm text-crimson">{bi("Transaksi ini dibuat dalam mode uji. Jangan transfer uang ke nomor VA atau memindai QR lama. Hubungi tim kami untuk membuat pesanan pembayaran nyata yang baru.", "This transaction was created in test mode. Do not transfer money to its old VA or scan its QR code. Contact us to create a new real-payment order.")}</p>
+               {!data.paid_at && data.status !== "CANCELLED" && data.payment_environment ? (
+                 <p className="mt-3 text-sm text-crimson">{bi("Jangan bayar dua kali. Konfirmasi status pembayaran sebelumnya dengan tim kami.", "Do not pay twice. Confirm your previous payment status with our team.")}</p>
               ) : null}
               <a
                 href={waLink(data.payment_method === "TERMS_REQUEST"
                   ? bi(`Halo Meatlink, saya ingin membahas pengajuan termin untuk pesanan ${data.order_no}. Kebutuhan: ${data.items.map((item) => `${item.product_name} ${fmt.qty(item.qty_kg)}`).join(", ")}. Nilai indikatif ${fmt.money(data.total_idr)}. Mohon info syarat pembayaran dan total akhir.`, `Hello Meatlink, I would like to discuss payment terms for order ${data.order_no}. Items: ${data.items.map((item) => `${item.product_name} ${fmt.qty(item.qty_kg)}`).join(", ")}. Indicative total ${fmt.money(data.total_idr)}. Please confirm payment terms and final total.`)
-                  : bi(`Halo Meatlink, saya ingin menindaklanjuti pesanan ${data.order_no}.`, `Hello Meatlink, I would like to follow up on order ${data.order_no}.`))}
+                   : bi(`Halo Meatlink, saya ingin konfirmasi transfer BCA untuk pesanan ${data.order_no} sebesar ${fmt.money(data.total_idr)}. Mohon periksa bukti pembayaran saya.`, `Hello Meatlink, I would like to confirm my BCA transfer for order ${data.order_no} of ${fmt.money(data.total_idr)}. Please check my payment receipt.`))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="eyebrow mt-6 inline-block bg-crimson px-6 py-3 text-bone hover:bg-crimson-deep"
               >
-                {data.payment_method === "TERMS_REQUEST" && data.status !== "CANCELLED" ? bi("Bahas termin di WhatsApp", "Discuss terms on WhatsApp") : bi("Hubungi tim via WhatsApp", "Contact our team via WhatsApp")}
+                 {data.payment_method === "TERMS_REQUEST" && data.status !== "CANCELLED" ? bi("Bahas termin di WhatsApp", "Discuss terms on WhatsApp") : !data.paid_at && data.status !== "CANCELLED" && !data.payment_environment ? bi("Konfirmasi transfer via WhatsApp", "Confirm transfer via WhatsApp") : bi("Hubungi tim via WhatsApp", "Contact our team via WhatsApp")}
               </a>
             </div>
 
-            {!data.paid_at && data.status !== "CANCELLED" && data.payment_method !== "TERMS_REQUEST" ? <PaymentProofUpload orderNo={data.order_no} token={t} /> : null}
+            {!data.paid_at && data.status !== "CANCELLED" && data.payment_method === "BANK_TRANSFER" && !data.payment_environment ? <PaymentProofUpload orderNo={data.order_no} token={t} /> : null}
 
             <DeliveryPanel
               orderNo={data.order_no}
