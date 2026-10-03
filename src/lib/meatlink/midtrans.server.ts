@@ -80,6 +80,9 @@ export async function createMidtransCharge(input: {
   email: string | null;
   phone: string;
 }) {
+  if (process.env["MEATLINK_GATEWAY_CHARGES_ENABLED"] !== "true") {
+    throw new Error("Pembayaran otomatis sedang tidak tersedia. Gunakan transfer BCA langsung.");
+  }
   const bank = input.bank;
   const method = input.method === "QRIS"
     ? { payment_type: "qris", qris: { acquirer: "gopay" } }
