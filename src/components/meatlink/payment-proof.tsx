@@ -69,8 +69,8 @@ export function PaymentProofUpload({
       <h2 className="eyebrow text-ash">{bi("Unggah bukti pembayaran", "Upload payment proof")}</h2>
       <p className="mt-3 text-sm leading-relaxed text-ink/80">
         {bi(
-          "Sudah transfer atau bayar tunai? Unggah foto struk / bukti transfer agar tim kami dapat memverifikasi lebih cepat. Format JPG, PNG, atau PDF (maks. 5 MB).",
-          "Already transferred or paid in cash? Upload a photo of the receipt / transfer proof so our team can verify it faster. JPG, PNG, or PDF format (max. 5 MB).",
+          "Sudah transfer ke rekening BCA? Unggah bukti transfer agar tim kami dapat mencocokkannya dengan mutasi rekening. Format JPG, PNG, atau PDF (maks. 5 MB).",
+          "Transferred to our BCA account? Upload your receipt so our team can match it with our bank statement. JPG, PNG, or PDF (max. 5 MB).",
         )}
       </p>
       {done ? (

@@ -146,6 +146,11 @@ function OrdersTable() {
 
   async function updateStatus(id: string, status: StoreStatus) {
     const d = draft[id];
+    const target = orders.find((o) => o.id === id);
+    if (status === "PAID" && target?.payment_method === "BANK_TRANSFER" && !window.confirm(bi(
+      `Sudah cek mutasi rekening BCA untuk pesanan ${target.order_no} sebesar ${formatIdr(Number(target.total_idr))}? Bukti transfer saja tidak cukup untuk memastikan dana masuk.`,
+      `Have you checked the BCA bank statement for order ${target.order_no} of ${formatIdr(Number(target.total_idr))}? A receipt alone does not prove funds arrived.`,
+    ))) return;
     const { error } = await supabase.rpc("ml_update_store_order", {
       _order_id: id,
       _status: status,
@@ -395,6 +400,8 @@ function OrdersTable() {
                       <p className="mt-1 text-xs text-ash">{bi("Stok telah dikurangi", "Stock deducted")}</p>
                     ) : null}
                     {o.payment_proof_url ? (
+                      <>
+                      {o.status === "NEW" || o.status === "AWAITING_PAYMENT" ? <p className="mt-2 text-xs font-medium text-crimson">{bi("Bukti diunggah — cocokkan nominal dan mutasi BCA sebelum tandai lunas.", "Receipt uploaded — check amount and BCA bank statement before marking paid.")}</p> : null}
                       <button
                         type="button"
                         onClick={() => void openProof(o.payment_proof_url!, bi)}
@@ -402,6 +409,7 @@ function OrdersTable() {
                       >
                         {bi("Lihat bukti bayar", "View payment proof")}
                       </button>
+                      </>
                     ) : null}
                   </div>
 

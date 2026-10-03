@@ -10,9 +10,10 @@ import { useBi, useLabel, useFormat, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyOrderEventPublic } from "@/lib/meatlink/notify.functions";
 import { listAddresses, saveAddress, type BuyerAddress } from "@/lib/meatlink/addresses";
+import { TRANSFER_ACCOUNT } from "@/lib/meatlink/config";
 
 const PAY_METHOD_HINT_EN: Record<string, string> = {
-  BANK_TRANSFER: "Virtual Account details are shown after placing the order.",
+  BANK_TRANSFER: "Transfer to our BCA account after placing the order, then confirm via WhatsApp.",
   QRIS: "The QRIS code is shown after placing the order.",
   WHATSAPP: "Our team will contact you to finalize the order.",
   CBD: "Pay in cash before the goods are delivered.",
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/keranjang")({
       {
         name: "description",
         content:
-          "Periksa keranjang pesanan daging B2B Anda, isi data pengiriman dan pilih metode pembayaran: transfer bank, QRIS, WhatsApp atau cash before delivery.",
+          "Periksa keranjang pesanan daging Anda, isi data pengiriman dan pilih transfer BCA atau ajukan termin via WhatsApp.",
       },
       { property: "og:title", content: "Keranjang & Checkout — Meatlink.id" },
       {
@@ -498,6 +499,12 @@ function CartPage() {
                   ))}
                 </div>
               </fieldset>
+
+              {method === "BANK_TRANSFER" ? (
+                <p className="mt-4 border border-line p-4 text-sm text-ink">
+                  {bi("Setelah pesanan dibuat, transfer ke", "After placing your order, transfer to")} {TRANSFER_ACCOUNT.bank} <strong>{TRANSFER_ACCOUNT.number}</strong> {bi("a.n.", "in the name of")} {TRANSFER_ACCOUNT.holder}. {bi("Konfirmasi pembayaran melalui WhatsApp dan unggah bukti transfer di halaman pesanan. Jangan transfer sebelum memeriksa nomor pesanan dan total akhirnya.", "Confirm on WhatsApp and upload your transfer receipt on the order page. Check your order number and final total before transferring.")}
+                </p>
+              ) : null}
 
                {submitAttempted && !validation.success ? (
                  <p role="alert" className="mt-6 text-sm text-crimson">
