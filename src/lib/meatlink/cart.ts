@@ -14,11 +14,6 @@ export const PAY_METHODS: {
     label: "Transfer BCA langsung",
     hint: "Transfer ke rekening BCA setelah pesanan dibuat, lalu konfirmasi via WhatsApp.",
   },
-  {
-    value: "TERMS_REQUEST",
-    label: "Ajukan termin via WhatsApp",
-    hint: "Buat pesanan dahulu, lalu bahas syarat pembayaran dengan tim kami. Belum disetujui.",
-  },
 ];
 
 export const PAY_METHOD_LABEL: Record<PayMethod, string> = {

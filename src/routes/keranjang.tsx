@@ -27,7 +27,7 @@ export const Route = createFileRoute("/keranjang")({
       {
         name: "description",
         content:
-          "Periksa keranjang pesanan daging Anda, isi data pengiriman dan pilih transfer BCA atau ajukan termin via WhatsApp.",
+          "Periksa keranjang pesanan daging Anda, isi data pengiriman dan bayar melalui transfer BCA langsung.",
       },
       { property: "og:title", content: "Keranjang & Checkout — Meatlink.id" },
       {
