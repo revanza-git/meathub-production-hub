@@ -222,10 +222,9 @@ function AvailableNow() {
         <ShelfHeading
           eyebrow={t("home.available.eyebrow")}
           title={t("home.available.title")}
+          to="/produk"
+          linkLabel={t("home.available.all")}
         />
-        <Link to="/produk" search={{ brand: ["TOKUSEN WAGYU"] }} className="eyebrow mt-5 inline-flex items-center gap-2 text-ink hover:text-crimson">
-          {t("home.available.all")} <ArrowRight className="h-4 w-4" aria-hidden="true" />
-        </Link>
         <div className="mt-10 grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
           {isLoading
             ? Array.from({ length: 4 }).map((_, i) => (
