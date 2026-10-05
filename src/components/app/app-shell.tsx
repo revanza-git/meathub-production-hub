@@ -60,7 +60,8 @@ export function AppShell({
   const pathname = useLocation({ select: (location) => location.pathname });
   const bi = useBi();
   const items = role ? NAV[role] : [];
-  const needsContact = !loading && role === "buyer" && !contactComplete && pathname !== "/app/profil";
+  const contactIncomplete = !loading && role === "buyer" && !contactComplete;
+  const needsContact = contactIncomplete && pathname !== "/app/profil";
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -92,7 +93,7 @@ export function AppShell({
             <span className="eyebrow text-crimson">
               {role ? bi(ROLE_LABEL[role].id, ROLE_LABEL[role].en) : bi("Ruang Kerja", "Workspace")}
             </span>
-            {(needsContact ? [] : items).map((item) => (
+            {(contactIncomplete ? [] : items).map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
