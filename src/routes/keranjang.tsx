@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { notifyOrderEventPublic } from "@/lib/meatlink/notify.functions";
 import { listAddresses, saveAddress, type BuyerAddress } from "@/lib/meatlink/addresses";
 import { TRANSFER_ACCOUNT } from "@/lib/meatlink/config";
+import { useAuth } from "@/hooks/use-auth";
 
 const PAY_METHOD_HINT_EN: Record<string, string> = {
   BANK_TRANSFER: "Transfer to our BCA account after placing the order, then confirm via WhatsApp.",
@@ -93,6 +94,7 @@ function CartPage() {
   const label = useLabel();
   const { lines, setQty, remove, clear, subtotal } = useCart();
   const navigate = useNavigate();
+  const account = useAuth();
   const [pending, setPending] = useState(false);
   const [method, setMethod] = useState<PayMethod>("BANK_TRANSFER");
   const [coupon, setCoupon] = useState("");
@@ -165,6 +167,15 @@ function CartPage() {
       if (!auth.user) return;
       if (active) setSignedIn(true);
 
+      const { data: profile } = await supabase.from("profiles")
+        .select("display_name, email, phone").eq("id", auth.user.id).maybeSingle();
+      if (active && profile) setForm((f) => ({
+        ...f,
+        buyer_name: f.buyer_name || profile.display_name || "",
+        phone: f.phone || profile.phone || "",
+        email: f.email || profile.email || auth.user.email || "",
+      }));
+
       const saved = await listAddresses().catch(() => [] as BuyerAddress[]);
       if (active) setAddresses(saved);
 
@@ -184,14 +195,14 @@ function CartPage() {
         .maybeSingle();
       if (!active || !data) return;
       setForm((f) =>
-        f.buyer_name || f.phone || f.address
+        f.address
           ? f
           : {
               ...f,
               buyer_name: data.buyer_name ?? "",
               company: data.company ?? "",
               phone: data.phone ?? "",
-              email: data.email ?? "",
+              email: data.email || auth.user.email || "",
               address: data.address ?? "",
               city: data.city ?? "",
             },
@@ -235,6 +246,11 @@ function CartPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (account.user && account.role === "buyer" && !account.contactComplete) {
+      toast.error(bi("Lengkapi email dan nomor telepon akun sebelum memesan.", "Complete your account email and phone number before ordering."));
+      void navigate({ to: "/app/profil" });
+      return;
+    }
     setSubmitAttempted(true);
     if (!validation.success) {
       const first = validation.error.issues[0];
@@ -303,6 +319,12 @@ function CartPage() {
       />
 
       <section className="mx-auto max-w-7xl px-5 py-14 lg:px-8">
+        {account.user && account.role === "buyer" && !account.contactComplete ? (
+          <p className="mb-6 border-l-2 border-crimson bg-card px-5 py-4 text-sm text-ink">
+            {bi("Lengkapi email dan nomor telepon akun sebelum memesan.", "Complete your account email and phone number before ordering.")} {" "}
+            <Link to="/app/profil" className="font-semibold underline underline-offset-4">{bi("Lengkapi kontak", "Complete contact details")}</Link>
+          </p>
+        ) : null}
         {lines.length === 0 ? (
           <p className="text-sm text-ash">
             {bi("Keranjang masih kosong.", "Your cart is still empty.")}{" "}
