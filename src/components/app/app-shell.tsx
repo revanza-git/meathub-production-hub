@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { Wordmark } from "@/components/site/site-header";
 import { LanguageToggle } from "@/components/site/language-toggle";
 import { supabase } from "@/integrations/supabase/client";
@@ -57,9 +57,10 @@ export function AppShell({
 }) {
   const { role, user, loading, contactComplete } = useAuth();
   const navigate = useNavigate();
+  const pathname = useLocation({ select: (location) => location.pathname });
   const bi = useBi();
   const items = role ? NAV[role] : [];
-  const needsContact = !loading && role === "buyer" && !contactComplete;
+  const needsContact = !loading && role === "buyer" && !contactComplete && pathname !== "/app/profil";
 
   async function signOut() {
     await supabase.auth.signOut();

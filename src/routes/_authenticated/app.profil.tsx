@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import { toast } from "sonner";
 import { AppShell, Panel } from "@/components/app/app-shell";
@@ -26,6 +27,7 @@ const phoneSchema = z.string().trim().min(8).max(30).regex(/^\+?[0-9][0-9 ()-]{6
 function BuyerProfilePage() {
   const { user, role, loading } = useAuth();
   const bi = useBi();
+  const navigate = useNavigate();
   const [phone, setPhone] = useState("");
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [pending, setPending] = useState(false);
@@ -66,7 +68,7 @@ function BuyerProfilePage() {
       return;
     }
     toast.success(bi("Kontak tersimpan.", "Contact details saved."));
-    window.location.assign("/app/orders");
+    void navigate({ to: "/app/orders" });
   }
 
   return (
