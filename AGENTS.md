@@ -17,3 +17,4 @@
 - Midtrans reconciliation snapshots are admin-readable and server-written; status transitions reuse verified active-attempt guards, while mismatches remain review-only — prevents stale or unequal charges from marking orders paid.
 - New payment-term requests use TERMS_REQUEST orders without credit limits, due dates, payment instructions, or invoices; reject new TOP orders in the database while keeping historic TOP readable — conversations are not approval or settlement.
 - Curate homepage product highlights from the public catalog using brand and recognizable cut names, not inventory rank writes — keeps merchandising scoped to the homepage without changing admin-curated catalog order.
+- Store buyer contact details in the existing self-owned profile; gate buyer workspace and order creation until both email and phone are present — preserves legacy accounts while requiring reachable contacts.

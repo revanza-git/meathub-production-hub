@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { Wordmark } from "@/components/site/site-header";
 import { LanguageToggle } from "@/components/site/language-toggle";
 import { supabase } from "@/integrations/supabase/client";
@@ -55,10 +55,13 @@ export function AppShell({
   actions?: ReactNode;
   children: ReactNode;
 }) {
-  const { role, user, loading } = useAuth();
+  const { role, user, loading, contactComplete } = useAuth();
   const navigate = useNavigate();
+  const pathname = useLocation({ select: (location) => location.pathname });
   const bi = useBi();
   const items = role ? NAV[role] : [];
+  const contactIncomplete = !loading && role === "buyer" && !contactComplete;
+  const needsContact = contactIncomplete && pathname !== "/app/profil";
 
   async function signOut() {
     await supabase.auth.signOut();
@@ -90,7 +93,7 @@ export function AppShell({
             <span className="eyebrow text-crimson">
               {role ? bi(ROLE_LABEL[role].id, ROLE_LABEL[role].en) : bi("Ruang Kerja", "Workspace")}
             </span>
-            {items.map((item) => (
+            {(contactIncomplete ? [] : items).map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -111,10 +114,16 @@ export function AppShell({
             <h1 className="font-display text-3xl text-ink">{title}</h1>
             {intro ? <p className="mt-2 max-w-2xl text-sm text-ash">{intro}</p> : null}
           </div>
-          {actions}
+          {!needsContact ? actions : null}
         </div>
         <div className="mt-8">
-          {loading ? <p className="text-sm text-ash">{bi("Memuat…", "Loading…")}</p> : children}
+          {loading ? <p className="text-sm text-ash">{bi("Memuat…", "Loading…")}</p> : needsContact ? (
+            <Panel className="max-w-xl p-8">
+              <h2 className="font-display text-xl text-ink">{bi("Lengkapi kontak akun Anda", "Complete your account contact details")}</h2>
+              <p className="mt-2 text-sm text-ash">{bi("Email dan nomor telepon wajib diisi sebelum melanjutkan.", "Email and phone number are required before continuing.")}</p>
+              <Link to="/app/profil" className="eyebrow mt-6 inline-flex bg-crimson px-5 py-3 text-bone">{bi("Lengkapi sekarang", "Complete now")}</Link>
+            </Panel>
+          ) : children}
         </div>
       </main>
     </div>

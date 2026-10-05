@@ -2,6 +2,7 @@
 
 # Roadmap
 
+- [x] Wajibkan email dan nomor telepon akun Pembeli baru serta arahkan Pembeli lama melengkapi kontak sebelum memakai ruang kerja.
 - [x] Tampilkan pilihan potongan Tokusen Wagyu teratas pada sorotan produk di halaman utama.
 - [x] Perbaiki validasi alamat email peringatan agar beberapa penerima dapat disimpan dari pengaturan admin.
 - [ ] Midtrans produksi: pisahkan transaksi sandbox/nyata, pastikan kunci dan notifikasi produksi, lalu uji transaksi nyata bernilai kecil setelah diterbitkan.

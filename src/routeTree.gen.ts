@@ -47,6 +47,7 @@ import { Route as AuthenticatedAdminStorefrontOrdersRouteImport } from './routes
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin.users'
 import { Route as AuthenticatedAppAlamatRouteImport } from './routes/_authenticated/app.alamat'
 import { Route as AuthenticatedAppPesananRouteImport } from './routes/_authenticated/app.pesanan'
+import { Route as AuthenticatedAppProfilRouteImport } from './routes/_authenticated/app.profil'
 import { Route as AuthenticatedAppRfqRouteImport } from './routes/_authenticated/app.rfq'
 import { Route as AuthenticatedAppStockRouteImport } from './routes/_authenticated/app.stock'
 import { Route as AuthenticatedVendorCatalogRouteImport } from './routes/_authenticated/vendor.catalog'
@@ -262,6 +263,11 @@ const AuthenticatedAppPesananRoute = AuthenticatedAppPesananRouteImport.update({
   path: '/app/pesanan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAppProfilRoute = AuthenticatedAppProfilRouteImport.update({
+  id: '/app/profil',
+  path: '/app/profil',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAppRfqRoute = AuthenticatedAppRfqRouteImport.update({
   id: '/app/rfq',
   path: '/app/rfq',
@@ -394,6 +400,7 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/app/alamat': typeof AuthenticatedAppAlamatRoute
   '/app/pesanan': typeof AuthenticatedAppPesananRoute
+  '/app/profil': typeof AuthenticatedAppProfilRoute
   '/app/rfq': typeof AuthenticatedAppRfqRoute
   '/app/stock': typeof AuthenticatedAppStockRoute
   '/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
@@ -449,6 +456,7 @@ export interface FileRoutesByTo {
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/app/alamat': typeof AuthenticatedAppAlamatRoute
   '/app/pesanan': typeof AuthenticatedAppPesananRoute
+  '/app/profil': typeof AuthenticatedAppProfilRoute
   '/app/rfq': typeof AuthenticatedAppRfqRoute
   '/app/stock': typeof AuthenticatedAppStockRoute
   '/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
@@ -506,6 +514,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/app/alamat': typeof AuthenticatedAppAlamatRoute
   '/_authenticated/app/pesanan': typeof AuthenticatedAppPesananRoute
+  '/_authenticated/app/profil': typeof AuthenticatedAppProfilRoute
   '/_authenticated/app/rfq': typeof AuthenticatedAppRfqRoute
   '/_authenticated/app/stock': typeof AuthenticatedAppStockRoute
   '/_authenticated/vendor/catalog': typeof AuthenticatedVendorCatalogRoute
@@ -563,6 +572,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/app/alamat'
     | '/app/pesanan'
+    | '/app/profil'
     | '/app/rfq'
     | '/app/stock'
     | '/vendor/catalog'
@@ -618,6 +628,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/app/alamat'
     | '/app/pesanan'
+    | '/app/profil'
     | '/app/rfq'
     | '/app/stock'
     | '/vendor/catalog'
@@ -674,6 +685,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/users'
     | '/_authenticated/app/alamat'
     | '/_authenticated/app/pesanan'
+    | '/_authenticated/app/profil'
     | '/_authenticated/app/rfq'
     | '/_authenticated/app/stock'
     | '/_authenticated/vendor/catalog'
@@ -994,6 +1006,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppPesananRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/app/profil': {
+      id: '/_authenticated/app/profil'
+      path: '/app/profil'
+      fullPath: '/app/profil'
+      preLoaderRoute: typeof AuthenticatedAppProfilRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/app/rfq': {
       id: '/_authenticated/app/rfq'
       path: '/app/rfq'
@@ -1121,6 +1140,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAppAlamatRoute: typeof AuthenticatedAppAlamatRoute
   AuthenticatedAppPesananRoute: typeof AuthenticatedAppPesananRoute
+  AuthenticatedAppProfilRoute: typeof AuthenticatedAppProfilRoute
   AuthenticatedAppRfqRoute: typeof AuthenticatedAppRfqRoute
   AuthenticatedAppStockRoute: typeof AuthenticatedAppStockRoute
   AuthenticatedVendorCatalogRoute: typeof AuthenticatedVendorCatalogRoute
@@ -1148,6 +1168,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
   AuthenticatedAppAlamatRoute: AuthenticatedAppAlamatRoute,
   AuthenticatedAppPesananRoute: AuthenticatedAppPesananRoute,
+  AuthenticatedAppProfilRoute: AuthenticatedAppProfilRoute,
   AuthenticatedAppRfqRoute: AuthenticatedAppRfqRoute,
   AuthenticatedAppStockRoute: AuthenticatedAppStockRoute,
   AuthenticatedVendorCatalogRoute: AuthenticatedVendorCatalogRoute,

@@ -1,0 +1,1 @@
+CREATE TRIGGER ml_require_buyer_contact_on_buyer_order BEFORE INSERT ON public.buyer_orders FOR EACH ROW EXECUTE FUNCTION public.ml_require_buyer_contact_on_order();
