@@ -29,7 +29,7 @@ export function useAuth(): AuthState {
         loading: false,
         user,
         role: (roles.data?.role as MlRole) ?? "buyer",
-        contactComplete: !profile.error && !!profile.data?.email?.trim() && !!profile.data?.phone?.trim(),
+        contactComplete: !profile.error && !!profile.data?.email?.trim() && /^\+?[0-9][0-9 ()-]{6,28}$/.test(profile.data?.phone?.trim() ?? "") && (profile.data?.phone?.trim().length ?? 0) >= 8,
       });
     }
 
