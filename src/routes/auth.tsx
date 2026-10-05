@@ -1,8 +1,10 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { SiteLayout } from "@/components/site/site-layout";
 import { Field, TextInput } from "@/components/site/form-kit";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { notifyNewRegistration } from "@/lib/meatlink/account.functions";
 
@@ -29,6 +31,8 @@ export const Route = createFileRoute("/auth")({
         property: "og:description",
         content: "Buyer access to the Meatlink.id order management workspace.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: AuthPage,
@@ -39,6 +43,7 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [pending, setPending] = useState(false);
   const navigate = useNavigate();
   const auth = useAuth();
@@ -46,24 +51,33 @@ function AuthPage() {
 
   useEffect(() => {
     if (auth.loading || !auth.user) return;
+    if (auth.role === "buyer" && !auth.contactComplete) {
+      void navigate({ to: "/app/profil" });
+      return;
+    }
     if (next) {
       window.location.href = next;
       return;
     }
     void navigate({ to: homeForRole(auth.role) });
-  }, [auth.loading, auth.user, auth.role, navigate, next]);
+  }, [auth.loading, auth.user, auth.role, auth.contactComplete, navigate, next]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setPending(true);
     try {
       if (mode === "register") {
+        const contact = z.object({
+          email: z.email().max(255),
+          phone: z.string().trim().regex(/^\+?[0-9][0-9 ()-]{6,28}$/, "Masukkan nomor telepon yang valid.").min(8).max(30),
+        }).safeParse({ email: email.trim(), phone: phone.trim() });
+        if (!contact.success) throw new Error(contact.error.issues[0]?.message ?? "Periksa email dan nomor telepon.");
         const { error } = await supabase.auth.signUp({
-          email,
+          email: contact.data.email,
           password,
           options: {
             emailRedirectTo: `${window.location.origin}${next ?? "/auth"}`,
-            data: { display_name: name, ml_role: "buyer" },
+            data: { display_name: name.trim(), phone: contact.data.phone, ml_role: "buyer" },
           },
         });
         if (error) throw error;
@@ -108,7 +122,7 @@ function AuthPage() {
           <div className="bg-bone p-6 text-ink lg:p-8">
             <div className="flex gap-2">
               {(["signin", "register"] as const).map((m) => (
-                <button
+                <Button
                   key={m}
                   type="button"
                   onClick={() => setMode(m)}
@@ -117,7 +131,7 @@ function AuthPage() {
                   }`}
                 >
                   {m === "signin" ? "Sign in" : "Create account"}
-                </button>
+                </Button>
               ))}
             </div>
 
@@ -130,6 +144,12 @@ function AuthPage() {
                     onChange={(e) => setName(e.target.value)}
                     autoComplete="name"
                   />
+                </Field>
+              ) : null}
+
+              {mode === "register" ? (
+                <Field label="Nomor telepon / WhatsApp" required>
+                  <TextInput type="tel" required minLength={8} maxLength={30} value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" placeholder="08xxxxxxxxxx" />
                 </Field>
               ) : null}
 
@@ -153,13 +173,13 @@ function AuthPage() {
                 />
               </Field>
 
-              <button
+              <Button
                 type="submit"
                 disabled={pending}
                 className="eyebrow bg-crimson px-6 py-4 text-bone transition-colors hover:bg-crimson-deep disabled:opacity-60"
               >
                 {pending ? "Working…" : mode === "signin" ? "Sign in" : "Create account"}
-              </button>
+              </Button>
             </form>
           </div>
         </div>
