@@ -114,7 +114,7 @@ export function AppShell({
             <h1 className="font-display text-3xl text-ink">{title}</h1>
             {intro ? <p className="mt-2 max-w-2xl text-sm text-ash">{intro}</p> : null}
           </div>
-          {actions}
+          {!needsContact ? actions : null}
         </div>
         <div className="mt-8">
           {loading ? <p className="text-sm text-ash">{bi("Memuat…", "Loading…")}</p> : needsContact ? (
