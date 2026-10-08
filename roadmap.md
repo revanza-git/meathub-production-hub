@@ -2,6 +2,7 @@
 
 # Roadmap
 
+- [ ] Periksa ulang akses Midtrans produksi; aktifkan VA/QRIS hanya setelah kanal terverifikasi dan pertahankan pesanan transfer manual lama.
 - [x] Wajibkan email dan nomor telepon akun Pembeli baru serta arahkan Pembeli lama melengkapi kontak sebelum memakai ruang kerja.
 - [x] Tampilkan pilihan potongan Tokusen Wagyu teratas pada sorotan produk di halaman utama.
 - [x] Perbaiki validasi alamat email peringatan agar beberapa penerima dapat disimpan dari pengaturan admin.
