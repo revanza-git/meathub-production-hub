@@ -2,6 +2,8 @@
 
 # Roadmap
 
+- [x] Periksa ulang Midtrans produksi pada 8 Oktober 2026: BCA VA, Mandiri, dan QRIS semuanya mengembalikan 402 "Payment channel is not activated."; tidak ada instruksi pembayaran diterbitkan.
+- [ ] Aktifkan kembali VA/QRIS setelah Midtrans mengaktifkan kanal produksi; terhalang penolakan 402 untuk ketiga kanal, transfer BCA langsung tetap dipertahankan.
 - [x] Wajibkan email dan nomor telepon akun Pembeli baru serta arahkan Pembeli lama melengkapi kontak sebelum memakai ruang kerja.
 - [x] Tampilkan pilihan potongan Tokusen Wagyu teratas pada sorotan produk di halaman utama.
 - [x] Perbaiki validasi alamat email peringatan agar beberapa penerima dapat disimpan dari pengaturan admin.
