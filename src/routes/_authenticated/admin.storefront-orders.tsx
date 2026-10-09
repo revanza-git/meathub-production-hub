@@ -10,6 +10,8 @@ import { useBi, useLabel, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from 
 import { notifyOrderEventAdmin } from "@/lib/meatlink/notify.functions";
 import type { Database } from "@/integrations/supabase/types";
 import { ReconciliationPanel } from "@/components/meatlink/reconciliation-panel";
+import { AdminSpecialOrders } from "@/components/meatlink/admin-special-orders";
+import { orderNextAction } from "@/lib/meatlink/order-next-action";
 import { Button } from "@/components/ui/button";
 
 type StoreStatus = Database["public"]["Enums"]["ml_store_order_status"];
@@ -37,12 +39,12 @@ const STATUS_TONE: Record<StoreStatus, string> = {
 export const Route = createFileRoute("/_authenticated/admin/storefront-orders")({
   head: () => ({
     meta: [
-      { title: "Storefront orders — Meatlink admin" },
+      { title: "Pesanan & Pembayaran — Meatlink admin" },
       {
         name: "description",
         content: "Every catalog order placed from the public Meatlink storefront, with status control.",
       },
-      { property: "og:title", content: "Storefront orders — Meatlink admin" },
+      { property: "og:title", content: "Pesanan & Pembayaran — Meatlink admin" },
       {
         property: "og:description",
         content: "Catalog orders from the public storefront with payment method and status control.",
@@ -54,23 +56,24 @@ export const Route = createFileRoute("/_authenticated/admin/storefront-orders")(
   component: AdminStorefrontOrdersPage,
 });
 
-function AdminStorefrontOrdersPage() {
+export function AdminStorefrontOrdersPage() {
   const bi = useBi();
-  const [tab, setTab] = useState<"orders" | "reconciliation">("orders");
+  const [tab, setTab] = useState<"orders" | "special" | "reconciliation">("orders");
   return (
     <AppShell
-      title={bi("Pesanan toko online", "Storefront orders")}
+      title={bi("Pesanan", "Orders")}
       intro={bi(
-        "Pesanan yang masuk langsung dari katalog publik. Perbarui status seiring pembayaran dan pengiriman berjalan.",
-        "Orders placed straight from the public catalog. Update status as payment and delivery progress.",
+        "Pembayaran, pesanan khusus, dan pengiriman dalam satu tempat.",
+        "Payments, custom orders and delivery in one place.",
       )}
     >
       <RoleGate allow="admin">
-        <div className="mb-6 flex gap-1 border-b border-line" role="tablist" aria-label={bi("Tampilan pesanan", "Order views")}>
-          <Button role="tab" aria-selected={tab === "orders"} variant="ghost" onClick={() => setTab("orders")} className={tab === "orders" ? "border-b-2 border-crimson text-ink" : "text-ash"}>{bi("Daftar pesanan", "Orders")}</Button>
+        <div className="mb-6 flex flex-wrap gap-1 border-b border-line" role="tablist" aria-label={bi("Tampilan pesanan", "Order views")}>
+          <Button role="tab" aria-selected={tab === "orders"} variant="ghost" onClick={() => setTab("orders")} className={tab === "orders" ? "border-b-2 border-crimson text-ink" : "text-ash"}>{bi("Katalog & pembayaran", "Catalog & payments")}</Button>
+          <Button role="tab" aria-selected={tab === "special"} variant="ghost" onClick={() => setTab("special")} className={tab === "special" ? "border-b-2 border-crimson text-ink" : "text-ash"}>{bi("Pesanan khusus", "Custom orders")}</Button>
           <Button role="tab" aria-selected={tab === "reconciliation"} variant="ghost" onClick={() => setTab("reconciliation")} className={tab === "reconciliation" ? "border-b-2 border-crimson text-ink" : "text-ash"}>{bi("Rekonsiliasi", "Reconciliation")}</Button>
         </div>
-        {tab === "orders" ? <OrdersTable /> : <ReconciliationPanel />}
+        <div role="tabpanel">{tab === "orders" ? <OrdersTable /> : tab === "special" ? <AdminSpecialOrders /> : <ReconciliationPanel />}</div>
       </RoleGate>
     </AppShell>
   );
@@ -298,6 +301,14 @@ function OrdersTable() {
         const events = (data?.events ?? []).filter((e) => e.order_id === o.id);
         const d = draft[o.id] ?? { ref: "", note: "" };
         const isOpen = open[o.id] ?? false;
+        const next = orderNextAction(o);
+        const nextLabel = next === "terms" ? bi("Bahas termin", "Discuss terms")
+          : next === "verify" ? bi("Periksa mutasi BCA", "Check BCA statement")
+          : next === "pay" ? bi("Tindak lanjuti pembayaran", "Follow up payment")
+          : next === "previous_payment" ? bi("Periksa transaksi lama", "Review prior payment")
+          : next === "prepare" ? bi("Siapkan pengiriman", "Prepare delivery")
+          : next === "tracking" ? bi("Perbarui pengiriman", "Update delivery")
+          : next === "receive" ? bi("Pantau penerimaan", "Track receipt") : bi("Lihat detail", "View details");
         const sh =
           ship[o.id] ?? {
             courier: o.courier_name ?? "",
@@ -336,6 +347,10 @@ function OrdersTable() {
               </div>
             </button>
 
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-5 py-3">
+              <p className="text-xs text-ash">{bi("Tindakan berikutnya", "Next action")}: <span className="font-medium text-ink">{nextLabel}</span></p>
+              <Button variant="outline" size="sm" onClick={() => setOpen((p) => ({ ...p, [o.id]: true }))}>{nextLabel}</Button>
+            </div>
             {isOpen ? (
               <div className="grid gap-6 border-t border-line px-5 py-5 lg:grid-cols-[1.3fr_1fr]">
                 {/* Left: buyer + lines + timeline */}
@@ -404,7 +419,7 @@ function OrdersTable() {
                       {o.status === "NEW" || o.status === "AWAITING_PAYMENT" ? <p className="mt-2 text-xs font-medium text-crimson">{bi("Bukti diunggah — cocokkan nominal dan mutasi BCA sebelum tandai lunas.", "Receipt uploaded — check amount and BCA bank statement before marking paid.")}</p> : null}
                       <button
                         type="button"
-                        onClick={() => void openProof(o.payment_proof_url!, bi)}
+                        onClick={() => { if (o.payment_proof_url) void openProof(o.payment_proof_url, bi); }}
                         className={`${btnClass} mt-3`}
                       >
                         {bi("Lihat bukti bayar", "View payment proof")}

@@ -14,6 +14,14 @@ import {
 } from "@/lib/meatlink/addresses";
 
 export const Route = createFileRoute("/_authenticated/app/alamat")({
+  head: () => ({ meta: [
+    { title: "Alamat Pengiriman — Meatlink.id" },
+    { name: "description", content: "Kelola alamat pengiriman pesanan Meatlink Anda." },
+    { property: "og:title", content: "Alamat Pengiriman — Meatlink.id" },
+    { property: "og:description", content: "Kelola alamat pengiriman pesanan Meatlink Anda." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
   component: AddressBookPage,
 });
 

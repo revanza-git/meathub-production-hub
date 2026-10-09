@@ -18,3 +18,5 @@
 - New payment-term requests use TERMS_REQUEST orders without credit limits, due dates, payment instructions, or invoices; reject new TOP orders in the database while keeping historic TOP readable — conversations are not approval or settlement.
 - Curate homepage product highlights from the public catalog using brand and recognizable cut names, not inventory rank writes — keeps merchandising scoped to the homepage without changing admin-curated catalog order.
 - Store buyer contact details in the existing self-owned profile; gate buyer workspace and order creation until both email and phone are present — preserves legacy accounts while requiring reachable contacts.
+
+- Buyer and admin order entry points share their unified order views; keep catalog and custom order records in existing stores and preserve legacy detail URLs — consolidates navigation without rewriting transaction history.

@@ -21,6 +21,14 @@ import {
 import { useBi } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/orders/$id")({
+  head: () => ({ meta: [
+    { title: "Detail Pesanan Khusus Admin — Meatlink.id" },
+    { name: "description", content: "Tinjau rincian dan tindak lanjut pesanan khusus di Meatlink." },
+    { property: "og:title", content: "Detail Pesanan Khusus Admin — Meatlink.id" },
+    { property: "og:description", content: "Tinjau rincian dan tindak lanjut pesanan khusus di Meatlink." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
   component: AdminOrderDetailPage,
 });
 

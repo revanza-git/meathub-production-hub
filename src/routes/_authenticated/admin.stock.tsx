@@ -13,6 +13,14 @@ import {
 import { useBi, useLabel, CATEGORY_LABEL_I18N } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/stock")({
+  head: () => ({ meta: [
+    { title: "Stok Pemasok Admin — Meatlink.id" },
+    { name: "description", content: "Pantau stok pemasok yang tersedia melalui Meatlink." },
+    { property: "og:title", content: "Stok Pemasok Admin — Meatlink.id" },
+    { property: "og:description", content: "Pantau stok pemasok yang tersedia melalui Meatlink." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
   component: AdminStockPage,
 });
 

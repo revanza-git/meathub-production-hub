@@ -6,6 +6,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { CATEGORIES, CATEGORY_LABEL, formatKg, type ProductCategory } from "@/lib/meatlink/orders";
 
 export const Route = createFileRoute("/_authenticated/app/stock")({
+  head: () => ({ meta: [
+    { title: "Stok Tersedia — Meatlink.id" },
+    { name: "description", content: "Lihat ketersediaan stok untuk kebutuhan pembelian Anda di Meatlink." },
+    { property: "og:title", content: "Stok Tersedia — Meatlink.id" },
+    { property: "og:description", content: "Lihat ketersediaan stok untuk kebutuhan pembelian Anda di Meatlink." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
   component: StockPage,
 });
 
