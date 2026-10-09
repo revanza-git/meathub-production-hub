@@ -14,13 +14,14 @@ import {
   type OrderStatus,
 } from "@/lib/meatlink/orders";
 import { useBi } from "@/lib/i18n";
+import { Button } from "@/components/ui/button";
 
 export function AdminSpecialOrders() {
   const bi = useBi();
   const [status, setStatus] = useState<"" | OrderStatus>("");
   const [query, setQuery] = useState("");
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["admin-orders"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -75,7 +76,7 @@ export function AdminSpecialOrders() {
         </select>
       </div>
 
-      {isLoading ? (
+      {error ? <p role="alert" className="text-sm text-crimson">{bi("Pesanan khusus belum dapat dimuat.", "Custom orders could not be loaded.")} <Button variant="link" onClick={() => void refetch()}>{bi("Coba lagi", "Try again")}</Button></p> : isLoading ? (
         <p className="text-sm text-ash">{bi("Memuat pesanan…", "Loading orders…")}</p>
       ) : rows.length === 0 ? (
         <Panel className="p-10 text-center text-sm text-ash">{bi("Tidak ada pesanan yang cocok dengan filter Anda.", "No orders match your filters.")}</Panel>

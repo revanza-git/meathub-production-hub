@@ -12,9 +12,10 @@ import {
 } from "@/lib/meatlink/orders";
 
 import { useBi } from "@/lib/i18n";
+import { Button } from "@/components/ui/button";
 export function BuyerSpecialOrders() {
   const bi = useBi();
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["my-orders"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -28,27 +29,27 @@ export function BuyerSpecialOrders() {
 
   return (
     <>
-      {isLoading ? (
+      {error ? <p role="alert" className="text-sm text-crimson">{bi("Les pesanan khusus belum dapat dimuat.", "Custom orders could not be loaded.")} <Button variant="link" onClick={() => void refetch()}>{bi("Coba lagi", "Try again")}</Button></p> : isLoading ? (
         <p className="text-sm text-ash">{bi("Memuat pesanan…", "Loading orders…")}</p>
       ) : !data || data.length === 0 ? (
         <Panel className="p-10 text-center">
           <h2 className="font-display text-xl text-ink">{bi("Belum ada pesanan khusus", "No custom orders yet")}</h2>
           <p className="mt-2 text-sm text-ash">{bi("Belum ada permintaan produk khusus.", "No custom product requests yet.")}</p>
-          <Link to="/request-quote" className="eyebrow mt-6 inline-flex bg-crimson px-5 py-3 text-bone">
+          <Button asChild className="mt-6"><Link to="/request-quote">
             {bi("Minta penawaran", "Request a quote")}
-          </Link>
+          </Link></Button>
         </Panel>
       ) : (
         <Panel className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-left text-sm">
             <thead className="border-b border-line text-xs uppercase tracking-[0.16em] text-ash">
               <tr>
-                <th className="px-4 py-3">Order</th>
-                <th className="px-4 py-3">Product</th>
-                <th className="px-4 py-3">Qty</th>
-                <th className="px-4 py-3">Payment</th>
+                <th className="px-4 py-3">{bi("Pesanan", "Order")}</th>
+                <th className="px-4 py-3">{bi("Produk", "Product")}</th>
+                <th className="px-4 py-3">{bi("Jumlah", "Qty")}</th>
+                <th className="px-4 py-3">{bi("Termin", "Terms")}</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Submitted</th>
+                <th className="px-4 py-3">{bi("Dibuat", "Submitted")}</th>
               </tr>
             </thead>
             <tbody>
