@@ -2,6 +2,7 @@
 
 # Roadmap
 
+- [x] Kembalikan metode pembayaran sebelumnya: transfer BCA langsung dan konfirmasi WhatsApp; VA/QRIS tetap dinonaktifkan, riwayat transaksi dipertahankan.
 - [x] Periksa ulang Midtrans produksi pada 8 Oktober 2026: BCA VA, Mandiri, dan QRIS semuanya mengembalikan 402 "Payment channel is not activated."; tidak ada instruksi pembayaran diterbitkan.
 - [ ] Aktifkan kembali VA/QRIS setelah Midtrans mengaktifkan kanal produksi; terhalang penolakan 402 untuk ketiga kanal, transfer BCA langsung tetap dipertahankan.
 - [x] Wajibkan email dan nomor telepon akun Pembeli baru serta arahkan Pembeli lama melengkapi kontak sebelum memakai ruang kerja.
