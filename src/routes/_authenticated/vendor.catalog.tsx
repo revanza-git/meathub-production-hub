@@ -16,6 +16,14 @@ import {
 } from "@/lib/meatlink/orders";
 
 export const Route = createFileRoute("/_authenticated/vendor/catalog")({
+  head: () => ({ meta: [
+    { title: "Katalog Pemasok — Meatlink.id" },
+    { name: "description", content: "Kelola katalog dan stok pemasok Meatlink." },
+    { property: "og:title", content: "Katalog Pemasok — Meatlink.id" },
+    { property: "og:description", content: "Kelola katalog dan stok pemasok Meatlink." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
   component: VendorCatalogPage,
 });
 

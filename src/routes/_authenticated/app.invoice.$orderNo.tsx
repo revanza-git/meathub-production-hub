@@ -6,6 +6,14 @@ import { type PayMethod } from "@/lib/meatlink/cart";
 import { ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N, useBi, useFormat, useLabel } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/app/invoice/$orderNo")({
+  head: () => ({ meta: [
+    { title: "Faktur Pesanan — Meatlink.id" },
+    { name: "description", content: "Lihat faktur dan tanda terima pesanan Meatlink Anda." },
+    { property: "og:title", content: "Faktur Pesanan — Meatlink.id" },
+    { property: "og:description", content: "Lihat faktur dan tanda terima pesanan Meatlink Anda." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
   component: InvoicePage,
 });
 

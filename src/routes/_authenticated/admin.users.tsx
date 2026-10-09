@@ -8,6 +8,14 @@ import { formatDate, type MlRole } from "@/lib/meatlink/orders";
 import { useBi } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/admin/users")({
+  head: () => ({ meta: [
+    { title: "Kelola Pengguna — Meatlink.id" },
+    { name: "description", content: "Kelola akun dan akses pengguna Meatlink." },
+    { property: "og:title", content: "Kelola Pengguna — Meatlink.id" },
+    { property: "og:description", content: "Kelola akun dan akses pengguna Meatlink." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
   component: AdminUsersPage,
 });
 

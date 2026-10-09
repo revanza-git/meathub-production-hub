@@ -14,6 +14,14 @@ import {
 } from "@/lib/meatlink/orders";
 
 export const Route = createFileRoute("/_authenticated/app/orders/$id")({
+  head: () => ({ meta: [
+    { title: "Detail Pesanan Khusus — Meatlink.id" },
+    { name: "description", content: "Lihat rincian dan perkembangan pesanan khusus Meatlink Anda." },
+    { property: "og:title", content: "Detail Pesanan Khusus — Meatlink.id" },
+    { property: "og:description", content: "Lihat rincian dan perkembangan pesanan khusus Meatlink Anda." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
   component: OrderDetailPage,
 });
 

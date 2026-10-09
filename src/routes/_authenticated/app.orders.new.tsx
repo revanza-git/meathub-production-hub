@@ -8,6 +8,14 @@ import { useAuth } from "@/hooks/use-auth";
 import { PAYMENT_TERMS, type PaymentTerm } from "@/lib/meatlink/orders";
 
 export const Route = createFileRoute("/_authenticated/app/orders/new")({
+  head: () => ({ meta: [
+    { title: "Permintaan Pesanan Khusus — Meatlink.id" },
+    { name: "description", content: "Ajukan kebutuhan produk khusus kepada tim Meatlink." },
+    { property: "og:title", content: "Permintaan Pesanan Khusus — Meatlink.id" },
+    { property: "og:description", content: "Ajukan kebutuhan produk khusus kepada tim Meatlink." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary_large_image" },
+  ] }),
   component: NewOrderPage,
 });
 
