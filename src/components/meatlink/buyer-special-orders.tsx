@@ -29,7 +29,7 @@ export function BuyerSpecialOrders() {
 
   return (
     <>
-      {error ? <p role="alert" className="text-sm text-crimson">{bi("Les pesanan khusus belum dapat dimuat.", "Custom orders could not be loaded.")} <Button variant="link" onClick={() => void refetch()}>{bi("Coba lagi", "Try again")}</Button></p> : isLoading ? (
+      {error ? <p role="alert" className="text-sm text-crimson">{bi("Pesanan khusus belum dapat dimuat.", "Custom orders could not be loaded.")} <Button variant="link" onClick={() => void refetch()}>{bi("Coba lagi", "Try again")}</Button></p> : isLoading ? (
         <p className="text-sm text-ash">{bi("Memuat pesanan…", "Loading orders…")}</p>
       ) : !data || data.length === 0 ? (
         <Panel className="p-10 text-center">
