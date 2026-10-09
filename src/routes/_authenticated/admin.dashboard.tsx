@@ -122,8 +122,8 @@ function DashboardBody() {
       <Panel className="p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-display text-xl text-ink">{bi("Bukti pembayaran untuk diverifikasi", "Payment proofs to verify")}</h2>
-          <Link to="/admin/storefront-orders" className="eyebrow text-ink hover:text-crimson">
-            {bi("Buka pesanan toko online", "Open storefront orders")}
+          <Link to="/admin/orders" className="eyebrow text-ink hover:text-crimson">
+            {bi("Buka pesanan", "Open orders")}
           </Link>
         </div>
         {proofs.length === 0 ? (

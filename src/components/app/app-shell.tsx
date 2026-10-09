@@ -11,11 +11,9 @@ type NavItem = { to: string; label: { id: string; en: string } };
 
 const NAV: Record<MlRole, NavItem[]> = {
   buyer: [
-    { to: "/app/pesanan", label: { id: "Pesanan Toko", en: "Store Orders" } },
+    { to: "/app/orders", label: { id: "Pesanan", en: "Orders" } },
     { to: "/app/alamat", label: { id: "Alamat Kirim", en: "Delivery Addresses" } },
-    { to: "/app/orders", label: { id: "Pesanan Saya", en: "My Orders" } },
-    { to: "/app/orders/new", label: { id: "Pesanan Baru", en: "New Order" } },
-    { to: "/app/rfq", label: { id: "RFQ Saya", en: "My RFQs" } },
+    { to: "/app/rfq", label: { id: "Penawaran Saya", en: "My Quotes" } },
     { to: "/app/stock", label: { id: "Stok Tersedia", en: "Available Stock" } },
   ],
   vendor: [
@@ -25,8 +23,7 @@ const NAV: Record<MlRole, NavItem[]> = {
   admin: [
     { to: "/admin/dashboard", label: { id: "Dasbor", en: "Dashboard" } },
     { to: "/admin/orders", label: { id: "Pesanan", en: "Orders" } },
-    { to: "/admin/rfq", label: { id: "Kotak Masuk RFQ", en: "RFQ Inbox" } },
-    { to: "/admin/storefront-orders", label: { id: "Pesanan Toko Online", en: "Storefront Orders" } },
+    { to: "/admin/rfq", label: { id: "Permintaan Penawaran", en: "Quote Requests" } },
     { to: "/admin/inventory", label: { id: "Inventaris", en: "Inventory" } },
     { to: "/admin/commerce", label: { id: "Promo & Kredit", en: "Promo & Credit" } },
     { to: "/admin/reports", label: { id: "Laporan", en: "Reports" } },

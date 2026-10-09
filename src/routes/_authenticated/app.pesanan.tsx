@@ -9,9 +9,14 @@ import { formatIdr } from "@/lib/meatlink/inventory";
 import { ORDER_STATUS_LABEL, PAY_METHOD_LABEL, useCart, type PayMethod } from "@/lib/meatlink/cart";
 import { formatDate } from "@/lib/meatlink/orders";
 import { OrderTimeline, type TimelineEvent } from "@/components/meatlink/order-timeline";
+import { BuyerSpecialOrders } from "@/components/meatlink/buyer-special-orders";
+import { Button } from "@/components/ui/button";
+import { useBi, useLabel, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
+import { orderNextAction } from "@/lib/meatlink/order-next-action";
 import { DeliveryPanel } from "@/components/meatlink/delivery-panel";
 
 export const Route = createFileRoute("/_authenticated/app/pesanan")({
+head: () => ({ meta: [{ title: "Riwayat Pesanan — Meatlink.id" }, { name: "description", content: "Pesanan katalog dan kebutuhan khusus, status pembayaran serta pengiriman Anda." }, { property: "og:title", content: "Riwayat Pesanan — Meatlink.id" }, { property: "og:description", content: "Pesanan katalog dan kebutuhan khusus, status pembayaran serta pengiriman Anda." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] }),
   component: StoreOrdersPage,
 });
 
@@ -35,6 +40,8 @@ type OrderRow = {
   credit_term_days: number | null;
   due_date: string | null;
   paid_at: string | null;
+  payment_ref: string | null;
+  payment_proof_url: string | null;
   total_idr: number;
   created_at: string;
   courier_name: string | null;
@@ -47,7 +54,7 @@ type OrderRow = {
 };
 
 const SELECT_COLUMNS =
-  "id, order_no, access_token, status, payment_method, subtotal_idr, discount_idr, coupon_code, credit_term_days, due_date, paid_at, total_idr, created_at, courier_name, tracking_no, eta_date, shipped_at, delivered_at, buyer_confirmed_at, storefront_order_items(slug, product_name, qty_kg, unit_price_idr, line_total_idr)";
+  "id, order_no, access_token, status, payment_method, subtotal_idr, discount_idr, coupon_code, credit_term_days, due_date, paid_at, payment_ref, payment_proof_url, total_idr, created_at, courier_name, tracking_no, eta_date, shipped_at, delivered_at, buyer_confirmed_at, storefront_order_items(slug, product_name, qty_kg, unit_price_idr, line_total_idr)";
 
 function dueBadge(order: OrderRow) {
   if (!order.due_date || order.paid_at) return null;
@@ -58,11 +65,14 @@ function dueBadge(order: OrderRow) {
   return { label: `Jatuh tempo ${formatDate(order.due_date)}`, tone: "ok" as const };
 }
 
-function StoreOrdersPage() {
+export function StoreOrdersPage() {
   const { add } = useCart();
+  const bi = useBi();
+  const label = useLabel();
+  const [view, setView] = useState<"all" | "catalog" | "special">("all");
   const [openId, setOpenId] = useState<string | null>(null);
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["my-store-orders"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -93,15 +103,22 @@ function StoreOrdersPage() {
 
   return (
     <AppShell
-      title="Pesanan toko"
-      intro="Riwayat pesanan katalog Anda, lengkap dengan status pengiriman, konfirmasi terima, dan tagihan tempo."
+      title={bi("Pesanan", "Orders")}
+      intro={bi("Status pembayaran dan pengiriman pesanan Anda.", "Payment and delivery status for your orders.")}
       actions={
-        <Link to="/produk" className="eyebrow bg-crimson px-5 py-3 text-bone">
-          Belanja katalog
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline"><Link to="/request-quote">{bi("Minta penawaran", "Request a quote")}</Link></Button>
+          <Button asChild><Link to="/produk">{bi("Belanja katalog", "Shop catalog")}</Link></Button>
+        </div>
       }
     >
-      {isLoading ? (
+      <div className="mb-6 flex flex-wrap gap-1 border-b border-line" role="tablist" aria-label={bi("Jenis pesanan", "Order type")}>
+        {(["all", "catalog", "special"] as const).map((value) => <Button key={value} role="tab" aria-selected={view === value} variant="ghost" onClick={() => setView(value)} className={view === value ? "border-b-2 border-crimson text-ink" : "text-ash"}>{value === "all" ? bi("Semua pesanan", "All orders") : value === "catalog" ? bi("Katalog", "Catalog") : bi("Pesanan khusus", "Custom orders")}</Button>)}
+      </div>
+      <div role="tabpanel">
+      {view !== "special" ? <>
+      {view === "all" ? <h2 className="mb-4 text-sm font-medium text-ink">{bi("Pesanan katalog", "Catalog orders")}</h2> : null}
+      {error ? <p role="alert" className="text-sm text-crimson">{bi("Pesanan belum dapat dimuat.", "Orders could not be loaded.")} <Button variant="link" onClick={() => void refetch()}>{bi("Coba lagi", "Try again")}</Button></p> : isLoading ? (
         <p className="text-sm text-ash">Memuat pesanan…</p>
       ) : !data || data.length === 0 ? (
         <Panel className="p-10 text-center">
@@ -118,13 +135,20 @@ function StoreOrdersPage() {
           {data.map((o) => {
             const badge = dueBadge(o);
             const open = openId === o.id;
+            const next = orderNextAction(o);
+            const nextLabel = next === "pay" ? bi("Bayar & konfirmasi", "Pay & confirm")
+              : next === "verify" ? bi("Lihat verifikasi pembayaran", "View payment verification")
+              : next === "terms" ? bi("Bahas termin via WhatsApp", "Discuss terms on WhatsApp")
+              : next === "previous_payment" ? bi("Periksa pembayaran sebelumnya", "Review previous payment")
+              : next === "receive" ? bi("Konfirmasi penerimaan", "Confirm receipt")
+              : next === "details" ? bi("Lihat pesanan", "View order") : bi("Pantau pengiriman", "Track delivery");
             return (
               <Panel key={o.id} className="p-6">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="font-display text-lg text-ink">{o.order_no}</p>
                     <p className="mt-1 text-xs text-ash">
-                      {formatDate(o.created_at)} · {PAY_METHOD_LABEL[o.payment_method]}
+                      {formatDate(o.created_at)} · {label(PAY_METHOD_LABEL_I18N, o.payment_method)}
                       {o.credit_term_days ? ` · Tempo ${o.credit_term_days} hari` : ""}
                     </p>
                     {o.payment_method === "TERMS_REQUEST" && o.status === "NEW" ? <p className="mt-2 text-xs text-crimson">Pengajuan termin — menunggu kesepakatan via WhatsApp, belum ada tagihan.</p> : null}
@@ -144,7 +168,7 @@ function StoreOrdersPage() {
                   </div>
                   <div className="text-right">
                     <span className="inline-flex border border-line px-2 py-1 text-xs text-ink">
-                      {ORDER_STATUS_LABEL[o.status] ?? o.status}
+                      {label(ORDER_STATUS_LABEL_I18N, o.status)}
                     </span>
                     <p className="mt-2 font-display text-xl text-ink">{formatIdr(o.total_idr)}</p>
                     {o.discount_idr && Number(o.discount_idr) > 0 ? (
@@ -170,39 +194,12 @@ function StoreOrdersPage() {
                 </ul>
 
                 <div className="mt-5 flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setOpenId(open ? null : o.id)}
-                    className="eyebrow inline-flex items-center gap-2 border border-ink/25 px-5 py-3 text-ink"
-                    aria-expanded={open}
-                  >
-                    {open ? "Tutup detail" : "Detail & pengiriman"}
-                    <ChevronDown
-                      className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
-                    />
-                  </button>
-                  <Link
-                    to="/pesanan/$orderNo"
-                    params={{ orderNo: o.order_no }}
-                    search={{ t: o.access_token }}
-                    className="eyebrow border border-ink/25 px-5 py-3 text-ink"
-                  >
-                    Lacak pesanan
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => reorder(o)}
-                    className="eyebrow bg-crimson px-5 py-3 text-bone transition-colors hover:bg-crimson-deep"
-                  >
-                    Pesan ulang
-                  </button>
-                   {o.payment_method !== "TERMS_REQUEST" ? <Link
-                    to="/app/invoice/$orderNo"
-                    params={{ orderNo: o.order_no }}
-                    className="eyebrow border border-ink/25 px-5 py-3 text-ink"
-                  >
-                    {o.buyer_confirmed_at ? "Tanda terima" : "Faktur"}
-                   </Link> : null}
+                  <Button asChild><Link to="/pesanan/$orderNo" params={{ orderNo: o.order_no }} search={{ t: o.access_token }}>{nextLabel}</Link></Button>
+                  <Button type="button" variant="outline" onClick={() => setOpenId(open ? null : o.id)} aria-expanded={open}>
+                    {open ? bi("Tutup detail", "Close details") : bi("Rincian", "Details")}<ChevronDown className={`h-4 w-4 ${open ? "rotate-180" : ""}`} />
+                  </Button>
+                  <Button type="button" variant="ghost" onClick={() => reorder(o)}>{bi("Pesan ulang", "Reorder")}</Button>
+                  {o.payment_method !== "TERMS_REQUEST" ? <Button asChild variant="ghost"><Link to="/app/invoice/$orderNo" params={{ orderNo: o.order_no }}>{o.buyer_confirmed_at ? bi("Tanda terima", "Receipt") : bi("Faktur", "Invoice")}</Link></Button> : null}
                 </div>
 
                 {open ? <OrderDetail order={o} onChanged={() => refetch()} /> : null}
@@ -211,6 +208,12 @@ function StoreOrdersPage() {
           })}
         </div>
       )}
+      </> : null}
+      {view !== "catalog" ? <section className={view === "all" ? "mt-10 border-t border-line pt-6" : ""}>
+        {view === "all" ? <h2 className="mb-4 text-sm font-medium text-ink">{bi("Pesanan khusus", "Custom orders")}</h2> : null}
+        <BuyerSpecialOrders />
+      </section> : null}
+      </div>
     </AppShell>
   );
 }
