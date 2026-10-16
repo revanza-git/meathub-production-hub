@@ -226,7 +226,9 @@ function ImportBody() {
       setErrors([]);
       setFileName("");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : bi("Impor gagal; tidak ada item yang disimpan.", "Import failed; no items were saved."));
+      const detail = err instanceof Error ? err.message
+        : (err as { message?: string } | null)?.message;
+      toast.error(detail ?? bi("Impor gagal; tidak ada item yang disimpan.", "Import failed; no items were saved."));
     } finally {
       setPending(false);
     }
