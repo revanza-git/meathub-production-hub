@@ -324,7 +324,7 @@ function OrdersTable() {
                 <span className="text-sm text-ash">{lines.length} {bi("item", "items")}</span>
                 <span className="font-display text-lg text-ink">{formatIdr(Number(o.total_idr))}</span>
                 {o.payment_method === "TERMS_REQUEST" && o.status === "NEW" ? <span className="text-xs font-medium text-crimson">{bi("Termin belum disetujui", "Terms not approved")}</span> : null}
-                <StatusPill status={o.status} label={label(ORDER_STATUS_LABEL_I18N, o.status)} />
+                <StatusChip status={o.status} label={label(ORDER_STATUS_LABEL_I18N, o.status)} />
                 <span className="eyebrow text-ash">{isOpen ? bi("Tutup", "Close") : bi("Detail", "Detail")}</span>
               </div>
             </button>
