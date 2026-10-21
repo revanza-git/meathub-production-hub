@@ -423,15 +423,46 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
               >
                 {t("header.cart")} ({count})
               </Link>
-              <Link
-                to="/auth"
-                onClick={() => setOpen(false)}
-                className={`eyebrow border px-5 py-3 text-center ${
-                  dark ? "border-white/25 text-bone" : "border-ink/25 text-ink"
-                }`}
-              >
-                {t("header.account")}
-              </Link>
+              {loading || !user ? (
+                <Link
+                  to="/auth"
+                  onClick={() => setOpen(false)}
+                  className={`eyebrow border px-5 py-3 text-center ${
+                    dark ? "border-white/25 text-bone" : "border-ink/25 text-ink"
+                  }`}
+                >
+                  {t("header.account")}
+                </Link>
+              ) : (
+                <>
+                  <div
+                    className={`border px-5 py-3 text-center ${
+                      dark ? "border-white/25 text-bone" : "border-ink/25 text-ink"
+                    }`}
+                  >
+                    <span className="block truncate text-sm">{displayName || t("header.account")}</span>
+                    {user.email ? <span className="mt-0.5 block truncate text-xs opacity-60">{user.email}</span> : null}
+                  </div>
+                  <Link
+                    to={homeForRole(role)}
+                    onClick={() => setOpen(false)}
+                    className={`eyebrow border px-5 py-3 text-center ${
+                      dark ? "border-white/25 text-bone" : "border-ink/25 text-ink"
+                    }`}
+                  >
+                    {workspaceLabel(role, t)}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => void handleMobileSignOut()}
+                    className={`eyebrow border px-5 py-3 text-center ${
+                      dark ? "border-white/25 text-bone" : "border-ink/25 text-ink"
+                    }`}
+                  >
+                    {t("header.signOut")}
+                  </button>
+                </>
+              )}
               <Link
                 to="/produk"
                 onClick={() => setOpen(false)}
