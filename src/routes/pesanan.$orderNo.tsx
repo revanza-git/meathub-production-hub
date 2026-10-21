@@ -8,6 +8,7 @@ import { type PayMethod } from "@/lib/meatlink/cart";
 import { useBi, useLabel, useFormat, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
 import { WHATSAPP_NUMBER, TRANSFER_ACCOUNT, waLink } from "@/lib/meatlink/config";
 import { PaymentProofUpload } from "@/components/meatlink/payment-proof";
+import { CancelOrder } from "@/components/meatlink/cancel-order";
 import { OrderTimeline, type TimelineEvent } from "@/components/meatlink/order-timeline";
 import { DeliveryPanel } from "@/components/meatlink/delivery-panel";
 
@@ -182,6 +183,10 @@ function OrderPage() {
             </div>
 
             {!data.paid_at && data.status !== "CANCELLED" && data.payment_method === "BANK_TRANSFER" && !data.payment_environment ? <PaymentProofUpload orderNo={data.order_no} token={t} /> : null}
+
+            {!data.paid_at && (data.status === "NEW" || data.status === "AWAITING_PAYMENT") ? (
+              <CancelOrder orderNo={data.order_no} token={t} onCancelled={() => void refetch()} />
+            ) : null}
 
             <DeliveryPanel
               orderNo={data.order_no}
