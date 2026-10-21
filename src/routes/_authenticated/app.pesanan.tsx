@@ -167,9 +167,7 @@ export function StoreOrdersPage() {
                     ) : null}
                   </div>
                   <div className="text-right">
-                    <span className="inline-flex border border-line px-2 py-1 text-xs text-ink">
-                      {label(ORDER_STATUS_LABEL_I18N, o.status)}
-                    </span>
+                    <StatusChip status={o.status} label={label(ORDER_STATUS_LABEL_I18N, o.status)} />
                     <p className="mt-2 font-display text-xl text-ink">{formatIdr(o.total_idr)}</p>
                     {o.discount_idr && Number(o.discount_idr) > 0 ? (
                       <p className="mt-1 text-xs text-ash">
