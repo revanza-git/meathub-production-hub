@@ -1,6 +1,9 @@
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Menu, Phone, Search, ShoppingCart, Truck, User, X } from "lucide-react";
+import { ChevronDown, LogOut, Menu, Phone, Search, ShoppingCart, Truck, User, UserRound, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { homeForRole, useAuth } from "@/hooks/use-auth";
 import mark from "@/assets/meatlink-mark.png.asset.json";
 import { useCart } from "@/lib/meatlink/cart";
 import { CATEGORY_PAGES } from "@/lib/meatlink/categories";
