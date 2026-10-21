@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "@/lib/meatlink/orders";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { useBi, useLabel, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
+import { StatusChip } from "@/components/meatlink/status-chip";
 import { notifyOrderEventAdmin } from "@/lib/meatlink/notify.functions";
 import type { Database } from "@/integrations/supabase/types";
 import { ReconciliationPanel } from "@/components/meatlink/reconciliation-panel";
