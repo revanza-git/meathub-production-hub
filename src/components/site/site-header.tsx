@@ -464,7 +464,10 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
                   </Link>
                   <button
                     type="button"
-                    onClick={() => void handleSignOutMobile()}
+                    onClick={() => {
+                      setOpen(false);
+                      void signOut();
+                    }}
                     className={`eyebrow border px-5 py-3 text-center ${
                       dark ? "border-white/25 text-bone" : "border-ink/25 text-ink"
                     }`}
