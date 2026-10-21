@@ -8,10 +8,17 @@ export type AuthState = {
   user: User | null;
   role: MlRole | null;
   contactComplete: boolean;
+  displayName: string;
 };
 
 export function useAuth(): AuthState {
-  const [state, setState] = useState<AuthState>({ loading: true, user: null, role: null, contactComplete: false });
+  const [state, setState] = useState<AuthState>({
+    loading: true,
+    user: null,
+    role: null,
+    contactComplete: false,
+    displayName: "",
+  });
 
   useEffect(() => {
     let active = true;
