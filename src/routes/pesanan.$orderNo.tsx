@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 import { type PayMethod } from "@/lib/meatlink/cart";
 import { useBi, useLabel, useFormat, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
+import { StatusChip } from "@/components/meatlink/status-chip";
 import { WHATSAPP_NUMBER, TRANSFER_ACCOUNT, waLink } from "@/lib/meatlink/config";
 import { PaymentProofUpload } from "@/components/meatlink/payment-proof";
 import { CancelOrder } from "@/components/meatlink/cancel-order";
@@ -113,7 +114,17 @@ function OrderPage() {
             </p>
             <h1 className="mt-4 font-display text-4xl text-ink">{data.order_no}</h1>
             <p className="mt-3 text-sm text-ash">
-              {bi("Status", "Status")}: {data.payment_method === "TERMS_REQUEST" && data.status === "NEW" ? bi("Menunggu kesepakatan termin", "Awaiting payment terms agreement") : label(ORDER_STATUS_LABEL_I18N, data.status)} ·{" "}
+              {bi("Status", "Status")}:{" "}
+              <StatusChip
+                status={data.status}
+                label={
+                  data.payment_method === "TERMS_REQUEST" && data.status === "NEW"
+                    ? bi("Menunggu kesepakatan termin", "Awaiting payment terms agreement")
+                    : label(ORDER_STATUS_LABEL_I18N, data.status)
+                }
+                className="align-middle"
+              />{" "}
+              ·{" "}
               {bi("Pembayaran", "Payment")}: {label(PAY_METHOD_LABEL_I18N, data.payment_method)}
             </p>
 

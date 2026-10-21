@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "@/lib/meatlink/orders";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { useBi, useLabel, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
+import { StatusChip } from "@/components/meatlink/status-chip";
 import { notifyOrderEventAdmin } from "@/lib/meatlink/notify.functions";
 import type { Database } from "@/integrations/supabase/types";
 import { ReconciliationPanel } from "@/components/meatlink/reconciliation-panel";
@@ -25,16 +26,6 @@ const STATUSES: StoreStatus[] = [
   "COMPLETED",
   "CANCELLED",
 ];
-
-const STATUS_TONE: Record<StoreStatus, string> = {
-  NEW: "border-ink/25 bg-ink/5 text-ink",
-  AWAITING_PAYMENT: "border-amber-400/50 bg-amber-100/60 text-amber-900",
-  PAID: "border-emerald-500/40 bg-emerald-100/60 text-emerald-900",
-  PROCESSING: "border-sky-500/40 bg-sky-100/60 text-sky-900",
-  SHIPPED: "border-indigo-500/40 bg-indigo-100/60 text-indigo-900",
-  COMPLETED: "border-emerald-700/40 bg-emerald-700/10 text-emerald-900",
-  CANCELLED: "border-crimson/40 bg-crimson/10 text-crimson",
-};
 
 export const Route = createFileRoute("/_authenticated/admin/storefront-orders")({
   head: () => ({
@@ -99,14 +90,6 @@ const inputClass =
   "w-full border border-line bg-card px-3 py-2 text-sm text-ink outline-none transition-colors focus:border-crimson";
 const btnClass =
   "eyebrow border border-line px-3 py-2 text-ink transition-colors hover:border-crimson hover:text-crimson";
-
-function StatusPill({ status, label }: { status: StoreStatus; label: string }) {
-  return (
-    <span className={`inline-flex border px-2 py-1 text-[11px] uppercase tracking-[0.12em] ${STATUS_TONE[status]}`}>
-      {label}
-    </span>
-  );
-}
 
 function OrdersTable() {
   const bi = useBi();
@@ -342,7 +325,7 @@ function OrdersTable() {
                 <span className="text-sm text-ash">{lines.length} {bi("item", "items")}</span>
                 <span className="font-display text-lg text-ink">{formatIdr(Number(o.total_idr))}</span>
                 {o.payment_method === "TERMS_REQUEST" && o.status === "NEW" ? <span className="text-xs font-medium text-crimson">{bi("Termin belum disetujui", "Terms not approved")}</span> : null}
-                <StatusPill status={o.status} label={label(ORDER_STATUS_LABEL_I18N, o.status)} />
+                <StatusChip status={o.status} label={label(ORDER_STATUS_LABEL_I18N, o.status)} />
                 <span className="eyebrow text-ash">{isOpen ? bi("Tutup", "Close") : bi("Detail", "Detail")}</span>
               </div>
             </button>

@@ -12,6 +12,7 @@ import { OrderTimeline, type TimelineEvent } from "@/components/meatlink/order-t
 import { BuyerSpecialOrders } from "@/components/meatlink/buyer-special-orders";
 import { Button } from "@/components/ui/button";
 import { useBi, useLabel, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
+import { StatusChip } from "@/components/meatlink/status-chip";
 import { orderNextAction } from "@/lib/meatlink/order-next-action";
 import { DeliveryPanel } from "@/components/meatlink/delivery-panel";
 
@@ -167,9 +168,7 @@ export function StoreOrdersPage() {
                     ) : null}
                   </div>
                   <div className="text-right">
-                    <span className="inline-flex border border-line px-2 py-1 text-xs text-ink">
-                      {label(ORDER_STATUS_LABEL_I18N, o.status)}
-                    </span>
+                    <StatusChip status={o.status} label={label(ORDER_STATUS_LABEL_I18N, o.status)} />
                     <p className="mt-2 font-display text-xl text-ink">{formatIdr(o.total_idr)}</p>
                     {o.discount_idr && Number(o.discount_idr) > 0 ? (
                       <p className="mt-1 text-xs text-ash">
