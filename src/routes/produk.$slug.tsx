@@ -408,6 +408,7 @@ function RelatedProducts({ category, slug }: { category: ProductCategory; slug: 
                 src={resolveProductImage(row.image_url, row.name, row.category, row.grade_band, row.cut_type, row.slug ?? row.id)}
                 alt={row.name}
                 loading="lazy"
+          decoding="async"
                 width={1024}
                 height={768}
                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

@@ -253,7 +253,7 @@ export type FeaturedItem = Pick<
 export function useFeaturedInventory(limit = 5) {
   return useQuery({
     queryKey: ["featured-inventory", limit],
-    staleTime: 60_000,
+    staleTime: 5 * 60_000,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("ml_public_featured", { _limit: limit });
       if (error) throw error;

@@ -226,6 +226,7 @@ function NetworkPage() {
               "Chef slicing premium beef in a professional kitchen",
             )}
             loading="lazy"
+          decoding="async"
             width={1200}
             height={912}
             className="h-full w-full object-cover"
@@ -314,6 +315,7 @@ function NetworkPage() {
               "Premium beef export carton with vacuum sealed cuts",
             )}
             loading="lazy"
+          decoding="async"
             width={1200}
             height={912}
             className="h-full w-full object-cover opacity-85"
