@@ -204,12 +204,23 @@ function workspaceLabel(role: string | null, t: (key: TKey) => string) {
   return t("header.orders");
 }
 
+/** Shared sign-out flow: stop in-flight queries, clear cache, end the session, land on sign-in. */
+function useSignOut() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  return async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    void navigate({ to: "/auth", replace: true });
+  };
+}
+
 /** Signed-in identity: name + email with workspace/profile/sign-out actions; falls back to the sign-in link. */
 function AccountMenu({ dark }: { dark: boolean }) {
   const { t } = useLang();
   const { loading, user, role, displayName } = useAuth();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const signOut = useSignOut();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
