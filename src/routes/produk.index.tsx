@@ -11,6 +11,8 @@ import {
   SORT_OPTIONS,
   useCatalog,
   useCatalogFacets,
+  catalogQueryOptions,
+  catalogFacetsQueryOptions,
   type Availability,
   type CatalogSort,
   type FacetValue,
@@ -78,6 +80,33 @@ export const Route = createFileRoute("/produk/")({
       ...(sort ? { sort } : {}),
       ...(page && page > 1 ? { page: Math.min(999, Math.round(page)) } : {}),
     };
+  },
+  loaderDeps: ({ search }) => search,
+  // Warm the catalog cache (also on hover-preload) so the grid renders instantly.
+  loader: ({ context, deps: p }) => {
+    if (typeof window === "undefined") return;
+    const qc = context.queryClient;
+    const category = p.category ?? null;
+    void qc.prefetchQuery(catalogFacetsQueryOptions({ search: p.q ?? "", category }));
+    void qc.prefetchQuery(catalogFacetsQueryOptions({ search: p.q ?? "", category: null }));
+    void qc.prefetchQuery(
+      catalogQueryOptions({
+        search: p.q ?? "",
+        category,
+        origins: p.origin ?? [],
+        brands: p.brand ?? [],
+        conditions: p.condition ?? [],
+        availability: p.avail ?? [],
+        grades: p.grade ?? [],
+        cuts: p.cut ?? [],
+        units: p.unit ?? [],
+        minPrice: p.min ?? null,
+        maxPrice: p.max ?? null,
+        sort: p.sort ?? "featured",
+        page: p.page ?? 1,
+        pageSize: PAGE_SIZE,
+      }),
+    );
   },
   head: () => ({
     meta: [
