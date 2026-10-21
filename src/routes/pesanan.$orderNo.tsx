@@ -113,7 +113,17 @@ function OrderPage() {
             </p>
             <h1 className="mt-4 font-display text-4xl text-ink">{data.order_no}</h1>
             <p className="mt-3 text-sm text-ash">
-              {bi("Status", "Status")}: {data.payment_method === "TERMS_REQUEST" && data.status === "NEW" ? bi("Menunggu kesepakatan termin", "Awaiting payment terms agreement") : label(ORDER_STATUS_LABEL_I18N, data.status)} ·{" "}
+              {bi("Status", "Status")}:{" "}
+              <StatusChip
+                status={data.status}
+                label={
+                  data.payment_method === "TERMS_REQUEST" && data.status === "NEW"
+                    ? bi("Menunggu kesepakatan termin", "Awaiting payment terms agreement")
+                    : label(ORDER_STATUS_LABEL_I18N, data.status)
+                }
+                className="align-middle"
+              />{" "}
+              ·{" "}
               {bi("Pembayaran", "Payment")}: {label(PAY_METHOD_LABEL_I18N, data.payment_method)}
             </p>
 

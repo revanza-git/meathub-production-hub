@@ -12,6 +12,7 @@ import { OrderTimeline, type TimelineEvent } from "@/components/meatlink/order-t
 import { BuyerSpecialOrders } from "@/components/meatlink/buyer-special-orders";
 import { Button } from "@/components/ui/button";
 import { useBi, useLabel, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
+import { StatusChip } from "@/components/meatlink/status-chip";
 import { orderNextAction } from "@/lib/meatlink/order-next-action";
 import { DeliveryPanel } from "@/components/meatlink/delivery-panel";
 
