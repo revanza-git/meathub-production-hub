@@ -1,16 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef, useState } from "react";
-import { ArrowRight, Bot, ChevronLeft, ChevronRight } from "lucide-react";
-import { PageHero, SiteLayout } from "@/components/site/site-layout";
+import { useMemo, useState } from "react";
+import { ArrowRight, Bot, Clock } from "lucide-react";
+import { SiteLayout } from "@/components/site/site-layout";
 import { ImageDisclaimer } from "@/components/site/image-disclaimer";
 import { CatalogAnalysis } from "@/components/site/catalog-analysis";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { resolveProductImage, useFeaturedInventory } from "@/lib/meatlink/featured";
 import { formatIdr } from "@/lib/meatlink/inventory";
 import { FALLBACK_NOTES, usePublishedInsights } from "@/lib/meatlink/insights";
@@ -33,12 +28,12 @@ export const Route = createFileRoute("/insights")({
       {
         name: "description",
         content:
-          "Analisis katalog daging Meatlink berdasarkan harga indikatif, stok, dan permintaan per cut, grade, serta origin.",
+          "Sorotan pasar daging mingguan dari Meatlink: harga indikatif, pasokan, logistik, dan permintaan per cut, grade, serta origin.",
       },
-      { property: "og:title", content: "Analisis Katalog & Market Insights — Meatlink.id" },
+      { property: "og:title", content: "Market Insights Daging — Meatlink.id" },
       {
         property: "og:description",
-        content: "Bandingkan harga, stok, dan permintaan daging berdasarkan cut, grade, dan origin.",
+        content: "Temuan pasar daging terbaru dan analisis katalog berdasarkan cut, grade, dan origin.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -47,53 +42,43 @@ export const Route = createFileRoute("/insights")({
   component: InsightsPage,
 });
 
+const TOPIC: Record<string, { id: string; en: string; keyword: string }> = {
+  pricing: { id: "Harga", en: "Pricing", keyword: "ribeye" },
+  supply: { id: "Pasokan", en: "Supply", keyword: "striploin" },
+  logistics: { id: "Logistik", en: "Logistics", keyword: "slice" },
+  demand: { id: "Permintaan", en: "Demand", keyword: "tenderloin" },
+};
+
+function topicKey(category: string) {
+  return category.trim().toLowerCase();
+}
+
+function readMinutes(text: string) {
+  return Math.max(1, Math.round(text.split(/\s+/).length / 200));
+}
+
 function InsightsPage() {
   const bi = useBi();
   const { lang } = useLang();
-  const { data: featured = [] } = useFeaturedInventory(5);
+  const { data: featured = [] } = useFeaturedInventory(4);
   const { data: published = [] } = usePublishedInsights(9);
-  const notes = published.length > 0 ? published : FALLBACK_NOTES;
-  const trackRef = useRef<HTMLDivElement>(null);
-  const notesTrackRef = useRef<HTMLDivElement>(null);
+  const notes: InsightNote[] = published.length > 0 ? published : FALLBACK_NOTES;
   const [activeNote, setActiveNote] = useState<InsightNote | null>(null);
-  const [visibleNote, setVisibleNote] = useState(0);
+  const [topic, setTopic] = useState<string>("all");
 
-  function scrollByCards(ref: React.RefObject<HTMLDivElement | null>, direction: 1 | -1) {
-    const track = ref.current;
-    if (!track) return;
-    const card = track.firstElementChild as HTMLElement | null;
-    const step = card ? card.offsetWidth + 24 : track.clientWidth;
-    track.scrollBy({ left: step * direction, behavior: "smooth" });
-  }
+  const topicLabel = (category: string) => {
+    const t = TOPIC[topicKey(category)];
+    return t ? bi(t.id, t.en) : category;
+  };
+  const noteImage = (n: InsightNote, i: number) =>
+    resolveProductImage(null, TOPIC[topicKey(n.category)]?.keyword ?? "ribeye", null, null, null, n.title, i);
 
-  function updateVisibleNote() {
-    const track = notesTrackRef.current;
-    const card = track?.firstElementChild as HTMLElement | null;
-    if (!track || !card) return;
-    const step = card.offsetWidth + 24;
-    setVisibleNote(Math.min(notes.length - 1, Math.max(0, Math.round(track.scrollLeft / step))));
-  }
+  const topics = useMemo(() => Array.from(new Set(notes.map((n) => topicKey(n.category)))), [notes]);
+  const [lead, ...rest] = notes;
+  const filtered = topic === "all" ? rest : notes.filter((n) => topicKey(n.category) === topic);
 
   return (
     <SiteLayout>
-      <PageHero
-        eyebrow={bi("Market insights", "Market insights")}
-        title={bi("Yang kami lihat di pasar daging.", "What we're seeing in the trade.")}
-        intro={bi(
-          "Catatan praktis dari permintaan yang bergerak lewat jaringan Meatlink — tanpa basa-basi, tanpa data hiasan.",
-          "Practical notes from the requests moving through the Meatlink network — no fluff, no vanity data.",
-        )}
-      />
-
-      <nav className="border-b border-line bg-bone" aria-label={bi("Navigasi insight", "Insights navigation")}>
-        <div className="mx-auto flex max-w-7xl gap-8 overflow-x-auto px-5 py-5 lg:px-8">
-          <a href="#analisis-katalog" className="eyebrow whitespace-nowrap text-crimson">{bi("Analisis Katalog", "Catalog Analysis")}</a>
-          <a href="#catatan-sourcing" className="eyebrow whitespace-nowrap text-ash hover:text-ink">{bi("Catatan Sourcing", "Sourcing Notes")}</a>
-        </div>
-      </nav>
-
-      <CatalogAnalysis />
-
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -118,201 +103,197 @@ function InsightsPage() {
         }}
       />
 
+      {/* Lead story */}
+      <section className="bg-noir text-bone">
+        <div className="mx-auto max-w-7xl px-5 pb-16 pt-14 lg:px-8 lg:pb-20">
+          <p className="eyebrow text-crimson">{bi("Market insights · Sorotan minggu ini", "Market insights · This week's highlight")}</p>
+          {lead ? (
+            <button
+              type="button"
+              onClick={() => setActiveNote(lead)}
+              className="group mt-8 grid w-full gap-8 text-left lg:grid-cols-[1.15fr_1fr] lg:items-center"
+            >
+              <div className="relative aspect-[16/10] overflow-hidden">
+                <img
+                  src={noteImage(lead, 0)}
+                  alt=""
+                  width={1200}
+                  height={750}
+                  className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <ImageDisclaimer variant="overlay" className="absolute bottom-2 left-2 z-10" />
+              </div>
+              <div>
+                <p className="eyebrow text-bone/60">
+                  {topicLabel(lead.category)} · {lead.region}
+                  {lead.period_label ? ` · ${lead.period_label}` : ""}
+                </p>
+                <h1 className="mt-4 line-clamp-4 font-display text-4xl leading-tight sm:text-5xl" lang={lang}>
+                  {pickLocale(lang, lead.title, lead.title_en)}
+                </h1>
+                <p className="mt-5 line-clamp-3 text-base leading-7 text-bone/70" lang={lang}>
+                  {pickLocale(lang, lead.body, lead.body_en)}
+                </p>
+                <span className="mt-7 inline-flex items-center gap-2 font-semibold text-crimson">
+                  {bi("Baca sorotan", "Read highlight")}
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                </span>
+              </div>
+            </button>
+          ) : (
+            <h1 className="mt-6 font-display text-5xl">{bi("Yang kami lihat di pasar daging.", "What we're seeing in the trade.")}</h1>
+          )}
+        </div>
+      </section>
+
+      {/* Article grid */}
       <section id="catatan-sourcing" className="scroll-mt-20 bg-bone">
-        <div className="mx-auto max-w-7xl px-5 py-20 lg:px-8">
-          <div className="flex items-end justify-between gap-4">
-            <p className="eyebrow text-crimson">{bi("Catatan sourcing", "Sourcing notes")}</p>
-            {notes.length > 1 ? (
-              <div className="flex gap-px bg-line">
+        <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <h2 className="font-display text-3xl sm:text-4xl">{bi("Catatan pasar terbaru", "Latest market notes")}</h2>
+            <div className="flex flex-wrap gap-2" role="group" aria-label={bi("Pilih topik", "Choose topic")}>
+              {["all", ...topics].map((t) => (
                 <button
+                  key={t}
                   type="button"
-                  aria-label={bi("Catatan sebelumnya", "Previous notes")}
-                  onClick={() => scrollByCards(notesTrackRef, -1)}
-                  className="bg-card p-3 text-ink transition-colors hover:bg-noir hover:text-bone"
+                  onClick={() => setTopic(t)}
+                  aria-pressed={topic === t}
+                  className={`border px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors ${
+                    topic === t ? "border-noir bg-noir text-bone" : "border-line bg-card text-ink hover:border-ink"
+                  }`}
                 >
-                  <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                  {t === "all" ? bi("Semua", "All") : topicLabel(t)}
                 </button>
-                <button
-                  type="button"
-                  aria-label={bi("Catatan berikutnya", "Next notes")}
-                  onClick={() => scrollByCards(notesTrackRef, 1)}
-                  className="bg-card p-3 text-ink transition-colors hover:bg-noir hover:text-bone"
-                >
-                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
-                </button>
-              </div>
-            ) : null}
+              ))}
+            </div>
           </div>
 
-          <div
-            ref={notesTrackRef}
-            onScroll={updateVisibleNote}
-            className="mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          >
-            {notes.map((n) => (
-              <article
-                key={n.title}
-                className="flex min-h-[25rem] w-[88%] shrink-0 snap-start flex-col border border-line bg-card p-6 sm:w-[calc(50%-0.75rem)] sm:p-8 lg:w-[calc(33.333%-1rem)]"
-              >
-                <p className="eyebrow min-h-8 text-crimson">
-                  {n.category} · {n.region}
-                  {"period_label" in n && n.period_label ? ` · ${n.period_label}` : ""}
-                </p>
-                <h2 className="mt-3 line-clamp-3 font-display text-2xl leading-snug" lang={lang}>
-                  {pickLocale(lang, n.title, n.title_en)}
-                </h2>
-                <p className="mt-4 line-clamp-5 text-sm leading-relaxed text-ash" lang={lang}>
-                  {pickLocale(lang, n.body, n.body_en)}
-                </p>
-                <div className="mt-auto pt-7">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => setActiveNote(n)}
-                    className="h-auto rounded-none p-0 font-semibold text-crimson hover:bg-transparent hover:text-crimson-deep"
-                  >
-                    {bi("Baca analisis", "Read analysis")}
-                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </Button>
-                  <p className="mt-5 flex items-start gap-1.5 border-t border-line pt-4 text-[10px] italic leading-relaxed text-ash/75">
-                    <Bot className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
-                    {bi("Analisis AI — verifikasi sebelum mengambil keputusan.", "AI analysis — verify before deciding.")}
-                  </p>
-                </div>
-              </article>
-            ))}
-          </div>
-          {notes.length > 1 ? (
-            <p className="mt-4 text-center text-xs tabular-nums text-ash sm:hidden" aria-live="polite">
-              {String(visibleNote + 1).padStart(2, "0")} / {String(notes.length).padStart(2, "0")}
-            </p>
-          ) : null}
-
-          <Dialog open={activeNote !== null} onOpenChange={(open) => !open && setActiveNote(null)}>
-            <DialogContent className="bottom-0 left-0 top-auto max-h-[92dvh] w-full max-w-none translate-x-0 translate-y-0 gap-0 overflow-y-auto rounded-none border-line bg-card p-0 sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:max-h-[86vh] sm:max-w-3xl sm:-translate-x-1/2 sm:-translate-y-1/2">
-              {activeNote ? (
-                <article className="px-6 pb-8 pt-12 sm:px-12 sm:pb-12 sm:pt-14">
-                  <p className="eyebrow pr-8 text-crimson">
-                    {activeNote.category} · {activeNote.region}
-                    {activeNote.period_label ? ` · ${activeNote.period_label}` : ""}
-                  </p>
-                  <DialogTitle className="mt-4 max-w-2xl font-display text-3xl font-normal leading-tight sm:text-4xl">
-                    {pickLocale(lang, activeNote.title, activeNote.title_en)}
-                  </DialogTitle>
-                  <DialogDescription className="sr-only">
-                    {bi("Analisis pasar Meatlink selengkapnya", "Full Meatlink market analysis")}
-                  </DialogDescription>
-                  <p className="mt-7 whitespace-pre-line text-base leading-8 text-ash" lang={lang}>
-                    {pickLocale(lang, activeNote.body, activeNote.body_en)}
-                  </p>
-                  <div className="mt-8 flex items-start gap-2 border-t border-line pt-5 text-xs italic leading-relaxed text-ash">
-                    <Bot className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-                    <p>
-                      {bi(
-                        "Hasil analisis AI — verifikasi sebelum digunakan sebagai dasar keputusan pembelian.",
-                        "AI-generated analysis — please verify before using it as a basis for purchasing decisions.",
-                      )}
-                    </p>
-                  </div>
-                  <Button asChild className="mt-8 h-auto rounded-none bg-crimson px-6 py-4 text-bone hover:bg-crimson-deep">
-                    <Link to="/request-quote">{bi("Minta Penawaran", "Request a Quote")}</Link>
-                  </Button>
-                </article>
-              ) : null}
-            </DialogContent>
-          </Dialog>
-
-          <div className="mt-20 flex items-end justify-between gap-4">
-            <p className="eyebrow text-crimson">{bi("Baru disourcing", "Recently sourced")}</p>
-            {featured.length > 0 ? (
-              <div className="flex gap-px bg-line">
-                <button
-                  type="button"
-                  aria-label={bi("Item sebelumnya", "Previous items")}
-                  onClick={() => scrollByCards(trackRef, -1)}
-                  className="bg-card p-3 text-ink transition-colors hover:bg-noir hover:text-bone"
-                >
-                  <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-                </button>
-                <button
-                  type="button"
-                  aria-label={bi("Item berikutnya", "Next items")}
-                  onClick={() => scrollByCards(trackRef, 1)}
-                  className="bg-card p-3 text-ink transition-colors hover:bg-noir hover:text-bone"
-                >
-                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
-                </button>
-              </div>
-            ) : null}
-          </div>
-          {featured.length === 0 ? (
+          {filtered.length === 0 ? (
             <p className="mt-10 border border-line bg-card p-6 text-sm text-ash">
-              {bi(
-                "Belum ada stok unggulan yang dipublikasikan — silakan cek kembali sebentar lagi.",
-                "No featured stock published yet — check back shortly.",
-              )}
+              {bi("Belum ada catatan lain untuk topik ini.", "No other notes for this topic yet.")}
             </p>
           ) : (
-            <div
-              ref={trackRef}
-              className="mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            >
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {filtered.map((n, i) => {
+                const body = pickLocale(lang, n.body, n.body_en);
+                return (
+                  <button
+                    key={n.title}
+                    type="button"
+                    onClick={() => setActiveNote(n)}
+                    className="group flex flex-col border border-line bg-card text-left transition-shadow hover:shadow-lg"
+                  >
+                    <div className="relative aspect-[16/10] overflow-hidden">
+                      <img
+                        src={noteImage(n, i + 1)}
+                        alt=""
+                        loading="lazy"
+                        width={800}
+                        height={500}
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <span className="eyebrow absolute left-3 top-3 bg-crimson px-2 py-1 text-bone">{topicLabel(n.category)}</span>
+                    </div>
+                    <div className="flex flex-1 flex-col p-6">
+                      <p className="flex items-center gap-2 text-xs text-ash">
+                        {n.region}
+                        <span aria-hidden="true">·</span>
+                        <Clock className="h-3 w-3" aria-hidden="true" />
+                        {readMinutes(body)} {bi("mnt baca", "min read")}
+                      </p>
+                      <h3 className="mt-3 line-clamp-3 font-display text-xl leading-snug" lang={lang}>
+                        {pickLocale(lang, n.title, n.title_en)}
+                      </h3>
+                      <span className="mt-auto inline-flex items-center gap-2 pt-6 text-sm font-semibold text-crimson">
+                        {bi("Baca analisis", "Read analysis")}
+                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+          <p className="mt-6 flex items-center gap-1.5 text-[11px] italic text-ash">
+            <Bot className="h-3 w-3" aria-hidden="true" />
+            {bi("Catatan disusun dengan bantuan AI — verifikasi sebelum mengambil keputusan.", "Notes are AI-assisted — verify before deciding.")}
+          </p>
+        </div>
+      </section>
+
+      <CatalogAnalysis />
+
+      {featured.length > 0 ? (
+        <section className="bg-bone">
+          <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
+            <div className="flex items-end justify-between gap-4">
+              <h2 className="font-display text-3xl">{bi("Baru disourcing", "Recently sourced")}</h2>
+              <Link to="/produk" className="text-sm font-semibold text-crimson">{bi("Lihat katalog", "View catalog")} →</Link>
+            </div>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {featured.map((item, index) => (
-                <article
-                  key={item.id}
-                  className="w-[85%] shrink-0 snap-start border border-line bg-card sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]"
-                >
+                <article key={item.id} className="border border-line bg-card">
                   <div className="relative">
                     <img
                       src={resolveProductImage(item.image_url, item.name, null, null, null, item.id, index)}
                       alt={item.name}
                       loading="lazy"
-                      width={1200}
-                      height={900}
-                      className="h-48 w-full object-cover"
+                      width={800}
+                      height={600}
+                      className="h-40 w-full object-cover"
                     />
                     <ImageDisclaimer variant="overlay" className="absolute bottom-1.5 left-1.5 z-10" />
                   </div>
-                  <div className="p-6">
+                  <div className="p-5">
                     <p className="eyebrow text-crimson">{item.origin}</p>
-                    <h3 className="mt-3 font-display text-xl leading-snug">{item.name}</h3>
-                    <dl className="mt-5 space-y-2 text-xs text-ash">
-                      <div className="flex justify-between border-b border-line pb-2">
-                        <dt>{bi("Brand", "Brand")}</dt>
-                        <dd className="text-ink">{item.brand || "Meatlink select"}</dd>
-                      </div>
-                      <div className="flex justify-between border-b border-line pb-2">
-                        <dt>{bi("Berat rata-rata", "Average weight")}</dt>
-                        <dd className="text-ink">{item.avg_weight_text ?? bi("Atas permintaan", "On request")}</dd>
-                      </div>
-                      <div className="flex justify-between pt-1">
-                        <dt>{bi("Harga indikatif", "Indicative price")}</dt>
-                        <dd className="text-crimson">
-                          {Number(item.list_price_idr) > Number(item.public_price_idr) ? (
-                            <span className="mr-2 text-ash line-through">
-                              {formatIdr(item.list_price_idr)}
-                            </span>
-                          ) : null}
-                          {formatIdr(item.public_price_idr)} / kg
-                        </dd>
-                      </div>
-                    </dl>
+                    <h3 className="mt-2 line-clamp-2 font-display text-lg leading-snug">{item.name}</h3>
+                    <p className="mt-3 text-sm font-semibold text-ink">{formatIdr(item.public_price_idr)} / kg</p>
                   </div>
                 </article>
               ))}
             </div>
-          )}
-
-          <div className="mt-14">
-            <Link
-              to="/request-quote"
-              className="eyebrow inline-flex bg-crimson px-7 py-4 text-bone transition-colors hover:bg-crimson-deep"
-            >
-              {bi("Minta Penawaran", "Request a Quote")}
-            </Link>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
+
+      <Dialog open={activeNote !== null} onOpenChange={(open) => !open && setActiveNote(null)}>
+        <DialogContent className="bottom-0 left-0 top-auto max-h-[92dvh] w-full max-w-none translate-x-0 translate-y-0 gap-0 overflow-y-auto rounded-none border-line bg-card p-0 sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:max-h-[86vh] sm:max-w-3xl sm:-translate-x-1/2 sm:-translate-y-1/2">
+          {activeNote ? (
+            <article className="px-6 pb-8 pt-12 sm:px-12 sm:pb-12 sm:pt-14">
+              <p className="eyebrow pr-8 text-crimson">
+                {topicLabel(activeNote.category)} · {activeNote.region}
+                {activeNote.period_label ? ` · ${activeNote.period_label}` : ""}
+              </p>
+              <DialogTitle className="mt-4 max-w-2xl font-display text-3xl font-normal leading-tight sm:text-4xl">
+                {pickLocale(lang, activeNote.title, activeNote.title_en)}
+              </DialogTitle>
+              <DialogDescription className="sr-only">
+                {bi("Analisis pasar Meatlink selengkapnya", "Full Meatlink market analysis")}
+              </DialogDescription>
+              <p className="mt-7 whitespace-pre-line text-base leading-8 text-ash" lang={lang}>
+                {pickLocale(lang, activeNote.body, activeNote.body_en)}
+              </p>
+              <div className="mt-8 flex items-start gap-2 border-t border-line pt-5 text-xs italic leading-relaxed text-ash">
+                <Bot className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                <p>
+                  {bi(
+                    "Hasil analisis AI — verifikasi sebelum digunakan sebagai dasar keputusan pembelian.",
+                    "AI-generated analysis — please verify before using it as a basis for purchasing decisions.",
+                  )}
+                </p>
+              </div>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button asChild className="h-auto rounded-none bg-crimson px-6 py-4 text-bone hover:bg-crimson-deep">
+                  <Link to="/produk">{bi("Lihat produk terkait", "View related products")}</Link>
+                </Button>
+                <Button asChild variant="outline" className="h-auto rounded-none px-6 py-4">
+                  <Link to="/request-quote">{bi("Minta penawaran", "Request a quote")}</Link>
+                </Button>
+              </div>
+            </article>
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </SiteLayout>
   );
 }
