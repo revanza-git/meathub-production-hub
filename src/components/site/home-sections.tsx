@@ -40,7 +40,7 @@ export function HomeHero() {
     skuCount ? [`${Math.floor(skuCount / 50) * 50}+`, bi("produk aktif", "active products"), "/produk", Package] : null,
     brandCount ? [`${brandCount}+`, bi("merek importir", "import brands"), "/produk", Tag] : null,
     ["A5 · MB9+", bi("grade wagyu tersedia", "wagyu grades available"), "/panduan-grade", Award],
-    [bi("Seluruh Indonesia", "All Indonesia"), bi("pengiriman", "delivery"), "/kontak", Truck],
+    [bi("Seluruh Indonesia", "All Indonesia"), bi("pengiriman", "delivery"), "/contact", Truck],
   ].filter(Boolean) as [string, string, string, typeof Package][];
 
   return (
