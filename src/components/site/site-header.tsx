@@ -197,6 +197,102 @@ export function CatalogSearch({
   );
 }
 
+/** Label for the signed-in user's workspace entry point, by role. */
+function workspaceLabel(role: string | null, t: (key: TKey) => string) {
+  if (role === "admin") return t("header.adminDashboard");
+  if (role === "vendor") return t("header.vendorCatalog");
+  return t("header.orders");
+}
+
+/** Signed-in identity: name + email with workspace/profile/sign-out actions; falls back to the sign-in link. */
+function AccountMenu({ dark }: { dark: boolean }) {
+  const { t } = useLang();
+  const { loading, user, role, displayName } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onDown(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
+
+  const idle =
+    "eyebrow inline-flex items-center gap-2 px-3 py-3 transition-colors " +
+    (dark ? "text-bone/80 hover:text-bone" : "text-ash hover:text-ink");
+
+  if (loading || !user) {
+    return (
+      <Link to="/auth" className={idle}>
+        <User className="h-5 w-5" aria-hidden="true" />
+        {t("header.account")}
+      </Link>
+    );
+  }
+
+  const name = displayName || t("header.account");
+  const email = user.email ?? "";
+
+  async function handleSignOut() {
+    setOpen(false);
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    void navigate({ to: "/auth", replace: true });
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-haspopup="true"
+        className={`${idle} max-w-56`}
+      >
+        <UserRound className="h-5 w-5 shrink-0" aria-hidden="true" />
+        <span className="truncate">{name}</span>
+        <ChevronDown className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+      </button>
+      {open ? (
+        <div className="absolute right-0 top-full z-50 mt-2 w-64 border border-line bg-background shadow-xl">
+          <div className="border-b border-line px-5 py-3">
+            <span className="block truncate text-sm font-medium text-ink">{name}</span>
+            {email ? <span className="mt-0.5 block truncate text-xs text-ash">{email}</span> : null}
+          </div>
+          <Link
+            to={homeForRole(role)}
+            onClick={() => setOpen(false)}
+            className="block border-b border-line px-5 py-3 text-sm text-ink transition-colors hover:bg-ink/5"
+          >
+            {workspaceLabel(role, t)}
+          </Link>
+          <Link
+            to="/app/profil"
+            onClick={() => setOpen(false)}
+            className="block border-b border-line px-5 py-3 text-sm text-ink transition-colors hover:bg-ink/5"
+          >
+            {t("header.myProfile")}
+          </Link>
+          <button
+            type="button"
+            onClick={() => void handleSignOut()}
+            className="eyebrow flex w-full items-center gap-2 px-5 py-3 text-left text-sm text-ink transition-colors hover:bg-ink/5"
+          >
+            <LogOut className="h-4 w-4" aria-hidden="true" />
+            {t("header.signOut")}
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
   const { t } = useLang();
   const [open, setOpen] = useState(false);
