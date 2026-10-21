@@ -26,16 +26,6 @@ const STATUSES: StoreStatus[] = [
   "CANCELLED",
 ];
 
-const STATUS_TONE: Record<StoreStatus, string> = {
-  NEW: "border-ink/25 bg-ink/5 text-ink",
-  AWAITING_PAYMENT: "border-amber-400/50 bg-amber-100/60 text-amber-900",
-  PAID: "border-emerald-500/40 bg-emerald-100/60 text-emerald-900",
-  PROCESSING: "border-sky-500/40 bg-sky-100/60 text-sky-900",
-  SHIPPED: "border-indigo-500/40 bg-indigo-100/60 text-indigo-900",
-  COMPLETED: "border-emerald-700/40 bg-emerald-700/10 text-emerald-900",
-  CANCELLED: "border-crimson/40 bg-crimson/10 text-crimson",
-};
-
 export const Route = createFileRoute("/_authenticated/admin/storefront-orders")({
   head: () => ({
     meta: [

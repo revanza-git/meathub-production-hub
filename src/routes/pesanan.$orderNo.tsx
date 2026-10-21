@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 import { type PayMethod } from "@/lib/meatlink/cart";
 import { useBi, useLabel, useFormat, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
+import { StatusChip } from "@/components/meatlink/status-chip";
 import { WHATSAPP_NUMBER, TRANSFER_ACCOUNT, waLink } from "@/lib/meatlink/config";
 import { PaymentProofUpload } from "@/components/meatlink/payment-proof";
 import { CancelOrder } from "@/components/meatlink/cancel-order";
