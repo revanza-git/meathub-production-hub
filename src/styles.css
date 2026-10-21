@@ -61,6 +61,9 @@
   --color-crimson-deep: var(--crimson-deep);
   --color-ash: var(--ash);
   --color-line: var(--line);
+  --color-status-warn: var(--status-warn);
+  --color-status-ok: var(--status-ok);
+  --color-status-info: var(--status-info);
 
   --color-chart-1: var(--crimson);
   --color-chart-2: var(--ash);
@@ -81,6 +84,11 @@
   --crimson-deep: oklch(0.38 0.14 25);
   --ash: oklch(0.55 0.008 70);
   --line: oklch(0.88 0.008 80);
+
+  /* order status tones — muted, editorial-friendly */
+  --status-warn: oklch(0.55 0.09 78); /* ochre amber — attention / awaiting payment */
+  --status-ok: oklch(0.5 0.08 155); /* deep green — paid / completed */
+  --status-info: oklch(0.5 0.06 248); /* steel blue — in progress / shipped */
 
   --background: var(--bone);
   --foreground: var(--ink);
