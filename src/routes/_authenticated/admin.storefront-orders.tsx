@@ -90,14 +90,6 @@ const inputClass =
 const btnClass =
   "eyebrow border border-line px-3 py-2 text-ink transition-colors hover:border-crimson hover:text-crimson";
 
-function StatusPill({ status, label }: { status: StoreStatus; label: string }) {
-  return (
-    <span className={`inline-flex border px-2 py-1 text-[11px] uppercase tracking-[0.12em] ${STATUS_TONE[status]}`}>
-      {label}
-    </span>
-  );
-}
-
 function OrdersTable() {
   const bi = useBi();
   const label = useLabel();
