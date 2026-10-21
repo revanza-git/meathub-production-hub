@@ -147,7 +147,7 @@ export function useCatalog(filters: CatalogFilters = {}) {
       page,
       pageSize,
     ],
-    staleTime: 60_000,
+    staleTime: 5 * 60_000,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("ml_public_catalog", {
         _search: search || undefined,
@@ -198,7 +198,7 @@ export function useCatalogFacets(scope: {
   const { search = "", category = null, promoOnly = false } = scope;
   return useQuery({
     queryKey: ["ml-catalog-facets", search, category, promoOnly],
-    staleTime: 60_000,
+    staleTime: 5 * 60_000,
     queryFn: async (): Promise<CatalogFacets> => {
       const { data, error } = await supabase.rpc("ml_public_catalog_facets", {
         _search: search || undefined,
@@ -241,7 +241,7 @@ export function useProduct(slug: string) {
   return useQuery({
     queryKey: ["ml-product", slug],
     enabled: Boolean(slug),
-    staleTime: 60_000,
+    staleTime: 5 * 60_000,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("ml_public_product", { _slug: slug });
       if (error) throw error;

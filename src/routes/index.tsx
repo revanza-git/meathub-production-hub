@@ -242,6 +242,7 @@ function AvailableNow() {
                       src={resolveProductImage(row.image_url, row.name, row.category, row.grade_band, row.cut_type, row.slug ?? row.id)}
                       alt={row.name}
                       loading="lazy"
+          decoding="async"
                       width={1024}
                       height={768}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -464,6 +465,7 @@ function MarketInsights() {
                   src={resolveProductImage(item.image_url, item.name, null, null, null, item.id, index)}
                   alt={item.name}
                   loading="lazy"
+          decoding="async"
                   width={1200}
                   height={900}
                   className="h-52 w-full object-cover"

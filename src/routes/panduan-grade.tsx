@@ -66,6 +66,7 @@ function GradeGuidePage() {
                   `Marbling sample for grade ${GRADE_LABEL[band]}`,
                 )}
                 loading="lazy"
+          decoding="async"
                 width={640}
                 height={640}
                 className="aspect-square w-full object-cover"

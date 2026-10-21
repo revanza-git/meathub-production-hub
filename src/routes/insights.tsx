@@ -188,6 +188,7 @@ function InsightsPage() {
                         src={noteImage(n, i + 1)}
                         alt=""
                         loading="lazy"
+          decoding="async"
                         width={800}
                         height={500}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -239,6 +240,7 @@ function InsightsPage() {
                       src={resolveProductImage(item.image_url, item.name, null, null, null, item.id, index)}
                       alt={item.name}
                       loading="lazy"
+          decoding="async"
                       width={800}
                       height={600}
                       className="h-40 w-full object-cover"

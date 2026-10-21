@@ -208,7 +208,17 @@ function matchCut(text: string): string | null {
 }
 
 /** Best-effort catalog artwork: admin image first, then cut match, grade match, category. */
-export function resolveProductImage(
+/** Request a resized copy from the asset CDN (supports ?w=), ~70% smaller for cards. */
+export function sizedImage(url: string, width = 800): string {
+  if (!url.includes("/__l5e/") || url.includes("?")) return url;
+  return `${url}?w=${width}`;
+}
+
+export function resolveProductImage(...args: Parameters<typeof resolveProductImageRaw>): string {
+  return sizedImage(resolveProductImageRaw(...args));
+}
+
+function resolveProductImageRaw(
   imageUrl: string | null | undefined,
   name: string | null | undefined,
   category: string | null | undefined,
@@ -253,7 +263,7 @@ export type FeaturedItem = Pick<
 export function useFeaturedInventory(limit = 5) {
   return useQuery({
     queryKey: ["featured-inventory", limit],
-    staleTime: 60_000,
+    staleTime: 5 * 60_000,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("ml_public_featured", { _limit: limit });
       if (error) throw error;

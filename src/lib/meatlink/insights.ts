@@ -97,7 +97,7 @@ export const FALLBACK_NOTES: Pick<
 export function usePublishedInsights(limit = 9) {
   return useQuery({
     queryKey: ["market-insights", "published", limit],
-    staleTime: 60_000,
+    staleTime: 5 * 60_000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("market_insights")
@@ -119,7 +119,7 @@ export function useCatalogAnalysis(
 ) {
   return useQuery({
     queryKey: ["catalog-analysis", dimension, filters.cut, filters.grade, filters.origin],
-    staleTime: 60_000,
+    staleTime: 5 * 60_000,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("ml_public_catalog_analysis", {
         _group_by: dimension,

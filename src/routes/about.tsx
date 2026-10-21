@@ -102,6 +102,7 @@ function AboutPage() {
             src={heroImg}
             alt={bi("Potongan daging sapi marbling premium di atas kertas butcher", "Premium marbled beef cut on butcher paper")}
             loading="lazy"
+          decoding="async"
             width={1600}
             height={1200}
             className="h-full w-full object-cover"
