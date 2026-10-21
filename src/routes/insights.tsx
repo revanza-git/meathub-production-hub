@@ -192,6 +192,7 @@ function InsightsPage() {
                         height={500}
                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       />
+                      <ImageDisclaimer variant="overlay" className="absolute bottom-1.5 left-1.5 z-10" />
                       <span className="eyebrow absolute left-3 top-3 bg-crimson px-2 py-1 text-bone">{topicLabel(n.category)}</span>
                     </div>
                     <div className="flex flex-1 flex-col p-6">
