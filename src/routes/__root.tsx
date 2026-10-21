@@ -201,6 +201,30 @@ function RootComponent() {
     return router.subscribe("onResolved", send);
   }, [router]);
 
+  // Subtle scroll reveal for public page sections (skips admin/app workspaces).
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    document.documentElement.classList.add("ml-motion");
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("ml-in"); io.unobserve(e.target); } }),
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.05 },
+    );
+    const scan = () => {
+      const p = window.location.pathname;
+      if (p.startsWith("/admin") || p.startsWith("/app") || p.startsWith("/vendor")) return;
+      document.querySelectorAll("main section:not(.ml-in)").forEach((el, i) => {
+        el.classList.add("ml-reveal");
+        const r = el.getBoundingClientRect();
+        if (i === 0 || r.top < window.innerHeight) requestAnimationFrame(() => el.classList.add("ml-in"));
+        else io.observe(el);
+      });
+    };
+    scan();
+    const mo = new MutationObserver(scan);
+    mo.observe(document.body, { childList: true, subtree: true });
+    return () => { io.disconnect(); mo.disconnect(); };
+  }, []);
+
   // Guarded PWA registration (no-op in dev/preview/iframe).
   useEffect(() => {
     void registerServiceWorker();

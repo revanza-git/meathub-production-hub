@@ -20,7 +20,7 @@ export function SiteLayout({
         Skip to main content
       </a>
       <SiteHeader tone={headerTone} />
-      <main id="main" className="flex-1">
+      <main id="main" className="ml-page-in flex-1">
         {children}
       </main>
       <SiteFooter />
