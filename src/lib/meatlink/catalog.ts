@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -108,7 +108,7 @@ export function isPromo(row: { public_price_idr: number | string; list_price_idr
 }
 
 /** Sanitized public catalog listing — no internal cost, markup or exact stock. */
-export function useCatalog(filters: CatalogFilters = {}) {
+export function catalogQueryOptions(filters: CatalogFilters = {}) {
   const {
     search = "",
     category = null,
@@ -127,7 +127,7 @@ export function useCatalog(filters: CatalogFilters = {}) {
     page = 1,
     pageSize = 24,
   } = filters;
-  return useQuery({
+  return queryOptions({
     queryKey: [
       "ml-catalog",
       search,
@@ -190,13 +190,13 @@ export type CatalogFacets = {
 
 
 /** Available filter options (with counts) for the current search/category scope. */
-export function useCatalogFacets(scope: {
+export function catalogFacetsQueryOptions(scope: {
   search?: string;
   category?: ProductCategory | null;
   promoOnly?: boolean;
 } = {}) {
   const { search = "", category = null, promoOnly = false } = scope;
-  return useQuery({
+  return queryOptions({
     queryKey: ["ml-catalog-facets", search, category, promoOnly],
     staleTime: 5 * 60_000,
     queryFn: async (): Promise<CatalogFacets> => {
@@ -248,4 +248,13 @@ export function useProduct(slug: string) {
       return ((data ?? []) as CatalogProduct[])[0] ?? null;
     },
   });
+}
+
+
+export function useCatalog(filters: CatalogFilters = {}) {
+  return useQuery(catalogQueryOptions(filters));
+}
+
+export function useCatalogFacets(scope: Parameters<typeof catalogFacetsQueryOptions>[0] = {}) {
+  return useQuery(catalogFacetsQueryOptions(scope));
 }
