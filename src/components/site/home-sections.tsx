@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Award, Package, Tag, Truck } from "lucide-react";
 import heroImg from "@/assets/hero-wagyu.jpg";
 import { ImageDisclaimer } from "@/components/site/image-disclaimer";
 import { CATEGORY_PAGES } from "@/lib/meatlink/categories";
@@ -36,13 +36,12 @@ export function HomeHero() {
   const facets = useHomeFacets();
   const skuCount = facets?.categories.reduce((a, c) => a + c.count, 0) ?? 0;
   const brandCount = facets?.brands.filter((b) => !GENERIC_BRAND.test(b.value)).length ?? 0;
-  const originCount = facets?.origins.filter((o) => o.value.toLowerCase() !== "other").length ?? 0;
   const stats = [
-    skuCount ? [`${Math.floor(skuCount / 50) * 50}+`, bi("produk aktif", "active products")] : null,
-    brandCount ? [`${brandCount}+`, bi("merek", "brands")] : null,
-    originCount ? [`${originCount}`, bi("negara asal", "origin countries")] : null,
-    [bi("Nasional", "Nationwide"), bi("pengiriman", "delivery")],
-  ].filter(Boolean) as [string, string][];
+    skuCount ? [`${Math.floor(skuCount / 50) * 50}+`, bi("produk aktif", "active products"), "/produk", Package] : null,
+    brandCount ? [`${brandCount}+`, bi("merek importir", "import brands"), "/produk", Tag] : null,
+    ["A5 · MB9+", bi("grade wagyu tersedia", "wagyu grades available"), "/panduan-grade", Award],
+    [bi("Seluruh Indonesia", "All Indonesia"), bi("pengiriman", "delivery"), "/contact", Truck],
+  ].filter(Boolean) as [string, string, string, typeof Package][];
 
   return (
     <section className="relative isolate overflow-hidden bg-noir text-bone">
@@ -83,14 +82,19 @@ export function HomeHero() {
           </div>
         </div>
       </div>
-      <div className="relative border-t border-bone/15 bg-noir/80 backdrop-blur">
-        <dl className="mx-auto grid max-w-7xl grid-cols-2 gap-px px-5 lg:grid-cols-4 lg:px-8">
-          {stats.map(([value, label]) => (
-            <div key={label} className="py-5">
+      <div className="relative border-t-2 border-crimson bg-noir">
+        <dl className="mx-auto grid max-w-6xl grid-cols-2 divide-bone/15 px-5 lg:grid-cols-4 lg:divide-x lg:px-8">
+          {stats.map(([value, label, to, Icon]) => (
+            <Link
+              key={label}
+              to={to}
+              className="group flex flex-col items-center gap-1 py-6 text-center transition-colors hover:bg-bone/5"
+            >
+              <Icon className="h-5 w-5 text-crimson transition-transform group-hover:-translate-y-0.5" aria-hidden="true" />
               <dt className="sr-only">{label}</dt>
-              <dd className="font-display text-2xl text-bone sm:text-3xl">{value}</dd>
-              <dd className="mt-1 text-xs uppercase tracking-wider text-bone/60">{label}</dd>
-            </div>
+              <dd className="mt-1 font-display text-2xl text-bone sm:text-3xl">{value}</dd>
+              <dd className="text-xs uppercase tracking-wider text-bone/60 group-hover:text-bone">{label}</dd>
+            </Link>
           ))}
         </dl>
       </div>
