@@ -317,15 +317,7 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
           </div>
 
           <div className="hidden items-center gap-2 lg:flex">
-            <Link
-              to="/auth"
-              className={`eyebrow inline-flex items-center gap-2 px-3 py-3 transition-colors ${
-                dark ? "text-bone/80 hover:text-bone" : "text-ash hover:text-ink"
-              }`}
-            >
-              <User className="h-5 w-5" aria-hidden="true" />
-              {t("header.account")}
-            </Link>
+            <AccountMenu dark={dark} />
             <Link
               to="/keranjang"
               aria-label={`${t("header.cart")} (${count})`}
