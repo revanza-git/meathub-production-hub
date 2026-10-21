@@ -212,7 +212,7 @@ function RootComponent() {
     const scan = () => {
       const p = window.location.pathname;
       if (p.startsWith("/admin") || p.startsWith("/app") || p.startsWith("/vendor")) return;
-      document.querySelectorAll("main section:not(.ml-reveal)").forEach((el, i) => {
+      document.querySelectorAll("main section:not(.ml-in)").forEach((el, i) => {
         el.classList.add("ml-reveal");
         const r = el.getBoundingClientRect();
         if (i === 0 || r.top < window.innerHeight) requestAnimationFrame(() => el.classList.add("ml-in"));
