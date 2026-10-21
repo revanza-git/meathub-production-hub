@@ -1,6 +1,9 @@
 import { Link, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, Menu, Phone, Search, ShoppingCart, Truck, User, X } from "lucide-react";
+import { ChevronDown, LogOut, Menu, Phone, Search, ShoppingCart, Truck, User, UserRound, X } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { homeForRole, useAuth } from "@/hooks/use-auth";
 import mark from "@/assets/meatlink-mark.png.asset.json";
 import { useCart } from "@/lib/meatlink/cart";
 import { CATEGORY_PAGES } from "@/lib/meatlink/categories";
@@ -194,11 +197,117 @@ export function CatalogSearch({
   );
 }
 
+/** Label for the signed-in user's workspace entry point, by role. */
+function workspaceLabel(role: string | null, t: (key: TKey) => string) {
+  if (role === "admin") return t("header.adminDashboard");
+  if (role === "vendor") return t("header.vendorCatalog");
+  return t("header.orders");
+}
+
+/** Shared sign-out flow: stop in-flight queries, clear cache, end the session, land on sign-in. */
+function useSignOut() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  return async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    void navigate({ to: "/auth", replace: true });
+  };
+}
+
+/** Signed-in identity: name + email with workspace/profile/sign-out actions; falls back to the sign-in link. */
+function AccountMenu({ dark }: { dark: boolean }) {
+  const { t } = useLang();
+  const { loading, user, role, displayName } = useAuth();
+  const signOut = useSignOut();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onDown(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [open]);
+
+  const idle =
+    "eyebrow inline-flex items-center gap-2 px-3 py-3 transition-colors " +
+    (dark ? "text-bone/80 hover:text-bone" : "text-ash hover:text-ink");
+
+  if (loading || !user) {
+    return (
+      <Link to="/auth" className={idle}>
+        <User className="h-5 w-5" aria-hidden="true" />
+        {t("header.account")}
+      </Link>
+    );
+  }
+
+  const name = displayName || t("header.account");
+  const email = user.email ?? "";
+
+  async function handleSignOut() {
+    setOpen(false);
+    await signOut();
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-haspopup="true"
+        className={`${idle} max-w-56`}
+      >
+        <UserRound className="h-5 w-5 shrink-0" aria-hidden="true" />
+        <span className="truncate">{name}</span>
+        <ChevronDown className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+      </button>
+      {open ? (
+        <div className="absolute right-0 top-full z-50 mt-2 w-64 border border-line bg-background shadow-xl">
+          <div className="border-b border-line px-5 py-3">
+            <span className="block truncate text-sm font-medium text-ink">{name}</span>
+            {email ? <span className="mt-0.5 block truncate text-xs text-ash">{email}</span> : null}
+          </div>
+          <Link
+            to={homeForRole(role)}
+            onClick={() => setOpen(false)}
+            className="block border-b border-line px-5 py-3 text-sm text-ink transition-colors hover:bg-ink/5"
+          >
+            {workspaceLabel(role, t)}
+          </Link>
+          <Link
+            to="/app/profil"
+            onClick={() => setOpen(false)}
+            className="block border-b border-line px-5 py-3 text-sm text-ink transition-colors hover:bg-ink/5"
+          >
+            {t("header.myProfile")}
+          </Link>
+          <button
+            type="button"
+            onClick={() => void handleSignOut()}
+            className="eyebrow flex w-full items-center gap-2 px-5 py-3 text-left text-sm text-ink transition-colors hover:bg-ink/5"
+          >
+            <LogOut className="h-4 w-4" aria-hidden="true" />
+            {t("header.signOut")}
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
   const { t } = useLang();
   const [open, setOpen] = useState(false);
   const dark = tone === "dark";
   const { count } = useCart();
+  const { loading, user, role, displayName } = useAuth();
+  const signOut = useSignOut();
 
   return (
     <header className="sticky top-0 z-50">
@@ -218,15 +327,7 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
           </div>
 
           <div className="hidden items-center gap-2 lg:flex">
-            <Link
-              to="/auth"
-              className={`eyebrow inline-flex items-center gap-2 px-3 py-3 transition-colors ${
-                dark ? "text-bone/80 hover:text-bone" : "text-ash hover:text-ink"
-              }`}
-            >
-              <User className="h-5 w-5" aria-hidden="true" />
-              {t("header.account")}
-            </Link>
+            <AccountMenu dark={dark} />
             <Link
               to="/keranjang"
               aria-label={`${t("header.cart")} (${count})`}
@@ -332,15 +433,49 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
               >
                 {t("header.cart")} ({count})
               </Link>
-              <Link
-                to="/auth"
-                onClick={() => setOpen(false)}
-                className={`eyebrow border px-5 py-3 text-center ${
-                  dark ? "border-white/25 text-bone" : "border-ink/25 text-ink"
-                }`}
-              >
-                {t("header.account")}
-              </Link>
+              {loading || !user ? (
+                <Link
+                  to="/auth"
+                  onClick={() => setOpen(false)}
+                  className={`eyebrow border px-5 py-3 text-center ${
+                    dark ? "border-white/25 text-bone" : "border-ink/25 text-ink"
+                  }`}
+                >
+                  {t("header.account")}
+                </Link>
+              ) : (
+                <>
+                  <div
+                    className={`border px-5 py-3 text-center ${
+                      dark ? "border-white/25 text-bone" : "border-ink/25 text-ink"
+                    }`}
+                  >
+                    <span className="block truncate text-sm">{displayName || t("header.account")}</span>
+                    {user.email ? <span className="mt-0.5 block truncate text-xs opacity-60">{user.email}</span> : null}
+                  </div>
+                  <Link
+                    to={homeForRole(role)}
+                    onClick={() => setOpen(false)}
+                    className={`eyebrow border px-5 py-3 text-center ${
+                      dark ? "border-white/25 text-bone" : "border-ink/25 text-ink"
+                    }`}
+                  >
+                    {workspaceLabel(role, t)}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpen(false);
+                      void signOut();
+                    }}
+                    className={`eyebrow border px-5 py-3 text-center ${
+                      dark ? "border-white/25 text-bone" : "border-ink/25 text-ink"
+                    }`}
+                  >
+                    {t("header.signOut")}
+                  </button>
+                </>
+              )}
               <Link
                 to="/produk"
                 onClick={() => setOpen(false)}

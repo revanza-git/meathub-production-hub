@@ -8,29 +8,47 @@ export type AuthState = {
   user: User | null;
   role: MlRole | null;
   contactComplete: boolean;
+  displayName: string;
 };
 
 export function useAuth(): AuthState {
-  const [state, setState] = useState<AuthState>({ loading: true, user: null, role: null, contactComplete: false });
+  const [state, setState] = useState<AuthState>({
+    loading: true,
+    user: null,
+    role: null,
+    contactComplete: false,
+    displayName: "",
+  });
 
   useEffect(() => {
     let active = true;
 
     async function load(user: User | null) {
       if (!user) {
-        if (active) setState({ loading: false, user: null, role: null, contactComplete: false });
+        if (active)
+          setState({ loading: false, user: null, role: null, contactComplete: false, displayName: "" });
         return;
       }
       const [roles, profile] = await Promise.all([
         supabase.from("ml_user_roles").select("role").eq("user_id", user.id).limit(1).maybeSingle(),
-        supabase.from("profiles").select("email, phone").eq("id", user.id).maybeSingle(),
+        supabase.from("profiles").select("email, phone, display_name").eq("id", user.id).maybeSingle(),
       ]);
-      if (active) setState({
-        loading: false,
-        user,
-        role: (roles.data?.role as MlRole) ?? "buyer",
-        contactComplete: !profile.error && !!profile.data?.email?.trim() && /^\+?[0-9][0-9 ()-]{6,28}$/.test(profile.data?.phone?.trim() ?? "") && (profile.data?.phone?.trim().length ?? 0) >= 8,
-      });
+      if (active)
+        setState({
+          loading: false,
+          user,
+          role: (roles.data?.role as MlRole) ?? "buyer",
+          contactComplete:
+            !profile.error &&
+            !!profile.data?.email?.trim() &&
+            /^\+?[0-9][0-9 ()-]{6,28}$/.test(profile.data?.phone?.trim() ?? "") &&
+            (profile.data?.phone?.trim().length ?? 0) >= 8,
+          displayName:
+            profile.data?.display_name?.trim() ||
+            profile.data?.email?.trim() ||
+            user.email ||
+            "",
+        });
     }
 
     void supabase.auth.getUser().then(({ data }) => load(data.user ?? null));
