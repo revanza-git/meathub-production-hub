@@ -31,7 +31,7 @@ export function CatalogAnalysis() {
   const query = useCatalogAnalysis(dimension);
   const analysis = query.data;
   const topRows = useMemo(
-    () => [...(analysis?.rows ?? [])]
+    () => [...(analysis?.rows ?? [])].filter((row) => !/^(lainnya|other|others|unknown)$/i.test(row.label.trim()))
       .sort((left, right) => {
         const demandDifference = (right.request_count ?? -1) - (left.request_count ?? -1);
         return demandDifference || right.stock_kg - left.stock_kg;
