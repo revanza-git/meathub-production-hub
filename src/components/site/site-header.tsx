@@ -306,6 +306,8 @@ export function SiteHeader({ tone = "dark" }: { tone?: "light" | "dark" }) {
   const [open, setOpen] = useState(false);
   const dark = tone === "dark";
   const { count } = useCart();
+  const { loading, user, role, displayName } = useAuth();
+  const signOut = useSignOut();
 
   return (
     <header className="sticky top-0 z-50">
