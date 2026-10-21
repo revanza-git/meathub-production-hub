@@ -7,18 +7,15 @@ import {
   Tags,
 } from "lucide-react";
 import { useState } from "react";
-import { CATEGORY_PAGES } from "@/lib/meatlink/categories";
 import { SiteLayout } from "@/components/site/site-layout";
-import { CatalogSearch } from "@/components/site/site-header";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
 import { ImageDisclaimer } from "@/components/site/image-disclaimer";
 import { PriceTag, PromoFlag } from "@/components/site/price-tag";
 import { Recommendations } from "@/components/meatlink/recommendations";
-import { CATEGORY_LABEL, useCatalog, useCatalogFacets } from "@/lib/meatlink/catalog";
+import { useCatalog } from "@/lib/meatlink/catalog";
 import { HomeHero, HomeCategories, HomeOrigins, HomeBrands } from "@/components/site/home-sections";
 import { resolveProductImage, useFeaturedInventory } from "@/lib/meatlink/featured";
 import { formatIdr } from "@/lib/meatlink/inventory";
-import heroImg from "@/assets/hero-wagyu.jpg";
 import { DICT, useLang, type TKey } from "@/lib/i18n";
 
 const FAQ_JSONLD_KEYS = ["scale", "minimum", "coverage", "sourcing"] as const;
@@ -67,7 +64,6 @@ const BENEFITS = [
   { icon: ClipboardList, key: "flexible" },
 ] as const;
 
-const AUDIENCES = ["restaurant", "hotel", "catering", "butcher", "retailer", "reseller"] as const;
 
 const CommercialHero = HomeHero;
 const ShopByCategory = HomeCategories;
