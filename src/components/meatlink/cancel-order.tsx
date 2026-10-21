@@ -27,7 +27,7 @@ export function CancelOrder({ orderNo, token, onCancelled }: { orderNo: string; 
   }
 
   return (
-    <div className="mt-6 border border-line bg-paper p-5">
+    <div className="mt-6 border border-line bg-card p-5">
       {!open ? (
         <button type="button" onClick={() => setOpen(true)} className="text-sm text-ash underline underline-offset-4 hover:text-crimson">
           {bi("Batalkan pesanan ini", "Cancel this order")}
@@ -41,7 +41,7 @@ export function CancelOrder({ orderNo, token, onCancelled }: { orderNo: string; 
             maxLength={250}
             rows={2}
             placeholder={bi("Alasan (opsional)", "Reason (optional)")}
-            className="w-full border border-line bg-bone p-2 text-sm"
+            className="w-full border border-line bg-background p-2 text-sm"
           />
           <div className="flex gap-3">
             <button type="button" disabled={busy} onClick={submit} className="eyebrow bg-crimson px-4 py-2 text-bone hover:bg-crimson-deep disabled:opacity-50">
