@@ -8,6 +8,13 @@
       "when": 1792151041952,
       "tag": "0000_speed_up_inventory_import",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792601082393,
+      "tag": "0001_buyer_cancel_store_order",
+      "breakpoints": true
     }
   ]
 }

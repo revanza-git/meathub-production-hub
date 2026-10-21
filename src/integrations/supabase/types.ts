@@ -3666,6 +3666,10 @@ export type Database = {
         Args: { _order_no: string; _token: string; _url: string }
         Returns: undefined
       }
+      ml_buyer_cancel_store_order: {
+        Args: { _order_no: string; _reason?: string; _token: string }
+        Returns: undefined
+      }
       ml_confirm_store_receipt: {
         Args: { _order_no: string; _token: string }
         Returns: undefined
