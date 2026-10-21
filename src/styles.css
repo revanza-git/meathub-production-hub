@@ -181,3 +181,13 @@
     letter-spacing: -0.01em;
   }
 }
+
+/* Subtle motion: scroll reveal for public page sections + route fade. */
+@keyframes ml-page-in { from { opacity: 0; } to { opacity: 1; } }
+.ml-page-in { animation: ml-page-in 0.35s ease-out both; }
+html.ml-motion .ml-reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s cubic-bezier(0.22,1,0.36,1), transform 0.6s cubic-bezier(0.22,1,0.36,1); }
+html.ml-motion .ml-reveal.ml-in { opacity: 1; transform: none; }
+.group img { will-change: auto; }
+@media (prefers-reduced-motion: reduce) {
+  .ml-page-in, html.ml-motion .ml-reveal { animation: none !important; transition: none !important; opacity: 1 !important; transform: none !important; }
+}
