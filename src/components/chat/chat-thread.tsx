@@ -159,8 +159,8 @@ export function ChatThread({ access, admin = false, context = "", visible = true
                     {m.sender_name}
                     {m.sender_kind === "admin" ? " · Meatlink" : ""}
                   </p>
+                  {m.image ? <ChatPhoto url={m.image.url} name={m.image.name} /> : null}
                   <p className="whitespace-pre-wrap break-words text-sm leading-relaxed [overflow-wrap:anywhere]">
-                    {m.image ? <ChatPhoto url={m.image.url} name={m.image.name} /> : null}
                     {m.body}
                   </p>
                   <p className="mt-2 flex items-center justify-end gap-1 text-[10px] opacity-70">

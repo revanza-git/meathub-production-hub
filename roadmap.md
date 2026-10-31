@@ -2,7 +2,7 @@
 
 # Roadmap
 
-- [ ] Tambahkan foto privat pada chat pelanggan/admin dengan pratinjau, batas 5 MB, dan pengujian akses serta kirim/baca.
+- [x] Tambahkan foto privat pada chat pelanggan/admin: pratinjau, batas 5 MB, validasi isi foto, pengaitan pesan atomik; foto tamu dan balasan foto admin berhasil dikirim dan dibaca kembali, tampilan HP tanpa luapan.
 
 - [x] Perhalus chat: pesan langsung terlihat dengan status pengiriman, draf tetap saat panel ditutup, referensi divalidasi bersama pesan; alur kirim dan muat ulang serta tampilan HP diuji.
 
