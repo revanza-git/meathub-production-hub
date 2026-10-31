@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Mail } from "lucide-react";
-import { CONTACT_EMAIL, waLink } from "@/lib/meatlink/config";
+import { CONTACT_EMAIL, chatLink } from "@/lib/meatlink/config";
 import { Wordmark } from "./site-header";
 import { useLang } from "@/lib/i18n";
 
@@ -84,12 +84,12 @@ export function SiteFooter() {
             <li>{CONTACT_EMAIL}</li>
             <li>
               <a
-                href={waLink("Hi Meatlink, I'd like to talk about sourcing.")}
-                target="_blank"
+                href={chatLink("Hi Meatlink, I'd like to talk about sourcing.")}
+                
                 rel="noreferrer noopener"
                 className="hover:text-bone"
               >
-                WhatsApp Business
+                Chat Meatlink
               </a>
             </li>
             <li>Jakarta · Bali · Indonesia</li>

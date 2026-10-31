@@ -60,7 +60,7 @@ const STATUS_COPY: Record<string, { label: string; hint: string; className: stri
   },
   quoted: {
     label: "Quoted",
-    hint: "A quote has been sent to you — check WhatsApp or email.",
+    hint: "A quote has been sent to you — check the response below or your email.",
     className: "border-crimson text-crimson",
   },
   won: {
@@ -103,12 +103,13 @@ function MyRfqBody() {
     enabled: Boolean(user),
     queryKey: ["my-quote-requests", user?.id],
     queryFn: async () => {
+      if (!user) return [];
       const { data, error } = await supabase
         .from("quote_requests")
         .select(
           "id, company_name, delivery_location, required_delivery_date, status, created_at, notes, items, reference_no, admin_response, response_valid_until",
         )
-        .eq("user_id", user!.id)
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data as unknown as MyRfq[];
@@ -124,7 +125,7 @@ function MyRfqBody() {
         <h2 className="font-display text-xl text-ink">No requests yet</h2>
         <p className="mt-2 max-w-lg text-sm text-ash">
           Requests you submit while signed in appear here with their status. Older requests sent
-          before you created an account stay with our sourcing team on WhatsApp.
+          before you created an account remain accessible through their private tracking links.
         </p>
         <Link
           to="/request-quote"

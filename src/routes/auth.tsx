@@ -148,7 +148,7 @@ function AuthPage() {
               ) : null}
 
               {mode === "register" ? (
-                <Field label="Nomor telepon / WhatsApp" required>
+                <Field label="Nomor telepon" required>
                   <TextInput type="tel" required minLength={8} maxLength={30} value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" placeholder="08xxxxxxxxxx" />
                 </Field>
               ) : null}

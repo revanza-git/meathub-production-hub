@@ -20,3 +20,4 @@
 - Store buyer contact details in the existing self-owned profile; gate buyer workspace and order creation until both email and phone are present — preserves legacy accounts while requiring reachable contacts.
 
 - Buyer and admin order entry points share their unified order views; keep catalog and custom order records in existing stores and preserve legacy detail URLs — consolidates navigation without rewriting transaction history.
+- Customer support uses separate conversation/message tables and server-verified account or hashed guest-token access; admin replies require the existing server-verified admin role, and each customer message uses an atomic idempotent write before a synchronous managed-email alert — keeps support private and independent of AI chat and payment settlement.

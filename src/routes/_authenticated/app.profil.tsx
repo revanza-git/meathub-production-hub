@@ -81,7 +81,7 @@ function BuyerProfilePage() {
             <Field label={bi("Email akun", "Account email")} required hint={bi("Email mengikuti alamat yang digunakan untuk masuk.", "This is the email you use to sign in.")}>
               <TextInput type="email" value={user?.email ?? ""} readOnly aria-label={bi("Email akun", "Account email")} />
             </Field>
-            <Field label={bi("Nomor telepon / WhatsApp", "Phone / WhatsApp number")} required>
+            <Field label={bi("Nomor telepon", "Phone number")} required>
               <TextInput type="tel" autoComplete="tel" inputMode="tel" minLength={8} maxLength={30} required value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="08xxxxxxxxxx" />
             </Field>
             <Button type="submit" disabled={pending || !user?.email} className="w-fit rounded-none bg-crimson px-6 py-3 text-bone hover:bg-crimson-deep">

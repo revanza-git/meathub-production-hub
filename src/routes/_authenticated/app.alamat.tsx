@@ -184,7 +184,7 @@ function AddressBookPage() {
             <Field label="Label" value={form.label} onChange={(v) => set("label", v)} placeholder="Gudang Cakung" />
             <Field label="Nama penerima" required value={form.buyer_name} onChange={(v) => set("buyer_name", v)} />
             <Field label="Perusahaan" value={form.company ?? ""} onChange={(v) => set("company", v)} />
-            <Field label="Nomor WhatsApp" required value={form.phone} onChange={(v) => set("phone", v)} />
+            <Field label="Nomor telepon" required value={form.phone} onChange={(v) => set("phone", v)} />
             <Field label="Email" type="email" value={form.email ?? ""} onChange={(v) => set("email", v)} />
             <Field label="Kota" value={form.city ?? ""} onChange={(v) => set("city", v)} />
             <Field label="Alamat lengkap" required value={form.address} onChange={(v) => set("address", v)} />

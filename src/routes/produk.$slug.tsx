@@ -5,7 +5,7 @@ import { AddToCart } from "@/components/site/add-to-cart";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
 import { ImageDisclaimer } from "@/components/site/image-disclaimer";
 import { PriceTag, PromoFlag } from "@/components/site/price-tag";
-import { WHATSAPP_NUMBER } from "@/lib/meatlink/config";
+import { chatLink } from "@/lib/meatlink/config";
 import {
   formatIdr,
   unitPriceFromPublic,
@@ -213,17 +213,12 @@ function ProductPage() {
                   {bi("Minta penawaran", "Request a quote")}
                 </Link>
                 <a
-                  href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-                    bi(
-                      `Halo Meatlink, saya tertarik dengan ${product.name}.`,
-                      `Hello Meatlink, I am interested in ${product.name}.`,
-                    ),
-                  )}`}
+                  href={chatLink(product.name)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="eyebrow inline-flex items-center justify-center gap-2 border border-ink/25 px-6 py-4 text-ink transition-colors hover:bg-ink/5"
                 >
-                  <MessageCircle className="h-4 w-4" /> {bi("Tanya via WhatsApp", "Ask via WhatsApp")}
+                  <MessageCircle className="h-4 w-4" /> {bi("Tanyakan produk ini", "Ask about this product")}
                 </a>
               </div>
             </aside>
