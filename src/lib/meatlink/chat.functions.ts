@@ -4,6 +4,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { chatAccessSchema, chatIdentitySchema, chatMessageSchema, CHAT_EMAIL } from './chat-schema';
+import { canReadCustomerChat, chatNotificationKey } from './chat-access';
 
 async function hash(s: string) { return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s))), b=>b.toString(16).padStart(2,'0')).join(''); }
 function token() { return Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join(''); }
@@ -25,11 +26,11 @@ async function limit(key:string,max:number,seconds:number) {
 async function access(input:z.infer<typeof chatAccessSchema>) {
  const user=await identity(),client=await db();
  const {data,error}=await client.from('support_conversations').select('*').eq('id',input.id).maybeSingle();
- if(error||!data|| !(data.user_id ? user?.id===data.user_id : input.token && data.guest_token_hash===await hash(input.token))) throw new Error('Percakapan tidak tersedia. Periksa akses Anda.');
+ if(error||!data|| !canReadCustomerChat(data.user_id,user?.id||null,data.guest_token_hash,input.token?await hash(input.token):null)) throw new Error('Percakapan tidak tersedia. Periksa akses Anda.');
  return {client,conversation:data,user};
 }
 async function alert(id:string,messageId:string,name:string) {
- try { const {sendTemplateEmail}=await import('@/lib/email-templates/send-email'); return (await sendTemplateEmail('chat-alert',CHAT_EMAIL,{idempotencyKey:`chat-${messageId}`,templateData:{name,inboxUrl:`https://meatlink.id/admin/chat?conversation=${id}`}})).sent; }
+ try { const {sendTemplateEmail}=await import('@/lib/email-templates/send-email'); return (await sendTemplateEmail('chat-alert',CHAT_EMAIL,{idempotencyKey:chatNotificationKey(messageId),templateData:{name,inboxUrl:`https://meatlink.id/admin/chat?conversation=${id}`}})).sent; }
  catch { console.warn('Chat notification could not be sent'); return false; }
 }
 export const startChat=createServerFn({method:'POST'}).inputValidator(input=>chatIdentitySchema.extend({id:z.string().uuid(),context:z.string().trim().max(300).default('')}).parse(input)).handler(async({data})=>{
@@ -59,7 +60,7 @@ export const readChat=createServerFn({method:'POST'}).inputValidator(input=>chat
  return {conversation:{id:conversation.id,customer_name:conversation.customer_name,customer_email:conversation.customer_email,context_label:conversation.context_label,status:conversation.status,last_message:conversation.last_message,last_message_at:conversation.last_message_at,customer_unread:0,admin_unread:conversation.admin_unread},messages:(messages||[]).reverse()};
 });
 export const sendChat=createServerFn({method:'POST'}).inputValidator(input=>chatAccessSchema.merge(chatMessageSchema).parse(input)).handler(async({data})=>{
- const {client,conversation,user}=await access(data);
+ const {client,conversation}=await access(data);
  const {data:old}=await client.from('support_messages').select('conversation_id,sender_kind').eq('id',data.messageId).maybeSingle();
  if(old) { if(old.conversation_id!==data.id||old.sender_kind!=='customer') throw new Error('Pesan tidak valid.'); return {ok:true,emailSent:true}; }
  await limit(`send:${data.id}`,12,60);
