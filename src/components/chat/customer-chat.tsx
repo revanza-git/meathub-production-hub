@@ -13,7 +13,7 @@ import {
 import { chatIdentitySchema, type ChatAccess } from "@/lib/meatlink/chat-schema";
 import { ChatThread } from "./chat-thread";
 const KEY = "meatlink.support.guest";
-export function CustomerChat({ context = "" }: { context?: string }) {
+export function CustomerChat({ context = "", visible = true }: { context?: string; visible?: boolean }) {
   const { user, displayName, loading } = useAuth(),
     bi = useBi(),
     start = useServerFn(startChat),
@@ -31,7 +31,7 @@ export function CustomerChat({ context = "" }: { context?: string }) {
     [notice, setNotice] = useState("");
   const q = useQuery({
     queryKey: ["chat-mine", user?.id],
-    enabled: !!user,
+    enabled: !!user && visible,
     queryFn: () => list(),
     staleTime: 0,
   });
@@ -121,7 +121,7 @@ export function CustomerChat({ context = "" }: { context?: string }) {
       setBusy(false);
     }
   }
-  if (loading || (busy && !active))
+  if (loading)
     return <p className="p-5 text-sm text-ash">{bi("Memuat…", "Loading…")}</p>;
   if (active)
     return (
@@ -141,7 +141,7 @@ export function CustomerChat({ context = "" }: { context?: string }) {
             {bi("Percakapan lain", "Other conversation")}
           </Button>
         </div>
-        <ChatThread access={active} context={context} />
+        <ChatThread key={active.id} access={active} context={context} visible={visible} />
       </div>
     );
   return (
@@ -224,8 +224,8 @@ export function CustomerChat({ context = "" }: { context?: string }) {
             {notice}
           </p>
         ) : null}
-        <Button type="submit" disabled={busy} className="w-full">
-          {recovering
+        <Button type="submit" disabled={busy} className="h-12 w-full">
+          {busy ? bi("Menghubungkan…", "Connecting…") : recovering
             ? bi("Kirim tautan pemulihan", "Send recovery link")
             : bi("Mulai percakapan", "Start conversation")}
         </Button>

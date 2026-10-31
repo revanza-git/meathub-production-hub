@@ -24,9 +24,9 @@ function Page() {
   const { context } = Route.useSearch();
   return (
     <SiteLayout>
-      <section className="mx-auto max-w-3xl px-5 py-10">
-        <h1 className="mb-6 font-display text-3xl text-ink">Chat Meatlink</h1>
-        <div className="flex h-[min(680px,80dvh)] flex-col overflow-hidden rounded-md border border-line bg-background">
+      <section className="ml-in mx-auto max-w-2xl px-4 py-5 sm:py-8">
+        <h1 className="mb-4 font-display text-2xl text-ink">Chat Meatlink</h1>
+        <div className="flex h-[min(720px,70dvh)] min-h-[360px] flex-col overflow-hidden rounded-md border border-line bg-background">
           <CustomerChat context={context} />
         </div>
       </section>
