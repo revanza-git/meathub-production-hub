@@ -314,7 +314,7 @@ export const ORDER_STATUS_LABEL_I18N: Record<string, Record<Lang, string>> = {
 export const PAY_METHOD_LABEL_I18N: Record<string, Record<Lang, string>> = {
   BANK_TRANSFER: { id: "Transfer langsung BCA", en: "Direct BCA transfer" },
   QRIS: { id: "QRIS", en: "QRIS" },
-  WHATSAPP: { id: "WhatsApp", en: "WhatsApp" },
+  WHATSAPP: { id: "Koordinasi manual (metode lama)", en: "Manual coordination (legacy)" },
   CBD: { id: "Cash Before Delivery", en: "Cash before delivery" },
   TOP: { id: "Tempo (TOP)", en: "Terms (TOP)" },
   TERMS_REQUEST: { id: "Pengajuan termin — belum disetujui", en: "Payment terms request — not approved" },
