@@ -3386,6 +3386,60 @@ export type Database = {
         }
         Relationships: []
       }
+      support_chat_images: {
+        Row: {
+          content_type: string
+          conversation_id: string
+          created_at: string
+          file_name: string
+          id: string
+          message_id: string | null
+          object_path: string
+          sender_id: string | null
+          sender_kind: string
+          size_bytes: number
+        }
+        Insert: {
+          content_type: string
+          conversation_id: string
+          created_at?: string
+          file_name: string
+          id?: string
+          message_id?: string | null
+          object_path: string
+          sender_id?: string | null
+          sender_kind: string
+          size_bytes: number
+        }
+        Update: {
+          content_type?: string
+          conversation_id?: string
+          created_at?: string
+          file_name?: string
+          id?: string
+          message_id?: string | null
+          object_path?: string
+          sender_id?: string | null
+          sender_kind?: string
+          size_bytes?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_chat_images_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "support_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "support_chat_images_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: true
+            referencedRelation: "support_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       support_conversations: {
         Row: {
           admin_unread: number
@@ -4108,6 +4162,18 @@ export type Database = {
       submit_organization: { Args: { _org_id: string }; Returns: undefined }
       support_consume_limit: {
         Args: { _key: string; _max: number; _seconds: number }
+        Returns: boolean
+      }
+      support_post_image_message: {
+        Args: {
+          _body: string
+          _conversation: string
+          _id: string
+          _image?: string
+          _kind: string
+          _name: string
+          _sender: string
+        }
         Returns: boolean
       }
       support_post_message: {
