@@ -29,6 +29,7 @@ export function ImageDisclaimer({
 }) {
   const { t } = useLang();
   const label = t("image.disclaimer");
+  if (variant === "overlay") return null;
 
   return (
     <TooltipProvider delayDuration={150}>
