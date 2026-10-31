@@ -141,7 +141,7 @@ export function CustomerChat({ context = "" }: { context?: string }) {
             {bi("Percakapan lain", "Other conversation")}
           </Button>
         </div>
-        <ChatThread access={active} />
+        <ChatThread access={active} context={context} />
       </div>
     );
   return (
