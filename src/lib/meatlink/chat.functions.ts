@@ -5,6 +5,8 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { chatAccessSchema, chatIdentitySchema, chatMessageSchema, CHAT_EMAIL } from "./chat-schema";
 import { canReadCustomerChat, chatNotificationKey } from "./chat-access";
+import { chatImageSchema, matchesChatImage } from "./chat-image";
+import type { ChatMessage } from "./chat-schema";
 
 async function hash(s: string) {
   return Array.from(
@@ -74,6 +76,57 @@ async function alert(id: string, messageId: string, name: string) {
     console.warn("Chat notification could not be sent");
     return false;
   }
+}
+async function prepareImage(client: Awaited<ReturnType<typeof db>>, conversationId: string, kind: string, sender: string | null, file: z.infer<typeof chatImageSchema>) {
+  await limit(`photo:${conversationId}`, 12, 60);
+  const id = crypto.randomUUID();
+  const ext = file.type === "image/jpeg" ? "jpg" : file.type === "image/png" ? "png" : "webp";
+  const path = `${conversationId}/${id}.${ext}`;
+  const { error } = await client.from("support_chat_images").insert({ id, conversation_id: conversationId, sender_kind: kind, sender_id: sender, object_path: path, file_name: file.name, size_bytes: file.size, content_type: file.type });
+  if (error) throw new Error("Foto belum dapat diunggah.");
+  const { data, error: uploadError } = await client.storage.from("support-chat-images").createSignedUploadUrl(path, { upsert: false });
+  if (uploadError || !data) throw new Error("Foto belum dapat diunggah.");
+  return { id, path, token: data.token };
+}
+export const prepareChatImage = createServerFn({ method: "POST" })
+  .inputValidator((input) => chatAccessSchema.extend({ file: chatImageSchema }).parse(input))
+  .handler(async ({ data }) => {
+    const { client, conversation } = await access(data);
+    return prepareImage(client, data.id, "customer", conversation.user_id, data.file);
+  });
+export const prepareAdminChatImage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input) => z.object({ id: z.string().uuid(), file: chatImageSchema }).parse(input))
+  .handler(async ({ data, context }) => {
+    await admin(context);
+    const { data: conversation } = await context.supabase.from("support_conversations").select("id").eq("id", data.id).maybeSingle();
+    if (!conversation) throw new Error("Percakapan tidak tersedia.");
+    return prepareImage(await db(), data.id, "admin", context.userId, data.file);
+  });
+async function verifyImage(client: Awaited<ReturnType<typeof db>>, imageId: string | undefined, conversationId: string, kind: string, sender: string | null) {
+  if (!imageId) return;
+  const { data } = await client.from("support_chat_images").select("*").eq("id", imageId).maybeSingle();
+  if (!data || data.conversation_id !== conversationId || data.sender_kind !== kind || data.sender_id !== sender) throw new Error("Foto tidak tersedia.");
+  const { data: blob, error } = await client.storage.from("support-chat-images").download(data.object_path);
+  if (error || !blob || blob.size !== data.size_bytes || !matchesChatImage(new Uint8Array(await blob.slice(0,12).arrayBuffer()), data.content_type)) {
+    await client.storage.from("support-chat-images").remove([data.object_path]);
+    throw new Error("Foto tidak valid. Pilih JPG, PNG, atau WebP maksimal 5 MB.");
+  }
+}
+async function messageImages(client: Awaited<ReturnType<typeof db>>, messages: ChatMessage[]) {
+  if (!messages.length) return messages;
+  const { data, error } = await client.from("support_chat_images").select("id,message_id,object_path,file_name").in("message_id", messages.map((m) => m.id));
+  if (error) throw new Error("Foto belum dapat dimuat.");
+  if (!data?.length) return messages;
+  const { data: urls } = await client.storage.from("support-chat-images").createSignedUrls(data.map((p) => p.object_path), 900);
+  return messages.map((m) => {
+    const photo = data.find((p) => p.message_id === m.id);
+    const url = photo ? urls?.find((u) => u.path === photo.object_path)?.signedUrl : null;
+    if (!photo || !url) return m;
+    const parsed = new URL(url);
+    const browserUrl = import.meta.env.VITE_SUPABASE_URL;
+    return { ...m, image: { id: photo.id, name: photo.file_name, url: `${browserUrl}${parsed.pathname}${parsed.search}` } };
+  });
 }
 export const startChat = createServerFn({ method: "POST" })
   .inputValidator((input) =>
@@ -165,7 +218,7 @@ export const readChat = createServerFn({ method: "POST" })
         customer_unread: 0,
         admin_unread: conversation.admin_unread,
       },
-      messages: (messages || []).reverse(),
+      messages: await messageImages(client, (messages || []).reverse()),
     };
   });
 export const sendChat = createServerFn({ method: "POST" })
@@ -187,15 +240,17 @@ export const sendChat = createServerFn({ method: "POST" })
       return { ok: true, emailSent: true };
     }
     await limit(`send:${data.id}`, 12, 60);
+    await verifyImage(client, data.imageId, data.id, "customer", conversation.user_id);
     // Generated RPC types cannot represent nullable UUID arguments.
     const rpcClient: SupabaseClient = client;
-    const { data: inserted, error } = await rpcClient.rpc("support_post_message", {
+    const { data: inserted, error } = await rpcClient.rpc("support_post_image_message", {
       _conversation: data.id,
       _id: data.messageId,
       _kind: "customer",
       _sender: conversation.user_id || null,
       _name: conversation.customer_name,
       _body: data.body,
+      _image: data.imageId || null,
     });
     if (error) throw new Error("Pesan belum terkirim. Silakan coba lagi.");
     const emailSent = inserted
@@ -249,7 +304,7 @@ export const adminReadChat = createServerFn({ method: "POST" })
       .update({ admin_unread: 0 })
       .eq("id", data.id)
       .eq("admin_unread", conversation.admin_unread);
-    return { conversation, messages: (messages || []).reverse() };
+    return { conversation, messages: await messageImages(client, (messages || []).reverse()) };
   });
 export const adminReplyChat = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -264,18 +319,22 @@ export const adminReplyChat = createServerFn({ method: "POST" })
       .maybeSingle();
     if (old && (old.conversation_id !== data.id || old.sender_id !== context.userId))
       throw new Error("Pesan tidak valid.");
+    if (old) return { ok: true };
+    await verifyImage(client, data.imageId, data.id, "admin", context.userId);
     const { data: p } = await context.supabase
       .from("profiles")
       .select("display_name")
       .eq("id", context.userId)
       .maybeSingle();
-    const { error } = await client.rpc("support_post_message", {
+    const rpcClient: SupabaseClient = client;
+    const { error } = await rpcClient.rpc("support_post_image_message", {
       _conversation: data.id,
       _id: data.messageId,
       _kind: "admin",
       _sender: context.userId,
       _name: p?.display_name || "Admin Meatlink",
       _body: data.body,
+      _image: data.imageId || null,
     });
     if (error) throw new Error("Balasan belum terkirim.");
     return { ok: true };

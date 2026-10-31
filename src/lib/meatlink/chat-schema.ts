@@ -8,6 +8,7 @@ export const chatIdentitySchema = z.object({
 export const chatMessageSchema = z.object({
   messageId: z.string().uuid(),
   body: z.string().trim().min(1).max(4000),
+  imageId: z.string().uuid().optional(),
 });
 export const chatAccessSchema = z.object({
   id: z.string().uuid(),
@@ -30,6 +31,7 @@ export type ChatConversation = {
   admin_unread: number;
 };
 export type ChatMessage = {
+  image?: { url: string; name: string; id: string };
   id: string;
   sender_kind: string;
   sender_name: string;

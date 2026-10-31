@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Send, Check, Clock3, RefreshCw, MessageCircle, ArrowDown, ArrowUpRight } from "lucide-react";
+import { Send, Check, Clock3, RefreshCw, MessageCircle, ArrowDown, ArrowUpRight, ImagePlus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useBi } from "@/lib/i18n";
-import { readChat, sendChat, adminReadChat, adminReplyChat } from "@/lib/meatlink/chat.functions";
+import { readChat, sendChat, adminReadChat, adminReplyChat, prepareChatImage, prepareAdminChatImage } from "@/lib/meatlink/chat.functions";
+import { supabase } from "@/integrations/supabase/client";
+import { chatImageSchema } from "@/lib/meatlink/chat-image";
+import { ChatPhoto } from "./chat-photo";
 import { chatMessageSchema, type ChatAccess, type ChatConversation, type ChatMessage } from "@/lib/meatlink/chat-schema";
 import { composeChatMessage } from "@/lib/meatlink/chat-compose";
 export function ChatThread({ access, admin = false, context = "", visible = true }: { access: ChatAccess; admin?: boolean; context?: string; visible?: boolean }) {
@@ -13,7 +16,17 @@ export function ChatThread({ access, admin = false, context = "", visible = true
     read = useServerFn(readChat),
     readAdmin = useServerFn(adminReadChat),
     send = useServerFn(sendChat),
-    reply = useServerFn(adminReplyChat);
+    reply = useServerFn(adminReplyChat),
+    prepare = useServerFn(prepareChatImage),
+    prepareAdmin = useServerFn(prepareAdminChatImage);
+  const [photo, setPhoto] = useState<{ file: File; url: string; id?: string } | null>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
+  useEffect(() => { return () => { if (photo?.url) URL.revokeObjectURL(photo.url); }; }, [photo?.url]);
+  function choosePhoto(file?: File) {
+    if (!file) return;
+    if (!chatImageSchema.safeParse({name:file.name, size:file.size, type:file.type}).success) { setError(bi("Pilih JPG, PNG, atau WebP maksimal 5 MB.", "Choose JPG, PNG, or WebP up to 5 MB.")); return; }
+    setError(""); setPhoto({file, url:URL.createObjectURL(file)}); draft.current = null;
+  }
   const [body, setBody] = useState(""),
     [pending, setPending] = useState(false),
     [error, setError] = useState("");
@@ -49,10 +62,10 @@ export function ChatThread({ access, admin = false, context = "", visible = true
   }, [q.data?.messages, outgoing]);
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!body.trim() || pending) return;
+    if ((!body.trim() && !photo) || pending) return;
     const messageId = draft.current?.body === body ? draft.current.id : crypto.randomUUID();
     draft.current = { body, id: messageId };
-    const parsed = chatMessageSchema.safeParse({ messageId, body: composeChatMessage(body, admin ? "" : context) });
+    const parsed = chatMessageSchema.safeParse({ messageId, body: composeChatMessage(body.trim() || bi("Foto", "Photo"), admin ? "" : context) });
     if (!parsed.success) {
       setError(
         bi(
@@ -65,16 +78,27 @@ export function ChatThread({ access, admin = false, context = "", visible = true
     setPending(true);
     setError("");
     const text = body;
-    setOutgoing({ id: messageId, body: parsed.data.body, sender_kind: admin ? "admin" : "customer", sender_name: bi("Anda", "You"), created_at: new Date().toISOString(), delivery: "sending" });
+    setOutgoing({ id: messageId, body: parsed.data.body, sender_kind: admin ? "admin" : "customer", sender_name: bi("Anda", "You"), created_at: new Date().toISOString(), delivery: "sending", image: photo ? { id:photo.id || messageId, name:photo.file.name, url:photo.url } : undefined });
     setBody("");
     setNearBottom(true);
     composer.current?.focus();
     try {
-      if (admin) await reply({ data: { id: access.id, ...parsed.data } });
-      else await send({ data: { ...access, ...parsed.data } });
+      let imageId = photo?.id;
+      if (photo && !imageId) {
+        const file = { name:photo.file.name, type:photo.file.type, size:photo.file.size };
+        const validated = chatImageSchema.parse(file);
+        const upload = admin ? await prepareAdmin({data:{id:access.id,file:validated}}) : await prepare({data:{...access,file:validated}});
+        const {error:uploadError} = await supabase.storage.from("support-chat-images").uploadToSignedUrl(upload.path, upload.token, photo.file, {contentType:photo.file.type});
+        if (uploadError) throw new Error("Upload failed");
+        imageId = upload.id;
+        setPhoto((current) => current ? {...current,id:imageId} : null);
+      }
+      if (admin) await reply({ data: { id: access.id, ...parsed.data, imageId } });
+      else await send({ data: { ...access, ...parsed.data, imageId } });
       setOutgoing((message) => message ? { ...message, delivery: "sent" } : null);
       draft.current = null;
-      void q.refetch();
+      await q.refetch();
+      setPhoto(null);
       void qc.invalidateQueries({ queryKey: ["chat-inbox"] });
       void qc.invalidateQueries({ queryKey: ["chat-mine"] });
     } catch {
@@ -136,6 +160,7 @@ export function ChatThread({ access, admin = false, context = "", visible = true
                     {m.sender_kind === "admin" ? " · Meatlink" : ""}
                   </p>
                   <p className="whitespace-pre-wrap break-words text-sm leading-relaxed [overflow-wrap:anywhere]">
+                    {m.image ? <ChatPhoto url={m.image.url} name={m.image.name} /> : null}
                     {m.body}
                   </p>
                   <p className="mt-2 flex items-center justify-end gap-1 text-[10px] opacity-70">
@@ -150,7 +175,7 @@ export function ChatThread({ access, admin = false, context = "", visible = true
             );
           })
         )}
-        {outgoing && !q.data?.messages.some((m) => m.id === outgoing.id) ? <div className="flex justify-end"><div className="max-w-[88%] rounded-md bg-primary px-4 py-3 text-primary-foreground"><p className="whitespace-pre-wrap break-words text-sm leading-relaxed [overflow-wrap:anywhere]">{outgoing.body}</p><p role="status" className="mt-2 flex items-center justify-end gap-1 text-[10px] opacity-80">{outgoing.delivery === "sending" ? <Clock3 className="h-3 w-3" /> : outgoing.delivery === "sent" ? <Check className="h-3 w-3" /> : <RefreshCw className="h-3 w-3" />}{outgoing.delivery === "sending" ? bi("Mengirim…", "Sending…") : outgoing.delivery === "sent" ? bi("Terkirim", "Sent") : bi("Belum terkirim · coba lagi", "Not sent · retry")}</p></div></div> : null}
+        {outgoing && !q.data?.messages.some((m) => m.id === outgoing.id) ? <div className="flex justify-end"><div className="max-w-[88%] rounded-md bg-primary px-4 py-3 text-primary-foreground">{outgoing.image ? <ChatPhoto url={outgoing.image.url} name={outgoing.image.name} /> : null}<p className="whitespace-pre-wrap break-words text-sm leading-relaxed [overflow-wrap:anywhere]">{outgoing.body}</p><p role="status" className="mt-2 flex items-center justify-end gap-1 text-[10px] opacity-80">{outgoing.delivery === "sending" ? <Clock3 className="h-3 w-3" /> : outgoing.delivery === "sent" ? <Check className="h-3 w-3" /> : <RefreshCw className="h-3 w-3" />}{outgoing.delivery === "sending" ? bi("Mengirim…", "Sending…") : outgoing.delivery === "sent" ? bi("Terkirim", "Sent") : bi("Belum terkirim · coba lagi", "Not sent · retry")}</p></div></div> : null}
         <div ref={bottom} />
       </div>
       {!nearBottom ? <Button variant="secondary" size="sm" className="self-center" onClick={() => { if (scroll.current) scroll.current.scrollTop = scroll.current.scrollHeight; setNearBottom(true); }}><ArrowDown className="h-4 w-4" />{bi("Pesan terbaru", "Latest messages")}</Button> : null}
@@ -160,7 +185,10 @@ export function ChatThread({ access, admin = false, context = "", visible = true
             {error}
           </p>
         ) : null}
+        {photo ? <div className="mb-2 flex items-center gap-3"><img src={photo.url} alt={bi("Pratinjau foto", "Photo preview")} className="h-16 w-16 rounded-md object-cover" /><span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{photo.file.name}</span><Button type="button" variant="ghost" size="icon" disabled={pending} aria-label={bi("Hapus foto", "Remove photo")} onClick={() => {setPhoto(null);draft.current=null;}}><X className="h-4 w-4" /></Button></div> : null}
         <div className="flex items-end gap-2">
+          <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => {choosePhoto(e.target.files?.[0]);e.target.value="";}} />
+          <Button type="button" variant="ghost" size="icon" className="h-12 w-10 shrink-0" disabled={pending || q.isPending || !!q.error} aria-label={bi("Lampirkan foto", "Attach photo")} title={bi("Lampirkan foto", "Attach photo")} onClick={() => fileInput.current?.click()}><ImagePlus className="h-5 w-5" /></Button>
           <textarea
             ref={composer}
             aria-label={bi("Pesan", "Message")}
@@ -176,7 +204,7 @@ export function ChatThread({ access, admin = false, context = "", visible = true
             type="submit"
             size="icon"
             className="h-12 w-12 shrink-0"
-            disabled={pending || !body.trim() || q.isPending || !!q.error}
+            disabled={pending || (!body.trim() && !photo) || q.isPending || !!q.error}
             aria-label={bi("Kirim pesan", "Send message")}
           >
             <Send />
