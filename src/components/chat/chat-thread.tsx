@@ -5,7 +5,7 @@ import { Send, CheckCheck, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useBi } from "@/lib/i18n";
 import { readChat, sendChat, adminReadChat, adminReplyChat } from "@/lib/meatlink/chat.functions";
-import { chatMessageSchema, type ChatAccess } from "@/lib/meatlink/chat-schema";
+import { chatMessageSchema, type ChatAccess, type ChatConversation, type ChatMessage } from "@/lib/meatlink/chat-schema";
 export function ChatThread({ access, admin = false }: { access: ChatAccess; admin?: boolean }) {
   const bi = useBi(),
     qc = useQueryClient(),
@@ -18,7 +18,7 @@ export function ChatThread({ access, admin = false }: { access: ChatAccess; admi
     [error, setError] = useState("");
   const draft = useRef<{ body: string; id: string } | null>(null),
     bottom = useRef<HTMLDivElement>(null);
-  const q = useQuery({
+  const q = useQuery<{ conversation: ChatConversation; messages: ChatMessage[] }>({
     queryKey: ["chat-thread", admin ? "admin" : "customer", access.id, access.token || ""],
     queryFn: () => (admin ? readAdmin({ data: { id: access.id } }) : read({ data: access })),
     staleTime: 0,
