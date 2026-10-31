@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
-import { WhatsAppFab } from "./whatsapp-fab";
+import { ChatWidget } from "@/components/chat/chat-widget";
 
 
 export function SiteLayout({
@@ -24,7 +24,7 @@ export function SiteLayout({
         {children}
       </main>
       <SiteFooter />
-      <WhatsAppFab />
+      <ChatWidget />
 
     </div>
   );

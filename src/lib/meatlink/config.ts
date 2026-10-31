@@ -1,17 +1,9 @@
-/**
- * Meatlink.id Phase 1 operating constants.
- * Update WHATSAPP_NUMBER to the live Meatlink WhatsApp Business line.
- */
-
-/** International format, digits only — used to build wa.me links. */
-export const WHATSAPP_NUMBER = "628978872745";
-
 export const TRANSFER_ACCOUNT = { bank: "BCA", number: "5271212403", holder: "Revanza Raytama" } as const;
 
 export const CONTACT_EMAIL = "cs@meatlink.id";
 
-export function waLink(message: string) {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message.slice(0, 1200))}`;
+export function chatLink(message = "") {
+  return `/chat?context=${encodeURIComponent(message.slice(0, 300))}`;
 }
 
 export const CATEGORIES = [

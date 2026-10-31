@@ -14,7 +14,7 @@ import { TRANSFER_ACCOUNT } from "@/lib/meatlink/config";
 import { useAuth } from "@/hooks/use-auth";
 
 const PAY_METHOD_HINT_EN: Record<string, string> = {
-  BANK_TRANSFER: "Transfer to our BCA account after placing the order, then confirm via WhatsApp.",
+  BANK_TRANSFER: "Transfer to our BCA account after placing the order, then confirm via chat Meatlink.",
   QRIS: "The QRIS code is shown after placing the order.",
   WHATSAPP: "Our team will contact you to finalize the order.",
   CBD: "Pay in cash before the goods are delivered.",
@@ -28,7 +28,7 @@ export const Route = createFileRoute("/keranjang")({
       {
         name: "description",
         content:
-          "Periksa keranjang pesanan daging Anda, isi data pengiriman dan pilih transfer BCA atau ajukan termin via WhatsApp.",
+          "Periksa keranjang pesanan daging Anda, isi data pengiriman dan pilih transfer BCA atau ajukan termin via chat Meatlink.",
       },
       { property: "og:title", content: "Keranjang & Checkout — Meatlink.id" },
       {
@@ -123,7 +123,7 @@ function CartPage() {
       .max(max, bi(`${name} maksimal ${max} karakter.`, `${name} must be no more than ${max} characters.`));
   const formSchema = z.object({
     buyer_name: requiredField(bi("Nama pemesan", "Buyer name"), 2, 120),
-    phone: requiredField(bi("Nomor WhatsApp", "WhatsApp number"), 6, 40),
+    phone: requiredField(bi("Nomor telepon", "Phone number"), 6, 40),
     address: requiredField(bi("Alamat pengiriman", "Shipping address"), 5, 500),
     company: z.string().trim().max(160),
     city: z.string().trim().max(120),
@@ -300,7 +300,7 @@ function CartPage() {
     } catch (err) {
       const message = err instanceof Error ? err.message : "";
       toast.error(message === "Data pemesan tidak lengkap"
-        ? bi("Periksa kembali nama, nomor WhatsApp, dan alamat pengiriman.", "Check your name, WhatsApp number, and shipping address.")
+        ? bi("Periksa kembali nama, nomor telepon, dan alamat pengiriman.", "Check your name, Phone number, and shipping address.")
         : message || bi("Pesanan gagal dibuat. Silakan coba lagi.", "Order could not be created. Please try again."));
     } finally {
       setPending(false);
@@ -405,7 +405,7 @@ function CartPage() {
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                  <Input id="buyer_name" label={bi("Nama pemesan", "Buyer name")} required value={form.buyer_name} onChange={(v) => set("buyer_name", v)} onBlur={() => touch("buyer_name")} error={visibleError("buyer_name")} maxLength={120} />
                  <Input id="company" label={bi("Perusahaan", "Company")} value={form.company} onChange={(v) => set("company", v)} onBlur={() => touch("company")} error={visibleError("company")} maxLength={160} />
-                 <Input id="phone" label={bi("Nomor WhatsApp", "WhatsApp number")} required type="tel" value={form.phone} onChange={(v) => set("phone", v)} onBlur={() => touch("phone")} error={visibleError("phone")} maxLength={40} />
+                 <Input id="phone" label={bi("Nomor telepon", "Phone number")} required type="tel" value={form.phone} onChange={(v) => set("phone", v)} onBlur={() => touch("phone")} error={visibleError("phone")} maxLength={40} />
                  <Input id="email" label={bi("Email", "Email")} type="email" value={form.email} onChange={(v) => set("email", v)} onBlur={() => touch("email")} error={visibleError("email")} maxLength={160} />
                  <Input id="city" label={bi("Kota", "City")} value={form.city} onChange={(v) => set("city", v)} onBlur={() => touch("city")} error={visibleError("city")} maxLength={120} />
                 <div className="sm:col-span-2">
@@ -512,7 +512,7 @@ function CartPage() {
                         className="mt-1"
                       />
                       <span>
-                         <span className="block text-ink">{m.value === "TERMS_REQUEST" ? bi("Ajukan termin via WhatsApp", "Request payment terms via WhatsApp") : label(PAY_METHOD_LABEL_I18N, m.value)}</span>
+                         <span className="block text-ink">{m.value === "TERMS_REQUEST" ? bi("Ajukan termin via chat Meatlink", "Request payment terms via chat Meatlink") : label(PAY_METHOD_LABEL_I18N, m.value)}</span>
                         <span className="mt-1 block text-xs text-ash">
                           {bi(m.hint, PAY_METHOD_HINT_EN[m.value] ?? m.hint)}
                         </span>
@@ -524,7 +524,7 @@ function CartPage() {
 
               {method === "BANK_TRANSFER" ? (
                 <p className="mt-4 border border-line p-4 text-sm text-ink">
-                  {bi("Setelah pesanan dibuat, transfer ke", "After placing your order, transfer to")} {TRANSFER_ACCOUNT.bank} <strong>{TRANSFER_ACCOUNT.number}</strong> {bi("a.n.", "in the name of")} {TRANSFER_ACCOUNT.holder}. {bi("Konfirmasi pembayaran melalui WhatsApp dan unggah bukti transfer di halaman pesanan. Jangan transfer sebelum memeriksa nomor pesanan dan total akhirnya.", "Confirm on WhatsApp and upload your transfer receipt on the order page. Check your order number and final total before transferring.")}
+                  {bi("Setelah pesanan dibuat, transfer ke", "After placing your order, transfer to")} {TRANSFER_ACCOUNT.bank} <strong>{TRANSFER_ACCOUNT.number}</strong> {bi("a.n.", "in the name of")} {TRANSFER_ACCOUNT.holder}. {bi("Konfirmasi pembayaran melalui chat Meatlink dan unggah bukti transfer di halaman pesanan. Jangan transfer sebelum memeriksa nomor pesanan dan total akhirnya.", "Confirm on chat Meatlink and upload your transfer receipt on the order page. Check your order number and final total before transferring.")}
                 </p>
               ) : null}
 

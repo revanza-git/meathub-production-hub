@@ -3,11 +3,11 @@ import { useBi, useErr } from "@/lib/i18n";
 import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 import { Field, SubmitButton, TextArea, TextInput } from "./form-kit";
-import { waLink } from "@/lib/meatlink/config";
+import { chatLink } from "@/lib/meatlink/config";
 import {
   submitSupplier,
   supplierSchema,
-  supplierWhatsappMessage,
+  supplierChatMessage,
   type SupplierInput,
 } from "@/lib/meatlink/leads";
 
@@ -69,12 +69,12 @@ export function SupplierForm() {
           {bi("Tim kami memverifikasi setiap pemasok sebelum mencocokkannya dengan permintaan pembeli. Kami akan menghubungi Anda untuk membahas ragam produk dan cakupan pengiriman.", "Our team verifies every supplier before matching them with buyer demand. We'll reach out to discuss your range and coverage.")}
         </p>
         <a
-          href={waLink(supplierWhatsappMessage(done))}
-          target="_blank"
+          href={chatLink(supplierChatMessage(done))}
+          
           rel="noreferrer noopener"
           className="eyebrow mt-6 inline-flex bg-crimson px-6 py-4 text-bone transition-colors hover:bg-crimson-deep"
         >
-          {bi("Lanjut via WhatsApp", "Continue on WhatsApp")}
+          {bi("Lanjut via chat Meatlink", "Continue on chat Meatlink")}
         </a>
       </div>
     );
@@ -96,7 +96,7 @@ export function SupplierForm() {
             onChange={(e) => set("contact_name", e.target.value)}
           />
         </Field>
-        <Field label={bi("Nomor WhatsApp", "WhatsApp number")} required error={errors["whatsapp"]}>
+        <Field label={bi("Nomor telepon", "Phone number")} required error={errors["whatsapp"]}>
           <TextInput
             value={values.whatsapp}
             onChange={(e) => set("whatsapp", e.target.value)}

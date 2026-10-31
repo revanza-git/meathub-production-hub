@@ -63,7 +63,7 @@ export const sendChat=createServerFn({method:'POST'}).inputValidator(input=>chat
  const {data:old}=await client.from('support_messages').select('conversation_id,sender_kind').eq('id',data.messageId).maybeSingle();
  if(old) { if(old.conversation_id!==data.id||old.sender_kind!=='customer') throw new Error('Pesan tidak valid.'); return {ok:true,emailSent:true}; }
  await limit(`send:${data.id}`,12,60);
- const {data:inserted,error}=await client.rpc('support_post_message',{_conversation:data.id,_id:data.messageId,_kind:'customer',_sender:user?.id,_name:conversation.customer_name,_body:data.body});
+ const {data:inserted,error}=await client.rpc('support_post_message',{_conversation:data.id,_id:data.messageId,_kind:'customer',_sender:user?.id||'00000000-0000-0000-0000-000000000000',_name:conversation.customer_name,_body:data.body});
  if(error) throw new Error('Pesan belum terkirim. Silakan coba lagi.');
  const emailSent=inserted?await alert(data.id,data.messageId,conversation.customer_name):true;
  return {ok:true,emailSent};

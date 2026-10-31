@@ -139,7 +139,7 @@ export function StoreOrdersPage() {
             const next = orderNextAction(o);
             const nextLabel = next === "pay" ? bi("Bayar & konfirmasi", "Pay & confirm")
               : next === "verify" ? bi("Lihat verifikasi pembayaran", "View payment verification")
-              : next === "terms" ? bi("Bahas termin via WhatsApp", "Discuss terms on WhatsApp")
+              : next === "terms" ? bi("Bahas termin via chat Meatlink", "Discuss terms on chat Meatlink")
               : next === "previous_payment" ? bi("Periksa pembayaran sebelumnya", "Review previous payment")
               : next === "receive" ? bi("Konfirmasi penerimaan", "Confirm receipt")
               : next === "details" ? bi("Lihat pesanan", "View order") : bi("Pantau pengiriman", "Track delivery");
@@ -152,7 +152,7 @@ export function StoreOrdersPage() {
                       {formatDate(o.created_at)} · {label(PAY_METHOD_LABEL_I18N, o.payment_method)}
                       {o.credit_term_days ? ` · Tempo ${o.credit_term_days} hari` : ""}
                     </p>
-                    {o.payment_method === "TERMS_REQUEST" && o.status === "NEW" ? <p className="mt-2 text-xs text-crimson">Pengajuan termin — menunggu kesepakatan via WhatsApp, belum ada tagihan.</p> : null}
+                    {o.payment_method === "TERMS_REQUEST" && o.status === "NEW" ? <p className="mt-2 text-xs text-crimson">Pengajuan termin — menunggu kesepakatan via chat Meatlink, belum ada tagihan.</p> : null}
                     {badge ? (
                       <span
                         className={`mt-2 inline-flex border px-2 py-1 text-[11px] ${

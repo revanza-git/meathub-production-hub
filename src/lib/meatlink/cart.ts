@@ -12,11 +12,11 @@ export const PAY_METHODS: {
   {
     value: "BANK_TRANSFER",
     label: "Transfer BCA langsung",
-    hint: "Transfer ke rekening BCA setelah pesanan dibuat, lalu konfirmasi via WhatsApp.",
+    hint: "Transfer ke rekening BCA setelah pesanan dibuat, lalu konfirmasi via chat Meatlink.",
   },
   {
     value: "TERMS_REQUEST",
-    label: "Ajukan termin via WhatsApp",
+    label: "Ajukan termin via chat Meatlink",
     hint: "Buat pesanan dahulu, lalu bahas syarat pembayaran dengan tim kami. Belum disetujui.",
   },
 ];
@@ -24,7 +24,7 @@ export const PAY_METHODS: {
 export const PAY_METHOD_LABEL: Record<PayMethod, string> = {
   BANK_TRANSFER: "Transfer BCA langsung",
   QRIS: "QRIS",
-  WHATSAPP: "WhatsApp",
+  WHATSAPP: "chat Meatlink",
   CBD: "Cash Before Delivery",
   TOP: "Tempo (TOP)",
   TERMS_REQUEST: "Pengajuan termin — belum disetujui",

@@ -9,7 +9,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatDate } from "@/lib/meatlink/orders";
 import { useBi } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
-import { waLink } from "@/lib/meatlink/config";
 import { respondToRfq } from "@/lib/meatlink/rfq.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/rfq")({
@@ -214,8 +213,8 @@ function QuoteRequestCard({
       if (result.emailError) {
         toast.warning(
           bi(
-            "Respons tersimpan, tetapi email belum terkirim. Lanjutkan via WhatsApp.",
-            "Response saved, but the email was not sent. Continue on WhatsApp.",
+            "Respons tersimpan, tetapi email belum terkirim. Lanjutkan via chat Meatlink.",
+            "Response saved, but the email was not sent. Continue on chat Meatlink.",
           ),
         );
       } else {
@@ -350,22 +349,19 @@ function QuoteRequestCard({
               ) : null}
               <Button asChild variant="outline" className="rounded-none">
                 <a
-                  href={waLink(
-                    `Halo ${r.contact_name}, berikut tindak lanjut untuk permintaan ${r.reference_no}:\n\n${response}`,
-                  )}
-                  target="_blank"
+                  href={`/admin/chat?context=${encodeURIComponent(r.reference_no)}`}
                   rel="noreferrer noopener"
                 >
                   <MessageCircle />
-                  WhatsApp
+                  chat Meatlink
                 </a>
               </Button>
             </div>
             {!r.email ? (
               <p className="text-xs text-ash">
                 {bi(
-                  "Email tidak dicantumkan. Simpan respons lalu lanjutkan melalui WhatsApp.",
-                  "No email was provided. Save the response, then continue on WhatsApp.",
+                  "Email tidak dicantumkan. Simpan respons lalu lanjutkan melalui chat Meatlink.",
+                  "No email was provided. Save the response, then continue on chat Meatlink.",
                 )}
               </p>
             ) : null}

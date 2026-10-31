@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Mail, MessageCircle, MapPin } from "lucide-react";
 import { PageHero, SiteLayout } from "@/components/site/site-layout";
 import { useBi } from "@/lib/i18n";
-import { CONTACT_EMAIL, waLink } from "@/lib/meatlink/config";
+import { CONTACT_EMAIL, chatLink } from "@/lib/meatlink/config";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -11,12 +11,14 @@ export const Route = createFileRoute("/contact")({
       {
         name: "description",
         content:
-          "Reach the Meatlink.id sourcing team by WhatsApp or email for B2B meat buying and supplier enquiries in Indonesia.",
+          "Reach the Meatlink.id sourcing team by chat Meatlink or email for B2B meat buying and supplier enquiries in Indonesia.",
       },
       { property: "og:title", content: "Contact Meatlink.id" },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       {
         property: "og:description",
-        content: "Talk to the Meatlink sourcing team by WhatsApp or email.",
+        content: "Talk to the Meatlink sourcing team by chat Meatlink or email.",
       },
     ],
   }),
@@ -40,22 +42,22 @@ function ContactPage() {
       <section className="bg-bone">
         <div className="mx-auto grid max-w-7xl gap-px border-y border-line bg-line lg:grid-cols-3">
           <a
-            href={waLink(
+            href={chatLink(
               bi(
                 "Halo Meatlink, saya ingin mendiskusikan kebutuhan produk.",
                 "Hi Meatlink, I'd like to discuss my sourcing needs.",
               ),
             )}
-            target="_blank"
+            
             rel="noreferrer noopener"
             className="group bg-card p-10 transition-colors hover:bg-noir"
           >
             <MessageCircle className="h-7 w-7 text-crimson" aria-hidden="true" />
-            <h2 className="mt-6 font-display text-2xl text-ink group-hover:text-bone">WhatsApp</h2>
+            <h2 className="mt-6 font-display text-2xl text-ink group-hover:text-bone">chat Meatlink</h2>
             <p className="mt-3 text-sm text-ash group-hover:text-bone/60">
               {bi(
-                "Cara tercepat menghubungi tim kami selama jam operasional.",
-                "The fastest way to reach our team during business hours.",
+                "Bicarakan kebutuhan Anda dengan tim kami.",
+                "Discuss your request with our team.",
               )}
             </p>
           </a>

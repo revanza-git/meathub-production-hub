@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { type PayMethod } from "@/lib/meatlink/cart";
 import { useBi, useLabel, useFormat, ORDER_STATUS_LABEL_I18N, PAY_METHOD_LABEL_I18N } from "@/lib/i18n";
 import { StatusChip } from "@/components/meatlink/status-chip";
-import { WHATSAPP_NUMBER, TRANSFER_ACCOUNT, waLink } from "@/lib/meatlink/config";
+import { TRANSFER_ACCOUNT, chatLink } from "@/lib/meatlink/config";
 import { PaymentProofUpload } from "@/components/meatlink/payment-proof";
 import { CancelOrder } from "@/components/meatlink/cancel-order";
 import { OrderTimeline, type TimelineEvent } from "@/components/meatlink/order-timeline";
@@ -101,8 +101,8 @@ function OrderPage() {
                 "Tautan pelacakan tidak valid atau sudah kedaluwarsa. Hubungi tim kami di",
                 "This tracking link is invalid or has expired. Contact our team on",
               )}{" "}
-              <a href={`https://wa.me/${WHATSAPP_NUMBER}`} className="underline">
-                WhatsApp
+              <a href={chatLink(orderNo)} className="underline">
+                chat Meatlink
               </a>
               .
             </p>
@@ -133,7 +133,7 @@ function OrderPage() {
             (data.status === "NEW" || data.status === "AWAITING_PAYMENT") ? (
               data.payment_environment ? (
                 <div className="mt-8 border border-crimson/40 p-6 text-sm text-ink">
-                  {bi("Pesanan ini masih terkait transaksi pembayaran sebelumnya. Jangan transfer lagi sebelum tim kami memeriksa statusnya. Hubungi kami melalui WhatsApp.", "This order is linked to an earlier payment attempt. Do not transfer again until our team checks its status. Contact us on WhatsApp.")}
+                  {bi("Pesanan ini masih terkait transaksi pembayaran sebelumnya. Jangan transfer lagi sebelum tim kami memeriksa statusnya. Hubungi kami melalui chat Meatlink.", "This order is linked to an earlier payment attempt. Do not transfer again until our team checks its status. Contact us on chat Meatlink.")}
                 </div>
               ) : (
                 <div className="mt-8 border border-crimson/40 bg-crimson/5 p-6">
@@ -163,8 +163,8 @@ function OrderPage() {
                     ? bi("Pesanan Anda tercatat sebagai pengajuan termin, bukan persetujuan kredit. Hubungi tim kami untuk membahas syarat pembayaran, harga akhir, dan pengiriman. Belum ada tagihan atau jatuh tempo.", "Your order is recorded as a payment terms request, not approved credit. Contact our team to discuss terms, final price and delivery. No invoice or due date has been issued.")
                   : data.payment_method === "BANK_TRANSFER"
                     ? bi(
-                         "Transfer ke rekening BCA di atas, unggah bukti pembayaran, lalu konfirmasi ke WhatsApp. Tim kami akan memverifikasi pembayaran secara manual.",
-                         "Transfer to the BCA account above, upload your payment receipt, then confirm on WhatsApp. Our team will verify your payment manually.",
+                         "Transfer ke rekening BCA di atas, unggah bukti pembayaran, lalu konfirmasi ke chat Meatlink. Tim kami akan memverifikasi pembayaran secara manual.",
+                         "Transfer to the BCA account above, upload your payment receipt, then confirm on chat Meatlink. Our team will verify your payment manually.",
                       )
                      : data.payment_method === "QRIS"
                        ? bi("Pembayaran QRIS sedang tidak tersedia. Hubungi tim kami sebelum membayar.", "QRIS payment is currently unavailable. Contact our team before paying.")
@@ -174,22 +174,22 @@ function OrderPage() {
                             "Cash payment is made before delivery. Our team will contact you to schedule delivery.",
                           )
                         : bi(
-                            "Tim kami menghubungi Anda melalui WhatsApp untuk finalisasi pesanan dan pembayaran.",
-                            "Our team will contact you via WhatsApp to finalize the order and payment.",
+                            "Tim kami menghubungi Anda melalui chat Meatlink untuk finalisasi pesanan dan pembayaran.",
+                            "Our team will contact you via chat Meatlink to finalize the order and payment.",
                           )}
               </p>
                {!data.paid_at && data.status !== "CANCELLED" && data.payment_environment ? (
                  <p className="mt-3 text-sm text-crimson">{bi("Jangan bayar dua kali. Konfirmasi status pembayaran sebelumnya dengan tim kami.", "Do not pay twice. Confirm your previous payment status with our team.")}</p>
               ) : null}
               <a
-                href={waLink(data.payment_method === "TERMS_REQUEST"
+                href={chatLink(data.payment_method === "TERMS_REQUEST"
                   ? bi(`Halo Meatlink, saya ingin membahas pengajuan termin untuk pesanan ${data.order_no}. Kebutuhan: ${data.items.map((item) => `${item.product_name} ${fmt.qty(item.qty_kg)}`).join(", ")}. Nilai indikatif ${fmt.money(data.total_idr)}. Mohon info syarat pembayaran dan total akhir.`, `Hello Meatlink, I would like to discuss payment terms for order ${data.order_no}. Items: ${data.items.map((item) => `${item.product_name} ${fmt.qty(item.qty_kg)}`).join(", ")}. Indicative total ${fmt.money(data.total_idr)}. Please confirm payment terms and final total.`)
                    : bi(`Halo Meatlink, saya ingin konfirmasi transfer BCA untuk pesanan ${data.order_no} sebesar ${fmt.money(data.total_idr)}. Mohon periksa bukti pembayaran saya.`, `Hello Meatlink, I would like to confirm my BCA transfer for order ${data.order_no} of ${fmt.money(data.total_idr)}. Please check my payment receipt.`))}
-                target="_blank"
+                
                 rel="noopener noreferrer"
                 className="eyebrow mt-6 inline-block bg-crimson px-6 py-3 text-bone hover:bg-crimson-deep"
               >
-                 {data.payment_method === "TERMS_REQUEST" && data.status !== "CANCELLED" ? bi("Bahas termin di WhatsApp", "Discuss terms on WhatsApp") : !data.paid_at && data.status !== "CANCELLED" && !data.payment_environment ? bi("Konfirmasi transfer via WhatsApp", "Confirm transfer via WhatsApp") : bi("Hubungi tim via WhatsApp", "Contact our team via WhatsApp")}
+                 {data.payment_method === "TERMS_REQUEST" && data.status !== "CANCELLED" ? bi("Bahas termin di chat Meatlink", "Discuss terms on chat Meatlink") : !data.paid_at && data.status !== "CANCELLED" && !data.payment_environment ? bi("Konfirmasi transfer via chat Meatlink", "Confirm transfer via chat Meatlink") : bi("Hubungi tim via chat Meatlink", "Contact our team via chat Meatlink")}
               </a>
             </div>
 

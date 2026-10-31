@@ -11,6 +11,7 @@ type NavItem = { to: string; label: { id: string; en: string } };
 
 const NAV: Record<MlRole, NavItem[]> = {
   buyer: [
+    { to: "/chat", label: { id: "Chat Meatlink", en: "Chat Meatlink" } },
     { to: "/app/orders", label: { id: "Pesanan", en: "Orders" } },
     { to: "/app/alamat", label: { id: "Alamat Kirim", en: "Delivery Addresses" } },
     { to: "/app/rfq", label: { id: "Penawaran Saya", en: "My Quotes" } },
@@ -22,6 +23,7 @@ const NAV: Record<MlRole, NavItem[]> = {
   ],
   admin: [
     { to: "/admin/dashboard", label: { id: "Dasbor", en: "Dashboard" } },
+    { to: "/admin/chat", label: { id: "Chat pelanggan", en: "Customer chat" } },
     { to: "/admin/orders", label: { id: "Pesanan", en: "Orders" } },
     { to: "/admin/rfq", label: { id: "Permintaan Penawaran", en: "Quote Requests" } },
     { to: "/admin/inventory", label: { id: "Inventaris", en: "Inventory" } },

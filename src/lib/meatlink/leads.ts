@@ -39,7 +39,7 @@ export const emptyRfqItem = (): RfqItem => ({
 export const rfqSchema = z.object({
   company_name: required("Company name"),
   contact_name: required("Contact name"),
-  whatsapp: required("WhatsApp number", 32),
+  whatsapp: required("Phone number", 32),
   email: text(255).email({ message: VErr.email }).optional().or(z.literal("")),
   delivery_location: required("Delivery location"),
   items: z
@@ -60,7 +60,7 @@ export type RfqInput = z.infer<typeof rfqSchema>;
 export const supplierSchema = z.object({
   company_name: required("Company name"),
   contact_name: required("Contact name"),
-  whatsapp: required("WhatsApp number", 32),
+  whatsapp: required("Phone number", 32),
   email: text(255).email({ message: VErr.email }).optional().or(z.literal("")),
   brands_represented: text(500).optional().or(z.literal("")),
   origins: text(300).optional().or(z.literal("")),
@@ -78,7 +78,7 @@ export async function submitSupplier(input: SupplierInput) {
   if (error) throw new Error(error.message);
 }
 
-export function rfqWhatsappMessage(v: RfqInput) {
+export function rfqChatMessage(v: RfqInput) {
   return [
     "Hi Meatlink, I just submitted an RFQ.",
     `Company: ${v.company_name}`,
@@ -92,7 +92,7 @@ export function rfqWhatsappMessage(v: RfqInput) {
   ].join("\n");
 }
 
-export function supplierWhatsappMessage(v: SupplierInput) {
+export function supplierChatMessage(v: SupplierInput) {
   return [
     "Hi Meatlink, I would like to supply through the network.",
     `Company: ${v.company_name}`,

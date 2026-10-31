@@ -4,11 +4,11 @@ import { useBi, useErr } from "@/lib/i18n";
 import { toast } from "sonner";
 import { CheckCircle2, Plus, Trash2 } from "lucide-react";
 import { Field, SelectInput, SubmitButton, TextArea, TextInput } from "./form-kit";
-import { CATEGORIES, waLink } from "@/lib/meatlink/config";
+import { CATEGORIES, chatLink } from "@/lib/meatlink/config";
 import {
   emptyRfqItem,
   rfqSchema,
-  rfqWhatsappMessage,
+  rfqChatMessage,
   type RfqInput,
   type RfqItem,
 } from "@/lib/meatlink/leads";
@@ -120,12 +120,12 @@ export function RfqForm() {
             {bi("Lihat status permintaan", "Track request")}
           </a>
           <a
-            href={waLink(rfqWhatsappMessage(done.input))}
-            target="_blank"
+            href={chatLink(rfqChatMessage(done.input))}
+            
             rel="noreferrer noopener"
             className="eyebrow inline-flex justify-center border border-line px-6 py-4 text-ink transition-colors hover:border-crimson hover:text-crimson"
           >
-            {bi("Lanjut via WhatsApp", "Continue on WhatsApp")}
+            {bi("Lanjut via chat Meatlink", "Continue on chat Meatlink")}
           </a>
         </div>
       </div>
@@ -156,7 +156,7 @@ export function RfqForm() {
             placeholder={bi("Nama lengkap", "Full name")}
           />
         </Field>
-        <Field label={bi("Nomor WhatsApp", "WhatsApp number")} required error={errors["whatsapp"]}>
+        <Field label={bi("Nomor telepon", "Phone number")} required error={errors["whatsapp"]}>
           <TextInput
             value={values.whatsapp}
             onChange={(e) => set("whatsapp", e.target.value)}

@@ -298,12 +298,6 @@ function OrdersTable() {
             tracking: o.tracking_no ?? "",
             eta: o.eta_date ?? "",
           };
-        const waText = encodeURIComponent(
-          `Halo ${o.buyer_name}, update pesanan Meatlink ${o.order_no}: status ${
-            label(ORDER_STATUS_LABEL_I18N, o.status)
-          }. Total ${formatIdr(Number(o.total_idr))}.`,
-        );
-        const waHref = `https://wa.me/${o.phone.replace(/\D/g, "").replace(/^0/, "62")}?text=${waText}`;
         return (
           <Panel key={o.id}>
             {/* Row header */}
@@ -345,8 +339,8 @@ function OrdersTable() {
                     </p>
                     <p className="mt-1 text-sm text-ash">{[o.address, o.city].filter(Boolean).join(", ")}</p>
                     {o.notes ? <p className="mt-2 text-sm italic text-ash">{o.notes}</p> : null}
-                    <a href={waHref} target="_blank" rel="noreferrer" className={`${btnClass} mt-3 inline-block`}>
-                      {bi("Beri tahu via WhatsApp", "Notify on WhatsApp")}
+                    <a href={`/admin/chat?context=${encodeURIComponent(o.order_no)}`} className={`${btnClass} mt-3 inline-block`}>
+                      {bi("Buka chat pembeli", "Open customer chat")}
                     </a>
                   </div>
 
@@ -390,7 +384,7 @@ function OrdersTable() {
                   <div>
                     <p className="eyebrow text-ash">{bi("Pembayaran", "Payment")}</p>
                     <p className="mt-2 text-sm text-ink">{label(PAY_METHOD_LABEL_I18N, o.payment_method)}</p>
-                    {o.payment_method === "TERMS_REQUEST" ? <p className="mt-2 text-xs text-ash">{bi("Pengajuan saja — belum ada tagihan, persetujuan kredit, atau jatuh tempo. Tindak lanjuti dengan pembeli lewat WhatsApp.", "Request only — no invoice, credit approval, or due date. Follow up with the buyer on WhatsApp.")}</p> : null}
+                    {o.payment_method === "TERMS_REQUEST" ? <p className="mt-2 text-xs text-ash">{bi("Pengajuan saja — belum ada tagihan, persetujuan kredit, atau jatuh tempo. Tindak lanjuti dengan pembeli lewat chat Meatlink.", "Request only — no invoice, credit approval, or due date. Follow up with the buyer on chat Meatlink.")}</p> : null}
                     {o.payment_ref ? (
                       <p className="mt-1 text-xs text-ash">{bi("Ref", "Ref")}: {o.payment_ref}</p>
                     ) : null}

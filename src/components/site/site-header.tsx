@@ -7,7 +7,7 @@ import { homeForRole, useAuth } from "@/hooks/use-auth";
 import mark from "@/assets/meatlink-mark.png.asset.json";
 import { useCart } from "@/lib/meatlink/cart";
 import { CATEGORY_PAGES } from "@/lib/meatlink/categories";
-import { CONTACT_EMAIL, waLink } from "@/lib/meatlink/config";
+import { CONTACT_EMAIL, chatLink } from "@/lib/meatlink/config";
 import { useLang, type TKey } from "@/lib/i18n";
 import { LanguageToggle } from "./language-toggle";
 
@@ -66,13 +66,13 @@ function UtilityBar() {
         </p>
         <div className="flex items-center gap-6 text-bone/70">
           <a
-            href={waLink("Halo Meatlink, saya ingin bertanya soal produk.")}
-            target="_blank"
+            href={chatLink("Halo Meatlink, saya ingin bertanya soal produk.")}
+            
             rel="noreferrer"
             className="inline-flex items-center gap-2 transition-colors hover:text-bone"
           >
             <Phone className="h-3.5 w-3.5" aria-hidden="true" />
-            WHATSAPP +62 897-8872-745
+            CHAT MEATLINK
           </a>
           <a href={`mailto:${CONTACT_EMAIL}`} className="transition-colors hover:text-bone">
             {CONTACT_EMAIL.toUpperCase()}
@@ -280,6 +280,7 @@ function AccountMenu({ dark }: { dark: boolean }) {
           >
             {workspaceLabel(role, t)}
           </Link>
+          <Link to="/chat" search={{ context: "" }} onClick={() => setOpen(false)} className="block border-b border-line px-5 py-3 text-sm text-ink hover:bg-ink/5">Chat Meatlink</Link>
           <Link
             to="/app/profil"
             onClick={() => setOpen(false)}

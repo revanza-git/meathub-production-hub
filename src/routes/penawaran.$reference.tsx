@@ -5,7 +5,7 @@ import { z } from "zod";
 import { Clock3, MessageCircle } from "lucide-react";
 import { SiteLayout } from "@/components/site/site-layout";
 import { useBi } from "@/lib/i18n";
-import { waLink } from "@/lib/meatlink/config";
+import { chatLink } from "@/lib/meatlink/config";
 import { getTrackedRfq } from "@/lib/meatlink/rfq.functions";
 
 const searchSchema = z.object({ token: z.string().catch("") });
@@ -135,13 +135,13 @@ function TrackedQuotePage() {
               </section>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <a
-                  href={waLink(`Halo Meatlink, saya ingin menindaklanjuti ${reference}.`)}
-                  target="_blank"
+                  href={chatLink(`Halo Meatlink, saya ingin menindaklanjuti ${reference}.`)}
+                  
                   rel="noreferrer noopener"
                   className="eyebrow inline-flex items-center justify-center gap-2 bg-crimson px-6 py-4 text-bone"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  {bi("Tanyakan via WhatsApp", "Ask via WhatsApp")}
+                  {bi("Tanyakan via chat Meatlink", "Ask via chat Meatlink")}
                 </a>
                 <Link
                   to="/produk"
