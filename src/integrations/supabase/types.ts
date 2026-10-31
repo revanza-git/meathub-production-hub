@@ -3386,6 +3386,151 @@ export type Database = {
         }
         Relationships: []
       }
+      support_conversations: {
+        Row: {
+          admin_unread: number
+          context_label: string
+          created_at: string
+          customer_email: string
+          customer_name: string
+          customer_unread: number
+          guest_token_hash: string | null
+          id: string
+          last_message: string
+          last_message_at: string
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_unread?: number
+          context_label?: string
+          created_at?: string
+          customer_email: string
+          customer_name: string
+          customer_unread?: number
+          guest_token_hash?: string | null
+          id?: string
+          last_message?: string
+          last_message_at?: string
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_unread?: number
+          context_label?: string
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          customer_unread?: number
+          guest_token_hash?: string | null
+          id?: string
+          last_message?: string
+          last_message_at?: string
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_conversations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_messages: {
+        Row: {
+          body: string
+          conversation_id: string
+          created_at: string
+          id: string
+          sender_id: string | null
+          sender_kind: string
+          sender_name: string
+        }
+        Insert: {
+          body: string
+          conversation_id: string
+          created_at?: string
+          id: string
+          sender_id?: string | null
+          sender_kind: string
+          sender_name: string
+        }
+        Update: {
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          sender_id?: string | null
+          sender_kind?: string
+          sender_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "support_conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "support_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      support_rate_limits: {
+        Row: {
+          hits: number
+          key_hash: string
+          window_start: string
+        }
+        Insert: {
+          hits?: number
+          key_hash: string
+          window_start?: string
+        }
+        Update: {
+          hits?: number
+          key_hash?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
+      support_recovery_tokens: {
+        Row: {
+          conversation_id: string
+          expires_at: string
+          id: string
+          token_hash: string
+        }
+        Insert: {
+          conversation_id: string
+          expires_at?: string
+          id?: string
+          token_hash: string
+        }
+        Update: {
+          conversation_id?: string
+          expires_at?: string
+          id?: string
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "support_recovery_tokens_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "support_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       vendor_offers: {
         Row: {
           base_price_per_kg: number
@@ -3958,6 +4103,21 @@ export type Database = {
         Returns: undefined
       }
       submit_organization: { Args: { _org_id: string }; Returns: undefined }
+      support_consume_limit: {
+        Args: { _key: string; _max: number; _seconds: number }
+        Returns: boolean
+      }
+      support_post_message: {
+        Args: {
+          _body: string
+          _conversation: string
+          _id: string
+          _kind: string
+          _name: string
+          _sender: string
+        }
+        Returns: boolean
+      }
       vendor_decide_order_item: {
         Args: { _decision: string; _item_id: string; _reason?: string }
         Returns: undefined
