@@ -149,7 +149,7 @@ function Inbox() {
           )}
         </div>
       </aside>
-      <div className={`${id ? "fixed inset-0 z-[80] flex h-dvh bg-background lg:relative lg:inset-auto lg:z-auto lg:h-full" : "hidden lg:flex"} min-h-0 min-w-0 flex-col`}>
+      <div className={`${id ? "fixed inset-0 z-[45] flex h-dvh bg-background lg:relative lg:inset-auto lg:z-auto lg:h-full" : "hidden lg:flex"} min-h-0 min-w-0 flex-col`}>
         {id ? (
           <>
             <div className="grid shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 border-b border-line px-3 py-3 lg:grid-cols-[minmax(0,1fr)_auto]">
