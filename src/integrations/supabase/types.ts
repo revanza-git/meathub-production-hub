@@ -3398,6 +3398,7 @@ export type Database = {
           id: string
           last_message: string
           last_message_at: string
+          last_sender_kind: string | null
           status: string
           user_id: string | null
         }
@@ -3412,6 +3413,7 @@ export type Database = {
           id?: string
           last_message?: string
           last_message_at?: string
+          last_sender_kind?: string | null
           status?: string
           user_id?: string | null
         }
@@ -3426,6 +3428,7 @@ export type Database = {
           id?: string
           last_message?: string
           last_message_at?: string
+          last_sender_kind?: string | null
           status?: string
           user_id?: string | null
         }

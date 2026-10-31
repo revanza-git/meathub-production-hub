@@ -2,7 +2,7 @@
 
 # Roadmap
 
-- [ ] Buat chat pelanggan/tamu dengan inbox multi-admin dan email setiap pesan pelanggan ke cs@meatlink.id; ganti seluruh kanal WhatsApp setelah rencana disetujui.
+- [x] Buat chat pelanggan/tamu, inbox multi-admin, pemulihan akses email, dan pengganti seluruh tautan WhatsApp; pesan tamu/akun, balasan admin, email terkirim, dan tampilan HP diuji; 13 pengujian aturan lolos.
 
 - [x] Satukan akses Pesanan pembeli/admin, pertahankan pesanan khusus dan riwayat lama, serta utamakan tindakan sesuai status tanpa mengubah aturan pembayaran; delapan pengujian aturan lolos, tampilan pembeli diperiksa dengan kontak contoh tanpa menyimpan data.
 - [ ] Verifikasi pesanan berisi data dan tindakan pembayaran sampai admin memakai akun uji dengan kontak lengkap dan akses admin; akun tersedia belum memiliki telepon, pesanan toko, atau peran admin.

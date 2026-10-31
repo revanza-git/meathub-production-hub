@@ -1,4 +1,7 @@
 import type { ReactNode } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { adminChats } from "@/lib/meatlink/chat.functions";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { Wordmark } from "@/components/site/site-header";
 import { LanguageToggle } from "@/components/site/language-toggle";
@@ -58,6 +61,9 @@ export function AppShell({
   const navigate = useNavigate();
   const pathname = useLocation({ select: (location) => location.pathname });
   const bi = useBi();
+  const loadChats = useServerFn(adminChats);
+  const chatInbox = useQuery({ queryKey: ["chat-inbox"], queryFn: () => loadChats(), enabled: role === "admin", staleTime: 0, refetchInterval: role === "admin" ? 30000 : false, refetchIntervalInBackground: false });
+  const unreadChats = (chatInbox.data ?? []).reduce((total, chat) => total + chat.admin_unread, 0);
   const items = role ? NAV[role] : [];
   const contactIncomplete = !loading && role === "buyer" && !contactComplete;
   const needsContact = contactIncomplete && pathname !== "/app/profil";
@@ -101,6 +107,7 @@ export function AppShell({
                 activeOptions={{ exact: item.to === "/app/orders" }}
               >
                 {bi(item.label.id, item.label.en)}
+                {item.to === "/admin/chat" && unreadChats > 0 ? <span className="ml-2 rounded-full bg-crimson px-2 py-0.5 text-xs text-bone">{unreadChats}</span> : null}
               </Link>
             ))}
           </nav>
