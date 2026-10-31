@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useBi } from "@/lib/i18n";
 import { readChat, sendChat, adminReadChat, adminReplyChat } from "@/lib/meatlink/chat.functions";
 import { chatMessageSchema, type ChatAccess, type ChatConversation, type ChatMessage } from "@/lib/meatlink/chat-schema";
-export function ChatThread({ access, admin = false }: { access: ChatAccess; admin?: boolean }) {
+export function ChatThread({ access, admin = false, context = "" }: { access: ChatAccess; admin?: boolean; context?: string }) {
   const bi = useBi(),
     qc = useQueryClient(),
     read = useServerFn(readChat),
@@ -18,6 +18,13 @@ export function ChatThread({ access, admin = false }: { access: ChatAccess; admi
     [error, setError] = useState("");
   const draft = useRef<{ body: string; id: string } | null>(null),
     bottom = useRef<HTMLDivElement>(null);
+  const appliedContext = useRef("");
+  useEffect(() => {
+    if (!admin && context && appliedContext.current !== context) {
+      appliedContext.current = context;
+      setBody((current) => current || `${context}\n\n`);
+    }
+  }, [context, admin]);
   const q = useQuery<{ conversation: ChatConversation; messages: ChatMessage[] }>({
     queryKey: ["chat-thread", admin ? "admin" : "customer", access.id, access.token || ""],
     queryFn: () => (admin ? readAdmin({ data: { id: access.id } }) : read({ data: access })),
@@ -48,7 +55,7 @@ export function ChatThread({ access, admin = false }: { access: ChatAccess; admi
     setError("");
     try {
       if (admin) await reply({ data: { id: access.id, ...parsed.data } });
-      else await send({ data: { ...access, ...parsed.data } });
+      else await send({ data: { ...access, ...parsed.data, body: context && !parsed.data.body.includes(context) ? `${context}\n\n${parsed.data.body}` : parsed.data.body } });
       setBody("");
       draft.current = null;
       await q.refetch();
@@ -71,7 +78,7 @@ export function ChatThread({ access, admin = false }: { access: ChatAccess; admi
           {admin ? q.data?.conversation.customer_name : bi("Tim Meatlink", "Meatlink team")}
         </p>
         <p className="mt-1 break-words text-xs text-ash">
-          {q.data?.conversation.context_label ||
+          {(!admin && context) || q.data?.conversation.context_label ||
             bi("Percakapan pelanggan", "Customer conversation")}
         </p>
         {q.data?.conversation.status === "closed" ? (
