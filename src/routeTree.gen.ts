@@ -15,6 +15,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BelanjaRouteImport } from './routes/belanja'
 import { Route as BuyersRouteImport } from './routes/buyers'
+import { Route as ChatRouteImport } from './routes/chat'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as KeranjangRouteImport } from './routes/keranjang'
@@ -36,6 +37,7 @@ import { Route as ProdukIndexRouteImport } from './routes/produk.index'
 import { Route as ProdukSlugRouteImport } from './routes/produk.$slug'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as AuthenticatedAdminChatRouteImport } from './routes/_authenticated/admin.chat'
 import { Route as AuthenticatedAdminCommerceRouteImport } from './routes/_authenticated/admin.commerce'
 import { Route as AuthenticatedAdminDashboardRouteImport } from './routes/_authenticated/admin.dashboard'
 import { Route as AuthenticatedAdminInsightsRouteImport } from './routes/_authenticated/admin.insights'
@@ -92,6 +94,11 @@ const BelanjaRoute = BelanjaRouteImport.update({
 const BuyersRoute = BuyersRouteImport.update({
   id: '/buyers',
   path: '/buyers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -202,6 +209,11 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedAdminChatRoute = AuthenticatedAdminChatRouteImport.update({
+  id: '/admin/chat',
+  path: '/admin/chat',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminCommerceRoute =
   AuthenticatedAdminCommerceRouteImport.update({
     id: '/admin/commerce',
@@ -368,6 +380,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/belanja': typeof BelanjaRoute
   '/buyers': typeof BuyersRoute
+  '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
   '/keranjang': typeof KeranjangRoute
@@ -389,6 +402,7 @@ export interface FileRoutesByFullPath {
   '/produk/': typeof ProdukIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/chat': typeof AuthenticatedAdminChatRoute
   '/admin/commerce': typeof AuthenticatedAdminCommerceRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/insights': typeof AuthenticatedAdminInsightsRoute
@@ -424,6 +438,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/belanja': typeof BelanjaRoute
   '/buyers': typeof BuyersRoute
+  '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
   '/keranjang': typeof KeranjangRoute
@@ -445,6 +460,7 @@ export interface FileRoutesByTo {
   '/produk': typeof ProdukIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/chat': typeof AuthenticatedAdminChatRoute
   '/admin/commerce': typeof AuthenticatedAdminCommerceRoute
   '/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/admin/insights': typeof AuthenticatedAdminInsightsRoute
@@ -482,6 +498,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/belanja': typeof BelanjaRoute
   '/buyers': typeof BuyersRoute
+  '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/insights': typeof InsightsRoute
   '/keranjang': typeof KeranjangRoute
@@ -503,6 +520,7 @@ export interface FileRoutesById {
   '/produk/': typeof ProdukIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/_authenticated/admin/chat': typeof AuthenticatedAdminChatRoute
   '/_authenticated/admin/commerce': typeof AuthenticatedAdminCommerceRoute
   '/_authenticated/admin/dashboard': typeof AuthenticatedAdminDashboardRoute
   '/_authenticated/admin/insights': typeof AuthenticatedAdminInsightsRoute
@@ -540,6 +558,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/belanja'
     | '/buyers'
+    | '/chat'
     | '/contact'
     | '/insights'
     | '/keranjang'
@@ -561,6 +580,7 @@ export interface FileRouteTypes {
     | '/produk/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/chat'
     | '/admin/commerce'
     | '/admin/dashboard'
     | '/admin/insights'
@@ -596,6 +616,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/belanja'
     | '/buyers'
+    | '/chat'
     | '/contact'
     | '/insights'
     | '/keranjang'
@@ -617,6 +638,7 @@ export interface FileRouteTypes {
     | '/produk'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/chat'
     | '/admin/commerce'
     | '/admin/dashboard'
     | '/admin/insights'
@@ -653,6 +675,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/belanja'
     | '/buyers'
+    | '/chat'
     | '/contact'
     | '/insights'
     | '/keranjang'
@@ -674,6 +697,7 @@ export interface FileRouteTypes {
     | '/produk/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/_authenticated/admin/chat'
     | '/_authenticated/admin/commerce'
     | '/_authenticated/admin/dashboard'
     | '/_authenticated/admin/insights'
@@ -711,6 +735,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BelanjaRoute: typeof BelanjaRoute
   BuyersRoute: typeof BuyersRoute
+  ChatRoute: typeof ChatRoute
   ContactRoute: typeof ContactRoute
   InsightsRoute: typeof InsightsRoute
   KeranjangRoute: typeof KeranjangRoute
@@ -780,6 +805,13 @@ declare module '@tanstack/react-router' {
       path: '/buyers'
       fullPath: '/buyers'
       preLoaderRoute: typeof BuyersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -928,6 +960,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/.mcp/invoke-tool/$tool'
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin/chat': {
+      id: '/_authenticated/admin/chat'
+      path: '/admin/chat'
+      fullPath: '/admin/chat'
+      preLoaderRoute: typeof AuthenticatedAdminChatRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/commerce': {
       id: '/_authenticated/admin/commerce'
@@ -1129,6 +1168,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminChatRoute: typeof AuthenticatedAdminChatRoute
   AuthenticatedAdminCommerceRoute: typeof AuthenticatedAdminCommerceRoute
   AuthenticatedAdminDashboardRoute: typeof AuthenticatedAdminDashboardRoute
   AuthenticatedAdminInsightsRoute: typeof AuthenticatedAdminInsightsRoute
@@ -1156,6 +1196,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminChatRoute: AuthenticatedAdminChatRoute,
   AuthenticatedAdminCommerceRoute: AuthenticatedAdminCommerceRoute,
   AuthenticatedAdminDashboardRoute: AuthenticatedAdminDashboardRoute,
   AuthenticatedAdminInsightsRoute: AuthenticatedAdminInsightsRoute,
@@ -1194,6 +1235,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BelanjaRoute: BelanjaRoute,
   BuyersRoute: BuyersRoute,
+  ChatRoute: ChatRoute,
   ContactRoute: ContactRoute,
   InsightsRoute: InsightsRoute,
   KeranjangRoute: KeranjangRoute,
