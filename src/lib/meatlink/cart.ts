@@ -24,7 +24,7 @@ export const PAY_METHODS: {
 export const PAY_METHOD_LABEL: Record<PayMethod, string> = {
   BANK_TRANSFER: "Transfer BCA langsung",
   QRIS: "QRIS",
-  WHATSAPP: "chat Meatlink",
+  WHATSAPP: "Koordinasi manual (metode lama)",
   CBD: "Cash Before Delivery",
   TOP: "Tempo (TOP)",
   TERMS_REQUEST: "Pengajuan termin — belum disetujui",
