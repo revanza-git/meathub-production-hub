@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useLocation } from "@tanstack/react-router";
 import { SiteHeader } from "./site-header";
 import { SiteFooter } from "./site-footer";
 import { ChatWidget } from "@/components/chat/chat-widget";
@@ -11,6 +12,7 @@ export function SiteLayout({
   children: ReactNode;
   headerTone?: "light" | "dark";
 }) {
+  const onChatPage = useLocation({ select: (location) => location.pathname === "/chat" });
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <a
@@ -24,7 +26,7 @@ export function SiteLayout({
         {children}
       </main>
       <SiteFooter />
-      <ChatWidget />
+      {!onChatPage ? <ChatWidget /> : null}
 
     </div>
   );
