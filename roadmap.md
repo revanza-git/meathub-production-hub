@@ -2,7 +2,7 @@
 
 # Roadmap
 
-- [ ] Tambahkan email setiap balasan admin dan tautan percakapan aman untuk pembeli/tamu; uji kirim, deduplikasi, dan pemulihan percakapan yang tepat.
+- [x] Tambahkan email setiap balasan admin dan tautan percakapan aman untuk pembeli/tamu; 18 pengujian lolos, balasan admin terbaca kembali di chat tamu HP dan log email pelanggan tercatat terkirim. Pemulihan dibatasi ID percakapan dan email, tautan tanpa akses menampilkan formulir pemulihan.
 
 - [x] Rapikan chat admin HP: daftar terbaca, filter cepat, percakapan satu layar, kembali mempertahankan pencarian; tindakan selesai/buka kembali dan desktop dua kolom diuji.
 
