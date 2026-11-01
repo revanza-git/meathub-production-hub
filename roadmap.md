@@ -2,6 +2,8 @@
 
 # Roadmap
 
+- [ ] Tambahkan email setiap balasan admin dan tautan percakapan aman untuk pembeli/tamu; uji kirim, deduplikasi, dan pemulihan percakapan yang tepat.
+
 - [x] Rapikan chat admin HP: daftar terbaca, filter cepat, percakapan satu layar, kembali mempertahankan pencarian; tindakan selesai/buka kembali dan desktop dua kolom diuji.
 
 - [x] Tambahkan foto privat pada chat pelanggan/admin: pratinjau, batas 5 MB, validasi isi foto, pengaitan pesan atomik; foto tamu dan balasan foto admin berhasil dikirim dan dibaca kembali, tampilan HP tanpa luapan.

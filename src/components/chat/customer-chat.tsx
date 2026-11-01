@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useBi } from "@/lib/i18n";
@@ -13,7 +14,7 @@ import {
 import { chatIdentitySchema, type ChatAccess } from "@/lib/meatlink/chat-schema";
 import { ChatThread } from "./chat-thread";
 const KEY = "meatlink.support.guest";
-export function CustomerChat({ context = "", visible = true }: { context?: string; visible?: boolean }) {
+export function CustomerChat({ context = "", visible = true, conversationId }: { context?: string; visible?: boolean; conversationId?: string }) {
   const { user, displayName, loading } = useAuth(),
     bi = useBi(),
     start = useServerFn(startChat),
@@ -27,7 +28,7 @@ export function CustomerChat({ context = "", visible = true }: { context?: strin
     [website, setWebsite] = useState(""),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
-    [recovering, setRecovering] = useState(false),
+    [recovering, setRecovering] = useState(!!conversationId),
     [notice, setNotice] = useState("");
   const q = useQuery({
     queryKey: ["chat-mine", user?.id],
@@ -61,7 +62,15 @@ export function CustomerChat({ context = "", visible = true }: { context?: strin
       .catch(() => setError(bi("Tautan tidak valid atau kedaluwarsa.", "Link invalid or expired.")))
       .finally(() => setBusy(false));
   }, [recover, bi]);
-  const active = selected || (!user ? guest : null);
+  useEffect(() => {
+    if (!conversationId) return;
+    if (user && q.data?.some((c) => c.id === conversationId)) {
+      setSelected({ id: conversationId });
+    } else if (!user) {
+      setRecovering(true);
+    }
+  }, [conversationId, user, q.data]);
+  const active = selected || (!user && (!conversationId || guest?.id === conversationId) ? guest : null);
   async function begin(e: React.FormEvent) {
     e.preventDefault();
     const parsed = chatIdentitySchema.safeParse({
@@ -108,7 +117,7 @@ export function CustomerChat({ context = "", visible = true }: { context?: strin
     }
     setBusy(true);
     try {
-      await requestRecovery({ data: { email, website } });
+      await requestRecovery({ data: { email, website, conversation: conversationId } });
       setNotice(
         bi(
           "Jika ada percakapan untuk email ini, tautan pemulihan akan dikirim.",
@@ -178,6 +187,11 @@ export function CustomerChat({ context = "", visible = true }: { context?: strin
           ? bi("Pulihkan chat", "Recover chat")
           : bi("Hubungi Meatlink", "Contact Meatlink")}
       </h2>
+      {conversationId && !user ? (
+        <Button asChild variant="link" className="mt-3 px-0">
+          <Link to="/auth">{bi("Punya akun? Masuk", "Have an account? Sign in")}</Link>
+        </Button>
+      ) : null}
       <form onSubmit={recovering ? restore : begin} className="mt-5 space-y-4">
         {!user && !recovering ? (
           <label className="block text-sm text-ink">
