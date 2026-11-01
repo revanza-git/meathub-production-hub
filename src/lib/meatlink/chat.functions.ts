@@ -320,6 +320,12 @@ export const adminReplyChat = createServerFn({ method: "POST" })
     if (old && (old.conversation_id !== data.id || old.sender_id !== context.userId))
       throw new Error("Pesan tidak valid.");
     if (old) return { ok: true };
+    const { data: conversation, error: conversationError } = await context.supabase
+      .from("support_conversations")
+      .select("id,customer_email,customer_name")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (conversationError || !conversation) throw new Error("Percakapan tidak tersedia.");
     await verifyImage(client, data.imageId, data.id, "admin", context.userId);
     const { data: p } = await context.supabase
       .from("profiles")
@@ -327,7 +333,7 @@ export const adminReplyChat = createServerFn({ method: "POST" })
       .eq("id", context.userId)
       .maybeSingle();
     const rpcClient: SupabaseClient = client;
-    const { error } = await rpcClient.rpc("support_post_image_message", {
+    const { data: inserted, error } = await rpcClient.rpc("support_post_image_message", {
       _conversation: data.id,
       _id: data.messageId,
       _kind: "admin",
@@ -337,7 +343,9 @@ export const adminReplyChat = createServerFn({ method: "POST" })
       _image: data.imageId || null,
     });
     if (error) throw new Error("Balasan belum terkirim.");
-    return { ok: true };
+    const { notifyChatReply } = await import("./chat-reply-notification.server");
+    const notification = await notifyChatReply(Boolean(inserted), conversation, data.messageId);
+    return { ok: true, emailStatus: notification.status };
   });
 export const closeChat = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -355,7 +363,7 @@ export const closeChat = createServerFn({ method: "POST" })
 export const requestChatRecovery = createServerFn({ method: "POST" })
   .inputValidator((input) =>
     z
-      .object({ email: z.string().email().max(255), website: z.string().max(0).default("") })
+      .object({ email: z.string().email().max(255), website: z.string().max(0).default(""), conversation: z.string().uuid().optional() })
       .parse(input),
   )
   .handler(async ({ data }) => {
@@ -363,11 +371,13 @@ export const requestChatRecovery = createServerFn({ method: "POST" })
     await limit(`recover:${ip}`, 3, 900);
     await limit(`recover-email:${data.email.toLowerCase()}`, 3, 900);
     const client = await db();
-    const { data: c } = await client
+    let query = client
       .from("support_conversations")
       .select("id")
       .is("user_id", null)
-      .eq("customer_email", data.email.toLowerCase())
+      .eq("customer_email", data.email.toLowerCase());
+    if (data.conversation) query = query.eq("id", data.conversation);
+    const { data: c } = await query
       .order("last_message_at", { ascending: false })
       .limit(1)
       .maybeSingle();

@@ -4,6 +4,7 @@ import { template as opsAlertTemplate } from "./ops-alert";
 import { template as rfqResponseTemplate } from "./rfq-response";
 import { template as chatAlertTemplate } from "./chat-alert";
 import { template as chatRecoveryTemplate } from "./chat-recovery";
+import { template as chatReplyTemplate } from "./chat-reply";
 
 export interface TemplateEntry {
   component: ComponentType<any>;
@@ -28,4 +29,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   "rfq-response": rfqResponseTemplate,
   "chat-alert": chatAlertTemplate,
   "chat-recovery": chatRecoveryTemplate,
+  "chat-reply": chatReplyTemplate,
 };
