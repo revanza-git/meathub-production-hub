@@ -4,6 +4,16 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { Field, TextInput } from "@/components/site/form-kit";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import {
