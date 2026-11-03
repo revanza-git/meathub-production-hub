@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Check, MessageCircle } from "lucide-react";
 import { SiteLayout } from "@/components/site/site-layout";
+import { HalalMark } from "@/components/site/halal-badge";
 import { AddToCart } from "@/components/site/add-to-cart";
 import { AvailabilityBadge } from "@/components/site/availability-badge";
 import { ImageDisclaimer } from "@/components/site/image-disclaimer";
@@ -191,10 +192,27 @@ function ProductPage() {
                 retailPack={product.retail_pack_text}
               />
 
-              <ul className="mt-7 space-y-3 text-sm text-ink/80">
+              <div className="mt-6 flex items-center gap-4 border border-line bg-card p-4">
+                <div className="flex h-16 w-11 shrink-0 items-center justify-center rounded-sm bg-background">
+                  <HalalMark className="h-12 w-auto" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-ink">
+                    {bi("Tersertifikasi Halal Indonesia", "Halal Indonesia certified")}
+                  </p>
+                  <p className="mt-0.5 text-xs text-ash">
+                    {bi(
+                      "Sertifikat BPJPH — dokumen halal tersedia per item.",
+                      "BPJPH certificate — halal documents available per item.",
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              <ul className="mt-6 space-y-3 text-sm text-ink/80">
                 {[
                   bi("Pemasok terverifikasi", "Verified suppliers"),
-                  bi("Dokumen halal & sertifikat tersedia", "Halal documents & certificates available"),
+                  bi("Dokumen impor & sertifikat grade tersedia", "Import documents & grading certificates available"),
                   bi("Pengiriman ke seluruh Indonesia", "Delivery across Indonesia"),
                 ].map((b) => (
                   <li key={b} className="flex gap-3">
