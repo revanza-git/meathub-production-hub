@@ -1,4 +1,4 @@
-export const TRANSFER_ACCOUNT = { bank: "BCA", number: "5271212403", holder: "Revanza Raytama" } as const;
+export const TRANSFER_ACCOUNT = { bank: "BCA", number: "5271200847", holder: "Rizal Abdurrachman" } as const;
 
 export const CONTACT_EMAIL = "cs@meatlink.id";
 
