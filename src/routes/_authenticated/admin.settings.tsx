@@ -302,6 +302,37 @@ function SettingsBody() {
         )}
       </Panel>
 
+      <AlertDialog open={confirmMargin} onOpenChange={setConfirmMargin}>
+        <AlertDialogContent className="bg-bone">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display text-ink">
+              {bi("Terapkan margin ke seluruh inventori?", "Apply margins to the entire inventory?")}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-ash">
+              {bi(
+                "Menyimpan margin akan langsung mengubah harga publik semua item inventaris, bukan hanya beberapa item. Perubahan ini tidak dapat dibatalkan dari halaman ini.",
+                "Saving margins immediately updates the public price of every inventory item, not just a few. This cannot be undone from this page.",
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="eyebrow border border-line px-5 py-3 text-ink">
+              {bi("Periksa lagi", "Review again")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="eyebrow bg-crimson px-5 py-3 text-bone"
+              onClick={(e) => {
+                e.preventDefault();
+                setConfirmMargin(false);
+                void applyMargins(marginPayload ?? {});
+              }}
+            >
+              {bi("Ya, terapkan ke semua item", "Yes, apply to all items")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Panel className="p-6">
         <h2 className="font-display text-xl text-ink">{bi("Otomasi operasional", "Ops automation")}</h2>
         <p className="mt-2 text-sm text-ash">
