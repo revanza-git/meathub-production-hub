@@ -99,18 +99,6 @@ export function SiteFooter() {
       </div>
 
       <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-5 py-5 lg:px-8">
-          <div className="flex h-16 w-12 items-center justify-center rounded-sm bg-bone">
-            <HalalMark className="h-12 w-auto" />
-          </div>
-          <div>
-            <p className="text-sm font-medium text-bone">{t("footer.halalTitle")}</p>
-            <p className="text-xs text-bone/60">{t("footer.halalBody")}</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-6 text-xs text-bone/40 lg:px-8">
           <span>© 2026 Meatlink.id — Better Meat | Better Connections</span>
           <span>{t("footer.legal")}</span>
