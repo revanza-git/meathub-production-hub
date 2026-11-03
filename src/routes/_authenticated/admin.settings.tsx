@@ -122,6 +122,9 @@ function SettingsBody() {
     });
   }, [data]);
 
+  const [confirmMargin, setConfirmMargin] = useState(false);
+  const [marginPayload, setMarginPayload] = useState<Record<string, number> | null>(null);
+
   async function saveMargins(e: React.FormEvent) {
     e.preventDefault();
     const parsed: Record<string, number> = {};
@@ -133,17 +136,34 @@ function SettingsBody() {
       }
       parsed[f.key] = n;
     }
-    await persist(
-      [{ key: KEYS.unitMargin, value: { ...parsed, ctn: parsed.carton } }],
-      bi("Margin per satuan disimpan.", "Per-unit margins saved."),
-    );
+    setMarginPayload(parsed);
+    setConfirmMargin(true);
+  }
+
+  async function applyMargins(parsed: Record<string, number>) {
+    if (!parsed || pending) return;
+    setPending(true);
+    const { error: settingsError } = await supabase
+      .from("admin_settings")
+      .upsert(
+        [{ key: KEYS.unitMargin, value: { ...parsed, ctn: parsed.carton } as never, updated_by: user?.id ?? null }],
+        { onConflict: "key" },
+      );
+    if (settingsError) {
+      setPending(false);
+      toast.error(settingsError.message);
+      return;
+    }
     // Loaf margin is the listed public price margin for every inventory item.
     const { error: syncError } = await supabase
       .from("admin_inventory")
       .update({ markup_idr: parsed.loaf })
       .neq("markup_idr", parsed.loaf);
-    if (syncError) {
+    setPending(false);
+    if (settingsError === null && syncError) {
       toast.error(bi("Margin tersimpan, tetapi harga inventori gagal diperbarui.", "Margins saved, but inventory prices failed to update."));
+    } else {
+      toast.success(bi("Margin per satuan disimpan ke seluruh inventori.", "Per-unit margins saved across the inventory."));
     }
     void qc.invalidateQueries({ queryKey: UNIT_MARGINS_QUERY_KEY });
     void qc.invalidateQueries({ queryKey: ["admin-inventory"] });
