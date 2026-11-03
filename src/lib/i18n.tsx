@@ -79,6 +79,11 @@ export const DICT = {
   "footer.aboutUs": { id: "Tentang kami", en: "About us" },
   "footer.contact": { id: "Kontak", en: "Contact" },
   "footer.legal": { id: "Syarat · Privasi", en: "Terms · Privacy" },
+  "footer.halalTitle": { id: "Tersertifikasi Halal Indonesia", en: "Halal Indonesia certified" },
+  "footer.halalBody": {
+    id: "Sertifikat BPJPH — dokumen halal tersedia untuk setiap item.",
+    en: "BPJPH certificate — halal documents available for every item.",
+  },
 
   // --- home -----------------------------------------------------------------
   "home.hero.eyebrow": {
