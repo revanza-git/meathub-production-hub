@@ -36,8 +36,8 @@ describe("customer chat requirements", () => {
   it("keeps BCA transfer details and replaces external WhatsApp links", () => {
     expect(TRANSFER_ACCOUNT).toEqual({
       bank: "BCA",
-      number: "5271212403",
-      holder: "Revanza Raytama",
+      number: "5271200847",
+      holder: "Rizal Abdurrachman",
     });
     expect(chatLink("Order MLO-1")).toBe("/chat?context=Order%20MLO-1");
   });
