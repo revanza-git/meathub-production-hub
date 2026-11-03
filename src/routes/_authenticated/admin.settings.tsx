@@ -127,8 +127,17 @@ function SettingsBody() {
       [{ key: KEYS.unitMargin, value: { ...parsed, ctn: parsed.carton } }],
       bi("Margin per satuan disimpan.", "Per-unit margins saved."),
     );
+    // Loaf margin is the listed public price margin for every inventory item.
+    const { error: syncError } = await supabase
+      .from("admin_inventory")
+      .update({ markup_idr: parsed.loaf })
+      .neq("markup_idr", parsed.loaf);
+    if (syncError) {
+      toast.error(bi("Margin tersimpan, tetapi harga inventori gagal diperbarui.", "Margins saved, but inventory prices failed to update."));
+    }
     void qc.invalidateQueries({ queryKey: UNIT_MARGINS_QUERY_KEY });
     void qc.invalidateQueries({ queryKey: ["admin-inventory"] });
+    void qc.invalidateQueries();
   }
 
   async function saveLowStock(e: React.FormEvent) {

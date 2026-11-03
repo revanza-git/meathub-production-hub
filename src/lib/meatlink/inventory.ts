@@ -220,10 +220,8 @@ export function unitMargin(
   unit: PurchaseUnit,
   margins: UnitMargins = UNIT_MARGIN_IDR,
 ): number {
-  const m = Number(markup ?? margins.loaf);
-  const loaf = Number.isFinite(m) && m > 0 ? m : margins.loaf;
-  const spread = margins.loaf - margins[unit];
-  return Math.max(0, loaf - spread);
+  void markup; // admin unit margins apply to every item
+  return Math.max(0, margins[unit]);
 }
 
 /** Public price per kg for a purchase unit = base cost + unit margin. */
