@@ -14,7 +14,7 @@ import { LanguageToggle } from "./language-toggle";
 
 const NAV = [
   { to: "/produk", key: "nav.products" },
-  { to: "/promo", key: "nav.promo" },
+  // Promo hidden while unused; page /promo still exists.
   { to: "/request-quote", key: "nav.sourcing" },
   { to: "/insights", key: "nav.insights" },
   { to: "/network", key: "nav.network" },
