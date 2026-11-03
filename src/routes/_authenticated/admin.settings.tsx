@@ -4,6 +4,16 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { AppShell, Panel, RoleGate } from "@/components/app/app-shell";
 import { Field, TextInput } from "@/components/site/form-kit";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -112,6 +122,9 @@ function SettingsBody() {
     });
   }, [data]);
 
+  const [confirmMargin, setConfirmMargin] = useState(false);
+  const [marginPayload, setMarginPayload] = useState<Record<string, number> | null>(null);
+
   async function saveMargins(e: React.FormEvent) {
     e.preventDefault();
     const parsed: Record<string, number> = {};
@@ -123,17 +136,34 @@ function SettingsBody() {
       }
       parsed[f.key] = n;
     }
-    await persist(
-      [{ key: KEYS.unitMargin, value: { ...parsed, ctn: parsed.carton } }],
-      bi("Margin per satuan disimpan.", "Per-unit margins saved."),
-    );
+    setMarginPayload(parsed);
+    setConfirmMargin(true);
+  }
+
+  async function applyMargins(parsed: Record<string, number>) {
+    if (!parsed || pending) return;
+    setPending(true);
+    const { error: settingsError } = await supabase
+      .from("admin_settings")
+      .upsert(
+        [{ key: KEYS.unitMargin, value: { ...parsed, ctn: parsed.carton } as never, updated_by: user?.id ?? null }],
+        { onConflict: "key" },
+      );
+    if (settingsError) {
+      setPending(false);
+      toast.error(settingsError.message);
+      return;
+    }
     // Loaf margin is the listed public price margin for every inventory item.
     const { error: syncError } = await supabase
       .from("admin_inventory")
       .update({ markup_idr: parsed.loaf })
       .neq("markup_idr", parsed.loaf);
-    if (syncError) {
+    setPending(false);
+    if (settingsError === null && syncError) {
       toast.error(bi("Margin tersimpan, tetapi harga inventori gagal diperbarui.", "Margins saved, but inventory prices failed to update."));
+    } else {
+      toast.success(bi("Margin per satuan disimpan ke seluruh inventori.", "Per-unit margins saved across the inventory."));
     }
     void qc.invalidateQueries({ queryKey: UNIT_MARGINS_QUERY_KEY });
     void qc.invalidateQueries({ queryKey: ["admin-inventory"] });
@@ -271,6 +301,37 @@ function SettingsBody() {
           </form>
         )}
       </Panel>
+
+      <AlertDialog open={confirmMargin} onOpenChange={setConfirmMargin}>
+        <AlertDialogContent className="bg-bone">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display text-ink">
+              {bi("Terapkan margin ke seluruh inventori?", "Apply margins to the entire inventory?")}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-ash">
+              {bi(
+                "Menyimpan margin akan langsung mengubah harga publik semua item inventaris, bukan hanya beberapa item. Perubahan ini tidak dapat dibatalkan dari halaman ini.",
+                "Saving margins immediately updates the public price of every inventory item, not just a few. This cannot be undone from this page.",
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="eyebrow border border-line px-5 py-3 text-ink">
+              {bi("Periksa lagi", "Review again")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="eyebrow bg-crimson px-5 py-3 text-bone"
+              onClick={(e) => {
+                e.preventDefault();
+                setConfirmMargin(false);
+                void applyMargins(marginPayload ?? {});
+              }}
+            >
+              {bi("Ya, terapkan ke semua item", "Yes, apply to all items")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Panel className="p-6">
         <h2 className="font-display text-xl text-ink">{bi("Otomasi operasional", "Ops automation")}</h2>
