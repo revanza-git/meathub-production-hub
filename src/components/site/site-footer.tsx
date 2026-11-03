@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Mail } from "lucide-react";
 import { CONTACT_EMAIL, chatLink } from "@/lib/meatlink/config";
+import { HalalMark } from "./halal-badge";
 import { Wordmark } from "./site-header";
 import { useLang } from "@/lib/i18n";
 
