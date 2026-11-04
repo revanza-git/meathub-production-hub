@@ -64,7 +64,7 @@ function Inbox() {
   const selected = q.data?.find((c) => c.id === id),
     rows = (q.data || []).filter(
       (c) =>
-        `${c.customer_name} ${c.customer_email} ${c.context_label} ${c.last_message}`
+        `${c.customer_name} ${c.customer_email} ${c.customer_phone ?? ""} ${c.context_label} ${c.last_message}`
           .toLowerCase()
           .includes(search.toLowerCase()) &&
         (filter === "all" ||
@@ -154,7 +154,7 @@ function Inbox() {
           <>
             <div className="grid shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 border-b border-line px-3 py-3 lg:grid-cols-[minmax(0,1fr)_auto]">
               <Button variant="ghost" size="icon" className="lg:hidden" aria-label={bi("Kembali ke percakapan", "Back to conversations")} onClick={() => openConversation("")}><ArrowLeft className="h-5 w-5" /></Button>
-              <div className="min-w-0"><p className="truncate text-sm font-semibold text-foreground">{selected?.customer_name || bi("Percakapan", "Conversation")}</p><p className="mt-1 truncate text-xs text-muted-foreground">{selected?.customer_email}</p></div>
+              <div className="min-w-0"><p className="truncate text-sm font-semibold text-foreground">{selected?.customer_name || bi("Percakapan", "Conversation")}</p><p className="mt-1 truncate text-xs text-muted-foreground">{selected?.customer_phone ? <a className="underline-offset-2 hover:underline" href={`tel:${selected.customer_phone.replace(/[^\d+]/g, "")}`}>{selected.customer_phone}</a> : null}{selected?.customer_phone && selected?.customer_email ? " · " : ""}{selected?.customer_email}</p></div>
               <Button variant={selected?.status === "closed" ? "outline" : "secondary"} size="sm" disabled={busy || !selected} onClick={() => void toggle()} className="shrink-0">
                 {selected?.status === "closed" ? <RotateCcw className="h-4 w-4" /> : <Check className="h-4 w-4" />}
                 {selected?.status === "closed"
