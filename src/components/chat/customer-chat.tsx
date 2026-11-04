@@ -11,11 +11,11 @@ import {
   requestChatRecovery,
   recoverChat,
 } from "@/lib/meatlink/chat.functions";
-import { chatIdentitySchema, type ChatAccess } from "@/lib/meatlink/chat-schema";
+import { chatIdentitySchema, chatPhoneSchema, type ChatAccess } from "@/lib/meatlink/chat-schema";
 import { ChatThread } from "./chat-thread";
 const KEY = "meatlink.support.guest";
 export function CustomerChat({ context = "", visible = true, conversationId }: { context?: string; visible?: boolean; conversationId?: string }) {
-  const { user, displayName, loading } = useAuth(),
+  const { user, displayName, phone: authPhone, loading } = useAuth(),
     bi = useBi(),
     start = useServerFn(startChat),
     list = useServerFn(listMyChats),
@@ -25,6 +25,7 @@ export function CustomerChat({ context = "", visible = true, conversationId }: {
     [selected, setSelected] = useState<ChatAccess | null>(null),
     [name, setName] = useState(""),
     [email, setEmail] = useState(""),
+    [phone, setPhone] = useState(""),
     [website, setWebsite] = useState(""),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
@@ -76,14 +77,20 @@ export function CustomerChat({ context = "", visible = true, conversationId }: {
     const parsed = chatIdentitySchema.safeParse({
       name: user ? displayName || user.email : name,
       email: user ? user.email : email,
+      phone: user ? authPhone : phone,
       website,
     });
     if (!parsed.success) {
       setError(
-        bi(
-          "Isi nama minimal 2 karakter dan email yang valid.",
-          "Enter a name of at least 2 characters and a valid email.",
-        ),
+        user && !authPhone
+          ? bi(
+              "Lengkapi nomor telepon di akun Anda sebelum chat.",
+              "Complete your account phone number before chatting.",
+            )
+          : bi(
+              "Isi nama minimal 2 karakter, email, dan nomor telepon yang valid.",
+              "Enter a name of at least 2 characters, a valid email, and a valid phone number.",
+            ),
       );
       return;
     }
@@ -215,6 +222,23 @@ export function CustomerChat({ context = "", visible = true, conversationId }: {
               maxLength={255}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="mt-2 w-full rounded-md border border-input bg-background px-3 py-2"
+            />
+          </label>
+        ) : null}
+        {!user ? (
+          <label className="block text-sm text-ink">
+            {bi("Nomor telepon", "Phone number")}
+            <input
+              type="tel"
+              required
+              minLength={8}
+              maxLength={30}
+              inputMode="tel"
+              autoComplete="tel"
+              placeholder="08xxxxxxxxxx"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               className="mt-2 w-full rounded-md border border-input bg-background px-3 py-2"
             />
           </label>

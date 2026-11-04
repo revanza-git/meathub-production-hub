@@ -9,6 +9,7 @@ export type AuthState = {
   role: MlRole | null;
   contactComplete: boolean;
   displayName: string;
+  phone: string;
 };
 
 export function useAuth(): AuthState {
@@ -18,6 +19,7 @@ export function useAuth(): AuthState {
     role: null,
     contactComplete: false,
     displayName: "",
+    phone: "",
   });
 
   useEffect(() => {
@@ -26,7 +28,7 @@ export function useAuth(): AuthState {
     async function load(user: User | null) {
       if (!user) {
         if (active)
-          setState({ loading: false, user: null, role: null, contactComplete: false, displayName: "" });
+          setState({ loading: false, user: null, role: null, contactComplete: false, displayName: "", phone: "" });
         return;
       }
       const [roles, profile] = await Promise.all([
@@ -48,6 +50,7 @@ export function useAuth(): AuthState {
             profile.data?.email?.trim() ||
             user.email ||
             "",
+          phone: profile.data?.phone?.trim() || "",
         });
     }
 

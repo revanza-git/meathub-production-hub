@@ -63,13 +63,13 @@ async function access(input: z.infer<typeof chatAccessSchema>) {
     throw new Error("Percakapan tidak tersedia. Periksa akses Anda.");
   return { client, conversation: data, user };
 }
-async function alert(id: string, messageId: string, name: string) {
+async function alert(id: string, messageId: string, name: string, phone: string | null) {
   try {
     const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
     return (
       await sendTemplateEmail("chat-alert", CHAT_EMAIL, {
         idempotencyKey: chatNotificationKey(messageId),
-        templateData: { name, inboxUrl: `https://meatlink.id/admin/chat?conversation=${id}` },
+        templateData: { name, phone, inboxUrl: `https://meatlink.id/admin/chat?conversation=${id}` },
       })
     ).sent;
   } catch {
@@ -151,15 +151,17 @@ export const startChat = createServerFn({ method: "POST" })
       throw new Error("Mulai percakapan baru.");
     }
     let name = data.name,
-      email = data.email;
+      email = data.email,
+      phone = data.phone;
     if (user) {
       const { data: p } = await client
         .from("profiles")
-        .select("display_name,email")
+        .select("display_name,email,phone")
         .eq("id", user.id)
         .maybeSingle();
       name = p?.display_name || user.email || name;
       email = p?.email || user.email || email;
+      phone = p?.phone?.trim() || data.phone;
     }
     const secret = user ? null : token();
     const { error } = await client
@@ -169,6 +171,7 @@ export const startChat = createServerFn({ method: "POST" })
         user_id: user?.id || null,
         customer_name: name,
         customer_email: email.toLowerCase(),
+        customer_phone: phone,
         guest_token_hash: secret ? await hash(secret) : null,
         context_label: data.context,
       });
@@ -254,7 +257,7 @@ export const sendChat = createServerFn({ method: "POST" })
     });
     if (error) throw new Error("Pesan belum terkirim. Silakan coba lagi.");
     const emailSent = inserted
-      ? await alert(data.id, data.messageId, conversation.customer_name)
+      ? await alert(data.id, data.messageId, conversation.customer_name, conversation.customer_phone ?? null)
       : true;
     return { ok: true, emailSent };
   });
@@ -272,7 +275,7 @@ export const adminChats = createServerFn({ method: "POST" })
     const { data, error } = await context.supabase
       .from("support_conversations")
       .select(
-        "id,customer_name,customer_email,context_label,status,last_sender_kind,last_message,last_message_at,customer_unread,admin_unread",
+        "id,customer_name,customer_email,customer_phone,context_label,status,last_sender_kind,last_message,last_message_at,customer_unread,admin_unread",
       )
       .order("last_message_at", { ascending: false })
       .limit(200);
@@ -288,7 +291,7 @@ export const adminReadChat = createServerFn({ method: "POST" })
     const { data: conversation, error } = await client
       .from("support_conversations")
       .select(
-        "id,customer_name,customer_email,context_label,status,last_sender_kind,last_message,last_message_at,customer_unread,admin_unread",
+        "id,customer_name,customer_email,customer_phone,context_label,status,last_sender_kind,last_message,last_message_at,customer_unread,admin_unread",
       )
       .eq("id", data.id)
       .single();

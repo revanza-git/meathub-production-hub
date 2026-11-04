@@ -1,0 +1,2 @@
+ALTER TABLE public.support_conversations ADD COLUMN customer_phone text;
+COMMENT ON COLUMN public.support_conversations.customer_phone IS 'Contact phone captured at chat start: required for guests, sourced from profiles for signed-in buyers';

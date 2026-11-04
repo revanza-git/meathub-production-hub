@@ -3447,6 +3447,7 @@ export type Database = {
           created_at: string
           customer_email: string
           customer_name: string
+          customer_phone: string | null
           customer_unread: number
           guest_token_hash: string | null
           id: string
@@ -3462,6 +3463,7 @@ export type Database = {
           created_at?: string
           customer_email: string
           customer_name: string
+          customer_phone?: string | null
           customer_unread?: number
           guest_token_hash?: string | null
           id?: string
@@ -3477,6 +3479,7 @@ export type Database = {
           created_at?: string
           customer_email?: string
           customer_name?: string
+          customer_phone?: string | null
           customer_unread?: number
           guest_token_hash?: string | null
           id?: string
