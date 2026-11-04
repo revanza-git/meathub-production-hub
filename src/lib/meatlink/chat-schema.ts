@@ -1,8 +1,15 @@
 import { z } from "zod";
 export const CHAT_EMAIL = "cs@meatlink.id";
+export const chatPhoneSchema = z
+  .string()
+  .trim()
+  .regex(/^\+?[0-9][0-9 ()-]{6,28}$/, "Masukkan nomor telepon yang valid.")
+  .min(8)
+  .max(30);
 export const chatIdentitySchema = z.object({
   name: z.string().trim().min(2).max(120),
   email: z.string().trim().email().max(255),
+  phone: chatPhoneSchema,
   website: z.string().max(0).default(""),
 });
 export const chatMessageSchema = z.object({

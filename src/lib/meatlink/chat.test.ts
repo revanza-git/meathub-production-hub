@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { canReadCustomerChat, chatNotificationKey } from "./chat-access";
-import { CHAT_EMAIL, chatIdentitySchema, chatMessageSchema } from "./chat-schema";
+import { CHAT_EMAIL, chatIdentitySchema, chatMessageSchema, chatPhoneSchema } from "./chat-schema";
 import { TRANSFER_ACCOUNT, chatLink } from "./config";
 describe("customer chat requirements", () => {
   it("permits guest chats with name and email", () => {
