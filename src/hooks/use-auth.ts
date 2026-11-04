@@ -19,6 +19,7 @@ export function useAuth(): AuthState {
     role: null,
     contactComplete: false,
     displayName: "",
+    phone: "",
   });
 
   useEffect(() => {
