@@ -275,7 +275,7 @@ export const adminChats = createServerFn({ method: "POST" })
     const { data, error } = await context.supabase
       .from("support_conversations")
       .select(
-        "id,customer_name,customer_email,context_label,status,last_sender_kind,last_message,last_message_at,customer_unread,admin_unread",
+        "id,customer_name,customer_email,customer_phone,context_label,status,last_sender_kind,last_message,last_message_at,customer_unread,admin_unread",
       )
       .order("last_message_at", { ascending: false })
       .limit(200);
@@ -291,7 +291,7 @@ export const adminReadChat = createServerFn({ method: "POST" })
     const { data: conversation, error } = await client
       .from("support_conversations")
       .select(
-        "id,customer_name,customer_email,context_label,status,last_sender_kind,last_message,last_message_at,customer_unread,admin_unread",
+        "id,customer_name,customer_email,customer_phone,context_label,status,last_sender_kind,last_message,last_message_at,customer_unread,admin_unread",
       )
       .eq("id", data.id)
       .single();
