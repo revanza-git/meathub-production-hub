@@ -226,6 +226,23 @@ export function CustomerChat({ context = "", visible = true, conversationId }: {
             />
           </label>
         ) : null}
+        {!user ? (
+          <label className="block text-sm text-ink">
+            {bi("Nomor telepon", "Phone number")}
+            <input
+              type="tel"
+              required
+              minLength={8}
+              maxLength={30}
+              inputMode="tel"
+              autoComplete="tel"
+              placeholder="08xxxxxxxxxx"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="mt-2 w-full rounded-md border border-input bg-background px-3 py-2"
+            />
+          </label>
+        ) : null}
         <input
           aria-hidden="true"
           tabIndex={-1}
