@@ -3,11 +3,22 @@ import { canReadCustomerChat, chatNotificationKey } from "./chat-access";
 import { CHAT_EMAIL, chatIdentitySchema, chatMessageSchema, chatPhoneSchema } from "./chat-schema";
 import { TRANSFER_ACCOUNT, chatLink } from "./config";
 describe("customer chat requirements", () => {
-  it("permits guest chats with name and email", () => {
+  it("permits guest chats with name, email, and phone", () => {
     expect(
-      chatIdentitySchema.safeParse({ name: "Guest buyer", email: "buyer@example.com" }).success,
+      chatIdentitySchema.safeParse({
+        name: "Guest buyer",
+        email: "buyer@example.com",
+        phone: "0812 3456 7890",
+      }).success,
     ).toBe(true);
     expect(chatIdentitySchema.safeParse({ name: "Guest buyer", email: "" }).success).toBe(false);
+  });
+  it("requires a reachable phone number before a chat can start", () => {
+    expect(chatPhoneSchema.safeParse("081234567890").success).toBe(true);
+    expect(chatPhoneSchema.safeParse("+62 812-3456-7890").success).toBe(true);
+    expect(chatPhoneSchema.safeParse("").success).toBe(false);
+    expect(chatPhoneSchema.safeParse("0812").success).toBe(false);
+    expect(chatPhoneSchema.safeParse("bukan nomor 12").success).toBe(false);
   });
   it("sends notifications only to the requested shared mailbox", () => {
     expect(CHAT_EMAIL).toBe("cs@meatlink.id");

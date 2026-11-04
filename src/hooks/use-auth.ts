@@ -9,6 +9,7 @@ export type AuthState = {
   role: MlRole | null;
   contactComplete: boolean;
   displayName: string;
+  phone: string;
 };
 
 export function useAuth(): AuthState {
